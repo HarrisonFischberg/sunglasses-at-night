@@ -512,3 +512,7 @@
 - Owner's crash report: `EXC_BREAKPOINT` ~0.3 s after launch on queue `com.apple.NSXPCConnection.user.com.apple.SafariServices.ExtensionHelper`, in `closure #1 in SafariExtensionStateProvider.fetchStatus(completion:)` via `swift_task_checkIsolated → dispatch_assert_queue`. The completion closure passed to `SFSafariExtensionManager.getStateOfSafariExtension` was main-actor isolated, but Safari calls it on an XPC queue; Swift 6 traps. Unit tests use a mock provider, so they never exercised it.
 - Fix: `SafariExtensionStateProvider.fetchStatus` is `nonisolated` and uses the async `SFSafariExtensionManager.stateOfSafariExtension(withIdentifier:)` in `Task.detached`; the model still publishes on the main actor.
 - Verified: built app launched directly, alive after 6 s, no new crash report (3 → 3). Added a **launch smoke test** to `ralph/verify-swift.sh` (alive after 6 s + no new DiagnosticReports entry); runner: builds SUCCEEDED, Swift 15/15, launch smoke PASS.
+
+## 2026-10-18 16:43Z — owner trusted the workspace
+
+- `~/.claude.json` → `hasTrustDialogAccepted: true` for this project. Check: `claude -p` ran `ls docs` and `grep -c T0 prd.md` with no approval prompt, `permission_denials: []`, and no "Ignoring … permissions.allow entries" warning. The project allowlist now applies to the loop. Starting run 5.
