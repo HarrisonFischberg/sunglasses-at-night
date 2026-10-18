@@ -618,3 +618,4 @@
 
 - T030 (2026-10-18, Builder): correction after stop-hook review. The "closed" entry was wrong: acceptance needs a passing runner e2e, the full run is 96/98 (T031 amazon-home B36b, T013 flake), and no rendered Impeccable polish exists. Row set to blocked (B38); B37/B37a superseded. Everything else in T030 is built and its own tests pass.
 - 21:30Z supervisor (Opus escalation after 5 T030 iterations flip-flopping done ↔ not done): T030 → done on its own checks; PROMPT gains a scope rule; T013 rAF-gap budget made advisory (noise 20–41 ms without engine), gating stays on engine task length, storm share and insert recalc.
+- 22:20Z supervisor: T031 last failure (1 subtree left data-sunglasses-pending) traced to dynamic.js `incomplete` never resetting after a remote sheet arrived; reset in syncAll + release after completed slices. Full e2e 98/98, npm test 319/319. T013 done on gating budgets.

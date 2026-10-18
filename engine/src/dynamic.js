@@ -1130,6 +1130,11 @@ export function startDynamic({
   }
 
   function syncAll(deadline) {
+    // Recomputed by every full sync: a remote sheet that was missing last time
+    // and has since arrived must not keep the flag set (it held pending
+    // subtrees tagged forever, T031 2026-10-18). Sheets still missing set it
+    // again as they're visited; complete ones are cached only when complete.
+    incomplete = false;
     let changed = false;
     for (const scope of [...scopes.values()]) {
       if (scope.root.nodeType === 11 && !scope.root.host?.isConnected) continue;
@@ -1161,7 +1166,14 @@ export function startDynamic({
     timerId = null;
     timerAt = Infinity;
     if (stopped) return;
-    if (!work(now() + SLICE_MS)) wake(0);
+    if (!work(now() + SLICE_MS)) {
+      wake(0);
+      return;
+    }
+    // All queued work is done. Subtrees tagged after this pass's release (a
+    // later insert, or one waiting on a re-fetched sheet) are released here,
+    // once their sheets are in; releasePending checks that itself.
+    if (pendingTags.size) releasePending();
   });
 
   function onMutations(scope, records) {
