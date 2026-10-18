@@ -10,6 +10,8 @@ Verified: 2026-10-17 (Phase 0). Re-verify at the start of each Ralph run.
 | Ralph fresh-context shell loop | YES | coleam00/ralph-loop-quickstart @ f6a7781 (2026-01-20) | Cloned to scratchpad and reviewed `ralph.sh` + `.claude/settings.json`. Upstream permissions too broad (`WebFetch(domain:*)`, `Bash(npx:*)`, `autoAllowBashIfSandboxed`); a narrowed project config was approved 2026-10-18 and written to `.claude/settings.json`. The `ralph-loop@claude-plugins-official` 1.0.0 plugin is also installed but is a same-context loop and is NOT used as a substitute. |
 | Caveman | REMOVED | — | Owner decision 2026-10-18: never use; removed from the new-app skill (SKILL.md, references/tools.md, scripts/scaffold.sh). |
 
+| Impeccable | YES | npm `impeccable` 4.6.0 | 2026-10-18 06:00Z: owner ran `cd ~/projects/sunglasses-at-night && npx impeccable install` (my attempt was blocked by the auto-mode classifier as self-modification). Installed `.claude/skills/impeccable/` (launcher `scripts/impeccable --version` → 4.6.0) and `.claude/agents/impeccable-*`. Hooks in `.claude/settings.local.json`: SessionStart, PostToolUse(Edit\|Write), Stop, which run the Impeccable detector. No app code changed. Kept out of git (`.gitignore`). Loop sessions in the project folder load it from there. |
+
 ## Section F — design, accessibility, quality layer
 
 | Skill | Available | Version / source | How verified |

@@ -14,3 +14,8 @@ replica/evidence/*.png
 # third-party site screenshots (supervised profiling), not redistributed
 ralph/evidence/amazon/*.png
 ralph/evidence/webbrowsertools/*.png
+
+# Impeccable install (owner ran npx impeccable install 2026-10-18): local tooling, not app code
+.claude/skills/impeccable/
+.claude/agents/
+.claude/settings.local.json
