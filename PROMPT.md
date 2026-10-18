@@ -29,7 +29,8 @@ marker only when every approved task genuinely meets its acceptance criteria.
   iteration and writes `ralph/evidence/swift-build-latest.md`; read it instead of calling
   `xcodebuild`. If your task's acceptance needs a Swift build you just changed, set the row status to
   `needs-runner-build` and stop; the next iteration picks the same task first, reads the fresh log,
-  and marks it done or fixes it. Code signing is off for these builds (B7).
+  and marks it done or fixes it. Never mark a task `blocked` only because a runner-side check
+  (Xcode, e2e) hasn't run yet: that's what `needs-runner-build` is for. Code signing is off for these builds (B7).
 - WebKit e2e (`npm run e2e`) can't launch inside your sandbox either. The runner runs it before and
   after every iteration and writes `ralph/evidence/e2e-latest.md` (+ `.log`); read that. Same
   `needs-runner-build` status applies when your acceptance depends on an e2e run you just changed.
