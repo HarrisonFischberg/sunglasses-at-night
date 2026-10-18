@@ -451,3 +451,16 @@ dialog .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap
   * { transition: none !important; }
   button:active { transform: none; }
 }
+
+.popup .report {
+  margin-top: var(--s-3);
+  text-align: center;
+}
+.popup .report a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  padding: 0 var(--s-3);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}

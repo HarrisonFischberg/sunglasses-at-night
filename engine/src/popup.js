@@ -7,6 +7,7 @@
 import { createSettingsStore, LOOK_RANGES } from './settings.js';
 import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, presetLook } from './ui-core.js';
 import { GET_TAB_STATE } from './messages.js';
+import { buildReportUrl } from './report.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
@@ -53,6 +54,12 @@ function render() {
     $('site-engine').value = view.engine;
     $('custom-look').checked = view.customLook;
   }
+  $('report').href = buildReportUrl({
+    host: view.restricted ? null : view.host,
+    version: api.runtime.getManifest?.().version,
+    system: globalThis.navigator?.userAgent,
+    settings,
+  });
   for (const r of document.querySelectorAll('input[name="preset"]')) r.checked = r.value === view.preset;
   for (const k of Object.keys(LOOK_RANGES)) {
     $(k).value = String(view.look[k]);

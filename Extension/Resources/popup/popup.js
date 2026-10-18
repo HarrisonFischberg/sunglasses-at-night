@@ -1733,6 +1733,46 @@ function scheduleHint(schedule) {
 return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENGINE_LABELS, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, matchPreset, presetLook, popupView, siteRows, scheduleHint };
 })();
 
+// ---- engine/src/report.js
+const __m_engine_src_report_js = (() => {
+// Sunglasses for Safari: "Report a problem" (T011). Builds a mailto: URL for a
+// draft in the user's own Mail app. The extension sends nothing: the popup
+// shows a plain link and the user presses Send in Mail, after reading and
+// editing the draft. Fields: site hostname, extension version, system
+// (user agent string) and settings. Only the current site's rule is included,
+// never the other sites the user has set rules for. Pure; no network.
+
+const REPORT_ADDRESS = 'hello@rarecreatures.app';
+const REPORT_SUBJECT = 'Sunglasses for Safari: problem report';
+
+function reportSettings(settings, host) {
+  const { sites = {}, ...rest } = settings ?? {};
+  const out = { ...rest };
+  const entry = host ? sites[host] : undefined;
+  if (entry) out.thisSite = entry;
+  out.otherSiteRules = Object.keys(sites).filter((h) => h !== host).length;
+  return out;
+}
+
+function buildReportBody({ host, version, system, settings }) {
+  return [
+    'What went wrong? (please describe, then press Send)',
+    '',
+    '',
+    '--- Sent only if you press Send. You can edit or delete anything below. ---',
+    `Site: ${host || '(none)'}`,
+    `Version: ${version || '(unknown)'}`,
+    `System: ${system || '(unknown)'}`,
+    `Settings: ${JSON.stringify(reportSettings(settings, host))}`,
+  ].join('\n');
+}
+
+function buildReportUrl(info) {
+  return `mailto:${REPORT_ADDRESS}?subject=${encodeURIComponent(REPORT_SUBJECT)}&body=${encodeURIComponent(buildReportBody(info))}`;
+}
+return { REPORT_ADDRESS, REPORT_SUBJECT, reportSettings, buildReportBody, buildReportUrl };
+})();
+
 // ---- engine/src/popup.js
 const __m_engine_src_popup_js = (() => {
 // Sunglasses for Safari: toolbar popup (S05) entry, bundled to
@@ -1744,6 +1784,7 @@ const __m_engine_src_popup_js = (() => {
 const { createSettingsStore, LOOK_RANGES } = __m_engine_src_settings_js;
 const { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, presetLook } = __m_engine_src_ui_core_js;
 const { GET_TAB_STATE } = __m_engine_src_messages_js;
+const { buildReportUrl } = __m_engine_src_report_js;
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
@@ -1790,6 +1831,12 @@ function render() {
     $('site-engine').value = view.engine;
     $('custom-look').checked = view.customLook;
   }
+  $('report').href = buildReportUrl({
+    host: view.restricted ? null : view.host,
+    version: api.runtime.getManifest?.().version,
+    system: globalThis.navigator?.userAgent,
+    settings,
+  });
   for (const r of document.querySelectorAll('input[name="preset"]')) r.checked = r.value === view.preset;
   for (const k of Object.keys(LOOK_RANGES)) {
     $(k).value = String(view.look[k]);
