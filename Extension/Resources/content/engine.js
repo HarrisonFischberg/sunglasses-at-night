@@ -2301,6 +2301,7 @@ function startDynamic({
   const pendingHosts = new Set();
   const touched = new Set(); // elements carrying our attributes or inline writes
   const inlineOriginals = new WeakMap(); // element → Map(prop → { value, written })
+  const frames = new Map(); // about:blank / srcdoc <iframe> → { doc, engine, start }
   const canvas = quantize(transformColor('#ffffff', 'bg', look));
   let stopped = false;
   let incomplete = false; // set while a needed remote sheet is still loading
@@ -2639,6 +2640,37 @@ function startDynamic({
     scanTree(sr);
   }
 
+  // about:blank and srcdoc frames get no content script (the manifest has no
+  // match_about_blank), so a frame the page fills itself would stay light.
+  // They're same-origin with us, so run a nested engine on their document;
+  // a frame's `load` (srcdoc parsed, src set to about:blank) restarts it.
+  function adoptFrame(el) {
+    if (frames.has(el)) return;
+    const src = el.getAttribute('src')?.trim().toLowerCase();
+    if (!el.hasAttribute('srcdoc') && src && src !== 'about:blank') return;
+    const entry = { doc: null, engine: null };
+    const start = () => {
+      if (stopped) return;
+      let doc = null;
+      try {
+        doc = el.contentDocument;
+      } catch {
+        doc = null;
+      }
+      if (!doc || doc === entry.doc || !doc.documentElement || !doc.defaultView) return;
+      entry.engine?.stop();
+      entry.doc = doc;
+      // A content script got there first (a host that does inject here).
+      entry.engine = doc.querySelector(`[${MARK}],#sunglasses-at-night-early`) ? null : startDynamic({
+        document: doc, window: doc.defaultView, look, fetchSheet, images, hideBackgroundImages,
+      });
+    };
+    entry.start = start;
+    frames.set(el, entry);
+    el.addEventListener('load', start);
+    start();
+  }
+
   function scanTree(root) {
     for (const el of elementsIn(root)) {
       if (isOurs(el)) continue;
@@ -2647,6 +2679,7 @@ function startDynamic({
         processInline(el);
       }
       if (el.shadowRoot || el.localName.includes('-')) adoptShadow(el);
+      if (el.localName === 'iframe') adoptFrame(el);
     }
   }
 
@@ -2735,6 +2768,11 @@ function startDynamic({
       }
       inlineOriginals.delete(el);
     }
+    for (const [el, entry] of frames) {
+      el.removeEventListener('load', entry.start);
+      entry.engine?.stop();
+    }
+    frames.clear();
     scopes.clear();
     touched.clear();
     pendingHosts.clear();

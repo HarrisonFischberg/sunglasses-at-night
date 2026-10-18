@@ -54,6 +54,25 @@ function visible(el, cs) {
   return r.width > 0 && r.height > 0;
 }
 
+/**
+ * The color painted behind everything: the root's background, or the body's
+ * when the root's is transparent (it propagates to the canvas), over the
+ * canvas color of the root's color scheme. Works while the page is loading.
+ */
+export function canvasColor() {
+  const rs = getComputedStyle(document.documentElement);
+  let c = parseColor(rs.backgroundColor);
+  if ((!c || c.alpha === 0) && document.body) c = parseColor(getComputedStyle(document.body).backgroundColor);
+  const scheme = rs.colorScheme ?? '';
+  const dark = /\bdark\b/.test(scheme) && (!/\blight\b/.test(scheme) || matchMedia('(prefers-color-scheme: dark)').matches);
+  const canvas = dark ? { r: 30 / 255, g: 30 / 255, b: 30 / 255, alpha: 1 } : { r: 1, g: 1, b: 1, alpha: 1 };
+  const out = c && c.alpha > 0 ? composite(c, canvas) : canvas;
+  return {
+    root: rs.backgroundColor, scheme, bodyChildren: document.body ? document.body.children.length : -1,
+    rgb: [out.r, out.g, out.b].map((v) => Math.round(v * 255)), luminance: +relativeLuminance(out).toFixed(3),
+  };
+}
+
 /** Structure + pointer-events + hit-testing, for before/after comparison. */
 export function snapshot() {
   const els = walk(document).filter((el) => !isOurs(el));

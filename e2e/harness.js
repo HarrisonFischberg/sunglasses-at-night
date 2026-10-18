@@ -22,11 +22,17 @@ const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const FIXTURES = resolve(ROOT, 'e2e/fixtures');
 export const EVIDENCE = resolve(ROOT, 'ralph/evidence');
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript' };
+const TYPES = {
+  '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript', '.svg': 'image/svg+xml',
+};
 
+// `?stall=<ms>` on an HTML page sends everything up to and including the
+// <body> tag, then holds the rest for <ms>: the browser paints the page
+// before any body content exists, which is when a white flash would show.
 function serve(dir, vars) {
   const server = createServer((req, res) => {
-    const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    const url = new URL(req.url, 'http://x');
+    const path = decodeURIComponent(url.pathname);
     const file = resolve(dir, '.' + path);
     if (!file.startsWith(dir) || !existsSync(file)) {
       res.writeHead(404).end('not found');
@@ -35,6 +41,16 @@ function serve(dir, vars) {
     let body = readFileSync(file, 'utf8');
     for (const [k, v] of Object.entries(vars())) body = body.replaceAll(`{{${k}}}`, v);
     res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'cache-control': 'no-store' });
+    const stall = Number(url.searchParams.get('stall')) || 0;
+    const bodyTag = extname(file) === '.html' ? /<body[^>]*>/i.exec(body) : null;
+    if (stall > 0 && bodyTag) {
+      const cut = bodyTag.index + bodyTag[0].length;
+      // Padding so the parser isn't left waiting for more bytes to sniff.
+      res.write(body.slice(0, cut) + `<!--${' '.repeat(2048)}-->`);
+      const timer = setTimeout(() => res.end(body.slice(cut)), stall);
+      res.on('close', () => clearTimeout(timer));
+      return;
+    }
     res.end(body);
   });
   return new Promise((r) => server.listen(0, '127.0.0.1', () => r(server)));
@@ -51,8 +67,13 @@ export async function startServers() {
   return { ...urls, close: () => Promise.all([site, cdn].map((s) => new Promise((r) => s.close(r)))) };
 }
 
-const contentBundle = () => bundle(resolve(ROOT, 'engine/src/content.js'));
-const auditBundle = () => bundle(resolve(ROOT, 'e2e/page-audit.js'), { globalName: '__sanAudit' });
+// The manifest has no match_about_blank, so Safari doesn't run the content
+// script in about:blank / about:srcdoc frames. Playwright's init scripts run
+// in every frame, so skip those here; the parent frame's engine has to cover
+// them (dynamic.js adoptFrame).
+const contentBundle = () =>
+  `if (location.protocol !== 'about:') {\n${bundle(resolve(ROOT, 'engine/src/content.js'))}\n}`;
+export const auditBundle = () => bundle(resolve(ROOT, 'e2e/page-audit.js'), { globalName: '__sanAudit' });
 
 function apiShim(settings) {
   return `(() => {
@@ -84,9 +105,39 @@ export async function launch() {
 /**
  * Open `path` on the site origin. With `extension`, the content script runs
  * at document start with mode "always" (or `settings`); `ready` is the role
- * of the engine sheet to wait for ('override' for dynamic, 'filter').
+ * of the engine sheet to wait for ('override' for dynamic, 'filter'), or
+ * null when the engine is expected to back off (already-dark pages).
  */
 export async function openPage(browser, servers, path, { extension = false, settings, ready = 'override' } = {}) {
+  const { page, context, fetchLog } = await preparePage(browser, servers, { extension, settings });
+  await page.goto(servers.SITE + path, { waitUntil: 'load' });
+  if (extension && ready) {
+    await page.waitForFunction((role) => document.querySelector(`style[data-sunglasses-at-night="${role}"]`), ready);
+  } else if (extension) {
+    await page.waitForFunction(() => !document.getElementById('sunglasses-at-night-early'));
+  }
+  // Let fixture scripts finish (they set __fixtureDone) and the 1 s poll run.
+  await page.waitForFunction(() => globalThis.__fixtureDone !== false, null, { timeout: 10000 });
+  await page.waitForTimeout(1500);
+  return { page, context, fetchLog };
+}
+
+/**
+ * Start loading `path` with the body held back by the server (`?stall`),
+ * wait until the browser has rendered frames of the bodiless page, and
+ * return what it painted the canvas with (page-audit canvasColor()).
+ */
+export async function openFirstPaint(browser, servers, path, { extension = false, settings, stallMs = 8000, paintMs = 800 } = {}) {
+  const { page, context } = await preparePage(browser, servers, { extension, settings });
+  await page.goto(`${servers.SITE}${path}?stall=${stallMs}`, { waitUntil: 'commit' });
+  await page.waitForFunction(() => document.body, null, { timeout: 5000 });
+  await page.waitForTimeout(paintMs);
+  const canvas = await page.evaluate(() => new Promise((done) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => done(__sanAudit.canvasColor())))));
+  return { page, context, canvas };
+}
+
+async function preparePage(browser, servers, { extension, settings }) {
   const context = await browser.newContext({ colorScheme: 'light', viewport: { width: 1024, height: 900 } });
   const page = await context.newPage();
   await page.addInitScript({ content: auditBundle() });
@@ -104,13 +155,6 @@ export async function openPage(browser, servers, path, { extension = false, sett
     await page.addInitScript({ content: apiShim(settings ?? { ...defaultSettings(), mode: 'always' }) });
     await page.addInitScript({ content: contentBundle() });
   }
-  await page.goto(servers.SITE + path, { waitUntil: 'load' });
-  if (extension) {
-    await page.waitForFunction((role) => document.querySelector(`style[data-sunglasses-at-night="${role}"]`), ready);
-  }
-  // Let fixture scripts finish (they set __fixtureDone) and the 1 s poll run.
-  await page.waitForFunction(() => globalThis.__fixtureDone !== false, null, { timeout: 10000 });
-  await page.waitForTimeout(1500);
   return { page, context, fetchLog };
 }
 

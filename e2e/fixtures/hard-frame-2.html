@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Frame level 2</title>
+<style>
+  body { margin: 8px; background: #ffffff; color: #2b2b2b; font: 14px/1.4 system-ui, sans-serif; }
+  .row { display: flex; gap: 10px; align-items: flex-start; }
+  figure { margin: 0; }
+  .tile { display: block; width: 64px; height: 64px; }
+  iframe { border: 1px solid #cccccc; display: block; margin-top: 6px; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <figure><img id="f2-img" class="tile" data-expect="light" alt="Tile in frame 2" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='64'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E"><figcaption>Frame 2 figure</figcaption></figure>
+    <p>Frame level 2, nested two deep.</p>
+  </div>
+  <iframe src="hard-frame-3.html" title="Frame level 3" width="540" height="170"></iframe>
+</body>
+</html>

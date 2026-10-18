@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<title>Already-dark fixture</title>
+<!-- T012: a site with its own dark theme. The engine must detect it and
+     leave it exactly as authored (F6): no sheets, no attributes, same colors. -->
+<style>
+  html { background: #121418; }
+  body { margin: 0; color: #e6e8eb; font: 16px/1.5 system-ui, sans-serif; }
+  header { background: #1b1f26; padding: 12px 16px; }
+  main { padding: 16px; max-width: 760px; }
+  a { color: #8ab4f8; }
+  .muted { color: #a3a8b0; }
+  .card { background: #1e232b; border: 1px solid #2e3440; border-radius: 8px; padding: 12px; margin: 12px 0; }
+  button { background: #2563eb; color: #ffffff; border: 0; border-radius: 6px; padding: 8px 14px; font: inherit; }
+  input { background: #0d0f12; color: #e6e8eb; border: 1px solid #3a404c; padding: 6px; font: inherit; }
+</style>
+</head>
+<body>
+<header><strong>Night Desk</strong> <a href="#about">About</a></header>
+<main>
+  <h1>Already dark</h1>
+  <p>This page ships its own dark theme, so dark mode should leave it alone.</p>
+  <p class="muted">Muted secondary text on the page background.</p>
+  <div class="card">
+    <h2>A card</h2>
+    <p>Card text on a slightly lighter surface, with a <a href="#about">link</a>.</p>
+    <label for="q">Search</label> <input id="q" value="dark themes">
+    <button id="go" type="button" onclick="this.dataset.clicks = (+this.dataset.clicks || 0) + 1">Search</button>
+  </div>
+  <p id="about" class="muted">About: a fixture page for Sunglasses at Night.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hard cases fixture</title>
+<!-- T012: an original page covering the categories that break dark modes
+     (owner request 2026-10-18). Every image is a solid color so a screenshot
+     pixel can say whether it was inverted, hidden or faded:
+     light #e6c896 (230,200,150), dark #28283c (40,40,60).
+     data-expect marks each media sample point; data-alpha marks authored
+     translucency (sampled against the pixels around it). -->
+<style>
+  html { background: #ffffff; }
+  body { margin: 0; color: #222222; font: 15px/1.45 system-ui, sans-serif; }
+  main { padding: 12px 16px; }
+  h1 { font-size: 22px; margin: 0 0 8px; }
+  h2 { font-size: 16px; margin: 14px 0 6px; color: #333333; border-bottom: 1px solid #dddddd; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+  .tile { display: block; width: 72px; height: 72px; }
+  figure { margin: 0; }
+  figcaption { font-size: 13px; color: #555555; }
+  .pad { display: inline-block; padding: 12px; }
+  .faded { opacity: 0.5; }
+  .slow { transition: all 30s linear; }
+  #bg-url { background: url("hard-tile.svg") center / cover no-repeat; }
+  #bg-data { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E"); background-color: #ffffff; }
+  embed, object { width: 72px; height: 72px; display: block; }
+  form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 12px; }
+  label { display: flex; flex-direction: column; font-size: 13px; }
+  .styled { background: #ffffff; color: #333333; border: 1px solid #bbbbbb; }
+  #frames iframe { border: 1px solid #cccccc; display: block; }
+  .on-dark { background: #16213e; color: #ffffff; padding: 8px; }
+  .on-black { background: #000000; color: #f0f0f0; padding: 8px; }
+  .on-white { background: #ffffff; color: #1b1b1b; padding: 8px; border: 1px solid #eeeeee; }
+  .palette { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+  .palette span { padding: 6px 4px; font-size: 12px; }
+  .ink-dark { color: #212121; }
+  .ink-light { color: #ffffff; }
+  .aa { -webkit-font-smoothing: antialiased; }
+  .sub { -webkit-font-smoothing: subpixel-antialiased; }
+  .nosmooth { -webkit-font-smoothing: none; }
+  .auto { -webkit-font-smoothing: auto; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hard cases</h1>
+
+  <h2>Images in links and figures</h2>
+  <div class="row">
+    <a id="img-link" href="#frames"><img id="m-link" class="tile" data-expect="light" alt="Light tile in a link" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E"></a>
+    <a href="#forms"><img id="m-link-dark" class="tile" data-expect="dark" alt="Dark tile in a link" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%2328283c'/%3E%3C/svg%3E"></a>
+    <figure><img id="m-fig" class="tile" data-expect="light" alt="Tile in a figure" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E"><figcaption>Figure caption</figcaption></figure>
+    <figure><a href="#text"><img id="m-fig-link" class="tile" data-expect="light" alt="Linked tile in a figure" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E"></a><figcaption>Linked figure</figcaption></figure>
+  </div>
+
+  <h2>Image styles</h2>
+  <div class="row">
+    <span class="pad" id="pad-faded"><img id="m-faded" class="tile faded" data-expect="light" data-alpha="0.5" alt="Half-transparent tile" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E"></span>
+    <img id="m-slow" class="tile slow" data-expect="light" alt="Tile with a long transition" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E">
+    <img id="m-revert" style="all: revert; width: 72px; height: 72px" data-expect="light" alt="Tile with all revert" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E">
+    <img id="m-nofilter" class="tile" style="filter: none" data-expect="light" alt="Tile with filter none" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E">
+  </div>
+
+  <h2>Background images</h2>
+  <div class="row">
+    <div id="bg-url" class="tile" data-expect="light" role="img" aria-label="url() background"></div>
+    <div id="bg-data" class="tile" data-expect="light" role="img" aria-label="data: background"></div>
+  </div>
+
+  <h2>Embedded media</h2>
+  <div class="row">
+    <picture><source srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E" type="image/svg+xml"><img id="m-picture" class="tile" data-expect="light" alt="Picture element" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%2328283c'/%3E%3C/svg%3E"></picture>
+    <canvas id="m-canvas" class="tile" data-expect="light" width="72" height="72"></canvas>
+    <embed id="m-embed" data-expect="light" type="image/svg+xml" src="hard-tile.svg" title="Embedded SVG">
+    <object id="m-object" data-expect="light" type="image/svg+xml" data="hard-tile.svg" aria-label="SVG object"></object>
+  </div>
+
+  <h2 id="forms">Form controls</h2>
+  <form onsubmit="return false">
+    <label>Text <input type="text" value="Typed text"></label>
+    <label>Search <input type="search" value="query"></label>
+    <label>Email <input type="email" value="someone@example.com"></label>
+    <label>URL <input type="url" value="https://example.com/"></label>
+    <label>Phone <input type="tel" value="555 0100"></label>
+    <label>Password <input type="password" value="hunter22"></label>
+    <label>Number <input type="number" value="42"></label>
+    <label>Date <input type="date" value="2026-10-18"></label>
+    <label>Time <input type="time" value="21:30"></label>
+    <label>Date and time <input type="datetime-local" value="2026-10-18T21:30"></label>
+    <label>Month <input type="month" value="2026-10"></label>
+    <label>Week <input type="week" value="2026-W42"></label>
+    <label>Color <input type="color" value="#3366cc"></label>
+    <label>Range <input type="range" value="30"></label>
+    <label>Checkbox <input type="checkbox" checked></label>
+    <label>Radio <input type="radio" name="r" checked></label>
+    <label>File <input type="file"></label>
+    <label>Styled text <input class="styled" type="text" value="Author colors"></label>
+    <label>Select <select><option>First option</option><option>Second option</option></select></label>
+    <label>Textarea <textarea rows="2">Text inside a textarea</textarea></label>
+    <label>Styled textarea <textarea class="styled" rows="2">Author colored textarea</textarea></label>
+    <input type="hidden" value="hidden">
+    <input id="i-submit" type="submit" value="Submit">
+    <input id="i-reset" type="reset" value="Reset">
+    <input id="i-count" type="button" value="Input button" onclick="this.dataset.clicks = (+this.dataset.clicks || 0) + 1">
+    <button id="b-count" type="button" onclick="this.dataset.clicks = (+this.dataset.clicks || 0) + 1">Button element</button>
+    <button class="styled" type="button">Styled button</button>
+    <input id="m-input-image" type="image" data-expect="light" width="72" height="72" alt="Image button" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E">
+  </form>
+
+  <h2>Frames</h2>
+  <div class="row" id="frames">
+    <iframe id="blank-empty" src="about:blank" title="Empty about:blank frame" width="160" height="90"></iframe>
+    <iframe id="blank-filled" title="about:blank frame filled by the page" width="300" height="90"></iframe>
+    <iframe id="nested" src="hard-frame-1.html" title="Nested frames" width="640" height="440"></iframe>
+  </div>
+
+  <h2 id="text">Text</h2>
+  <p class="on-dark">White text on a dark navy block.</p>
+  <p class="on-black">Light text on a black block.</p>
+  <p class="on-white">Dark text on a white block.</p>
+
+  <h2>Background palette</h2>
+  <div class="palette">
+    <span class="ink-dark" style="background:#ffffff">white</span>
+    <span class="ink-dark" style="background:#f5f5f5">smoke</span>
+    <span class="ink-dark" style="background:#ffeb3b">yellow</span>
+    <span class="ink-dark" style="background:#ff9800">orange</span>
+    <span class="ink-light" style="background:#d32f2f">red</span>
+    <span class="ink-light" style="background:#c2185b">pink</span>
+    <span class="ink-light" style="background:#7b1fa2">purple</span>
+    <span class="ink-light" style="background:#303f9f">indigo</span>
+    <span class="ink-light" style="background:#1976d2">blue</span>
+    <span class="ink-dark" style="background:#00bcd4">cyan</span>
+    <span class="ink-light" style="background:#388e3c">green</span>
+    <span class="ink-dark" style="background:#cddc39">lime</span>
+    <span class="ink-light" style="background:#5d4037">brown</span>
+    <span class="ink-dark" style="background:#9e9e9e">gray</span>
+    <span class="ink-light" style="background:#424242">charcoal</span>
+    <span class="ink-light" style="background:#000000">black</span>
+  </div>
+
+  <h2>Font smoothing</h2>
+  <p class="aa">Antialiased text.</p>
+  <p class="sub">Subpixel antialiased text.</p>
+  <p class="nosmooth">Text with smoothing off.</p>
+  <p class="auto">Text with automatic smoothing.</p>
+</main>
+<script>
+  globalThis.__fixtureDone = false;
+  const g = document.getElementById('m-canvas').getContext('2d');
+  g.fillStyle = '#e6c896';
+  g.fillRect(0, 0, 72, 72);
+  // A page writing into an about:blank frame (ads, editors, widgets).
+  const blank = document.getElementById('blank-filled').contentDocument;
+  blank.body.innerHTML = '<p id="bf-text">Text the page wrote into an about:blank frame.</p>' +
+    '<button id="bf-btn" type="button" onclick="this.dataset.clicks = (+this.dataset.clicks || 0) + 1">Frame button</button>';
+  setTimeout(() => {
+    const p = blank.createElement('p');
+    p.id = 'bf-late';
+    p.textContent = 'Added later.';
+    blank.body.appendChild(p);
+    globalThis.__fixtureDone = true;
+  }, 300);
+</script>
+</body>
+</html>
