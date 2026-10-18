@@ -626,3 +626,9 @@
 - Verification: `npm run check` -> `node --check: 18 file(s) OK`; `npm test` -> `tests 325, pass 325, fail 0` (new engine/test/report.test.js, 6 cases); `npm run privacy-check` -> 16/17, only `npm audit` fails because the sandbox denies registry.npmjs.org (no new network API flagged).
 - Not run: WebKit e2e (cannot launch here). The popup gained one link, so the runner T030 popup layout tests should re-run (link is min-height var(--target)). Not claimed: rendered Impeccable polish/audit of the new link, or Mail opening in real Safari (owner check).
 - Docs: B24 updated in docs/launch-blockers.md (OS version is approximate: Safari freezes the UA).
+
+## T015 — SwiftUI S01–S04 + accessibility (2026-10-18, Builder). NEEDS-RUNNER-BUILD
+- Built: App/ContentView.swift (TabView: S01 Welcome/Enable, S02 Settings, S03 Sites, S04 About & Privacy with confirmed Reset all), Shared/MirrorSummary.swift (pure mirror parser), Tests/MirrorSummaryTests.swift (4 cases). S04 copy is from docs/site/in-app-copy.md.
+- Deviation for Opus review: S02/S03 are read-only. The bridge has no app-to-extension channel except the reset generation, so in-app editing/deleting would not reach the extension. See docs/accessibility-t015.md.
+- Accessibility: code-review checklist only (docs/accessibility-t015.md). Not run: Swift build/tests (Xcode cannot run in the sandbox; swiftc -parse also needed approval), VoiceOver, Dynamic Type XXXL, Full Keyboard Access, Reduce Motion on a device.
+- Next: runner reads ralph/evidence/swift-build-latest.md for both schemes and the new tests; then the owner does the VoiceOver / XXXL / keyboard pass. Row is not done until both.
