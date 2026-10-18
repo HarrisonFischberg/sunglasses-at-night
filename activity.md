@@ -547,3 +547,4 @@
 - `impeccable detect design/concepts/{a,b,c}` after the batch: regex-only, 0 findings each (`docs/design/logs/detect-*-post.txt`). The detector does not parse the static `.html`, so this is an undercount.
 - Audit: recorded from the measured evidence, not a fresh rendered run. Not claimed: keyboard/VoiceOver checks.
 - Why not done: CSS changed after capture, so the screenshots show the pre-fix state. The runner's e2e must re-capture them; then Opus writes `comparison.md` and the owner approves a direction (task says stop for owner approval).
+- Stop-hook round: row set to `blocked (B35)`. What remains is human work: Opus's `comparison.md` and the owner's choice of direction. The screenshots are pre-fix until the runner's next e2e re-captures them, so check `t026-e2e.json` before approving. Nothing is marked done.
