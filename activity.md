@@ -188,3 +188,4 @@
 
 - Owner ran the signed test build (HEAD ~bdda3a0+, built 02:23Z) in real Safari on macOS with the extension enabled: **pages darken and "work well" on wikipedia.org and citizenfreepress.com.** So the T007 engine does inject in Safari; the 0/7 e2e result is most likely a **harness problem** (Playwright WebKit init-script/content-script setup), not the engine. Check the harness first.
 - Owner asked that testing also cover the hard cases from https://webbrowsertools.com/darkmode/. T012's acceptance now includes an original local fixture for those categories. e2e itself stays loopback-only. The supervisor will run the real page once, supervised.
+- 02:30Z owner T009 result: Option+Shift+N works; badge shows "off" when off and nothing when on (as designed); hover title says "on" when on. T009 → done, B16 closed.
