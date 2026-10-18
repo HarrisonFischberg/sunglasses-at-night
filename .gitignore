@@ -10,3 +10,6 @@ ralph/logs/
 
 # third-party listing screenshots: observation only, not redistributed
 replica/evidence/*.png
+
+# third-party site screenshots (supervised profiling), not redistributed
+ralph/evidence/amazon/*.png
