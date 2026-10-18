@@ -34,6 +34,10 @@
   .on-white { background: #ffffff; color: #1b1b1b; padding: 8px; border: 1px solid #eeeeee; }
   .palette { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
   .palette span { padding: 6px 4px; font-size: 12px; }
+  .island { background: #1b2336; color: #f2f2f2; padding: 10px 12px; border-radius: 6px; }
+  .island p { margin: 0; }
+  .swatches { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
+  .swatches span { padding: 6px 2px; font-size: 11px; text-align: center; }
   .ink-dark { color: #212121; }
   .ink-light { color: #ffffff; }
   .aa { -webkit-font-smoothing: antialiased; }
@@ -138,6 +142,63 @@
     <span class="ink-dark" style="background:#9e9e9e">gray</span>
     <span class="ink-light" style="background:#424242">charcoal</span>
     <span class="ink-light" style="background:#000000">black</span>
+  </div>
+
+  <h2>Dark island on a light page</h2>
+  <div id="island" class="island">
+    <p id="island-text">Light text on a box the author made dark, on a light page.</p>
+  </div>
+
+  <h2>48-swatch palette</h2>
+  <div id="swatches" class="swatches">
+    <span class="ink-light" data-swatch style="background:hsl(0 65% 20%)">0/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(30 65% 20%)">30/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(60 65% 20%)">60/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(90 65% 20%)">90/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(120 65% 20%)">120/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(150 65% 20%)">150/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(180 65% 20%)">180/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(210 65% 20%)">210/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(240 65% 20%)">240/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(270 65% 20%)">270/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(300 65% 20%)">300/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(330 65% 20%)">330/20</span>
+    <span class="ink-light" data-swatch style="background:hsl(0 65% 40%)">0/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(30 65% 40%)">30/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(60 65% 40%)">60/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(90 65% 40%)">90/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(120 65% 40%)">120/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(150 65% 40%)">150/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(180 65% 40%)">180/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(210 65% 40%)">210/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(240 65% 40%)">240/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(270 65% 40%)">270/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(300 65% 40%)">300/40</span>
+    <span class="ink-light" data-swatch style="background:hsl(330 65% 40%)">330/40</span>
+    <span class="ink-dark" data-swatch style="background:hsl(0 65% 60%)">0/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(30 65% 60%)">30/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(60 65% 60%)">60/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(90 65% 60%)">90/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(120 65% 60%)">120/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(150 65% 60%)">150/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(180 65% 60%)">180/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(210 65% 60%)">210/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(240 65% 60%)">240/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(270 65% 60%)">270/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(300 65% 60%)">300/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(330 65% 60%)">330/60</span>
+    <span class="ink-dark" data-swatch style="background:hsl(0 65% 80%)">0/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(30 65% 80%)">30/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(60 65% 80%)">60/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(90 65% 80%)">90/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(120 65% 80%)">120/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(150 65% 80%)">150/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(180 65% 80%)">180/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(210 65% 80%)">210/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(240 65% 80%)">240/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(270 65% 80%)">270/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(300 65% 80%)">300/80</span>
+    <span class="ink-dark" data-swatch style="background:hsl(330 65% 80%)">330/80</span>
   </div>
 
   <h2>Font smoothing</h2>

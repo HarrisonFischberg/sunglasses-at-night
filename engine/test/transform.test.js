@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  MIN_CONTRAST, ROLES, DEFAULT_LOOK, PRESETS, normalizeLook, isIdentityLook, applyLook,
+  MIN_CONTRAST, ROLES, DARK_ISLAND_L, DEFAULT_LOOK, PRESETS, normalizeLook, isIdentityLook, applyLook,
   transformColor, quantize, opaqueBackdrop, ensureContrast, transformPair,
 } from '../src/transform.js';
 import { LOOK_RANGES } from '../src/settings.js';
@@ -224,9 +224,21 @@ test('mapping: white page → dark bg, black text → light text, borders betwee
 test('mapping inverts lightness order within a role', () => {
   const grays = ['#000000', '#404040', '#808080', '#c0c0c0', '#ffffff'];
   for (const role of ROLES) {
-    const ls = grays.map((g) => srgbToOklch(transformColor(g, role)).l);
+    // Backgrounds already dark stay as authored (T025), so only the ones
+    // lighter than the island threshold are inverted.
+    const src = role === 'bg' ? grays.filter((g) => srgbToOklch(parseColor(g)).l > DARK_ISLAND_L) : grays;
+    const ls = src.map((g) => srgbToOklch(transformColor(g, role)).l);
+    assert.ok(ls.length >= 3);
     for (let i = 1; i < ls.length; i++) assert.ok(ls[i] < ls[i - 1], `${role}: ${ls}`);
   }
+});
+
+test('mapping keeps dark backgrounds as authored and joins the inverted range at the threshold', () => {
+  for (const g of ['#000000', '#202020', '#404040']) {
+    const l = srgbToOklch(parseColor(g)).l;
+    if (l <= DARK_ISLAND_L) assert.ok(Math.abs(srgbToOklch(transformColor(g, 'bg')).l - l) < 0.005, g);
+  }
+  assert.equal(formatRgb(quantize(transformColor('#000000', 'bg'))), 'rgb(0 0 0)');
 });
 
 test('mapping preserves hue for chromatic colors', () => {

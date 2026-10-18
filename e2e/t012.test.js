@@ -20,7 +20,8 @@ import assert from 'node:assert/strict';
 import { writeFileSync } from 'node:fs';
 import { startServers, launch, openPage, openFirstPaint, evidencePath, auditBundle } from './harness.js';
 import { decodePng } from './png.js';
-import { relativeLuminance } from '../engine/src/color.js';
+import { relativeLuminance, parseColor, srgbToOklch, contrastRatio } from '../engine/src/color.js';
+import { DARK_ISLAND_L } from '../engine/src/transform.js';
 
 const FIXTURES = [
   { name: 'light', path: '/light.html' },
@@ -207,6 +208,7 @@ for (const fx of FIXTURES) {
       baseline = {
         styles: await plain.page.evaluate(styleSignature),
         media: fx.name === 'hard-cases' ? await sampleMedia(plain.page, evidencePath(`t012-${fx.name}-before.png`)) : null,
+        colors: fx.name === 'hard-cases' ? await plain.page.evaluate(islandColors) : null,
       };
       await plain.context.close();
     }
@@ -254,6 +256,30 @@ for (const fx of FIXTURES) {
       // ...and darkening leaves every image as authored.
       assert.deepEqual(mediaWrong(media), [], 'media inverted, hidden or faded');
 
+      // T025: the dark box on the light page stays as authored, its text
+      // stays readable, and the 48 swatches stay distinct and in order.
+      const after = await page.evaluate(islandColors);
+      const authored = baseline.colors;
+      const dE = (a, b) => deltaE(parseColor(a), parseColor(b));
+      const islandMove = dE(authored.island.bg, after.island.bg);
+      const islandInk = contrastRatio(parseColor(after.island.color), parseColor(after.island.bg));
+      assert.ok(islandMove <= 5, `dark island moved ΔE ${islandMove.toFixed(1)}: ${authored.island.bg} → ${after.island.bg}`);
+      assert.ok(islandInk >= 4.5, `dark island text ratio ${islandInk.toFixed(2)}`);
+      assert.equal(after.swatches.length, 48);
+      const collisions = [];
+      for (let i = 0; i < 48; i++) {
+        for (let j = i + 1; j < 48; j++) {
+          const was = dE(authored.swatches[i], authored.swatches[j]);
+          const now = dE(after.swatches[i], after.swatches[j]);
+          if (was >= 10 && now < 3) collisions.push(`${i}/${j}: ${was.toFixed(1)} → ${now.toFixed(1)}`);
+        }
+      }
+      assert.deepEqual(collisions, [], 'swatches collapsed together');
+      const lights = authored.swatches.map((c, i) => ({ was: srgbToOklch(parseColor(c)).l, now: srgbToOklch(parseColor(after.swatches[i])).l }))
+        .filter((s) => s.was > DARK_ISLAND_L).sort((a, b) => a.was - b.was);
+      for (let i = 1; i < lights.length; i++) assert.ok(lights[i].now <= lights[i - 1].now + 0.006, 'swatch lightness order broke');
+      record(fx.name, 'islandPalette', { islandMove: +islandMove.toFixed(2), islandInk: +islandInk.toFixed(2), swatches: after.swatches.length, collisions: collisions.length });
+
       // about:blank frames: the empty one isn't a white box, and the one the
       // page wrote into was darkened (audited above) and stays usable.
       const blank = await page.evaluate(() => {
@@ -283,6 +309,26 @@ for (const fx of FIXTURES) {
     }
     await context.close();
   });
+}
+
+// Computed colors of the T025 dark island and palette swatches.
+function islandColors() {
+  const cs = (el) => getComputedStyle(el);
+  const box = document.getElementById('island'), text = document.getElementById('island-text');
+  return {
+    island: { bg: cs(box).backgroundColor, color: cs(text).color },
+    swatches: [...document.querySelectorAll('[data-swatch]')].map((el) => cs(el).backgroundColor),
+  };
+}
+
+// Distance in OKLab, black → white = 100.
+function deltaE(a, b) {
+  const lab = (c) => {
+    const o = srgbToOklch(c);
+    return [o.l, o.c * Math.cos((o.h * Math.PI) / 180), o.c * Math.sin((o.h * Math.PI) / 180)];
+  };
+  const [x, y] = [lab(a), lab(b)];
+  return 100 * Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
 }
 
 // Computed colors of every element, to compare a page with itself.
