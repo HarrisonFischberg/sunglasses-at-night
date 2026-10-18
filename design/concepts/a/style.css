@@ -89,6 +89,10 @@ legend {
   overflow-wrap: anywhere;
 }
 
+/* critique fix: legend sat on the rule; float it into the padding box */
+fieldset > legend { float: left; width: 100%; }
+fieldset > legend + * { clear: both; }
+
 /* mode list: whole row is the hit target */
 .mode {
   display: grid;
@@ -137,7 +141,7 @@ legend {
 .app-title { font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 600; line-height: 1.05; }
 .app-lede { margin-top: 0.6rem; color: var(--muted); max-width: 46ch; }
 
-.block { padding: 1.5rem 0; border-top: 1px solid var(--line); margin-top: 1.5rem; display: grid; gap: 0.6rem; }
+.block { padding: 1.5rem 0; border-top: 1px solid var(--line); margin-top: 1.5rem; display: grid; gap: 0.25rem; }
 .app-lede + .block { margin-top: 2rem; }
 .block h3 { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; }
 .block p { max-width: 62ch; }

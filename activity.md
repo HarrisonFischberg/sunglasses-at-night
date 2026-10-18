@@ -540,3 +540,10 @@
 - Node scripts of my own needed approval, so token contrast was not pre-computed; the e2e measures it.
 - Next iteration: read e2e-latest.md + screenshots, run critique → one fix batch → audit per concept, append output to `docs/design/critique.md`, then mark done and stop for owner approval.
 - 17:25Z supervisor: run 5 stopped after 3 iterations (T013, T029, T026 all set to blocked on runner output again). Runner e2e 83/84: T029 heavy-grid 4/4 ✔, T026 12 concept screenshots ✔, only the T013 rAF-gap budget fails. T029 → owner check, T026 → needs-runner-build (critique next), T024 unblocked (deps → T029).
+
+## T026 — critique, one fix batch, audit (2026-10-18, Builder). NEEDS-RUNNER-BUILD
+- Inputs read: all 12 runner screenshots (viewed a/b/c at 1440×900 and 390×844) and `ralph/evidence/t026-e2e.json` (overflow 0, no low-contrast, no small targets, no errors in any capture).
+- `/impeccable critique` run in this session (skill loaded; platform `adaptive` so design-review-only, single context, no sub-agents; banner in `docs/design/critique.md`). One fix batch: A legends + checkbox gap, B orphan tile + hint copy, C legend overlap.
+- `impeccable detect design/concepts/{a,b,c}` after the batch: regex-only, 0 findings each (`docs/design/logs/detect-*-post.txt`). The detector does not parse the static `.html`, so this is an undercount.
+- Audit: recorded from the measured evidence, not a fresh rendered run. Not claimed: keyboard/VoiceOver checks.
+- Why not done: CSS changed after capture, so the screenshots show the pre-fix state. The runner's e2e must re-capture them; then Opus writes `comparison.md` and the owner approves a direction (task says stop for owner approval).

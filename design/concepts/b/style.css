@@ -58,6 +58,7 @@ legend { font-size: 0.8125rem; font-weight: 700; color: var(--muted); text-trans
 .tag { text-transform: none; letter-spacing: 0; font-family: var(--mono); font-weight: 500; margin-left: 0.5rem; color: var(--accent); }
 
 .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.tiles > :last-child:nth-child(odd) { grid-column: 1 / -1; }
 .tile { position: relative; }
 .tile input { position: absolute; opacity: 0; inset: 0; margin: 0; width: 100%; height: 100%; cursor: pointer; }
 .tile span {

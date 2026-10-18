@@ -52,6 +52,8 @@ h1, h2, h3, p { margin: 0; }
 .detail { margin-top: 0.2rem; color: var(--muted); }
 
 .group { border: 0; margin: 0; padding: 0; min-width: 0; background: var(--group); border-radius: 22px; padding: 0.9rem 1rem 1rem; }
+fieldset > .group-title { float: left; width: 100%; }
+fieldset > .group-title + * { clear: both; }
 .group-title { font-size: 0.9375rem; font-weight: 700; color: var(--muted); padding: 0; margin-bottom: 0.5rem; }
 .hint { margin-top: 0.6rem; color: var(--muted); font-size: 0.9375rem; min-height: 1.3em; }
 .host { font-weight: 700; margin-bottom: 0.6rem; overflow-wrap: anywhere; }
