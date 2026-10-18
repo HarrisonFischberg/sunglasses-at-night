@@ -394,3 +394,9 @@
 - In-session `npm run e2e` attempt (after the stop hook asked for runner output): no output after 420 s, moved to background, output file empty. Same B15 sandbox hang as T013's attempts; it is not a test result and I stopped it. `ralph/evidence/e2e-latest.md` is still from HEAD 9d9d35f.
 - Not run here: `npm run e2e` (WebKit can't launch in the sandbox). Row set to `needs-runner-build`; the next iteration reads `ralph/evidence/e2e-latest.md` and must see the hard-cases case and all other T012 cases passing.
 - 07:01Z owner Safari check of T022 build (9d9d35f): popup now shows "This site", but **"Never dark" on en.wikipedia.org doesn't turn the page light** ("stuck on dark"). Supervisor repro in WebKit with the same commit: writing `sites[host].rule='never'` removes all 3 engine styles at once, so not reproduced. Wikipedia logged-out default is light (`skin-theme-clientpref-day`) in both color schemes. Asked the owner: does a reload fix it, does the choice persist, and Wikipedia's own Appearance setting. Diagnosis pending; T010 stays blocked (B18).
+
+## 2026-10-18 — T025 closed (fresh-context iteration)
+
+- Verification: `npm test` → `ℹ tests 302 ℹ pass 302 ℹ fail 0` (includes engine/test/island-palette.test.js).
+- Runner e2e (ralph/evidence/e2e-latest.md, HEAD 17ff696, 07:09Z, exit 0): `ℹ tests 39 ℹ pass 39 ℹ fail 0`. The hard-cases test (e2e/t012.test.js lines 259-281) asserts the dark island stays within ΔE 5 with text ≥ 4.5:1 and that the 48 swatches have no collapsed pair and keep lightness order; all other T012 cases pass.
+- Row set to done in prd.md. No code changes this iteration.
