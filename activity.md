@@ -238,3 +238,5 @@
 - Verification:
   - `npm test` → `ℹ tests 282 ℹ pass 282 ℹ fail 0`.
   - `npm run check` → `node --check: 16 file(s) OK`.
+  - `npm run e2e -- --test-name-pattern="filter engine"` in-session: WebKit failed to launch (`browserType.launch` TimeoutError; `sandbox_extension_issue_file_to_process failed … Playwright.app: 1 (Operation not permitted)`, `Connection Invalid error for service com.apple.hiservices-xpcservice`), the same sandbox limit as B15. No test ran. This doesn't count against the 5 verification attempts; that count starts with the runner's run.
+- Status: `needs-runner-build`. The runner's `ralph/verify-e2e.sh` decides T008: 5/5 in `e2e/filter.test.js` → the next iteration marks it done using `ralph/evidence/e2e-latest.md` + `t008-e2e.json` + `t008-*.png`. Known risk: whether WebKit's root filter covers the canvas below short pages (the `belowContent` check).
