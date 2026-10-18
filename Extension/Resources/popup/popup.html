@@ -6,8 +6,8 @@
   <title>Sunglasses for Safari</title>
   <link rel="stylesheet" href="../ui/ui.css">
 </head>
-<body class="popup">
-  <header>
+<body class="popup" data-on="false">
+  <header class="top">
     <h1>Sunglasses for Safari</h1>
     <button id="more" type="button" class="icon-button" aria-label="More settings" title="More settings">
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -17,24 +17,40 @@
     </button>
   </header>
 
-  <p id="status" role="status" class="muted">Loading…</p>
+  <section class="hero" aria-label="Status">
+    <div class="hero-text">
+      <svg class="mark" viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+        <path class="lens" d="M6 20h18c1 0 2 1 2 2v6c0 5-4 9-9 9h-1c-5 0-9-4-9-9v-6c0-1 0-2 0-2z"/>
+        <path class="lens" d="M32 22c0-1 1-2 2-2h18c0 0 0 1 0 2v6c0 5-4 9-9 9h-1c-5 0-9-4-9-9z"/>
+        <path class="bridge" d="M26 24c2-2 4-2 6 0"/>
+      </svg>
+      <p id="status" role="status">Loading…</p>
+    </div>
+    <label class="switch">
+      <span class="switch-label">Dark mode</span>
+      <input type="checkbox" id="power" class="switch-input">
+      <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+    </label>
+  </section>
 
-  <div class="field">
-    <label for="mode">Dark mode</label>
-    <select id="mode">
-      <option value="system">Match system appearance</option>
-      <option value="always">Always</option>
-      <option value="schedule">On a schedule</option>
-      <option value="off">Off</option>
-    </select>
-  </div>
+  <fieldset id="mode-set">
+    <legend>When</legend>
+    <div class="tiles" id="mode-tiles">
+      <label class="tile"><input type="radio" name="mode" value="system"><span>Match system</span></label>
+      <label class="tile"><input type="radio" name="mode" value="always"><span>Always</span></label>
+      <label class="tile"><input type="radio" name="mode" value="schedule"><span>On a schedule</span></label>
+    </div>
+  </fieldset>
 
   <fieldset id="site" hidden>
-    <legend>This site: <span id="host"></span></legend>
-    <label class="check"><input type="radio" name="rule" value="default"> Default</label>
-    <label class="check"><input type="radio" name="rule" value="always"> Always dark</label>
-    <label class="check"><input type="radio" name="rule" value="never"> Never dark</label>
-    <p id="already-dark" class="warning" hidden>This page looks dark already, so it was left as is.</p>
+    <legend>This site</legend>
+    <p class="host" id="host"></p>
+    <div class="segment" id="rule-segment">
+      <label><input type="radio" name="rule" value="default"><span>Default</span></label>
+      <label><input type="radio" name="rule" value="always"><span>Always dark</span></label>
+      <label><input type="radio" name="rule" value="never"><span>Never dark</span></label>
+    </div>
+    <p id="already-dark" class="warning hint" hidden>This page looks dark already, so it was left as is.</p>
     <label class="check"><input type="checkbox" id="force-dark"> Darken even if the page looks dark already</label>
     <div class="field">
       <label for="site-engine">Engine</label>
@@ -44,21 +60,17 @@
         <option value="filter">Filter</option>
       </select>
     </div>
-    <p id="site-engine-hint" class="muted">Try Filter if this site looks broken. It switches without reloading.</p>
+    <p id="site-engine-hint" class="hint">Try Filter if this site looks broken. It switches without reloading.</p>
   </fieldset>
 
   <fieldset id="look">
     <legend>Look</legend>
     <label class="check" id="custom-look-row" hidden><input type="checkbox" id="custom-look"> Use a separate look for this site</label>
-    <div class="field">
-      <label for="preset">Preset</label>
-      <select id="preset">
-        <option value="standard">Standard</option>
-        <option value="soft">Soft</option>
-        <option value="warm">Warm</option>
-        <option value="mono">Mono</option>
-        <option value="custom" disabled>Custom</option>
-      </select>
+    <div class="presets" id="presets">
+      <label class="preset" data-preset="standard"><input type="radio" name="preset" value="standard"><span class="swatch" aria-hidden="true"><b></b><i></i><i></i><i></i></span><span class="name">Standard</span></label>
+      <label class="preset" data-preset="soft"><input type="radio" name="preset" value="soft"><span class="swatch" aria-hidden="true"><b></b><i></i><i></i><i></i></span><span class="name">Soft</span></label>
+      <label class="preset" data-preset="warm"><input type="radio" name="preset" value="warm"><span class="swatch" aria-hidden="true"><b></b><i></i><i></i><i></i></span><span class="name">Warm</span></label>
+      <label class="preset" data-preset="mono"><input type="radio" name="preset" value="mono"><span class="swatch" aria-hidden="true"><b></b><i></i><i></i><i></i></span><span class="name">Mono</span></label>
     </div>
     <div class="slider">
       <div class="field"><label for="brightness">Brightness</label><output id="brightness-value" for="brightness"></output></div>

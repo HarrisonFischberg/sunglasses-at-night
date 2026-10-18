@@ -7,10 +7,20 @@
   <link rel="stylesheet" href="../ui/ui.css">
 </head>
 <body class="options">
-<main>
+<div class="shell">
+<header class="head">
   <h1>Sunglasses for Safari settings</h1>
   <p class="muted">Changes save as you make them and stay on this device.</p>
   <p id="load-error" class="warning" role="alert" hidden>Settings couldn’t be loaded. Reload this page to try again.</p>
+</header>
+<nav class="rail" aria-label="Settings sections">
+  <a href="#h-when">When</a>
+  <a href="#h-look">Look</a>
+  <a href="#h-pages">Images and pages</a>
+  <a href="#h-sites">Sites</a>
+  <a href="#h-reset">Reset</a>
+</nav>
+<main>
 
   <section aria-labelledby="h-when">
     <h2 id="h-when">When to turn dark</h2>
@@ -119,6 +129,7 @@
     <p id="reset-done" role="status" class="muted"></p>
   </section>
 </main>
+</div>
 
 <dialog id="reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-body">
   <form method="dialog">

@@ -278,19 +278,35 @@ test('popup and options bundles make no network requests', () => {
   assert.ok(!/https?:\/\//.test(read('Extension/Resources/ui/ui.css')), 'no remote fonts or images');
 });
 
-test('ui.css tokens meet contrast in both schemes, and focus stays visible', () => {
+test('ui.css (Dusk) tokens meet contrast, and focus stays visible', () => {
   const css = read('Extension/Resources/ui/ui.css');
-  const block = (src) => Object.fromEntries([...src.matchAll(/--([\w-]+):\s*(#[0-9A-Fa-f]{6})/g)].map((m) => [m[1], parseColor(m[2])]));
-  const light = block(css.slice(css.indexOf(':root {'), css.indexOf('@media')));
-  const darkStart = css.indexOf('@media (prefers-color-scheme: dark)');
-  const dark = block(css.slice(darkStart, css.indexOf('* {', darkStart)));
-  for (const [name, t] of [['light', light], ['dark', dark]]) {
-    for (const [fg, bg] of [['fg', 'bg'], ['fg', 'card'], ['muted', 'bg'], ['muted', 'card'], ['warning', 'bg'], ['warning', 'card'], ['on-accent', 'accent']]) {
-      const r = contrastRatio(t[fg], t[bg]);
-      assert.ok(r >= 4.5, `${name}: --${fg} on --${bg} is ${r.toFixed(2)}:1`);
+  const root = css.slice(css.indexOf(':root {'), css.indexOf('* {'));
+  const t = Object.fromEntries([...root.matchAll(/--([\w-]+):\s*(#[0-9A-Fa-f]{6})/g)].map((m) => [m[1], parseColor(m[2])]));
+  for (const surface of ['bg', 'group', 'raised']) {
+    for (const fg of ['fg', 'muted', 'accent', 'warning', 'danger']) {
+      const r = contrastRatio(t[fg], t[surface]);
+      assert.ok(r >= 4.5, `--${fg} on --${surface} is ${r.toFixed(2)}:1`);
     }
-    assert.ok(contrastRatio(t.focus, t.bg) >= 3, `${name}: focus ring`);
   }
-  assert.match(css, /:focus-visible\s*\{\s*outline:\s*2px solid var\(--focus\)/);
+  assert.ok(contrastRatio(t['on-accent'], t.accent) >= 4.5, '--on-accent on --accent');
+  for (const surface of ['bg', 'group']) {
+    assert.ok(contrastRatio(t.edge, t[surface]) >= 3, `--edge (control outlines) on --${surface} >= 3:1`);
+    assert.ok(contrastRatio(t.focus, t[surface]) >= 3, `--focus on --${surface}`);
+  }
+  assert.match(css, /:focus-visible\s*\{\s*outline:\s*\d+px solid var\(--focus\)/);
   assert.ok(!/outline:\s*(none|0)/.test(css), 'never remove the focus outline');
+});
+
+test('ui.css: colors, type sizes, radii and durations come from :root tokens only', () => {
+  const css = read('Extension/Resources/ui/ui.css');
+  const start = css.indexOf(':root {');
+  const end = css.indexOf('\n}\n', start) + 3;
+  const rest = css.slice(0, start) + css.slice(end);
+  const body = rest.replace(/\/\*[\s\S]*?\*\//g, '');
+  assert.ok(!/#[0-9A-Fa-f]{3,8}\b/.test(body), 'hex color outside :root');
+  assert.ok(!/\b(?:hsl|oklch|oklab|lch)a?\(/.test(body), 'color function outside :root');
+  assert.ok(!/(?<!\w)(?:color|background|border|outline|fill|stroke)[\w-]*:[^;]*\brgba?\(/.test(body), 'rgb() color outside :root');
+  assert.ok(!/font-size:\s*[\d.]+(?:rem|px|em)/.test(body), 'font-size must use a --text-* token');
+  assert.ok(!/border-radius:\s*[\d.]+px/.test(body), 'border-radius must use a --r-* token');
+  assert.ok(!/(?:transition|animation)[^;]*\b\d+m?s\b(?!\))/.test(body.replace(/var\([^)]*\)/g, '')), 'durations come from --dur');
 });

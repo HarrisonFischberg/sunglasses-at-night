@@ -12,6 +12,7 @@ import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { launch, evidencePath } from './harness.js';
+import { shim } from './ui-shim.js';
 import { defaultSettings } from '../engine/src/settings.js';
 
 const RES = fileURLToPath(new URL('../Extension/Resources/', import.meta.url));
@@ -36,43 +37,6 @@ after(async () => {
   await browser?.close();
   await new Promise((r) => server.close(r));
 });
-
-function shim({ settings, tabUrl, report }) {
-  return `(() => {
-  const data = { settings: ${JSON.stringify(settings)} };
-  const listeners = new Set();
-  const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
-  globalThis.__sent = [];
-  globalThis.__data = data;
-  globalThis.browser = {
-    storage: {
-      local: {
-        get: async (k) => (k in data ? { [k]: clone(data[k]) } : {}),
-        set: async (o) => {
-          const changes = {};
-          for (const [k, v] of Object.entries(o)) { changes[k] = { oldValue: clone(data[k]), newValue: clone(v) }; data[k] = clone(v); }
-          for (const l of listeners) l(changes, 'local');
-        },
-        remove: async (k) => { delete data[k]; },
-      },
-      onChanged: { addListener: (f) => listeners.add(f), removeListener: (f) => listeners.delete(f) },
-    },
-    tabs: { query: async () => [${tabUrl === null ? '{ id: 5 }' : `{ id: 5, url: ${JSON.stringify(tabUrl)} }`}] },
-    runtime: {
-      id: 'e2e',
-      openOptionsPage: async () => { globalThis.__openedOptions = true; },
-      sendMessage: async (msg) => {
-        __sent.push(msg);
-        if (msg.type.endsWith('get-tab-state')) return ${JSON.stringify(report ?? null)};
-        if (msg.type.endsWith('reset-all')) {
-          await globalThis.browser.storage.local.set({ settings: ${JSON.stringify(defaultSettings())} });
-          return { ok: true };
-        }
-      },
-    },
-  };
-})();`;
-}
 
 async function open(page, { scheme = 'light', settings = defaultSettings(), tabUrl = 'https://example.com/', report } = {}) {
   const context = await browser.newContext({ colorScheme: scheme, viewport: { width: page === 'popup' ? 340 : 760, height: 760 } });
@@ -142,7 +106,8 @@ test('popup on a restricted page: no site controls, says why', async () => {
     assert.equal(await p.isVisible('#site'), false, tabUrl);
     assert.equal(await p.isVisible('#custom-look-row'), false, tabUrl);
     assert.match(await p.textContent('#status'), /can’t change this page/);
-    assert.equal(await p.isVisible('#mode'), true, 'global mode still available');
+    assert.equal(await p.isVisible('#mode-tiles'), true, 'global mode still available');
+    assert.equal(await p.isVisible('#power'), true, 'on/off switch still available');
     if (tabUrl === 'about:blank') await p.screenshot({ path: evidencePath('t010-popup-restricted.png'), fullPage: true });
     assert.deepEqual(errors, []);
     results.push({ case: `popup-restricted ${tabUrl}`, ok: true });

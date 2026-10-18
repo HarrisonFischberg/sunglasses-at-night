@@ -1760,6 +1760,8 @@ let report = null;
 let view = null;
 
 let focused = null;
+// The mode the switch returns to when turned back on within this popup session.
+let lastMode = 'system';
 
 async function fetchReport() {
   const id = tab?.id ?? focused?.id;
@@ -1774,7 +1776,10 @@ async function fetchReport() {
 function render() {
   view = popupView({ settings, url: tab?.url, report, focusedUrl: focused?.url });
   $('status').textContent = view.status;
-  $('mode').value = view.mode;
+  if (view.mode !== 'off') lastMode = view.mode;
+  $('power').checked = view.mode !== 'off';
+  document.body.dataset.on = String(report?.on === true);
+  for (const r of document.querySelectorAll('input[name="mode"]')) r.checked = r.value === view.mode;
   $('site').hidden = view.restricted;
   $('custom-look-row').hidden = view.restricted;
   if (!view.restricted) {
@@ -1785,7 +1790,7 @@ function render() {
     $('site-engine').value = view.engine;
     $('custom-look').checked = view.customLook;
   }
-  $('preset').value = view.preset;
+  for (const r of document.querySelectorAll('input[name="preset"]')) r.checked = r.value === view.preset;
   for (const k of Object.keys(LOOK_RANGES)) {
     $(k).value = String(view.look[k]);
     $(`${k}-value`).textContent = `${view.look[k]}%`;
@@ -1808,7 +1813,11 @@ function saveLook(look) {
   return commit(store.update({ look }));
 }
 
-$('mode').addEventListener('change', (e) => commit(store.update({ mode: e.target.value })));
+$('power').addEventListener('change', (e) => commit(store.update({ mode: e.target.checked ? lastMode : 'off' })));
+
+for (const radio of document.querySelectorAll('input[name="mode"]')) {
+  radio.addEventListener('change', (e) => { if (e.target.checked) commit(store.update({ mode: e.target.value })); });
+}
 
 for (const radio of document.querySelectorAll('input[name="rule"]')) {
   radio.addEventListener('change', (e) => { if (e.target.checked) editSite((s) => withRule(s, e.target.value)); });
@@ -1821,10 +1830,12 @@ $('site-engine').addEventListener('change', (e) => editSite((s) => withEngine(s,
 $('custom-look').addEventListener('change', (e) =>
   editSite((s) => withLook(s, e.target.checked ? { ...settings.look } : null)));
 
-$('preset').addEventListener('change', (e) => {
-  const look = presetLook(e.target.value);
-  if (look) saveLook(look);
-});
+for (const radio of document.querySelectorAll('input[name="preset"]')) {
+  radio.addEventListener('change', (e) => {
+    const look = presetLook(e.target.value);
+    if (e.target.checked && look) saveLook(look);
+  });
+}
 
 for (const k of Object.keys(LOOK_RANGES)) {
   $(k).addEventListener('input', (e) => { $(`${k}-value`).textContent = `${e.target.value}%`; });
