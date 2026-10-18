@@ -16,6 +16,11 @@ import { detectAlreadyDark, finalDecision } from './detect.js';
 
 export const SHEET_ID = 'sunglasses-at-night-early';
 
+// Set on <html> as soon as settings are known. The manifest-declared
+// content/base.css paints a dark base (system dark only) until it appears,
+// so the page never flashes white while the async settings read is pending.
+export const OFF_ATTRIBUTE = 'data-sunglasses-off';
+
 const WHITE = { r: 1, g: 1, b: 1, alpha: 1 };
 const BLACK = { r: 0, g: 0, b: 0, alpha: 1 };
 
@@ -72,6 +77,11 @@ export function startEarly({
 }) {
   const activation = decide({ settings, hostname, systemDark, now, timeZone });
   const site = resolveSite(settings, hostname);
+  // Settings are known: the manifest base sheet has done its job. When on,
+  // the sheet below takes over in the same task; otherwise the page goes
+  // back to its authored colors. Already-dark pages are measured with the
+  // base off, too (see readPageColors).
+  document.documentElement?.setAttribute?.(OFF_ATTRIBUTE, '');
   let style = null;
   if (activation.on) {
     style = document.createElement('style');

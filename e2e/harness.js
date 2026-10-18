@@ -75,7 +75,27 @@ const contentBundle = () =>
   `if (location.protocol !== 'about:') {\n${bundle(resolve(ROOT, 'engine/src/content.js'))}\n}`;
 export const auditBundle = () => bundle(resolve(ROOT, 'e2e/page-audit.js'), { globalName: '__sanAudit' });
 
-function apiShim(settings) {
+// Stand-in for the manifest `css` entry: Safari injects content/base.css
+// before first paint with no script. An init script that appends the same
+// text to the root at document start is the closest WebKit-under-Playwright
+// gets; it runs before the page's first rendering update.
+const baseCssText = () => readFileSync(resolve(ROOT, 'Extension/Resources/content/base.css'), 'utf8');
+const baseCssShim = (css) => `(() => {
+  if (location.protocol === 'about:') return;
+  const put = () => {
+    const root = document.documentElement;
+    if (!root) return false;
+    const s = document.createElement('style');
+    s.id = 'san-manifest-base';
+    s.textContent = ${JSON.stringify(css)};
+    root.appendChild(s);
+    return true;
+  };
+  if (!put()) new MutationObserver((_, o) => { if (put()) o.disconnect(); }).observe(document, { childList: true });
+})();`;
+
+// `delayMs` holds every settings read back, like a slow storage.local.get.
+function apiShim(settings, delayMs = 0) {
   return `(() => {
   const data = { settings: ${JSON.stringify(settings)} };
   const listeners = new Set();
@@ -83,7 +103,11 @@ function apiShim(settings) {
   globalThis.browser = {
     storage: {
       local: {
-        get: async (k) => (k in data ? { [k]: clone(data[k]) } : {}),
+        get: async (k) => {
+          if (${delayMs} > 0) await new Promise((r) => setTimeout(r, ${delayMs}));
+          globalThis.__sanSettingsAt = Math.round(performance.now());
+          return k in data ? { [k]: clone(data[k]) } : {};
+        },
         set: async (o) => {
           const changes = {};
           for (const [k, v] of Object.entries(o)) { changes[k] = { oldValue: clone(data[k]), newValue: clone(v) }; data[k] = clone(v); }
@@ -136,8 +160,8 @@ const FIRST_FRAME = `if (location.protocol !== 'about:') requestAnimationFrame((
  * return what the browser painted the canvas with in the first frame it
  * rendered (page-audit canvasColor(), plus bodyChildren at that moment).
  */
-export async function openFirstPaint(browser, servers, path, { extension = false, settings, stallMs = 8000 } = {}) {
-  const { page, context } = await preparePage(browser, servers, { extension, settings });
+export async function openFirstPaint(browser, servers, path, { extension = false, settings, stallMs = 8000, colorScheme, settingsDelayMs } = {}) {
+  const { page, context } = await preparePage(browser, servers, { extension, settings, colorScheme, settingsDelayMs });
   await page.addInitScript({ content: FIRST_FRAME });
   await page.goto(`${servers.SITE}${path}?stall=${stallMs}`, { waitUntil: 'commit' });
   const handle = await page.waitForFunction(() => globalThis.__sanFirstFrame, null, { polling: 50, timeout: stallMs + 10000 });
@@ -145,8 +169,8 @@ export async function openFirstPaint(browser, servers, path, { extension = false
   return { page, context, canvas };
 }
 
-async function preparePage(browser, servers, { extension, settings }) {
-  const context = await browser.newContext({ colorScheme: 'light', viewport: { width: 1024, height: 900 } });
+async function preparePage(browser, servers, { extension, settings, colorScheme = 'light', settingsDelayMs = 0 }) {
+  const context = await browser.newContext({ colorScheme, viewport: { width: 1024, height: 900 } });
   const page = await context.newPage();
   await page.addInitScript({ content: auditBundle() });
   const fetchLog = [];
@@ -160,10 +184,36 @@ async function preparePage(browser, servers, { extension, settings }) {
     await page.exposeFunction('__sanBackground', (msg) => new Promise((resolveMsg) => {
       if (handler(msg, { tab: { id: 1 }, id: 'e2e' }, resolveMsg) === false) resolveMsg(undefined);
     }));
-    await page.addInitScript({ content: apiShim(settings ?? { ...defaultSettings(), mode: 'always' }) });
+    await page.addInitScript({ content: baseCssShim(baseCssText()) });
+    await page.addInitScript({ content: apiShim(settings ?? { ...defaultSettings(), mode: 'always' }, settingsDelayMs) });
     await page.addInitScript({ content: contentBundle() });
   }
   return { page, context, fetchLog };
+}
+
+// Every rendered frame's canvas color from document start, recorded by a
+// rAF loop (page-audit canvasColor()).
+const FRAME_LOG = `if (location.protocol !== 'about:') {
+  globalThis.__sanFrames = [];
+  const tick = () => {
+    globalThis.__sanFrames.push({ t: Math.round(performance.now()), ...__sanAudit.canvasColor() });
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}`;
+
+/**
+ * Load `path` (body held back `stallMs`) and log every frame until `watchMs`
+ * after the load event. Returns { frames, settingsAt } where settingsAt is
+ * the performance.now() at which the settings read resolved.
+ */
+export async function recordFrames(browser, servers, path, { extension = true, settings, colorScheme, settingsDelayMs, watchMs = 1200, stallMs = 1500 } = {}) {
+  const { page, context } = await preparePage(browser, servers, { extension, settings, colorScheme, settingsDelayMs });
+  await page.addInitScript({ content: FRAME_LOG });
+  await page.goto(`${servers.SITE}${path}?stall=${stallMs}`, { waitUntil: 'load' });
+  await page.waitForTimeout(watchMs);
+  const out = await page.evaluate(() => ({ frames: globalThis.__sanFrames, settingsAt: globalThis.__sanSettingsAt ?? null }));
+  return { ...out, page, context };
 }
 
 export function evidencePath(name) {
