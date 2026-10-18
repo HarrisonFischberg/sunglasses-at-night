@@ -13,3 +13,4 @@ replica/evidence/*.png
 
 # third-party site screenshots (supervised profiling), not redistributed
 ralph/evidence/amazon/*.png
+ralph/evidence/webbrowsertools/*.png

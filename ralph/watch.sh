@@ -5,7 +5,7 @@ while true; do
   clear
   echo "Sunglasses at Night: Ralph loop   $(date '+%H:%M:%S')"
   echo
-  echo "Runner:"; tail -n 8 ralph/logs/run2.out 2>/dev/null | sed 's/^/  /'
+  echo "Runner:"; tail -n 8 ralph/logs/run2b.out 2>/dev/null | sed 's/^/  /'
   echo
   echo "Tasks:"; grep -E '^\| T0' prd.md | awk -F'|' '{s=$7; gsub(/^ +| +$/,"",s); printf "  %s  %s\n", $2, substr(s,1,70)}'
   echo
