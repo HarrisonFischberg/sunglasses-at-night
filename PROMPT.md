@@ -2,6 +2,9 @@
 > produces (Xcode build/tests, `npm run e2e`, `npm run perf`, screenshots), set the row to
 > `needs-runner-build`, never `blocked`. `blocked` is only for things a human must decide or do.
 > The runner re-picks `needs-runner-build` rows first, with fresh output in `ralph/evidence/`.
+> **Scope rule:** a task is done when ITS OWN acceptance checks pass. Red tests that belong to
+> other tasks don't block it and never justify flipping a done task back; note them and move on.
+> Never run `npm run e2e`/`npm run perf` inside your session. They can't launch WebKit there.
 
 # Per-iteration instructions (Sunglasses for Safari)
 
