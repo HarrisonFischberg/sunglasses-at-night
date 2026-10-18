@@ -562,3 +562,4 @@
 - gridGeneratedRules: 635 after storm vs 4,714 without pruning (limit 2,357): -86.5%, pass.
 - gridInsertRecalc: median of 3 paired runs 0 ms with engine, 0 ms without (per run 0/0, 0/0, 0/2); budget pass. Caveat: 1 ms timer resolution, so both medians round to 0; this shows no measurable recalc cost, not a precise ratio. Unpruned control: 2 ms.
 - gridStormRafGapMax (T013, B32) now also passes: 35 vs 41 ms without engine, median of 3. T013 row left unchanged for the supervisor to re-queue.
+- 20:00Z owner screenshot of amazon.com (saved ralph/evidence/amazon/owner-2026-10-18-2000.png): hero cards still flash white; multiply-blended product photos go near-black; headline over a red photo card turns gray. Opus analysis → T031 (blueprint fix 6), queued before T030.

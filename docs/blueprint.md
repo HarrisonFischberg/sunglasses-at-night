@@ -127,3 +127,13 @@ same server the page already loaded it from, and (2) a user-initiated
    sheet lands; start the engine on sheets as they arrive; cache rewritten CSS
    per sheet URL in the background. Interim state is flat dark (dark → dark),
    never white, and never touches media.
+
+6. **amazon.com homepage defects (T031, owner screenshot 2026-10-18).**
+   (a) `mix-blend-mode: multiply` product images over a tile we darkened go
+   near-black: force `normal` blend for media over darkened backdrops. (b) Text
+   over a photo (url() background or an img behind it) keeps its authored
+   color; contrast enforcement only applies against solid colors we control.
+   (c) Content inserted after load must never paint white: tag inserted
+   subtrees `data-sunglasses-pending` in the MutationObserver callback (before
+   paint), neutralize their backgrounds with a CSS rule, and untag when the
+   sliced processor finishes.
