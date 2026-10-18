@@ -18,10 +18,15 @@ marker only when every approved task genuinely meets its acceptance criteria.
 
 ## Runner contract (ralph/ralph.sh, adapted from coleam00/ralph-loop-quickstart @ f6a7781)
 
-- Completion marker: print `<promise>COMPLETE</promise>` only when every approved
-  task in `prd.md` is `done` with evidence. Blocked or review-dependent tasks
-  never count as done.
-- Print `<progress>NONE</progress>` if this iteration produced no meaningful
-  progress; the runner stops after two in a row.
-- Never edit `.claude/settings.json`, never `git push`, never add a dependency
-  that `prd.md` doesn't list as approved.
+- The runner already picked your one task and set its bounded `/goal` as the prompt
+  (step 2–3 above are done for you). Work only on that task.
+- When done: set its row status in `prd.md` to `done (<date>, evidence: <paths>)`;
+  if blocked: `blocked (<B-id>)` plus a row in `docs/launch-blockers.md`.
+- Append an `activity.md` entry with the exact verification command and its real output summary.
+- Commit only this task's files: `git add <paths> && git commit -m "<id>: <summary>"` ending with
+  `Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>`.
+- Never edit `.claude/settings.json`, never push, never add a dependency `prd.md` doesn't list as
+  approved (approved: `playwright@1.64.1` dev-only; nothing else).
+- Never weaken or delete a test to make it pass. Never mark a blocked task done.
+- Product name is "Sunglasses at Night". Never use reference apps' names, copy, or visuals.
+- No network code in the shipped extension or app except what prd.md T007 allows.

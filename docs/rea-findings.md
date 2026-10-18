@@ -13,10 +13,13 @@ installed on this Mac. Widening the scope (for example licensed local copies)
 needs a new owner answer.
 
 Methods used (least intrusive first):
-1. Public browser observation. REA web capture (`capture_web_screenshot`,
-   `inspect_web_page`) is **BLOCKED**: no CDP browser on this Mac (see
-   `docs/tool-environment.md`). Fallback: fetched public App Store pages as
-   text (WebFetch / WebSearch), dated 2026-10-18.
+1. Public browser observation. Text: fetched public App Store pages
+   (WebFetch / WebSearch) on 2026-10-18. Rendered: REA `list_browser_targets`
+   + `capture_web_screenshot` through **headless Comet** (owner-approved
+   2026-10-18). It ran with an isolated throwaway profile in the scratchpad
+   (`--headless=new --user-data-dir=<scratch> --remote-debugging-address=127.0.0.1`),
+   so none of the owner's Comet sign-ins or data were used. It was stopped after
+   capture.
 2. Static inspection: GitHub API listing of the `darkreader/darkreader` MIT
    repo's `src/generators` and `src/inject` directory names. No source file
    contents were read or copied.
@@ -36,20 +39,21 @@ Methods used (least intrusive first):
 | R10 | Dark Reader's open-source engine is organized as several theme engines (CSS filter, SVG filter, static theme, dynamic theme), plus a dark-site detector and an anti-flash fallback. | GitHub API directory names under `src/generators`, `src/inject` | Verified (names only) | Internal behavior not read | Original design: dynamic color rewrite as the primary engine, CSS-filter fallback mode. Written from scratch, no code copied |
 | R11 | Shortcuts / Control Center / Focus Filters / Widgets integration (Noir). | Noir listing | Verified (claim) | — | Deferred, out of v1 scope (P2 in feature matrix) |
 | R12 | Age rating 4+ on all three. | Listings | Verified | — | Target 4+ rating; children's-data review (safeguard 17) |
+| R14 | Noir's settings layout (from listing screenshots): Default Settings group with an Auto / On / Off segmented control, Theme, Advanced Settings, then a Website Settings list of hosts. Per-site screen has Enabled, Theme, and a Built-In Dark Mode "ignore" option. | REA `capture_web_screenshot` ev_f75c881f80112c56b (2026-10-18T00:48:18Z), local `replica/evidence/noir-appstore.png` (gitignored) | Observed (marketing screenshot) | Marketing image, not the live app | Confirms the information architecture of S02/S03/S05. Our own layout uses native Form; we don't copy their visuals |
+| R15 | Noir and Midnight both use a moon icon on a purple gradient. Dark Reader uses its own mascot art. | REA screenshots ev_f75c881f…, ev_f2900664…, ev_3577d1e1… | Observed | — | Brand: avoid the moon + purple look entirely. Sunglasses motif, original art (T017) |
 | R13 | iPadOS 26.4 Safari crash when opening an extension popup with the compact tab bar; iOS 26.6 extension load delay (Noir release notes, attributed to Apple bugs). | Noir listing release notes | Verified (developer statement) | Not reproduced | Test plan: popup on iPad compact tab bar (T016) |
 
 ## Limitations of this analysis
 
-- No rendered-page observation of any reference app. Visual design was not
-  studied, and none is reproduced: our UI direction comes from
+- Rendered observation was limited to App Store listing pages (first viewport).
+  The apps themselves weren't run. No visual design is reproduced: our UI direction comes from
   `ui-ux-pro-max`, not from a reference (`replica/design-direction.md`).
 - Review samples are small and self-selected.
 - Privacy labels are developer-reported and unverified.
 
 ## Blockers / unauthorized paths not taken
 
-- REA web capture: BLOCKED (no CDP browser). Fix: owner approves installing
-  Chromium or Chrome, or accepts the text-only public observation above.
+- REA web capture: resolved via headless Comet (see Methods).
 - Purchasing or decompiling Noir / Dark Reader / Midnight: not authorized, not
   done.
 - Reading Dark Reader source file contents: not done. Even though the repo is

@@ -11,9 +11,9 @@
 | B7 | Apple Developer Program team / signing identity for archive + TestFlight | approval (account) | Harold | release | OPEN |
 | B8 | Privacy policy + terms drafts need qualified legal review before publishing | legal review | counsel | 1, 2 | OPEN (drafts not written yet) |
 | B9 | Trademark / name clearance for "Sunglasses at Night" (also a well-known song title) | legal review | Harold + counsel | brand, listing | OPEN |
-| B10 | REA web capture blocked (no CDP browser) | tool | Harold (approve Chromium install) or accept | discovery evidence | OPEN, non-blocking for build |
-| B11 | Caveman skill not installed | tool | Harold (approve install) | comms rule | OPEN, non-blocking |
-| B12 | Playwright (WebKit) dev dependency for e2e fixtures not approved | approval | Harold | T012 evidence for safeguards 14 + contrast claim | OPEN |
+| B10 | REA web capture | tool | Harold | discovery evidence | CLOSED 2026-10-18: headless Comet, isolated profile |
+| B11 | Caveman skill | tool | Harold | comms rule | CLOSED 2026-10-18: owner said never use it; removed from skill |
+| B12 | Playwright (WebKit) dev dependency for e2e fixtures | approval | Harold | T012 evidence for safeguards 14 + contrast claim | CLOSED 2026-10-18: approved |
 
 ## Unknown business and legal inputs
 

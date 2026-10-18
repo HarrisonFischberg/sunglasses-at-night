@@ -1,0 +1,18 @@
+{
+  "name": "sunglasses-at-night",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Sunglasses at Night: Safari Web Extension engine, tests and tooling",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "check": "node engine/scripts/check.js",
+    "test": "node --test engine/test/",
+    "e2e": "node --test e2e/",
+    "perf": "node engine/scripts/perf.js",
+    "privacy-check": "node --test privacy/"
+  },
+  "devDependencies": {
+    "playwright": "1.64.1"
+  }
+}

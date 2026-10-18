@@ -1,8 +1,6 @@
 # Sunglasses at Night — PRD
 
-Status: **DRAFT v1, awaiting owner approval.** Created 2026-10-17, updated 2026-10-18.
-Nothing in "Atomic tasks" runs until Harold approves this plan and the
-permission changes below.
+Status: **APPROVED v1** by Harold, 2026-10-18 (plan, permissions, Playwright dev dependency, 10-iteration cap with stop after 2 without progress).
 
 ## Purpose
 
@@ -72,7 +70,7 @@ Order = dependency order. Each Ralph iteration takes exactly one task. 22 tasks 
 
 | ID | Task | Depends on | Acceptance criteria | Verification command | Status |
 | --- | --- | --- | --- | --- | --- |
-| T000 | Smoke-test `/goal` in `claude -p` and the narrowed permissions; write `ralph/ralph.sh` final | approval | `/goal` sets and clears in a non-interactive run; result in `docs/tool-environment.md` | `ralph/ralph.sh --dry-run` | pending |
+| T000 | Smoke-test `/goal` in `claude -p` and the narrowed permissions; write `ralph/ralph.sh` final | approval | `/goal` sets and clears in a non-interactive run; result in `docs/tool-environment.md` | `ralph/ralph.sh --dry-run` | done (2026-10-18, supervised: /goal smoke test passed, runner + permissions written) |
 | T001 | `engine/` skeleton + `color.js`: parse all CSS color syntaxes incl. `color-mix` fallback, sRGB↔OKLCH, WCAG contrast ratio | — | ≥40 unit cases incl. edge syntaxes; contrast matches WCAG reference values ±0.01 | `node --test engine/test/` | pending |
 | T002 | Xcode multiplatform Safari Web Extension project (iOS + macOS targets, App Group, bundle IDs `app.rarecreatures.sunglassesatnight.*` placeholder pending B1/B7), build phase copies `engine/src` | — | both schemes build with 0 errors; extension loads in Safari (Mac, unsigned dev mode) | CLAUDE.md Swift build rows | pending |
 | T003 | `settings.js`: defaults, schema validation, migration v0→v1, storage wrapper | T001 | invalid values rejected/clamped; round-trip tests | `node --test engine/test/` | pending |
@@ -84,7 +82,7 @@ Order = dependency order. Each Ralph iteration takes exactly one task. 22 tasks 
 | T009 | `background.js`: settings broadcast, toolbar icon state, Mac `commands` shortcut | T003, T002 | storage change reaches open tabs < 200 ms; shortcut toggles | unit tests + manual Safari | pending |
 | T010 | Popup (S05) + options page (S06) with tokens; edit-time `fixing-accessibility` | T009 | all controls native; names on icon buttons; restricted-page state | manual + T015 | pending |
 | T011 | Report a problem → `mailto:` with hostname, version, settings; no auto-send | T010 | draft opens with exactly those fields; nothing transmitted by the extension | unit test on URL builder | pending |
-| T012 | E2E on WebKit with 8 fixture pages (light, already-dark, inline styles, SPA mutations, images, cross-origin sheet, links, shop buttons) | T007, T008, **B12** | every visible text node ≥4.5:1; first paint not white; all buttons clickable; screenshots in `ralph/evidence/` | `npm run e2e` | pending |
+| T012 | E2E on WebKit with 8 fixture pages (light, already-dark, inline styles, SPA mutations, images, cross-origin sheet, links, shop buttons) | T007, T008 | every visible text node ≥4.5:1; first paint not white; all buttons clickable; screenshots in `ralph/evidence/` | `npm run e2e` | pending |
 | T013 | Performance budget | T007 | 5,000-node fixture: initial pass ≤ 50 ms median, mutation batch ≤ 8 ms on this Mac | `npm run perf` | pending |
 | T014 | Native messaging bridge: App Group mirror, Reset all (both stores) | T002, T003 | Swift unit tests; reset clears both | Swift tests row | pending |
 | T015 | SwiftUI app S01–S04 + accessibility (VoiceOver labels, Dynamic Type XXXL, Full Keyboard Access, Reduce Motion) | T014 | `ios-accessibility` checklist pass; popup keyboard pass | Swift build + manual evidence | pending |
@@ -117,4 +115,4 @@ Other approvals requested:
 
 ## Human review and launch blockers
 
-See `docs/launch-blockers.md` (B1–B12). Blockers for building: approval of this plan, plus B12 for T012. Blockers for release (Gate B): B1–B9.
+See `docs/launch-blockers.md` (B1–B12). Building is approved (2026-10-18). Blockers for release (Gate B): B1–B9.

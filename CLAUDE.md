@@ -6,7 +6,7 @@ Sunglasses at Night: a free, privacy-first dark mode Safari Web Extension for ma
 
 Built under `~/.claude/skills/new-app/SKILL.md`; read it before non-trivial
 work. Mandatory tools: Replica, REA, bounded `/goal`, Ralph fresh-context
-loop, Caveman. Verify each before claiming use: `docs/tool-environment.md`.
+loop. Verify each before claiming use: `docs/tool-environment.md`.
 
 ## Safety boundaries
 
