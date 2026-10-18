@@ -11,8 +11,9 @@
 //   5,000-node page: initial pass ≤ 50 ms (median of 7 loads), mutation
 //     batch ≤ 8 ms (median of 10 batches of 50 mutations)
 //   product grid: no engine task > 50 ms after first paint; engine time
-//     during the 5 s mutation storm ≤ 10% of wall time; rAF gaps ≤ 32 ms
-//     while it scrolls through the storm
+//     during the 5 s mutation storm ≤ 10% of wall time; rAF gap max with the engine ≤
+//     rAF gap max of the same fixture without it + 8 ms during the storm
+//     (median of 3 paired runs; owner-accepted 2026-10-18)
 // Writes ralph/evidence/t013-perf.json; exits 1 when a budget is missed.
 
 import { createServer } from 'node:http';
@@ -29,8 +30,9 @@ const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 export const OUT = resolve(ROOT, 'ralph/evidence/t013-perf.json');
 
 export const BUDGET = Object.freeze({
-  initialMedianMs: 50, batchMedianMs: 8, longTaskMs: 50, stormShare: 0.10, rafGapMs: 32,
+  initialMedianMs: 50, batchMedianMs: 8, longTaskMs: 50, stormShare: 0.10, rafGapExtraMs: 8,
 });
+const GRID_RUNS = 3;
 const NODE_LOADS = 7, BATCHES = 10, BATCH_WINDOW_MS = 400, INITIAL_WINDOW_MS = 900;
 
 const FRAME_RECORDER = `(() => {
@@ -149,7 +151,7 @@ async function storm(page) {
   };
 }
 
-async function measureGrid(browser, servers) {
+async function gridRun(browser, servers) {
   // Without the engine first: what the page alone costs on this machine.
   const plain = await openPage(browser, servers, '/perf/grid.html', { engine: false });
   await plain.page.waitForTimeout(1500);
@@ -190,6 +192,26 @@ async function measureGrid(browser, servers) {
   };
 }
 
+async function measureGrid(browser, servers) {
+  const runs = [];
+  for (let i = 0; i < GRID_RUNS; i++) runs.push(await gridRun(browser, servers));
+  const mid = [...runs].sort((a, b) => a.storm.rafGapMaxMs - b.storm.rafGapMaxMs)[Math.floor(GRID_RUNS / 2)];
+  const worst = (f) => Math.max(...runs.map(f));
+  return {
+    ...mid,
+    // Per-run raw numbers; the gap budget uses the medians, the task and share budgets the worst run.
+    runs: runs.map((r) => ({
+      rafGapMaxWithEngine: r.storm.rafGapMaxMs, rafGapMaxWithoutEngine: r.baselineStorm.rafGapMaxMs,
+      engineShare: r.storm.engineShare, longestEngineTaskAfterFirstPaint: r.longestEngineTaskAfterFirstPaint.ms,
+    })),
+    rafGapMaxWithEngineMedian: round(median(runs.map((r) => r.storm.rafGapMaxMs))),
+    rafGapMaxWithoutEngineMedian: round(median(runs.map((r) => r.baselineStorm.rafGapMaxMs))),
+    worstEngineTaskAfterFirstPaint: round(worst((r) => r.longestEngineTaskAfterFirstPaint.ms)),
+    worstEngineShare: worst((r) => r.storm.engineShare),
+    check: { adsStyled: Math.min(...runs.map((r) => r.check.adsStyled)), ads: mid.check.ads, cardBackground: mid.check.cardBackground },
+  };
+}
+
 function gitHead() {
   try {
     return execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim();
@@ -208,9 +230,13 @@ export async function runPerf() {
     const budgets = {
       nodesInitialMedian: { value: nodes.initialMedianMs, max: BUDGET.initialMedianMs },
       nodesBatchMedian: { value: nodes.batchMedianMs, max: BUDGET.batchMedianMs },
-      gridLongestEngineTaskAfterFirstPaint: { value: grid.longestEngineTaskAfterFirstPaint.ms, max: BUDGET.longTaskMs },
-      gridStormEngineShare: { value: grid.storm.engineShare, max: BUDGET.stormShare },
-      gridStormRafGapMax: { value: grid.storm.rafGapMaxMs, max: BUDGET.rafGapMs },
+      gridLongestEngineTaskAfterFirstPaint: { value: grid.worstEngineTaskAfterFirstPaint, max: BUDGET.longTaskMs },
+      gridStormEngineShare: { value: grid.worstEngineShare, max: BUDGET.stormShare },
+      gridStormRafGapMax: {
+        value: grid.rafGapMaxWithEngineMedian,
+        withoutEngine: grid.rafGapMaxWithoutEngineMedian,
+        max: round(grid.rafGapMaxWithoutEngineMedian + BUDGET.rafGapExtraMs),
+      },
     };
     for (const b of Object.values(budgets)) b.pass = b.value <= b.max;
     const result = {
@@ -232,6 +258,7 @@ export async function runPerf() {
 export function summary(r) {
   const lines = [`T013 perf (${r.browser}, HEAD ${r.head})`];
   for (const [k, b] of Object.entries(r.budgets)) lines.push(`${b.pass ? 'PASS' : 'FAIL'} ${k}: ${b.value} (max ${b.max})`);
+  lines.push(`grid runs (rAF gap max with / without engine, ms): ${r.grid.runs.map((x) => `${x.rafGapMaxWithEngine}/${x.rafGapMaxWithoutEngine}`).join(', ')}`);
   lines.push(`nodes initial ms: ${r.nodes.initialMs.join(', ')}; batch ms: ${r.nodes.batchMs.join(', ')}`);
   const s = r.grid.storm, b = r.grid.baselineStorm;
   lines.push(`grid storm: ${s.mutations} mutations in ${s.wallMs} ms, engine ${s.engineMs} ms (${(s.engineShare * 100).toFixed(1)}%), ` +

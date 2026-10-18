@@ -487,3 +487,8 @@
 - New `Tests/ContainerAppTests.swift`: initial state unknown; mocked provider flips disabled, enabled, disabled; background completion publishes on main; the delegate returns true for terminate-after-last-window-closed.
 - Not run (sandbox cannot run Xcode): macOS/iOS builds and Swift tests. The runner's next `ralph/evidence/swift-build-latest.md` decides. Limit: the window-close test checks the delegate's answer, not a real window close (that needs a UI test target, which the project does not have). No pass is claimed.
 - Stop-hook round: row set to `blocked (B30)`. The acceptance names a real window-close test and the project has no UI test target; adding one edits `project.pbxproj`, which needs an owner decision. The runner build/test of 33c499e is still unseen, so no pass is claimed; the owner decision and a clean runner log are both needed before `done`.
+
+## T013 — rAF-gap metric revised (2026-10-18, Builder). NEEDS-RUNNER-BUILD
+- `engine/scripts/perf.js`: the grid fixture now runs 3 paired runs (each: no-engine storm, then engine storm). Budget `gridStormRafGapMax` = median rAF gap max with engine ≤ median without engine + 8 ms (owner-accepted). Engine-task and share budgets use the worst of the 3 runs. Per-run numbers go to `grid.runs` in `ralph/evidence/t013-perf.json`; the summary prints them.
+- Verification: `node --check engine/scripts/perf.js` OK. `npm run perf` in the sandbox produced no output for 300 s and was stopped (WebKit does not launch here, B15). That is not a result. The existing t013-perf.json still holds the old 32 ms metric run, so it does not prove the new metric.
+- Row set to `needs-runner-build`: the runner e2e (same code via e2e/perf.test.js) must write the new t013-perf.json. No pass claimed.
