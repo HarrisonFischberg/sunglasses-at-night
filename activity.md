@@ -66,3 +66,15 @@
 - No Swift changes, so no runner build is needed.
 - Note for T004: equal schedule start and end are stored as given, and activation.js decides what they mean. `timeToMinutes()` is exported.
 - Note for T014: the App Group mirror should store the same validated v1 object.
+
+## 2026-10-17: T004 activation decision (Ralph iteration). DONE
+
+- Goal: T004 acceptance criteria (truth-table tests incl. schedule crossing midnight, DST boundary, equal start/end), proven by `npm test`.
+- Wrote:
+  - `engine/src/activation.js` (ESM, pure, no DOM/network). `decide({ settings, hostname, systemDark, now, timeZone })` → `{ on, reason }`, plus `isActive`, `isInSchedule`, `inWindow` and `localMinutes`. Precedence: mode `off` is the master switch and beats every site rule; then site `never` → off; site `always` → on; then mode `always` → on, `system` → on only when `systemDark === true`, `schedule` → on inside the window.
+  - Schedule semantics: local wall-clock minutes, start inclusive and end exclusive. start > end crosses midnight. **start === end is an empty window (never on)**, and "all day" is mode `always`. DST needs no special case: a skipped start time (02:30 on spring-forward day) takes effect at 03:00, and on fall-back day the repeated hour is evaluated by its wall-clock reading both times. An optional IANA `timeZone` (via `Intl.DateTimeFormat`) makes the tests independent of the host zone. Without it, the runtime's local clock is used.
+  - `engine/test/activation.test.js`: 28 cases. They cover the full 4 modes × 3 site rules × system dark/light × in/out-of-window truth table (48 combinations in 12 tests, plus a coverage check), reasons, hostname normalization, midnight crossing at every boundary, 00:00 edges, equal start/end at all 1,440 minutes, America/New_York spring-forward and fall-back, Europe/London spring-forward, and invalid input.
+- Verification, attempt 1/5: `npm test` → `ℹ tests 128 ℹ pass 128 ℹ fail 0` (62 color + 38 settings + 28 activation). `node --test engine/test/activation.test.js` → `ℹ tests 28 ℹ pass 28 ℹ fail 0`. `npm run check` → `node --check: 3 file(s) OK`.
+- No Swift changes, so no runner build is needed.
+- Owner decision worth confirming (not a blocker): equal start/end = never on, and global Off overrides per-site "Always dark". Both are documented in the `activation.js` header and pinned by tests.
+- Note for T009: the background script has to re-evaluate when the schedule crosses a boundary (e.g. a 1-minute `alarms` tick, or the next boundary computed from `schedule`) and when `prefers-color-scheme` changes.
