@@ -51,3 +51,18 @@
 - `npm test` → 57/62 at first. Fixed: OKLab inverse matrices now computed (round-trip ≤1e-9), byte rounding epsilon for exact halves (hsl/hwb 127.5→128), test expectation 3.95→3.98 for 50% black over white (composite is 127.5, not #808080). Result: `ℹ tests 62 ℹ pass 62 ℹ fail 0`.
 - Xcode: macOS + iOS Simulator builds `** BUILD SUCCEEDED **` with `CODE_SIGNING_ALLOWED=NO` (signing requires B7). Logs: `ralph/evidence/build-*.log`.
 - Runner changes: `--settings .claude/settings.json`, `ralph/verify-swift.sh` around each iteration, `needs-runner-build` status.
+
+## 2026-10-17: T003 settings model (Ralph iteration). DONE
+
+- Goal: T003 acceptance criteria (invalid values rejected/clamped; round-trip tests), proven by `npm test`.
+- Wrote:
+  - `engine/src/settings.js` (ESM, no deps, no network). Schema v1: `mode` (system/always/schedule/off), `schedule` {start, end} as `HH:MM`, `look` {brightness 50–150, contrast 50–150, sepia 0–100, grayscale 0–100}, `images` (leave/dim/no-invert), `hideBackgroundImages`, `detectDark`, `engine` (dynamic/filter), `sites` {hostname → {rule default/always/never, optional look/engine/detectDark overrides}}.
+  - Validation: invalid enums, booleans, times and non-numeric sliders are rejected and fall back to defaults. Numeric sliders are clamped and rounded. Unknown keys are dropped. Hostnames are normalized (lowercase, trailing dot removed) and invalid ones rejected. Entries that only inherit are pruned. Sites are capped at 5,000. Every problem is reported as a "path: reason" string. `__proto__` keys don't pollute prototypes.
+  - Migration: v0 = the unversioned pre-release layout (`enabled` boolean, sliders at the top level, `sites` host → 'dark'/'light'), migrated to v1. A future or garbage `version` resets to defaults. Migration is idempotent.
+  - Storage wrapper `createSettingsStore(area)` with load (migrates, and writes back only when something changed), save (validates before writing), update (merges look/schedule one level deep), setSite, reset and subscribe (onChanged → validated settings). There is also `createMemoryArea()` for tests, and `resolveSite()` for per-site overrides.
+  - `engine/test/settings.test.js`: 38 cases, including a 500-input randomized fixed-point round-trip and a save → load round-trip through the storage wrapper.
+  - `docs/data-inventory.md`: the settings row now lists the new fields. The data flow is unchanged (on-device `browser.storage.local`).
+- Verification, attempt 1/5: `npm test` → `ℹ tests 100 ℹ pass 100 ℹ fail 0` (62 color + 38 settings). `npm run check` → `node --check: 2 file(s) OK`.
+- No Swift changes, so no runner build is needed.
+- Note for T004: equal schedule start and end are stored as given, and activation.js decides what they mean. `timeToMinutes()` is exported.
+- Note for T014: the App Group mirror should store the same validated v1 object.

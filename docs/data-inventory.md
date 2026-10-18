@@ -5,7 +5,7 @@ network code. The extension never sends page content, URLs or settings anywhere.
 
 | Data collected | Purpose | Collection point | Recipient / storage | Retention | Deletion mechanism |
 | --- | --- | --- | --- | --- | --- |
-| Settings (mode, schedule times, look sliders, image mode) | apply user's chosen look | popup, options page, container app | `browser.storage.local` on device + App Group `UserDefaults` on device | until changed / reset / uninstall | "Reset all settings" (S04); uninstall removes both |
+| Settings (mode, schedule times, look sliders, image mode, hide background images, already-dark detection, engine choice; schema in `engine/src/settings.js`) | apply user's chosen look | popup, options page, container app | `browser.storage.local` on device + App Group `UserDefaults` on device | until changed / reset / uninstall | "Reset all settings" (S04); uninstall removes both |
 | Per-site rules: hostname + rule + optional look override | remember per-site choice | popup | same as above | until rule deleted / reset / uninstall | delete in Sites (S03), Reset all, uninstall |
 | Page content + current URL (in memory only) | compute dark styles; hostname lookup for rule | content script, popup (active tab) | in page memory only; never stored except hostname when user creates a rule; never transmitted | page lifetime | n/a (not persisted) |
 | Diagnostic report (hostname, app version, OS version, active settings) | user reports a broken site | popup "Report a problem" → `mailto:` draft | user's own Mail app → hello@rarecreatures.app **only if the user presses Send** | owner's mailbox; retention policy UNKNOWN (launch blocker) | owner deletes email on request; contact in privacy policy |
