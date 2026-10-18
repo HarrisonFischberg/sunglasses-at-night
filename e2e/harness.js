@@ -122,18 +122,26 @@ export async function openPage(browser, servers, path, { extension = false, sett
   return { page, context, fetchLog };
 }
 
+// Records the canvas at the page's first rendering update: a rAF callback
+// queued at document start runs in the first frame WebKit renders. WebKit
+// renders no frames of a document whose body is still empty (it keeps the
+// layer tree frozen until there is content to show), so with `?stall` that
+// first frame is the one the user sees first, whenever it comes.
+const FIRST_FRAME = `if (location.protocol !== 'about:') requestAnimationFrame(() => {
+  globalThis.__sanFirstFrame = { ...__sanAudit.canvasColor(), atMs: Math.round(performance.now()) };
+});`;
+
 /**
- * Start loading `path` with the body held back by the server (`?stall`),
- * wait until the browser has rendered frames of the bodiless page, and
- * return what it painted the canvas with (page-audit canvasColor()).
+ * Start loading `path` with the body held back by the server (`?stall`) and
+ * return what the browser painted the canvas with in the first frame it
+ * rendered (page-audit canvasColor(), plus bodyChildren at that moment).
  */
-export async function openFirstPaint(browser, servers, path, { extension = false, settings, stallMs = 8000, paintMs = 800 } = {}) {
+export async function openFirstPaint(browser, servers, path, { extension = false, settings, stallMs = 8000 } = {}) {
   const { page, context } = await preparePage(browser, servers, { extension, settings });
+  await page.addInitScript({ content: FIRST_FRAME });
   await page.goto(`${servers.SITE}${path}?stall=${stallMs}`, { waitUntil: 'commit' });
-  await page.waitForFunction(() => document.body, null, { timeout: 5000 });
-  await page.waitForTimeout(paintMs);
-  const canvas = await page.evaluate(() => new Promise((done) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => done(__sanAudit.canvasColor())))));
+  const handle = await page.waitForFunction(() => globalThis.__sanFirstFrame, null, { polling: 50, timeout: stallMs + 10000 });
+  const canvas = await handle.jsonValue();
   return { page, context, canvas };
 }
 

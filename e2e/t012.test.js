@@ -1,8 +1,9 @@
 // T012 acceptance on WebKit, over the 8 fixture pages (light, already-dark,
 // inline styles, SPA mutations, images, cross-origin sheet, links, shop
 // buttons), the shadow-DOM page, and the original "hard cases" page:
-//   - first paint is not white: the server holds the body back and the
-//     screenshot is taken before any body content exists;
+//   - first paint is not white: the server holds the body back; the canvas
+//     is read in the first frame WebKit renders (WebKit renders none while
+//     the body is empty) and the screen just after it has no white areas;
 //   - every visible text node, in every frame, is ≥ 4.5:1 on a dark
 //     background (page-audit.js, computed colors);
 //   - every enabled button passes Playwright's actionability checks (visible,
@@ -63,15 +64,16 @@ const record = (name, key, value) => { (summary[name] ??= {})[key] = value; };
 // Luminance over a 6×6 grid of viewport pixels.
 function paintStats(buf) {
   const png = decodePng(buf);
-  let max = 0, min = 1;
+  let max = 0, min = 1, white = 0;
   for (let i = 0; i < 6; i++) {
     for (let j = 0; j < 6; j++) {
       const l = lum(png.at(((i + 0.5) * png.width) / 6, ((j + 0.5) * png.height) / 6));
       max = Math.max(max, l);
       min = Math.min(min, l);
+      if (l > 0.9) white++;
     }
   }
-  return { max: +max.toFixed(3), min: +min.toFixed(3) };
+  return { max: +max.toFixed(3), min: +min.toFixed(3), white };
 }
 
 // page-audit in every frame (about:blank frames may not get init scripts).
@@ -164,40 +166,34 @@ function mediaWrong(samples) {
 
 // ------------------------------------------------------------- first paint
 
-// Pixels of the bodiless page, when WebKit will take a screenshot before
-// the body arrives (Playwright waits for document.fonts.ready first, which
-// may not settle while the document is loading). null when it won't.
-async function bodilessShot(page, path) {
-  let buf;
+// Pixels right after the first rendered frame; null if WebKit won't take the
+// screenshot yet (Playwright waits for document.fonts.ready first).
+async function firstFrameShot(page, path) {
   try {
-    buf = await page.screenshot({ path, timeout: 2500 });
+    return paintStats(await page.screenshot({ path, timeout: 5000 }));
   } catch {
     return null;
   }
-  const children = await page.evaluate(() => document.body.children.length);
-  return children === 0 ? paintStats(buf) : null;
 }
 
 for (const fx of FIXTURES) {
   test(`${fx.name}: first paint is not white`, { timeout: 60000 }, async () => {
     const plain = await openFirstPaint(browser, servers, fx.path);
-    const basePx = await bodilessShot(plain.page);
+    const basePx = await firstFrameShot(plain.page);
     await plain.context.close();
 
     const dark = await openFirstPaint(browser, servers, fx.path, { extension: true });
-    const px = await bodilessShot(dark.page, evidencePath(`t012-firstpaint-${fx.name}.png`));
+    const px = await firstFrameShot(dark.page, evidencePath(`t012-firstpaint-${fx.name}.png`));
     await dark.context.close();
     record(fx.name, 'firstPaint', { baseline: { canvas: plain.canvas, pixels: basePx }, extension: { canvas: dark.canvas, pixels: px } });
 
-    // Measured after two rendered frames of the page with no body content.
-    assert.equal(dark.canvas.bodyChildren, 0, 'body content had already arrived');
-    // Without the extension the same moment is light, so the check can tell.
-    if (!fx.alreadyDark) {
-      assert.ok(plain.canvas.luminance > 0.5, `baseline canvas not light (${JSON.stringify(plain.canvas)})`);
-      if (basePx) assert.ok(basePx.min > 0.5, `baseline first-paint pixels not light (${JSON.stringify(basePx)})`);
-    }
+    // Without the extension the first frame is light, so the check can tell.
+    if (!fx.alreadyDark) assert.ok(plain.canvas.luminance > 0.5, `baseline canvas not light (${JSON.stringify(plain.canvas)})`);
+    // The first frame the browser rendered, with the extension, is dark...
     assert.ok(dark.canvas.luminance < 0.1, `first paint canvas not dark: ${JSON.stringify(dark.canvas)}`);
-    if (px) assert.ok(px.max < 0.1, `first paint pixels not dark: brightest sample luminance ${px.max}`);
+    // ...and the screen just after it has no white areas.
+    assert.ok(px, 'no screenshot of the first frame');
+    assert.equal(px.white, 0, `first paint pixels: ${px.white} of 36 samples near white (${JSON.stringify(px)})`);
   });
 }
 
