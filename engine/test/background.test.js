@@ -79,11 +79,11 @@ test('toggleMode: off with nothing (or junk) remembered goes to always', () => {
 
 test('toolbarState: on, off with reason, unknown reason, and unavailable', () => {
   assert.deepEqual(toolbarState({ on: true, reason: 'mode-always' }),
-    { state: 'on', title: 'Sunglasses at Night: on', badge: '' });
+    { state: 'on', title: 'Sunglasses for Safari: on', badge: '' });
   assert.deepEqual(toolbarState({ on: false, reason: 'already-dark' }),
-    { state: 'off', title: 'Sunglasses at Night: off, page is already dark', badge: 'off' });
-  assert.equal(toolbarState({ on: false, reason: 'site-never' }).title, 'Sunglasses at Night: off, never dark on this site');
-  assert.equal(toolbarState({ on: false, reason: '<script>' }).title, 'Sunglasses at Night: off');
+    { state: 'off', title: 'Sunglasses for Safari: off, page is already dark', badge: 'off' });
+  assert.equal(toolbarState({ on: false, reason: 'site-never' }).title, 'Sunglasses for Safari: off, never dark on this site');
+  assert.equal(toolbarState({ on: false, reason: '<script>' }).title, 'Sunglasses for Safari: off');
   assert.equal(toolbarState(undefined).state, 'unavailable');
   assert.equal(toolbarState(undefined).badge, '');
 });
@@ -144,9 +144,9 @@ test('toolbar: top-frame report sets that tab\'s title and badge', async () => {
   send(api, { type: TAB_STATE, on: false, reason: 'already-dark' }, { id: 'ext', tab: { id: 2 }, frameId: 0 });
   send(api, { type: TAB_STATE, on: true, reason: 'mode-always' }, { id: 'ext', tab: { id: 3 }, frameId: 0 });
   await settle();
-  assert.equal(titles.get(2), 'Sunglasses at Night: off, page is already dark');
+  assert.equal(titles.get(2), 'Sunglasses for Safari: off, page is already dark');
   assert.equal(badges.get(2), 'off');
-  assert.equal(titles.get(3), 'Sunglasses at Night: on');
+  assert.equal(titles.get(3), 'Sunglasses for Safari: on');
   assert.equal(badges.get(3), '');
 });
 
@@ -170,7 +170,7 @@ test('toolbar: navigation resets the tab to unavailable; closing forgets it', as
   api.tabs.onUpdated.fire(1, { status: 'loading', url: 'https://example.com/' });
   await settle();
   assert.equal(bg.tabStates.has(1), false);
-  assert.equal(titles.get(1), 'Sunglasses at Night: not running on this page');
+  assert.equal(titles.get(1), 'Sunglasses for Safari: not running on this page');
   send(api, { type: TAB_STATE, on: true }, { id: 'ext', tab: { id: 5 }, frameId: 0 });
   api.tabs.onRemoved.fire(5);
   assert.equal(bg.tabStates.has(5), false);

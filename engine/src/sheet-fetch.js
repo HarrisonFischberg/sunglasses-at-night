@@ -1,4 +1,4 @@
-// Sunglasses at Night: cross-origin stylesheet re-fetch (background side, T007).
+// Sunglasses for Safari: cross-origin stylesheet re-fetch (background side, T007).
 // A content script can't read the rules of a stylesheet served from another
 // origin, so it asks the background script for the sheet's text. The request
 // goes only to the URL the page itself already loaded the sheet from: no

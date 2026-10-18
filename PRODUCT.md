@@ -54,7 +54,7 @@ Reset all. The Mac keyboard shortcut (Option+Shift+N) toggles it on and off.
 
 ## Brand Commitments
 
-- Name: **Sunglasses at Night**. Never "Dark Eyes" or any reference app's name or look.
+- Name: **Sunglasses for Safari**. Never "Dark Eyes" or any reference app's name or look.
 - Voice: **witty.** The joke is the name itself: you put on sunglasses at night because the web keeps throwing white pages at you. Wit lives in small moments (empty states, first run, the popup's status line), never in controls, consent, privacy, or error copy, which stay plain.
 - Avoid the reference apps' moon-on-purple look (REA R15).
 

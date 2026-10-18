@@ -1,4 +1,4 @@
-// Sunglasses at Night: color transform.
+// Sunglasses for Safari: color transform.
 // Maps a light page's background, text and border colors to dark equivalents
 // in OKLCH (lightness remapped, hue kept, chroma tempered), applies the look
 // sliders, and guarantees text-on-background contrast of at least 4.5:1

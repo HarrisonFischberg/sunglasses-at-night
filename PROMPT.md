@@ -1,4 +1,4 @@
-# Per-iteration instructions (Sunglasses at Night)
+# Per-iteration instructions (Sunglasses for Safari)
 
 Each fresh session:
 
@@ -52,5 +52,5 @@ claim Impeccable ran unless its output is in this session.
 - Never edit `.claude/settings.json`, never push, never add a dependency `prd.md` doesn't list as
   approved (approved: `playwright@1.64.1` dev-only; nothing else).
 - Never weaken or delete a test to make it pass. Never mark a blocked task done.
-- Product name: **Sunglasses for Safari** (renamed 2026-10-18 by T027; until T027 is done the code still says "Sunglasses at Night"). Never use reference apps' names, copy, or visuals.
+- Product name: **Sunglasses for Safari** (renamed 2026-10-18 by T027). Never use reference apps' names, copy, or visuals.
 - No network code in the shipped extension or app except what prd.md T007 allows.

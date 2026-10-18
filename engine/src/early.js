@@ -1,4 +1,4 @@
-// Sunglasses at Night: document_start anti-flash (F7).
+// Sunglasses for Safari: document_start anti-flash (F7).
 // At document_start, if activation says on, inject a small sheet that paints
 // the root dark before the page's first paint. Once the page's own styles are
 // in (DOMContentLoaded), measure the page with our sheet switched off and

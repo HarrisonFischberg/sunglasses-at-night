@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5A0000000000000000000041"
-               BuildableName = "Sunglasses at Night.app"
-               BlueprintName = "Sunglasses at Night (macOS)"
+               BuildableName = "Sunglasses for Safari.app"
+               BlueprintName = "Sunglasses for Safari (macOS)"
                ReferencedContainer = "container:SunglassesAtNight.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -55,8 +55,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5A0000000000000000000041"
-            BuildableName = "Sunglasses at Night.app"
-            BlueprintName = "Sunglasses at Night (macOS)"
+            BuildableName = "Sunglasses for Safari.app"
+            BlueprintName = "Sunglasses for Safari (macOS)"
             ReferencedContainer = "container:SunglassesAtNight.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

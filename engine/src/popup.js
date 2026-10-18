@@ -1,4 +1,4 @@
-// Sunglasses at Night: toolbar popup (S05) entry, bundled to
+// Sunglasses for Safari: toolbar popup (S05) entry, bundled to
 // Extension/Resources/popup/popup.js. Mode, this site's rule, the
 // already-dark override and the look, saved as they change. On pages the
 // extension can't run on (restricted), only the global controls show.
@@ -112,5 +112,5 @@ async function main() {
 }
 
 main().catch(() => {
-  $('status').textContent = 'Sunglasses at Night couldn’t load its settings. Close this and try again.';
+  $('status').textContent = 'Sunglasses for Safari couldn’t load its settings. Close this and try again.';
 });

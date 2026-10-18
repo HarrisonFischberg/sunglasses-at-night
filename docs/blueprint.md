@@ -1,4 +1,4 @@
-# Blueprint: Sunglasses at Night
+# Blueprint: Sunglasses for Safari
 
 Written 2026-10-18 by Opus when the project moved to the new `/new-app`
 version (owner decision). It records the architecture already approved in

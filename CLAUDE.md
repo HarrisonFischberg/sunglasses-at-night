@@ -1,6 +1,6 @@
-# Sunglasses at Night
+# Sunglasses for Safari
 
-Sunglasses at Night: a free, privacy-first dark mode Safari Web Extension for macOS, iOS and iPadOS.
+Sunglasses for Safari: a free, privacy-first dark mode Safari Web Extension for macOS, iOS and iPadOS.
 
 ## Workflow
 
@@ -24,9 +24,9 @@ loop. Verify each before claiming use: `docs/tool-environment.md`.
 | --- | --- |
 | engine unit tests | `npm test` |
 | engine lint (syntax) | `node --check` on every `engine/src/*.js` via `npm run check` |
-| Swift build (macOS) | `xcodebuild -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build` |
-| Swift build (iOS) | `xcodebuild -scheme "Sunglasses at Night (iOS)" -destination 'generic/platform=iOS Simulator' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build` |
-| Swift tests | `xcodebuild test -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO` |
+| Swift build (macOS) | `xcodebuild -scheme "Sunglasses for Safari (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build` |
+| Swift build (iOS) | `xcodebuild -scheme "Sunglasses for Safari (iOS)" -destination 'generic/platform=iOS Simulator' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build` |
+| Swift tests | `xcodebuild test -scheme "Sunglasses for Safari (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO` |
 | Swift (inside Ralph) | run by the runner: `ralph/verify-swift.sh` → `ralph/evidence/swift-build-latest.md` |
 | e2e (WebKit fixtures) | `npm run e2e` (Playwright 1.64.1, approved) |
 
@@ -34,7 +34,7 @@ Exact scheme names are fixed by task T002; update this table if they change.
 
 ## Naming
 
-Product name everywhere: **Sunglasses at Night**. Slug: `sunglasses-at-night`.
+Product name everywhere: **Sunglasses for Safari**. Slug: `sunglasses-at-night`.
 Never use the working name "Dark Eyes" or any reference app's name or branding
 (Noir, Dark Reader, Midnight) in code, assets, copy, or metadata.
 

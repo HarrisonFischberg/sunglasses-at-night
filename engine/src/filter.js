@@ -1,4 +1,4 @@
-// Sunglasses at Night: filter fallback engine (T008, F10) and image modes (F5).
+// Sunglasses for Safari: filter fallback engine (T008, F10) and image modes (F5).
 // For pages the dynamic engine breaks: one sheet inverts the whole page with
 // a CSS filter on the root (invert, then hue-rotate so hues stay put) and
 // counter-inverts media so photos, video and frames show as authored.

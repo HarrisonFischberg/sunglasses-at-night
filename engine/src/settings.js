@@ -1,4 +1,4 @@
-// Sunglasses at Night: settings model.
+// Sunglasses for Safari: settings model.
 // Defaults, schema validation (reject or clamp), migration from the
 // unversioned v0 layout to v1, and a thin wrapper over a WebExtension
 // storage area. No DOM, no network. The storage area is injected so the

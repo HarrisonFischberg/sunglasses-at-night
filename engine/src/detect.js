@@ -1,4 +1,4 @@
-// Sunglasses at Night: already-dark detection.
+// Sunglasses for Safari: already-dark detection.
 // Decides whether a page is dark on its own, so we leave it alone (F6).
 // Pure: the caller reads computed styles and the color-scheme meta tag and
 // passes them in as strings, so the same code runs in early.js and node:test.

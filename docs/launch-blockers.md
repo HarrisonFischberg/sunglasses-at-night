@@ -10,7 +10,7 @@
 | B6 | Retention policy for report emails at hello@rarecreatures.app and the email provider used | missing fact | Harold | 1, data inventory | OPEN |
 | B7 | Apple Developer Program team / signing identity for archive + TestFlight | approval (account) | Harold | release | OPEN |
 | B8 | Privacy policy + terms drafts need qualified legal review before publishing | legal review | counsel | 1, 2 | OPEN (drafts written 2026-10-18 in docs/site/, marked "Draft for legal review"; counsel review still needed) |
-| B9 | Trademark / name clearance for "Sunglasses at Night" (also a well-known song title) | legal review | Harold + counsel | brand, listing | OPEN |
+| B9 | Trademark / name clearance for "Sunglasses for Safari" (uses Apple's "Safari" in the "… for Safari" pattern; formerly "Sunglasses at Night", also a well-known song title) | legal review | Harold + counsel | brand, listing | OPEN |
 | B10 | REA web capture | tool | Harold | discovery evidence | CLOSED 2026-10-18: headless Comet, isolated profile |
 | B11 | Caveman skill | tool | Harold | comms rule | CLOSED 2026-10-18: owner said never use it; removed from skill |
 | B12 | Playwright (WebKit) dev dependency for e2e fixtures | approval | Harold | T012 evidence for safeguards 14 + contrast claim | CLOSED 2026-10-18: approved |

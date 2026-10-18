@@ -1,4 +1,4 @@
-// Sunglasses at Night: background logic (T009). The WebExtension API is
+// Sunglasses for Safari: background logic (T009). The WebExtension API is
 // injected so node:test can drive it; background.js passes the real one.
 //
 //   Settings broadcast  every write to the settings key is pushed to every
@@ -26,7 +26,7 @@ export const RESET_GENERATION_KEY = 'nativeResetGeneration';
 // Safari ignores the application id and routes to the containing app's handler.
 export const NATIVE_APP_ID = 'app.rarecreatures.sunglassesatnight';
 
-const NAME = 'Sunglasses at Night';
+const NAME = 'Sunglasses for Safari';
 
 /**
  * The shortcut's effect. On (any mode but 'off') → 'off', remembering the
