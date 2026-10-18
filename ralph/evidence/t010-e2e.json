@@ -5,20 +5,8 @@
       {
         "tag": "select",
         "type": "select-one",
-        "id": "mode",
-        "name": "Dark mode"
-      },
-      {
-        "tag": "select",
-        "type": "select-one",
         "id": "site-engine",
         "name": "Engine"
-      },
-      {
-        "tag": "select",
-        "type": "select-one",
-        "id": "preset",
-        "name": "Preset"
       }
     ],
     "allOrder": [
@@ -29,10 +17,16 @@
         "name": "More settings"
       },
       {
-        "tag": "select",
-        "type": "select-one",
-        "id": "mode",
+        "tag": "input",
+        "type": "checkbox",
+        "id": "power",
         "name": "Dark mode"
+      },
+      {
+        "tag": "input",
+        "type": "radio",
+        "id": "",
+        "name": "Match system"
       },
       {
         "tag": "input",
@@ -59,10 +53,10 @@
         "name": "Use a separate look for this site"
       },
       {
-        "tag": "select",
-        "type": "select-one",
-        "id": "preset",
-        "name": "Preset"
+        "tag": "input",
+        "type": "radio",
+        "id": "",
+        "name": "Standard"
       },
       {
         "tag": "input",
@@ -96,20 +90,8 @@
       {
         "tag": "select",
         "type": "select-one",
-        "id": "mode",
-        "name": "Dark mode"
-      },
-      {
-        "tag": "select",
-        "type": "select-one",
         "id": "site-engine",
         "name": "Engine"
-      },
-      {
-        "tag": "select",
-        "type": "select-one",
-        "id": "preset",
-        "name": "Preset"
       }
     ],
     "allOrder": [
@@ -120,10 +102,16 @@
         "name": "More settings"
       },
       {
-        "tag": "select",
-        "type": "select-one",
-        "id": "mode",
+        "tag": "input",
+        "type": "checkbox",
+        "id": "power",
         "name": "Dark mode"
+      },
+      {
+        "tag": "input",
+        "type": "radio",
+        "id": "",
+        "name": "Match system"
       },
       {
         "tag": "input",
@@ -150,10 +138,10 @@
         "name": "Use a separate look for this site"
       },
       {
-        "tag": "select",
-        "type": "select-one",
-        "id": "preset",
-        "name": "Preset"
+        "tag": "input",
+        "type": "radio",
+        "id": "",
+        "name": "Standard"
       },
       {
         "tag": "input",
@@ -266,6 +254,36 @@
       }
     ],
     "allOrder": [
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "When"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Look"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Images and pages"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Sites"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Reset"
+      },
       {
         "tag": "select",
         "type": "select-one",
@@ -447,6 +465,36 @@
       }
     ],
     "allOrder": [
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "When"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Look"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Images and pages"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Sites"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Reset"
+      },
       {
         "tag": "select",
         "type": "select-one",

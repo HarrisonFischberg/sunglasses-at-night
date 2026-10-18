@@ -1,0 +1,1232 @@
+{
+  "baseline": {
+    "peakLightShare": 0.9609,
+    "frames": 24
+  },
+  "systemDarkAlways": {
+    "settingsAt": 314,
+    "readyAt": 1850,
+    "peakLightShare": 0,
+    "peakBeforeReady": 0,
+    "framesBeforeReady": 19,
+    "media": [
+      {
+        "filter": "none",
+        "opacity": "1",
+        "mixBlend": "normal"
+      },
+      {
+        "filter": "none",
+        "opacity": "1",
+        "mixBlend": "normal"
+      }
+    ],
+    "final": {
+      "ready": true,
+      "early": false,
+      "override": true
+    },
+    "frames": [
+      {
+        "t": 1526,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1550,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1567,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1583,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1599,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1616,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1633,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1649,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1666,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1682,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1700,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1716,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1733,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1749,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1766,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1782,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1800,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1817,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1832,
+        "lightShare": 0,
+        "ready": false
+      },
+      {
+        "t": 1850,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 1866,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 1883,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 1900,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 1917,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 1933,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 1950,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 1966,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 1983,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2000,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2016,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2032,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2050,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2066,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2082,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2100,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2117,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2133,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2150,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2166,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2183,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2200,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2216,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2232,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2250,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2267,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2283,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2300,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2316,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2333,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2350,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2367,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2383,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2400,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2416,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2433,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2450,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2466,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2483,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2500,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2516,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2533,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2550,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2566,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2582,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2600,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2616,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2633,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2650,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2666,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2683,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2699,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2717,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2732,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2749,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2766,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2783,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2800,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2816,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2833,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2850,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2867,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2883,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2899,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2916,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2932,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2950,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2967,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2983,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 2999,
+        "lightShare": 0,
+        "ready": true
+      },
+      {
+        "t": 3017,
+        "lightShare": 0,
+        "ready": true
+      }
+    ]
+  },
+  "systemDarkOff": {
+    "settingsAt": 322,
+    "state": {
+      "tileBg": "rgb(255, 255, 255)",
+      "ready": false,
+      "off": true,
+      "ours": 0
+    },
+    "peakLightShare": 0.9609,
+    "frames": [
+      {
+        "t": 1534,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1555,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1572,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1588,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1605,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1622,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1639,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1656,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1672,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1688,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1706,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1722,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1739,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1756,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1771,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1789,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1805,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1822,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1838,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1855,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1872,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1888,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1905,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1923,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1939,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1956,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1972,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1988,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2006,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2021,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2038,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2055,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2072,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2089,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2106,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2121,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2139,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2155,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2172,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2189,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2206,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2222,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2238,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2255,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2272,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2289,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2305,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2322,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2338,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2355,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2371,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2389,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2405,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2422,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2438,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2456,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2471,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2489,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2506,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2522,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2539,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2555,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2572,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2589,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2605,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2622,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2639,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2656,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2672,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2689,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2705,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2722,
+        "lightShare": 0.9609,
+        "ready": false
+      }
+    ]
+  },
+  "neverSite": {
+    "settingsAt": 306,
+    "state": {
+      "tileBg": "rgb(255, 255, 255)",
+      "ready": false,
+      "off": true,
+      "ours": 0
+    },
+    "peakLightShare": 0.9609,
+    "frames": [
+      {
+        "t": 1515,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1539,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1556,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1572,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1589,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1606,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1622,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1639,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1656,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1672,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1689,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1706,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1722,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1738,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1755,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1771,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1788,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1805,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1822,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1839,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1855,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1872,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1888,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1906,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1922,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1939,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1955,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1972,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 1989,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2006,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2022,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2039,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2056,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2072,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2088,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2106,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2121,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2139,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2155,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2172,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2189,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2205,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2222,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2238,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2256,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2272,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2289,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2305,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2322,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2339,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2356,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2372,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2389,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2405,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2422,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2438,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2455,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2472,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2489,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2505,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2521,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2539,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2555,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2572,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2588,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2605,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2622,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2639,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2655,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2672,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2688,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2705,
+        "lightShare": 0.9609,
+        "ready": false
+      }
+    ]
+  },
+  "_meta": {
+    "engine": "webkit (Playwright 1.64.1)",
+    "settingsDelayMs": 300,
+    "sheetDelayMs": 1500,
+    "date": "2026-10-18T22:18:47.141Z"
+  }
+}

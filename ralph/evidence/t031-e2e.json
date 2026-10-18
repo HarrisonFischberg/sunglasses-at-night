@@ -1,0 +1,168 @@
+{
+  "authored": {
+    "headBg": "rgb(255, 255, 255)",
+    "headImg": "rgb(255, 255, 255)",
+    "blend": "multiply",
+    "pixels": [
+      {
+        "id": "prod-1",
+        "kind": "shape",
+        "x": 106,
+        "y": 153.390625,
+        "px": [
+          225,
+          158,
+          22
+        ]
+      },
+      {
+        "id": "prod-1",
+        "kind": "photo-white",
+        "x": 44,
+        "y": 91.390625,
+        "px": [
+          247,
+          247,
+          247
+        ]
+      },
+      {
+        "id": "prod-2",
+        "kind": "shape",
+        "x": 302,
+        "y": 153.390625,
+        "px": [
+          45,
+          121,
+          48
+        ]
+      },
+      {
+        "id": "prod-2",
+        "kind": "photo-white",
+        "x": 240,
+        "y": 91.390625,
+        "px": [
+          247,
+          247,
+          247
+        ]
+      }
+    ]
+  },
+  "engine": {
+    "photos": [
+      {
+        "id": "prod-1",
+        "kind": "shape",
+        "authored": [
+          225,
+          158,
+          22
+        ],
+        "now": [
+          232,
+          163,
+          23
+        ],
+        "dE": 1.77
+      },
+      {
+        "id": "prod-1",
+        "kind": "photo-white",
+        "authored": [
+          247,
+          247,
+          247
+        ],
+        "now": [
+          255,
+          255,
+          255
+        ],
+        "dE": 2.39
+      },
+      {
+        "id": "prod-2",
+        "kind": "shape",
+        "authored": [
+          45,
+          121,
+          48
+        ],
+        "now": [
+          46,
+          125,
+          50
+        ],
+        "dE": 1.23
+      },
+      {
+        "id": "prod-2",
+        "kind": "photo-white",
+        "authored": [
+          247,
+          247,
+          247
+        ],
+        "now": [
+          255,
+          255,
+          255
+        ],
+        "dE": 2.39
+      }
+    ],
+    "headBg": "rgb(255, 255, 255)",
+    "headImg": "rgb(255, 255, 255)",
+    "blend": "normal",
+    "insertedAt": 843,
+    "framesAfterInsert": 162,
+    "peakLightAfterInsert": 0,
+    "peakLightAll": 0,
+    "final": {
+      "pending": 0,
+      "cardBg": [
+        "rgb(20, 20, 20)",
+        "rgb(20, 20, 20)",
+        "rgb(20, 20, 20)"
+      ],
+      "pBg": [
+        "rgb(20, 20, 20)",
+        "rgb(20, 20, 20)",
+        "rgb(20, 20, 20)"
+      ],
+      "imgs": [
+        {
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "filter": "none",
+          "opacity": "1"
+        }
+      ],
+      "ready": true
+    }
+  },
+  "_meta": {
+    "engine": "webkit (Playwright 1.64.1)",
+    "date": "2026-10-18T22:18:58.185Z"
+  }
+}

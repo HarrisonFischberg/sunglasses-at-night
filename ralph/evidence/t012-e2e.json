@@ -12,7 +12,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8021
+          "atMs": 8014
         },
         "pixels": {
           "max": 1,
@@ -31,7 +31,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8031
+          "atMs": 8015
         },
         "pixels": {
           "max": 0.009,
@@ -70,7 +70,7 @@
             24
           ],
           "luminance": 0.007,
-          "atMs": 8015
+          "atMs": 8016
         },
         "pixels": {
           "max": 0.017,
@@ -89,7 +89,7 @@
             24
           ],
           "luminance": 0.007,
-          "atMs": 8018
+          "atMs": 8022
         },
         "pixels": {
           "max": 0.017,
@@ -147,7 +147,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8028
+          "atMs": 8016
         },
         "pixels": {
           "max": 0.007,
@@ -186,7 +186,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8014
+          "atMs": 8010
         },
         "pixels": {
           "max": 1,
@@ -205,7 +205,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8020
+          "atMs": 8016
         },
         "pixels": {
           "max": 0.007,
@@ -244,7 +244,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8016
+          "atMs": 8014
         },
         "pixels": {
           "max": 1,
@@ -263,7 +263,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8028
+          "atMs": 8024
         },
         "pixels": {
           "max": 0.694,
@@ -302,7 +302,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8013
+          "atMs": 8014
         },
         "pixels": {
           "max": 1,
@@ -321,7 +321,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8017
+          "atMs": 8019
         },
         "pixels": {
           "max": 0.007,
@@ -360,7 +360,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8013
+          "atMs": 8009
         },
         "pixels": {
           "max": 1,
@@ -379,7 +379,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8017
+          "atMs": 8014
         },
         "pixels": {
           "max": 0.007,
@@ -418,7 +418,7 @@
             246
           ],
           "luminance": 0.922,
-          "atMs": 8020
+          "atMs": 8081
         },
         "pixels": {
           "max": 0.991,
@@ -437,7 +437,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8024
+          "atMs": 8021
         },
         "pixels": {
           "max": 0.046,
@@ -476,7 +476,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8014
+          "atMs": 8017
         },
         "pixels": {
           "max": 1,
@@ -495,7 +495,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8023
+          "atMs": 8022
         },
         "pixels": {
           "max": 0.038,
@@ -553,7 +553,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8054
+          "atMs": 8022
         },
         "pixels": {
           "max": 0.603,
@@ -1288,6 +1288,6 @@
   },
   "_meta": {
     "engine": "webkit (Playwright 1.64.1)",
-    "date": "2026-10-18T08:56:11.883Z"
+    "date": "2026-10-18T22:17:57.833Z"
   }
 }
