@@ -1,3 +1,8 @@
+> **Status rule (most-broken rule so far):** if the only thing missing is output the runner
+> produces (Xcode build/tests, `npm run e2e`, `npm run perf`, screenshots), set the row to
+> `needs-runner-build`, never `blocked`. `blocked` is only for things a human must decide or do.
+> The runner re-picks `needs-runner-build` rows first, with fresh output in `ralph/evidence/`.
+
 # Per-iteration instructions (Sunglasses for Safari)
 
 Each fresh session:
