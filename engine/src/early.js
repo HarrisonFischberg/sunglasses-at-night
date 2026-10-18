@@ -102,6 +102,22 @@ export function startEarly({
   };
 }
 
+/**
+ * Call `fn` once the document has a root element (now, if it has one).
+ * Safari runs document_start scripts after <html> is inserted, but other
+ * WebKit hosts (and Playwright's init scripts) can run before it exists.
+ */
+export function whenRoot(document, fn, MutationObserver = document.defaultView?.MutationObserver) {
+  if (document.documentElement) return void fn();
+  if (!MutationObserver) return void whenParsed(document, () => { if (document.documentElement) fn(); });
+  const observer = new MutationObserver(() => {
+    if (!document.documentElement) return;
+    observer.disconnect();
+    fn();
+  });
+  observer.observe(document, { childList: true });
+}
+
 /** Call `fn` once the DOM is parsed (now, if it already is). */
 export function whenParsed(document, fn) {
   if (document.readyState !== 'loading') return void fn();

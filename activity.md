@@ -189,3 +189,15 @@
 - Owner ran the signed test build (HEAD ~bdda3a0+, built 02:23Z) in real Safari on macOS with the extension enabled: **pages darken and "work well" on wikipedia.org and citizenfreepress.com.** So the T007 engine does inject in Safari; the 0/7 e2e result is most likely a **harness problem** (Playwright WebKit init-script/content-script setup), not the engine. Check the harness first.
 - Owner asked that testing also cover the hard cases from https://webbrowsertools.com/darkmode/. T012's acceptance now includes an original local fixture for those categories. e2e itself stays loopback-only. The supervisor will run the real page once, supervised.
 - 02:30Z owner T009 result: Option+Shift+N works; badge shows "off" when off and nothing when on (as designed); hover title says "on" when on. T009 → done, B16 closed.
+
+## 2026-10-17: T007 e2e 0/7 diagnosis (Ralph iteration). NEEDS-RUNNER-BUILD
+
+- Goal: T007 acceptance (fixture pages render dark; no `pointer-events` changes or overlays), proven by `npm run e2e`.
+- Input: `ralph/evidence/e2e-latest.md` (runner, HEAD 256a35f): 0/7. Every fixture timed out at `e2e/harness.js:108` waiting for `style[data-sunglasses-at-night="override"]`, with no page errors. That fits a silent early return, since `main().catch(() => {})` swallows errors.
+- Cause: `engine/src/content.js` `main()` returned immediately when `document.documentElement` was null. Safari's `document_start` runs after `<html>` is inserted, which is why the owner's real-Safari test worked. Playwright's WebKit `addInitScript` runs before any element exists, so the engine never started in any fixture.
+- Fix: new `whenRoot(document, fn)` in `engine/src/early.js` runs now if the root exists. Otherwise it waits for it with a `MutationObserver` on the document (childList), falling back to DOMContentLoaded. `content.js` awaits it after loading settings and then runs as before. No engine behavior changes once a root exists.
+- Tests: `engine/test/detect.test.js` adds `whenRoot` (runs now with a root; with no root it observes the document, ignores mutations until the root appears, then fires once and disconnects).
+- Verification:
+  - `npm test` → `ℹ tests 240 ℹ pass 240 ℹ fail 0`.
+  - `npm run e2e` in-session → every launch fails: `browserType.launch: Timeout 180000ms exceeded … sandbox_extension_issue_file_to_process failed for …/webkit-2370/Playwright.app: 1 (Operation not permitted)`. That is the known sandbox limit, not a test result.
+- Row set to `needs-runner-build`. The next iteration reads the runner's `ralph/evidence/e2e-latest.md`, then marks T007 done (7/7 with the pointer-events/overlay checks) or keeps fixing it.

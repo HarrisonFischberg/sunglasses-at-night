@@ -6,7 +6,7 @@
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 import { createSettingsStore, resolveSite, migrate } from './settings.js';
-import { startEarly, whenParsed } from './early.js';
+import { startEarly, whenParsed, whenRoot } from './early.js';
 import { startDynamic } from './dynamic.js';
 import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
 
@@ -76,9 +76,10 @@ function run(settings) {
 }
 
 async function main() {
-  if (!api?.storage?.local || !document.documentElement) return;
+  if (!api?.storage?.local) return;
   const store = createSettingsStore(localArea());
   const { settings } = await store.load();
+  await new Promise((resolve) => whenRoot(document, resolve));
   let current = JSON.stringify(settings);
   let teardown = run(settings);
   // Settings arrive twice per write (storage.onChanged here, and the

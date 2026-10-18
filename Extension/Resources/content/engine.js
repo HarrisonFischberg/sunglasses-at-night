@@ -1801,12 +1801,28 @@ function startEarly({
   };
 }
 
+/**
+ * Call `fn` once the document has a root element (now, if it has one).
+ * Safari runs document_start scripts after <html> is inserted, but other
+ * WebKit hosts (and Playwright's init scripts) can run before it exists.
+ */
+function whenRoot(document, fn, MutationObserver = document.defaultView?.MutationObserver) {
+  if (document.documentElement) return void fn();
+  if (!MutationObserver) return void whenParsed(document, () => { if (document.documentElement) fn(); });
+  const observer = new MutationObserver(() => {
+    if (!document.documentElement) return;
+    observer.disconnect();
+    fn();
+  });
+  observer.observe(document, { childList: true });
+}
+
 /** Call `fn` once the DOM is parsed (now, if it already is). */
 function whenParsed(document, fn) {
   if (document.readyState !== 'loading') return void fn();
   document.addEventListener('DOMContentLoaded', () => fn(), { once: true });
 }
-return { SHEET_ID, antiFlashCss, readPageColors, startEarly, whenParsed };
+return { SHEET_ID, antiFlashCss, readPageColors, startEarly, whenRoot, whenParsed };
 })();
 
 // ---- engine/src/dynamic.js
@@ -2627,7 +2643,7 @@ const __m_engine_src_content_js = (() => {
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 const { createSettingsStore, resolveSite, migrate } = __m_engine_src_settings_js;
-const { startEarly, whenParsed } = __m_engine_src_early_js;
+const { startEarly, whenParsed, whenRoot } = __m_engine_src_early_js;
 const { startDynamic } = __m_engine_src_dynamic_js;
 const { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } = __m_engine_src_messages_js;
 
@@ -2697,9 +2713,10 @@ function run(settings) {
 }
 
 async function main() {
-  if (!api?.storage?.local || !document.documentElement) return;
+  if (!api?.storage?.local) return;
   const store = createSettingsStore(localArea());
   const { settings } = await store.load();
+  await new Promise((resolve) => whenRoot(document, resolve));
   let current = JSON.stringify(settings);
   let teardown = run(settings);
   // Settings arrive twice per write (storage.onChanged here, and the

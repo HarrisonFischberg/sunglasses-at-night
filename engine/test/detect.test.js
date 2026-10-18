@@ -5,7 +5,7 @@ import {
 } from '../src/detect.js';
 import { contrastRatio, parseColor } from '../src/color.js';
 import {
-  SHEET_ID, antiFlashCss, readPageColors, startEarly, whenParsed,
+  SHEET_ID, antiFlashCss, readPageColors, startEarly, whenParsed, whenRoot,
 } from '../src/early.js';
 import { defaultSettings, validateSettings } from '../src/settings.js';
 
@@ -262,6 +262,32 @@ test('readPageColors: reads page colors, not the sheet, and restores media', () 
   assert.equal(c.colorScheme, 'light dark');
   assert.equal(c.metaColorScheme, 'light');
   assert.equal(ctl.style.media, '');
+});
+
+test('whenRoot: runs now with a root, else once <html> is inserted', () => {
+  let n = 0;
+  whenRoot(fakeDom().document, () => n++);
+  assert.equal(n, 1);
+
+  const early = fakeDom();
+  const html = early.document.documentElement;
+  early.document.documentElement = null;
+  let observer = null;
+  class FakeObserver {
+    constructor(cb) { this.cb = cb; observer = this; }
+    observe(target, opts) { this.target = target; this.opts = opts; }
+    disconnect() { this.disconnected = true; }
+  }
+  whenRoot(early.document, () => n++, FakeObserver);
+  assert.equal(n, 1);
+  assert.equal(observer.target, early.document);
+  assert.deepEqual(observer.opts, { childList: true });
+  observer.cb([]); // a doctype node arrives first
+  assert.equal(n, 1);
+  early.document.documentElement = html;
+  observer.cb([]);
+  assert.equal(n, 2);
+  assert.equal(observer.disconnected, true);
 });
 
 test('whenParsed: runs now after parsing, else on DOMContentLoaded', () => {
