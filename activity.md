@@ -523,3 +523,4 @@
 - Cause: not engine JS (max task 6 ms). It is browser style recalc over the generated override CSS (4,992 rules, 486 KB), which is T024's job (blueprint fix 3); T024 depends on T013, so the dependency is circular.
 - No test or budget was changed. Row set to `blocked (B32)`; the owner picks (a) run T024 first or (b) loosen the allowance.
 - 16:52Z owner: amazon.com still shows a white pop-in for 0.5–2 s before turning dark (Mac dark mode, up-to-date build 76d154d). Far longer than the settings read, so this is not T023's case. Opus analysis + fix plan → T029 (blueprint fix 5), queued right after the current iteration.
+- 16:53Z owner: put the App Store listing (T020) on hold. Status set to `on hold`; the runner won't pick it.
