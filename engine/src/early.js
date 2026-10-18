@@ -1,0 +1,109 @@
+// Sunglasses at Night: document_start anti-flash (F7).
+// At document_start, if activation says on, inject a small sheet that paints
+// the root dark before the page's first paint. Once the page's own styles are
+// in (DOMContentLoaded), measure the page with our sheet switched off and
+// remove the sheet if the page is already dark (F6). The dynamic engine
+// (T007) takes over from the sheet on pages that stay dark-moded.
+//
+// The DOM is injected (document, getComputedStyle) so node:test can drive it
+// with a fake document. No storage, no network: settings come from the caller.
+
+import { decide } from './activation.js';
+import { resolveSite } from './settings.js';
+import { formatRgb } from './color.js';
+import { transformColor, ensureContrast, quantize } from './transform.js';
+import { detectAlreadyDark, finalDecision } from './detect.js';
+
+export const SHEET_ID = 'sunglasses-at-night-early';
+
+const WHITE = { r: 1, g: 1, b: 1, alpha: 1 };
+const BLACK = { r: 0, g: 0, b: 0, alpha: 1 };
+
+/**
+ * The anti-flash CSS for a look: the colors page white and page black map
+ * to, with text contrast enforced. Only colors and color-scheme change;
+ * nothing that affects layout, hit-testing or pointer events.
+ */
+export function antiFlashCss(look) {
+  const bg = quantize(transformColor(WHITE, 'bg', look));
+  const fg = ensureContrast(transformColor(BLACK, 'fg', look), bg);
+  const b = formatRgb(bg), f = formatRgb(fg);
+  return (
+    `:root{color-scheme:dark!important;background-color:${b}!important;color:${f}!important}` +
+    `body{background-color:${b}!important}`
+  );
+}
+
+/**
+ * Read the page's own colors with our sheet switched off, then restore it.
+ * Turning a sheet off and on synchronously restyles without painting, so
+ * the user never sees the page's light colors.
+ */
+export function readPageColors(document, getComputedStyle, style) {
+  const prevMedia = style ? style.media : undefined;
+  if (style) style.media = 'not all';
+  try {
+    const root = document.documentElement, body = document.body;
+    const rs = root ? getComputedStyle(root) : null;
+    const bs = body ? getComputedStyle(body) : null;
+    const meta = document.querySelector?.('meta[name="color-scheme" i]');
+    return {
+      rootBg: rs?.backgroundColor,
+      rootColor: rs?.color,
+      colorScheme: rs?.colorScheme,
+      bodyBg: bs?.backgroundColor,
+      bodyColor: bs?.color,
+      metaColorScheme: meta?.getAttribute?.('content') ?? undefined,
+    };
+  } finally {
+    if (style) style.media = prevMedia;
+  }
+}
+
+/**
+ * Run the document_start step. Returns a controller:
+ *   activation  activation.decide() result
+ *   style       the injected <style> element, or null when inactive
+ *   finish()    measure + decide; removes the sheet on already-dark pages.
+ *               Returns finalDecision()'s { apply, reason } plus `detection`.
+ */
+export function startEarly({
+  document, getComputedStyle, settings, hostname, systemDark = false, now = new Date(), timeZone,
+}) {
+  const activation = decide({ settings, hostname, systemDark, now, timeZone });
+  const site = resolveSite(settings, hostname);
+  let style = null;
+  if (activation.on) {
+    style = document.createElement('style');
+    style.id = SHEET_ID;
+    style.textContent = antiFlashCss(site.look);
+    (document.head ?? document.documentElement).appendChild(style);
+  }
+
+  let result = null;
+  function finish() {
+    if (result) return result;
+    let detection = null;
+    if (activation.on && site.detectDark) {
+      detection = detectAlreadyDark({ ...readPageColors(document, getComputedStyle, style), systemDark });
+    }
+    result = { ...finalDecision({ activation, detectDark: site.detectDark, detection }), detection };
+    if (!result.apply && style) {
+      style.remove();
+      style = null;
+    }
+    return result;
+  }
+
+  return {
+    activation,
+    get style() { return style; },
+    finish,
+  };
+}
+
+/** Call `fn` once the DOM is parsed (now, if it already is). */
+export function whenParsed(document, fn) {
+  if (document.readyState !== 'loading') return void fn();
+  document.addEventListener('DOMContentLoaded', () => fn(), { once: true });
+}
