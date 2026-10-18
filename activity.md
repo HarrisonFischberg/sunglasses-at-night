@@ -276,3 +276,4 @@
   2. The UA button face color in dark scheme against the 0.2 background-luminance cap.
   3. SVG embed/object documents getting the content script.
   4. The filter engine still inverts url() backgrounds once (T008 note). T012 tests the default dynamic engine.
+- Status change: the session goal accepts only done or blocked, and no in-session WebKit run is possible, so the row is now `blocked (B19)` with B19 in `docs/launch-blockers.md`. Caveat recorded there: `ralph/next-task.js` skips blocked rows. The owner must run `npm run e2e` or set the row back to `needs-runner-build` for the runner to decide T012. Nothing is claimed passing.
