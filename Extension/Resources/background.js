@@ -518,6 +518,10 @@ const { SETTINGS_CHANGED, TAB_STATE } = __m_engine_src_messages_js;
 const TOGGLE_COMMAND = 'toggle-dark-mode';
 // Separate storage key, so the settings schema stays unchanged.
 const RESTORE_KEY = 'shortcutRestoreMode';
+// Last App Group reset generation this extension has applied (T014).
+const RESET_GENERATION_KEY = 'nativeResetGeneration';
+// Safari ignores the application id and routes to the containing app's handler.
+const NATIVE_APP_ID = 'app.rarecreatures.sunglassesatnight';
 
 const NAME = 'Sunglasses at Night';
 
@@ -599,9 +603,50 @@ function createBackground({ api, fetch }) {
     return (await store.update({ mode: next.mode })).settings;
   }
 
+  // ---- native bridge (T014): mirror settings into the App Group, apply the
+  // app's Reset all. Without native messaging (tests, other browsers) these no-op.
+  async function sendNative(message) {
+    if (typeof api.runtime.sendNativeMessage !== 'function') return null;
+    try {
+      return await api.runtime.sendNativeMessage(NATIVE_APP_ID, message);
+    } catch {
+      return null;
+    }
+  }
+
+  async function seenGeneration() {
+    const got = await api.storage.local.get(RESET_GENERATION_KEY);
+    const n = got?.[RESET_GENERATION_KEY];
+    return Number.isInteger(n) && n >= 0 ? n : 0;
+  }
+
+  // Clear this extension's store. The generation is written first, so the
+  // settings write that follows syncs defaults with it and isn't reset again.
+  async function clearLocal(generation) {
+    await api.storage.local.set({ [RESET_GENERATION_KEY]: generation });
+    await api.storage.local.remove(RESTORE_KEY);
+    return store.reset();
+  }
+
+  // Push settings to the App Group mirror. Returns the native reply, or null.
+  async function syncNative() {
+    const { settings } = await store.load();
+    const reply = await sendNative({ type: 'sync', settings, resetGeneration: await seenGeneration() });
+    if (reply?.reset === true && Number.isInteger(reply.resetGeneration)) await clearLocal(reply.resetGeneration);
+    return reply;
+  }
+
+  // Reset all from the extension UI: both stores.
+  async function resetAll() {
+    const reply = await sendNative({ type: 'reset' });
+    const generation = Number.isInteger(reply?.resetGeneration) ? reply.resetGeneration : await seenGeneration();
+    return clearLocal(generation);
+  }
+
   api.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local' || !changes || !Object.prototype.hasOwnProperty.call(changes, STORAGE_KEY)) return;
     broadcast(migrate(changes[STORAGE_KEY].newValue).settings).catch(ignore);
+    syncNative().catch(ignore);
   });
 
   const sheetHandler = createSheetMessageHandler({ fetch, extensionId: api.runtime.id });
@@ -629,9 +674,12 @@ function createBackground({ api, fetch }) {
     if (command === TOGGLE_COMMAND) toggle().catch(ignore);
   });
 
-  return { broadcast, toggle, tabStates, store };
+  // Each background start picks up a Reset all done in the app meanwhile.
+  const ready = syncNative().catch(ignore);
+
+  return { broadcast, toggle, tabStates, store, syncNative, resetAll, ready };
 }
-return { TOGGLE_COMMAND, RESTORE_KEY, toggleMode, toolbarState, createBackground };
+return { TOGGLE_COMMAND, RESTORE_KEY, RESET_GENERATION_KEY, NATIVE_APP_ID, toggleMode, toolbarState, createBackground };
 })();
 
 // ---- engine/src/background.js

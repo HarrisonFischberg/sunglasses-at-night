@@ -6,7 +6,7 @@ import SafariServices
 // Placeholder identifiers until the seller account is known (B1/B7).
 enum AppIdentifiers {
     static let extensionBundleID = "app.rarecreatures.sunglassesatnight.extension"
-    static let appGroup = "group.app.rarecreatures.sunglassesatnight"
+    static let appGroup = SettingsBridge.appGroup
 }
 
 // Minimal shell for T002. Onboarding and settings screens (S01–S04) arrive in T015.

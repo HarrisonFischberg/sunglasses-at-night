@@ -152,3 +152,20 @@
   - Swift: `ralph/evidence/swift-build-latest.md` (HEAD 378fa42) predates this manifest change. The runner's next build covers it.
 - Not done: manual Safari (real tabs < 200 ms, Option+Shift+N toggles, toolbar title/badge). Agents can't open Safari or load the unsigned extension. Logged as B16 with exact steps. Row set to `blocked (B16)`, not done.
 - Data flows: none new. `TAB_STATE`/`SETTINGS_CHANGED` are in-extension messages, nothing leaves the device.
+
+## 2026-10-17: T014 native messaging bridge (Ralph iteration). NEEDS-RUNNER-BUILD
+
+- Goal: T014 acceptance (Swift unit tests; reset clears both stores), proven by the CLAUDE.md "Swift tests" row.
+- Wrote:
+  - `Shared/SettingsBridge.swift` (new, compiled into both apps, both extensions and the test bundle via a synchronized `Shared` group). App Group `UserDefaults` mirror of the settings JSON (≤ 1 MB, objects only) plus a `resetGeneration` counter. Messages: `sync` (stores the mirror, but answers `reset: true` and does **not** store when the app has reset since the extension's last seen generation), `reset` (clears the mirror and bumps the generation), `get`. `resetAll()` is the app's Reset all.
+  - `Extension/SafariWebExtensionHandler.swift`: routes `SFExtensionMessageKey` messages to `SettingsBridge.shared()`. Replies `app group unavailable` if the container can't be opened (e.g. unsigned).
+  - `engine/src/background-core.js`: `syncNative()` on startup and after every settings write. A `reset: true` reply clears `browser.storage` (settings → defaults, shortcut restore key removed, generation stored first so the follow-up sync isn't reset again). `resetAll()` sends `reset` and then clears local, so both stores end up empty. With no native messaging or a failing host it no-ops.
+  - `Extension/Resources/manifest.json`: adds the `nativeMessaging` permission (listed in the prd.md architecture).
+  - Xcode: new macOS unit-test target `SunglassesAtNightTests` (`Tests/`, no host app, compiles `Shared/` directly), added to the shared macOS scheme's TestAction. `AppIdentifiers.appGroup` now reuses `SettingsBridge.appGroup`.
+  - Tests: `Tests/SettingsBridgeTests.swift` (11 XCTest cases: mirror round-trip across two bridges on one suite, app Reset all clears the mirror and stale syncs can't repopulate it, extension `reset` clears the mirror, generations increase, malformed messages / non-object / oversized settings rejected). `engine/test/background.test.js`: 6 new native cases with a fake host following the same contract (startup and write mirroring, app reset → extension store cleared, reset while stopped applies at startup, extension reset clears both, no or failing host, malformed reply). `engine/test/bundle.test.js`: the exact permission pin is now `['storage', 'nativeMessaging']`, still an exact match.
+- Verification:
+  - `npm test` attempt 1 → 238/239. The only failure was the T009 pin `permissions === ['storage']`, which this task changes on purpose. Updated it to the exact prd set.
+  - `npm test` attempt 2 → **239 tests, 239 pass, 0 fail**.
+  - `npm run check` → `node --check: 12 file(s) OK`.
+  - Swift tests: can't run in the agent sandbox (B14). `ralph/verify-swift.sh` runs `xcodebuild test` once `xcodebuild -list` shows a `Tests` target, which it now does, and writes `## Swift tests (macOS)` into `ralph/evidence/swift-build-latest.md`. Row set to `needs-runner-build`. The next iteration reads that section and either marks T014 done or fixes it.
+- Data flows: new on-device row in `docs/data-inventory.md` (settings mirror + reset generation in the App Group). No network.

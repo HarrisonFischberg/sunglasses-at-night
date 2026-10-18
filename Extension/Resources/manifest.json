@@ -3,7 +3,7 @@
   "name": "Sunglasses at Night",
   "description": "Dark mode for websites.",
   "version": "0.1.0",
-  "permissions": ["storage"],
+  "permissions": ["storage", "nativeMessaging"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"

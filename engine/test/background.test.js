@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { performance } from 'node:perf_hooks';
 import {
-  createBackground, toggleMode, toolbarState, TOGGLE_COMMAND, RESTORE_KEY,
+  createBackground, toggleMode, toolbarState, TOGGLE_COMMAND, RESTORE_KEY, RESET_GENERATION_KEY, NATIVE_APP_ID,
 } from '../src/background-core.js';
 import { createMemoryArea, createSettingsStore, defaultSettings, STORAGE_KEY } from '../src/settings.js';
 import { SETTINGS_CHANGED, TAB_STATE, FETCH_SHEET } from '../src/messages.js';
@@ -231,4 +231,109 @@ test('shortcut: other command names do nothing', async () => {
   api.commands.onCommand.fire('something-else');
   await settle();
   assert.equal(local._raw()[STORAGE_KEY], undefined);
+});
+
+// ----------------------------------------------------------- native bridge
+
+// Same contract as Shared/SettingsBridge.swift: an App Group mirror plus a
+// reset generation the app bumps on Reset all.
+function fakeNative() {
+  const host = { mirror: undefined, generation: 0, calls: [] };
+  host.send = async (appId, msg) => {
+    host.calls.push({ appId, msg: JSON.parse(JSON.stringify(msg)) });
+    if (msg.type === 'sync') {
+      if ((msg.resetGeneration ?? 0) < host.generation) return { ok: true, reset: true, resetGeneration: host.generation };
+      host.mirror = JSON.parse(JSON.stringify(msg.settings));
+      return { ok: true, reset: false, resetGeneration: host.generation };
+    }
+    if (msg.type === 'reset') return { ok: true, resetGeneration: host.resetAll() };
+    return { ok: false, error: 'unknown type' };
+  };
+  host.resetAll = () => { host.mirror = undefined; return ++host.generation; };
+  return host;
+}
+
+const customized = () => ({ ...defaultSettings(), mode: 'always', sites: { 'example.com': { rule: 'never' } } });
+
+test('native: startup and every settings write mirror into the App Group', async () => {
+  const native = fakeNative();
+  const { api } = fakeApi({ initial: { [STORAGE_KEY]: customized() } });
+  api.runtime.sendNativeMessage = native.send;
+  const bg = createBackground({ api, fetch: noFetch });
+  await bg.ready;
+  assert.equal(native.calls[0].appId, NATIVE_APP_ID);
+  assert.deepEqual(native.mirror, customized());
+  await bg.store.update({ mode: 'off' });
+  await waitFor(() => native.mirror?.mode === 'off');
+});
+
+test('native: Reset all in the app clears the extension store on next sync', async () => {
+  const native = fakeNative();
+  const { api, local } = fakeApi({ initial: { [STORAGE_KEY]: customized(), [RESTORE_KEY]: 'always' } });
+  api.runtime.sendNativeMessage = native.send;
+  const bg = createBackground({ api, fetch: noFetch });
+  await bg.ready;
+  native.resetAll(); // the app's Reset all
+  assert.equal(native.mirror, undefined);
+  await bg.syncNative();
+  await waitFor(() => native.mirror !== undefined);
+  assert.deepEqual(local._raw()[STORAGE_KEY], defaultSettings());
+  assert.equal(RESTORE_KEY in local._raw(), false);
+  assert.equal(local._raw()[RESET_GENERATION_KEY], 1);
+  assert.deepEqual(native.mirror, defaultSettings());
+  // The stale customized settings never reached the mirror after the reset.
+  assert.ok(native.calls.filter((c) => c.msg.resetGeneration === 0).every((c) => c.msg.settings.mode === 'always'));
+  assert.equal(native.calls.at(-1).msg.resetGeneration, 1);
+});
+
+test('native: a Reset all made while the background was stopped applies at startup', async () => {
+  const native = fakeNative();
+  native.mirror = customized();
+  native.resetAll();
+  const { api, local } = fakeApi({ initial: { [STORAGE_KEY]: customized() } });
+  api.runtime.sendNativeMessage = native.send;
+  const bg = createBackground({ api, fetch: noFetch });
+  await bg.ready;
+  assert.deepEqual(local._raw()[STORAGE_KEY], defaultSettings());
+  await waitFor(() => native.mirror !== undefined);
+  assert.deepEqual(native.mirror, defaultSettings());
+});
+
+test('native: Reset all from the extension clears both stores', async () => {
+  const native = fakeNative();
+  const { api, local } = fakeApi({ initial: { [STORAGE_KEY]: customized(), [RESTORE_KEY]: 'schedule' } });
+  api.runtime.sendNativeMessage = native.send;
+  const bg = createBackground({ api, fetch: noFetch });
+  await bg.ready;
+  await bg.resetAll();
+  assert.deepEqual(local._raw()[STORAGE_KEY], defaultSettings());
+  assert.equal(RESTORE_KEY in local._raw(), false);
+  assert.equal(native.generation, 1);
+  assert.equal(local._raw()[RESET_GENERATION_KEY], 1);
+  await waitFor(() => native.mirror !== undefined);
+  assert.deepEqual(native.mirror, defaultSettings());
+});
+
+test('native: no native messaging, or a failing host, never breaks settings', async () => {
+  const { api, local } = fakeApi({ initial: { [STORAGE_KEY]: customized() } });
+  const bg = createBackground({ api, fetch: noFetch });
+  await bg.ready;
+  assert.equal(await bg.syncNative(), null);
+  await bg.resetAll();
+  assert.deepEqual(local._raw()[STORAGE_KEY], defaultSettings());
+
+  const failing = fakeApi({ initial: { [STORAGE_KEY]: customized() } });
+  failing.api.runtime.sendNativeMessage = async () => { throw new Error('no app group'); };
+  const bg2 = createBackground({ api: failing.api, fetch: noFetch });
+  await bg2.ready;
+  assert.equal(await bg2.syncNative(), null);
+  assert.deepEqual(failing.local._raw()[STORAGE_KEY], customized());
+});
+
+test('native: a malformed reply does not reset anything', async () => {
+  const { api, local } = fakeApi({ initial: { [STORAGE_KEY]: customized() } });
+  api.runtime.sendNativeMessage = async () => ({ reset: true, resetGeneration: 'soon' });
+  const bg = createBackground({ api, fetch: noFetch });
+  await bg.ready;
+  assert.deepEqual(local._raw()[STORAGE_KEY], customized());
 });

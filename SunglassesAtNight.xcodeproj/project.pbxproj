@@ -60,6 +60,7 @@
 		5A0000000000000000000011 /* Sunglasses at Night.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sunglasses at Night.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A0000000000000000000012 /* Sunglasses at Night Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Sunglasses at Night Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A0000000000000000000013 /* Sunglasses at Night Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Sunglasses at Night Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5A0000000000000000000014 /* SunglassesAtNightTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SunglassesAtNightTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A0000000000000000000020 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
 		5A0000000000000000000021 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
 		5A0000000000000000000022 /* App-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "App-iOS.entitlements"; sourceTree = "<group>"; };
@@ -74,6 +75,16 @@
 		5A0000000000000000000006 /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = App;
+			sourceTree = "<group>";
+		};
+		5A0000000000000000000007 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		5A0000000000000000000008 /* Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -107,6 +118,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5A0000000000000000000091 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -115,6 +133,8 @@
 			children = (
 				5A0000000000000000000006 /* App */,
 				5A0000000000000000000005 /* Extension */,
+				5A0000000000000000000007 /* Shared */,
+				5A0000000000000000000008 /* Tests */,
 				5A0000000000000000000027 /* engine/src */,
 				5A0000000000000000000004 /* Config */,
 				5A0000000000000000000003 /* Products */,
@@ -128,6 +148,7 @@
 				5A0000000000000000000011 /* Sunglasses at Night.app */,
 				5A0000000000000000000012 /* Sunglasses at Night Extension.appex */,
 				5A0000000000000000000013 /* Sunglasses at Night Extension.appex */,
+				5A0000000000000000000014 /* SunglassesAtNightTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -172,6 +193,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				5A0000000000000000000006 /* App */,
+				5A0000000000000000000007 /* Shared */,
 			);
 			name = "Sunglasses at Night (iOS)";
 			productName = "Sunglasses at Night";
@@ -194,6 +216,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				5A0000000000000000000006 /* App */,
+				5A0000000000000000000007 /* Shared */,
 			);
 			name = "Sunglasses at Night (macOS)";
 			productName = "Sunglasses at Night";
@@ -212,6 +235,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				5A0000000000000000000007 /* Shared */,
+			);
 			name = "Sunglasses at Night Extension (iOS)";
 			productName = "Sunglasses at Night Extension";
 			productReference = 5A0000000000000000000012 /* Sunglasses at Night Extension.appex */;
@@ -229,10 +255,33 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				5A0000000000000000000007 /* Shared */,
+			);
 			name = "Sunglasses at Night Extension (macOS)";
 			productName = "Sunglasses at Night Extension";
 			productReference = 5A0000000000000000000013 /* Sunglasses at Night Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		5A0000000000000000000044 /* SunglassesAtNightTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5A0000000000000000000075 /* Build configuration list for PBXNativeTarget "SunglassesAtNightTests" */;
+			buildPhases = (
+				5A0000000000000000000090 /* Sources */,
+				5A0000000000000000000091 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5A0000000000000000000007 /* Shared */,
+				5A0000000000000000000008 /* Tests */,
+			);
+			name = SunglassesAtNightTests;
+			productName = SunglassesAtNightTests;
+			productReference = 5A0000000000000000000014 /* SunglassesAtNightTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -262,6 +311,7 @@
 				5A0000000000000000000041 /* Sunglasses at Night (macOS) */,
 				5A0000000000000000000042 /* Sunglasses at Night Extension (iOS) */,
 				5A0000000000000000000043 /* Sunglasses at Night Extension (macOS) */,
+				5A0000000000000000000044 /* SunglassesAtNightTests */,
 			);
 		};
 /* End PBXProject section */
@@ -344,6 +394,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				5A0000000000000000000031 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5A0000000000000000000090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -608,6 +665,36 @@
 			};
 			name = Release;
 		};
+		5A000000000000000000008A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.rarecreatures.sunglassesatnight.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5A000000000000000000008B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.rarecreatures.sunglassesatnight.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -652,6 +739,15 @@
 			buildConfigurations = (
 				5A0000000000000000000088 /* Debug */,
 				5A0000000000000000000089 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5A0000000000000000000075 /* Build configuration list for PBXNativeTarget "SunglassesAtNightTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5A000000000000000000008A /* Debug */,
+				5A000000000000000000008B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
