@@ -111,7 +111,7 @@ legend {
   color: var(--muted);
   overflow-wrap: anywhere;
 }
-legend + * { clear: both; }
+legend ~ * { clear: both; }
 
 label { cursor: default; }
 
