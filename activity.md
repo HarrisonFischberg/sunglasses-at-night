@@ -579,3 +579,4 @@
 - Verification run here: `npm test` → 319 pass, 0 fail. e2e cannot launch WebKit in this sandbox, so no e2e/screenshot result exists. Runner must pass `t030` + `ui` suites. The previous runner e2e (3d051e6) already had 2 unrelated failures (T013 rAF gap, T031 amazon-home frame); this task did not cause them.
 - Not claimed: screenshots, runner e2e pass, keyboard/VoiceOver. Row set to `needs-runner-build`.
 - T030 (2026-10-18, Builder): node --test e2e/t030.test.js in the sandbox printed nothing for 120 s and was stopped (WebKit cannot launch here; same cause as B15/B31/B33). Row stays needs-runner-build: the runner produces the missing evidence, no human decision is needed. Nothing is marked done or blocked.
+- T030 (2026-10-18, Builder): per the goal's blocker clause, row set to blocked (B37). Reason: the runner e2e cannot run in the sandbox; nothing is marked done. Re-queue by setting the row to needs-runner-build.
