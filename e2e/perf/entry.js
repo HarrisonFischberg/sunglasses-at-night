@@ -24,6 +24,7 @@ if (location.protocol !== 'about:') {
     perf.engine = startDynamic({
       document, window, look: settings.look, fetchSheet,
       images: settings.images, hideBackgroundImages: settings.hideBackgroundImages,
+      prune: !globalThis.__sanNoPrune, // T024 baseline run: the engine as it was before pruning
       monitor: (name, start, ms) => perf.tasks.push({ name, start, ms }),
     });
   }));

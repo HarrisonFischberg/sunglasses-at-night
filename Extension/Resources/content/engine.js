@@ -1881,6 +1881,186 @@ function whenParsed(document, fn) {
 return { SHEET_ID, OFF_ATTRIBUTE, READY_ATTRIBUTE, antiFlashCss, interimCss, earlySheetCss, readPageColors, startEarly, whenRoot, whenParsed };
 })();
 
+// ---- engine/src/selector-index.js
+const __m_engine_src_selector_index_js = (() => {
+// Sunglasses for Safari: dead-selector index (T024).
+// An override rule whose selector can't match anything on the page still costs
+// the browser a rule-set entry on every style recalc. The page's own sheets
+// are full of such rules (a store ships thousands of selectors for pages it
+// isn't showing), so the engine leaves them out of the override sheet and puts
+// them back the moment the page grows the class, id or tag they need.
+//
+// Soundness: a selector is dead only when one of its required tokens (a class,
+// an id or a tag name written at the top level of a compound selector) is in
+// no element the page has had. Anything the parser can't reason about (escapes,
+// namespaces, nesting `&`) is never dead. Tokens inside parentheses
+// (:not(), :is(), :has(), ::slotted() …) are not required, attribute selectors
+// and pseudo-classes add nothing, and every token is lower-cased, so quirks
+// mode's case-insensitive matching can only make us keep more rules. The set of
+// seen tokens only grows, so a rule is dead until a token appears, never again.
+// Pure: no DOM, no network.
+
+const MAX_PARSED = 50000;
+
+const isIdentChar = (code) =>
+  (code >= 48 && code <= 57) || (code >= 65 && code <= 90) || (code >= 97 && code <= 122) ||
+  code === 45 || code === 95 || code > 127;
+
+const parsed = new Map();
+
+/**
+ * The tokens each comma-separated part of `selectorText` requires:
+ * an array (one entry per part) of token arrays (`.class`, `#id`, `<tag`), or
+ * null when the selector can't be reasoned about.
+ */
+function requiredTokens(selectorText) {
+  if (typeof selectorText !== 'string') return null;
+  if (parsed.has(selectorText)) return parsed.get(selectorText);
+  const out = parseSelector(selectorText);
+  if (parsed.size >= MAX_PARSED) parsed.clear();
+  parsed.set(selectorText, out);
+  return out;
+}
+
+function parseSelector(s) {
+  const groups = [[]];
+  const n = s.length;
+  let i = 0, depth = 0, atCompoundStart = true;
+  const ident = () => {
+    const start = i;
+    while (i < n && isIdentChar(s.charCodeAt(i))) i++;
+    return s.slice(start, i).toLowerCase();
+  };
+  while (i < n) {
+    const ch = s[i];
+    if (ch === '\\' || ch === '&' || ch === '|') return null;
+    if (ch === '"' || ch === "'") {
+      i++;
+      while (i < n && s[i] !== ch) i += s[i] === '\\' ? 2 : 1;
+      i++;
+      continue;
+    }
+    if (ch === '(') {
+      depth++;
+      i++;
+      continue;
+    }
+    if (ch === ')') {
+      if (--depth < 0) return null;
+      i++;
+      continue;
+    }
+    if (depth > 0) {
+      i++;
+      continue;
+    }
+    if (ch === '[') {
+      i++;
+      while (i < n && s[i] !== ']') {
+        if (s[i] === '"' || s[i] === "'") {
+          const q = s[i++];
+          while (i < n && s[i] !== q) i += s[i] === '\\' ? 2 : 1;
+        }
+        i++;
+      }
+      i++;
+      atCompoundStart = false;
+      continue;
+    }
+    if (ch === ',') {
+      groups.push([]);
+      i++;
+      atCompoundStart = true;
+      continue;
+    }
+    if (ch === ' ' || ch === '>' || ch === '+' || ch === '~' || ch === '\t' || ch === '\n' || ch === '\r' || ch === '\f') {
+      i++;
+      atCompoundStart = true;
+      continue;
+    }
+    const group = groups[groups.length - 1];
+    if (ch === '.' || ch === '#') {
+      i++;
+      const name = ident();
+      if (!name) return null;
+      group.push(ch + name);
+    } else if (ch === ':') {
+      i++;
+      if (s[i] === ':') i++;
+      if (!ident()) return null;
+    } else if (ch === '*') {
+      i++;
+    } else if (isIdentChar(s.charCodeAt(i))) {
+      const name = ident();
+      if (atCompoundStart && !/^[0-9-]/.test(name)) group.push('<' + name);
+    } else {
+      return null;
+    }
+    atCompoundStart = false;
+  }
+  return depth === 0 ? groups : null;
+}
+
+/**
+ * Track the classes, ids and tag names a page has had, and which selectors
+ * can't match yet. `onRevive()` runs when a dead selector may match again;
+ * the caller then rewrites the sheets that left it out.
+ */
+function createSelectorIndex(onRevive = () => {}) {
+  const tokens = new Set();
+  const dead = new Set();
+  const waiting = new Map(); // token → selectors that need it
+
+  function isDead(selectorText) {
+    if (dead.has(selectorText)) return true;
+    const groups = requiredTokens(selectorText);
+    if (!groups) return false;
+    const missing = [];
+    for (const group of groups) {
+      const m = group.find((t) => !tokens.has(t));
+      if (m === undefined) return false;
+      missing.push(m);
+    }
+    dead.add(selectorText);
+    for (const m of missing) {
+      let set = waiting.get(m);
+      if (!set) waiting.set(m, (set = new Set()));
+      set.add(selectorText);
+    }
+    return true;
+  }
+
+  function add(token) {
+    if (tokens.has(token)) return;
+    tokens.add(token);
+    const set = waiting.get(token);
+    if (!set) return;
+    waiting.delete(token);
+    let revived = false;
+    for (const sel of set) {
+      if (!dead.has(sel)) continue;
+      dead.delete(sel);
+      if (!isDead(sel)) revived = true;
+    }
+    if (revived) onRevive();
+  }
+
+  /** Record one element's tag, id and classes. */
+  function addElement(el) {
+    add('<' + el.localName.toLowerCase());
+    const id = el.getAttribute('id');
+    if (id) add('#' + id.toLowerCase());
+    const cls = el.getAttribute('class');
+    if (cls) {
+      for (const c of cls.split(/\s+/)) if (c) add('.' + c.toLowerCase());
+    }
+  }
+
+  return { isDead, add, addElement, has: (t) => tokens.has(t), deadCount: () => dead.size };
+}
+return { requiredTokens, createSelectorIndex };
+})();
+
 // ---- engine/src/filter.js
 const __m_engine_src_filter_js = (() => {
 // Sunglasses for Safari: filter fallback engine (T008, F10) and image modes (F5).
@@ -2018,6 +2198,7 @@ const __m_engine_src_dynamic_js = (() => {
 // sheets cascade after every <style> we could add.
 
 const { parseColor, formatRgb, composite, contrastRatio } = __m_engine_src_color_js;
+const { createSelectorIndex } = __m_engine_src_selector_index_js;
 const { transformColor, ensureContrast, quantize, normalizeLook, MIN_CONTRAST } = __m_engine_src_transform_js;
 const { dynamicImageCss } = __m_engine_src_filter_js;
 
@@ -2290,6 +2471,7 @@ const STYLE_RULE = 1, IMPORT_RULE = 3, PAGE_RULE = 6, KEYFRAMES_RULE = 7, KEYFRA
 /**
  * Override CSS for a list of rules. `onImport(rule)` returns the override
  * CSS for an @import's sheet (or ''). opts.important: see rewriteDeclarations.
+ * opts.isDead(selectorText): true for a style rule to leave out (selector-index.js).
  */
 function rewriteRules(rules, look, onImport = () => '', opts = {}) {
   let css = '';
@@ -2307,6 +2489,9 @@ function rewriteRules(rules, look, onImport = () => '', opts = {}) {
     if (type === PAGE_RULE || type === KEYFRAMES_RULE || type === KEYFRAME_RULE) continue;
     const nested = rule.cssRules ? rewriteRules(rule.cssRules, look, onImport, opts) : '';
     if (type === STYLE_RULE) {
+      // A selector that can't match yet adds a rule the browser must index on
+      // every recalc: leave it out until the page grows what it needs.
+      if (nested === '' && !rule.cssRules?.length && opts.isDead?.(rule.selectorText)) continue;
       const decls = rewriteDeclarations(rule.style, look, opts);
       if (decls.length || nested) css += `${rule.selectorText}{${decls.join(';')}${decls.length && nested ? ';' : ''}${nested}}`;
       continue;
@@ -2342,7 +2527,7 @@ function baseCss(look) {
 const HTML_NS = 'http://www.w3.org/1999/xhtml';
 const POLL_MS = 1000;
 const MAX_IMPORT_DEPTH = 4;
-const ATTR_FILTER = ['style', 'bgcolor', 'background', 'color', 'text', 'class', 'media', 'disabled', 'rel', 'href'];
+const ATTR_FILTER = ['style', 'bgcolor', 'background', 'color', 'text', 'class', 'id', 'media', 'disabled', 'rel', 'href'];
 const SHEET_ATTRS = new Set(['media', 'disabled', 'rel', 'href']);
 
 // Scheduling (T013). Mutation callbacks do only the cheap, flash-preventing
@@ -2363,6 +2548,8 @@ const YIELD = Symbol('yield');
  * returns the text of a stylesheet the CSSOM can't read (cross-origin).
  * opts.images: image mode (settings.IMAGE_MODES); opts.hideBackgroundImages
  * drops url()/image-set() background layers, keeping gradients.
+ * opts.prune (default true), test-only: false keeps the override rules of
+ * selectors that match nothing, as the engine did before T024.
  * opts.monitor(name, start, ms), test-only: called after each main-thread
  * task the engine runs (the perf harness sums them).
  * opts.onReady(), called once, in the task the override sheet first covers every
@@ -2375,9 +2562,25 @@ const YIELD = Symbol('yield');
  */
 function startDynamic({
   document, window = document.defaultView, look, fetchSheet = async () => null,
-  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null,
+  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null, prune = true,
 }) {
-  const base = hideBackgroundImages ? { hideImages: true } : {};
+  // Classes, ids and tags the page has had (document and open shadow roots).
+  // A rule whose selector needs one that never appeared is left out of the
+  // override sheet; `sink` collects what a sheet's cached CSS left out, so the
+  // cache is dropped when one of those selectors may match again.
+  let pruneRevived = false;
+  const selectors = createSelectorIndex(() => { pruneRevived = true; });
+  let sink = null;
+  const isDead = (sel) => {
+    if (!selectors.isDead(sel)) return false;
+    sink?.push(sel);
+    return true;
+  };
+  const stillDead = (list) => list.every((sel) => selectors.isDead(sel));
+  const forward = (list) => {
+    if (sink) for (const sel of list) sink.push(sel);
+  };
+  const base = { ...(hideBackgroundImages ? { hideImages: true } : {}), ...(prune ? { isDead } : {}) };
   const win = window;
   const getCS = (el) => win.getComputedStyle(el);
   const now = () => win.performance?.now?.() ?? Date.now();
@@ -2391,8 +2594,8 @@ function startDynamic({
     }
   };
   const scopes = new Map(); // Document | ShadowRoot → scope
-  const sheetCache = new WeakMap(); // CSSStyleSheet → { sig, css }
-  const remote = new Map(); // absolute URL → { done, parsed, css }
+  const sheetCache = new WeakMap(); // CSSStyleSheet → { sig, css, pruned }
+  const remote = new Map(); // absolute URL → { done, parsed, css, pruned }
   const pending = new Set();
   const pendingHosts = new Set();
   const touched = new Set(); // elements carrying our attributes or inline writes
@@ -2509,7 +2712,7 @@ function startDynamic({
     }
     let entry = remote.get(url);
     if (!entry) {
-      entry = { done: false, parsed: null, css: null };
+      entry = { done: false, parsed: null, css: null, pruned: [] };
       remote.set(url, entry);
       const p = Promise.resolve()
         .then(() => fetchSheet(url))
@@ -2528,15 +2731,23 @@ function startDynamic({
       return '';
     }
     if (!entry.parsed) return '';
-    if (entry.css === null) {
-      const outer = incomplete;
+    if (entry.css === null || !stillDead(entry.pruned)) {
+      const outer = incomplete, outerSink = sink;
       incomplete = false;
-      // `base` is the engine's rewrite options (hide background images).
+      sink = [];
+      // `base` is the engine's rewrite options (hide background images, pruning).
       const css = rewriteRules(entry.parsed.rules, look, (r) => remoteCss(r.href, url, depth + 1), base);
-      if (!incomplete) entry.css = css;
+      const pruned = sink;
+      sink = outerSink;
+      forward(pruned);
+      if (!incomplete) {
+        entry.css = css;
+        entry.pruned = pruned;
+      }
       incomplete = outer || incomplete;
       return css;
     }
+    forward(entry.pruned);
     return entry.css;
   }
 
@@ -2571,11 +2782,14 @@ function startDynamic({
     const media = sheet.media?.mediaText;
     if (sig === null) return withMedia(remoteCss(sheet.href, undefined, 0), media);
     const cached = sheetCache.get(sheet);
-    if (cached && cached.sig === sig) return cached.css;
-    const outer = incomplete;
+    if (cached && cached.sig === sig && stillDead(cached.pruned)) return cached.css;
+    const outer = incomplete, outerSink = sink;
     incomplete = false;
+    sink = [];
     const css = withMedia(rewriteRules(sheet.cssRules, look, (r) => importCss(r, 0, opts), opts), media);
-    if (!incomplete) sheetCache.set(sheet, { sig, css });
+    const pruned = sink;
+    sink = outerSink;
+    if (!incomplete) sheetCache.set(sheet, { sig, css, pruned });
     incomplete = outer || incomplete;
     return css;
   }
@@ -2776,6 +2990,12 @@ function startDynamic({
     return root.nodeType === 1 ? [root, ...all] : all;
   }
 
+  // Record every element under `root` (and `root` itself) in the selector index.
+  function indexTree(root) {
+    if (!prune) return;
+    for (const el of elementsIn(root)) selectors.addElement(el);
+  }
+
   function adoptShadow(host) {
     const sr = host.shadowRoot;
     if (!sr) {
@@ -2784,6 +3004,7 @@ function startDynamic({
     }
     pendingHosts.delete(host);
     if (scopes.has(sr)) return;
+    indexTree(sr);
     syncSheets(ensureScope(sr));
     scanTree(sr);
     wantContrast(host);
@@ -2811,7 +3032,7 @@ function startDynamic({
       entry.doc = doc;
       // A content script got there first (a host that does inject here).
       entry.engine = doc.querySelector(`[${MARK}],#sunglasses-at-night-early`) ? null : startDynamic({
-        document: doc, window: doc.defaultView, look, fetchSheet, images, hideBackgroundImages, monitor,
+        document: doc, window: doc.defaultView, look, fetchSheet, images, hideBackgroundImages, monitor, prune,
       });
     };
     entry.start = start;
@@ -2949,6 +3170,21 @@ function startDynamic({
     if (stopped) return;
     let sheetsChanged = false;
     const added = new Set();
+    if (prune) {
+      // Index before any sheet is rewritten, so a class that just arrived
+      // brings its rules back in this task, before the next paint.
+      for (const r of records) {
+        if (r.type === 'childList') {
+          for (const n of r.addedNodes) if (n.nodeType === 1 && n.isConnected && !isOurs(n)) indexTree(n);
+        } else if (r.type === 'attributes' && (r.attributeName === 'class' || r.attributeName === 'id') && !isOurs(r.target)) {
+          selectors.addElement(r.target);
+        }
+      }
+      if (pruneRevived) {
+        pruneRevived = false;
+        if (syncAll(Infinity) === true) wantContrastAll();
+      }
+    }
     const isSheetNode = (n) => n.localName === 'style' || (n.localName === 'link' && /stylesheet/i.test(n.rel));
     for (const r of records) {
       const t = r.target;
@@ -2969,7 +3205,7 @@ function startDynamic({
         } else {
           // A class can recolor the whole subtree; that only needs a contrast
           // check, not a rescan.
-          if (r.attributeName !== 'class') processInline(t);
+          if (r.attributeName !== 'class' && r.attributeName !== 'id') processInline(t);
           wantContrast(t);
         }
       }
@@ -3003,6 +3239,7 @@ function startDynamic({
 
   timed('start', () => {
     ensureScope(document);
+    indexTree(document.documentElement);
     syncSheets(scopes.get(document));
     scanTree(document.documentElement);
     for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {

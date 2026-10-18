@@ -142,6 +142,25 @@ test('rewriteRules: style, grouping, nested, import, keyframes and page rules', 
     '@media print{.i{color:x}}');
 });
 
+test('rewriteRules: isDead leaves out style rules that cannot match, keeps nested parents', () => {
+  const dead = new Set(['.gone', '.parent']);
+  const rules = [
+    { type: 1, selectorText: '.gone', style: decl({ color: ['#222'] }) },
+    { type: 1, selectorText: '.here', style: decl({ color: ['#222'] }) },
+    { type: 4, cssText: '@media (min-width: 10px) { .gone { color: red; } }', cssRules: [
+      { type: 1, selectorText: '.gone', style: decl({ color: ['red'] }) },
+    ] },
+    { type: 1, selectorText: '.parent', style: decl({ color: ['#222'] }), cssRules: [
+      { type: 1, selectorText: '&:hover', style: decl({ 'background-color': ['#eee'] }) },
+    ] },
+  ];
+  const css = rewriteRules(rules, undefined, () => '', { isDead: (s) => dead.has(s) });
+  assert.equal(css,
+    `.here{color:${mapped('#222', 'fg')}}` +
+    `.parent{color:${mapped('#222', 'fg')};&:hover{background-color:${mapped('#eee', 'bg')}}}`);
+  assert.equal(rewriteRules(rules.slice(0, 2), undefined, () => '').split('{').length, 3, 'without isDead nothing is left out');
+});
+
 test('baseCss: dark canvas, readable default text and link colors, zero specificity', () => {
   const css = baseCss();
   assert.ok(css.startsWith(':where(:root){color-scheme:dark;'));

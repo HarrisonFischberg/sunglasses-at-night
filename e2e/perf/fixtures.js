@@ -123,7 +123,7 @@ globalThis.__batch = () => {
 
 export const GRID = {
   cards: 60, siteSheets: 6, cdnSheets: 10, rulesPerSheet: 312, carousels: 3, slides: 12, thumbs: 4,
-  stormMs: 5000, stormRate: 200, scrollSteps: 20, scrollPx: 600, scrollEveryMs: 250,
+  insertBatches: 40, insertPerBatch: 4, stormMs: 5000, stormRate: 200, scrollSteps: 20, scrollPx: 600, scrollEveryMs: 250,
 };
 
 const NAMES = ['Kettle base', 'Pour-over stand', 'Ceramic mug pair', 'Tea tin', 'Milk frother', 'Burr grinder',
@@ -213,6 +213,31 @@ setInterval(() => {
 // The storm: ~${GRID.stormRate} mutations/s for ${GRID.stormMs} ms (ad and recommendation inserts and
 // removals, class/attribute/style flips, price text swaps), plus scrolling.
 const LIGHTS = ${JSON.stringify(LIGHTS)};
+// Insert storm (T024): clones of product cards go into the grid in small
+// batches, one frame apart. After each batch a computed-style read forces
+// the style recalc for the new subtrees and is timed; the sum is the metric.
+// Layout is not forced (a color read flushes style only). Inserted cards are
+// removed again at the end.
+globalThis.__insertStorm = async () => {
+  const grid = document.getElementById('grid');
+  const sources = [...grid.children];
+  const added = [];
+  let recalc = 0, inserted = 0;
+  for (let b = 0; b < ${GRID.insertBatches}; b++) {
+    const first = grid.appendChild(sources[(b * 7) % sources.length].cloneNode(true));
+    added.push(first);
+    for (let k = 1; k < ${GRID.insertPerBatch}; k++) added.push(grid.appendChild(sources[(b * 7 + k) % sources.length].cloneNode(true)));
+    inserted += ${GRID.insertPerBatch};
+    await new Promise((r) => setTimeout(r, 0)); // the engine's observers run here
+    const t = performance.now();
+    getComputedStyle(first).backgroundColor;
+    recalc += performance.now() - t;
+    await new Promise((r) => requestAnimationFrame(() => r()));
+  }
+  for (const el of added) el.remove();
+  return { inserted, recalcMs: recalc };
+};
+
 globalThis.__storm = () => new Promise((done) => {
   const grid = document.getElementById('grid'), recs = document.getElementById('recs');
   const cards = grid.children;

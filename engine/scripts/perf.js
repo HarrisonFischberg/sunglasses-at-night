@@ -14,6 +14,11 @@
 //     during the 5 s mutation storm ≤ 10% of wall time; rAF gap max with the engine ≤
 //     rAF gap max of the same fixture without it + 8 ms during the storm
 //     (median of 3 paired runs; owner-accepted 2026-10-18)
+//   T024: forced style-recalc time while cards are inserted (gridInsertRecalc)
+//     with the engine ≤ 2× without it (median of 3 paired runs); generated
+//     override rules on the grid (gridGeneratedRules) ≤ 50% of what the
+//     engine generated before pruning (same page, measured in the same run
+//     with the engine's prune option off)
 // Writes ralph/evidence/t013-perf.json; exits 1 when a budget is missed.
 
 import { createServer } from 'node:http';
@@ -31,6 +36,7 @@ export const OUT = resolve(ROOT, 'ralph/evidence/t013-perf.json');
 
 export const BUDGET = Object.freeze({
   initialMedianMs: 50, batchMedianMs: 8, longTaskMs: 50, stormShare: 0.10, rafGapExtraMs: 8,
+  insertRecalcFactor: 2, generatedRulesFraction: 0.5,
 });
 const GRID_RUNS = 3;
 const NODE_LOADS = 7, BATCHES = 10, BATCH_WINDOW_MS = 400, INITIAL_WINDOW_MS = 900;
@@ -73,11 +79,12 @@ const pct = (xs, p) => {
 const round = (x) => Math.round(x * 100) / 100;
 const sum = (tasks) => tasks.reduce((t, x) => t + x.ms, 0);
 
-async function openPage(browser, servers, path, { engine }) {
+async function openPage(browser, servers, path, { engine, prune = true }) {
   const context = await browser.newContext({ colorScheme: 'light', viewport: { width: 1280, height: 900 } });
   const page = await context.newPage();
   await page.addInitScript({ content: FRAME_RECORDER });
   if (engine) {
+    if (!prune) await page.addInitScript({ content: 'globalThis.__sanNoPrune = true;' });
     const handler = createSheetMessageHandler({
       fetch: (url, init) => fetch(url, { ...init, cache: undefined }), extensionId: 'perf',
     });
@@ -151,11 +158,31 @@ async function storm(page) {
   };
 }
 
+// Style rules in the engine's override sheet, nested ones included.
+const countOverrideRules = (page) => page.evaluate(() => {
+  const count = (rules) => {
+    let n = 0;
+    for (const r of rules) {
+      if (r.type === 1) n++;
+      if (r.cssRules) n += count(r.cssRules);
+    }
+    return n;
+  };
+  const sheet = document.querySelector('style[data-sunglasses-at-night="override"]')?.sheet;
+  return sheet ? count(sheet.cssRules) : 0;
+});
+
+async function insertStorm(page) {
+  const res = await page.evaluate(() => __insertStorm());
+  return { inserted: res.inserted, recalcMs: round(res.recalcMs) };
+}
+
 async function gridRun(browser, servers) {
   // Without the engine first: what the page alone costs on this machine.
   const plain = await openPage(browser, servers, '/perf/grid.html', { engine: false });
   await plain.page.waitForTimeout(1500);
   const baseline = await storm(plain.page);
+  const baselineInsert = await insertStorm(plain.page);
   await plain.context.close();
 
   const { page, context } = await openPage(browser, servers, '/perf/grid.html', { engine: true });
@@ -166,7 +193,10 @@ async function gridRun(browser, servers) {
     sheets: document.styleSheets.length,
     overrideBytes: document.querySelector('style[data-sunglasses-at-night="override"]')?.textContent.length ?? 0,
   }));
+  const rulesAfterLoad = await countOverrideRules(page);
   const withEngine = await storm(page);
+  const insert = await insertStorm(page);
+  const rulesAfterStorm = await countOverrideRules(page);
   // Every engine task since load (initial pass, sheet arrivals, storm) that
   // ended after the first frame.
   const after = await page.evaluate((limit) => {
@@ -188,6 +218,8 @@ async function gridRun(browser, servers) {
     longestEngineTaskAfterFirstPaint: { name: after.longest.name, ms: round(after.longest.ms) },
     engineTasksOver50AfterFirstPaint: after.over,
     storm: withEngine, baselineStorm: baseline,
+    insertRecalc: { withEngine: insert, withoutEngine: baselineInsert },
+    generatedRules: { afterLoad: rulesAfterLoad, afterStorm: rulesAfterStorm },
     check: { adsStyled: after.adsStyled, ads: after.ads, cardBackground: after.cardBg },
   };
 }
@@ -195,6 +227,12 @@ async function gridRun(browser, servers) {
 async function measureGrid(browser, servers) {
   const runs = [];
   for (let i = 0; i < GRID_RUNS; i++) runs.push(await gridRun(browser, servers));
+  // The engine before T024 (no pruning) on the same page: the rule-count baseline.
+  const legacy = await openPage(browser, servers, '/perf/grid.html', { engine: true, prune: false });
+  await legacy.page.waitForTimeout(1500);
+  const legacyRules = await countOverrideRules(legacy.page);
+  const legacyInsert = await insertStorm(legacy.page);
+  await legacy.context.close();
   const mid = [...runs].sort((a, b) => a.storm.rafGapMaxMs - b.storm.rafGapMaxMs)[Math.floor(GRID_RUNS / 2)];
   const worst = (f) => Math.max(...runs.map(f));
   return {
@@ -204,6 +242,17 @@ async function measureGrid(browser, servers) {
       rafGapMaxWithEngine: r.storm.rafGapMaxMs, rafGapMaxWithoutEngine: r.baselineStorm.rafGapMaxMs,
       engineShare: r.storm.engineShare, longestEngineTaskAfterFirstPaint: r.longestEngineTaskAfterFirstPaint.ms,
     })),
+    generatedRules: {
+      withoutPruning: legacyRules,
+      afterLoad: Math.max(...runs.map((r) => r.generatedRules.afterLoad)),
+      afterStorm: Math.max(...runs.map((r) => r.generatedRules.afterStorm)),
+    },
+    insertRecalcRuns: runs.map((r) => ({
+      withEngine: r.insertRecalc.withEngine.recalcMs, withoutEngine: r.insertRecalc.withoutEngine.recalcMs,
+    })),
+    insertRecalcWithoutPruningMs: legacyInsert.recalcMs,
+    insertRecalcWithEngineMedian: round(median(runs.map((r) => r.insertRecalc.withEngine.recalcMs))),
+    insertRecalcWithoutEngineMedian: round(median(runs.map((r) => r.insertRecalc.withoutEngine.recalcMs))),
     rafGapMaxWithEngineMedian: round(median(runs.map((r) => r.storm.rafGapMaxMs))),
     rafGapMaxWithoutEngineMedian: round(median(runs.map((r) => r.baselineStorm.rafGapMaxMs))),
     worstEngineTaskAfterFirstPaint: round(worst((r) => r.longestEngineTaskAfterFirstPaint.ms)),
@@ -232,6 +281,16 @@ export async function runPerf() {
       nodesBatchMedian: { value: nodes.batchMedianMs, max: BUDGET.batchMedianMs },
       gridLongestEngineTaskAfterFirstPaint: { value: grid.worstEngineTaskAfterFirstPaint, max: BUDGET.longTaskMs },
       gridStormEngineShare: { value: grid.worstEngineShare, max: BUDGET.stormShare },
+      gridInsertRecalc: {
+        value: grid.insertRecalcWithEngineMedian,
+        withoutEngine: grid.insertRecalcWithoutEngineMedian,
+        max: round(grid.insertRecalcWithoutEngineMedian * BUDGET.insertRecalcFactor),
+      },
+      gridGeneratedRules: {
+        value: grid.generatedRules.afterStorm,
+        withoutPruning: grid.generatedRules.withoutPruning,
+        max: Math.floor(grid.generatedRules.withoutPruning * BUDGET.generatedRulesFraction),
+      },
       gridStormRafGapMax: {
         value: grid.rafGapMaxWithEngineMedian,
         withoutEngine: grid.rafGapMaxWithoutEngineMedian,
@@ -259,6 +318,8 @@ export function summary(r) {
   const lines = [`T013 perf (${r.browser}, HEAD ${r.head})`];
   for (const [k, b] of Object.entries(r.budgets)) lines.push(`${b.pass ? 'PASS' : 'FAIL'} ${k}: ${b.value} (max ${b.max})`);
   lines.push(`grid runs (rAF gap max with / without engine, ms): ${r.grid.runs.map((x) => `${x.rafGapMaxWithEngine}/${x.rafGapMaxWithoutEngine}`).join(', ')}`);
+  lines.push(`grid insert recalc (ms, with / without engine): ${r.grid.insertRecalcRuns.map((x) => `${x.withEngine}/${x.withoutEngine}`).join(', ')}; ` +
+    `without pruning: ${r.grid.insertRecalcWithoutPruningMs}; override rules: ${r.grid.generatedRules.afterStorm} after storm (${r.grid.generatedRules.afterLoad} after load) vs ${r.grid.generatedRules.withoutPruning} without pruning`);
   lines.push(`nodes initial ms: ${r.nodes.initialMs.join(', ')}; batch ms: ${r.nodes.batchMs.join(', ')}`);
   const s = r.grid.storm, b = r.grid.baselineStorm;
   lines.push(`grid storm: ${s.mutations} mutations in ${s.wallMs} ms, engine ${s.engineMs} ms (${(s.engineShare * 100).toFixed(1)}%), ` +

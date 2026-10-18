@@ -32,6 +32,7 @@
 // sheets cascade after every <style> we could add.
 
 import { parseColor, formatRgb, composite, contrastRatio } from './color.js';
+import { createSelectorIndex } from './selector-index.js';
 import { transformColor, ensureContrast, quantize, normalizeLook, MIN_CONTRAST } from './transform.js';
 import { dynamicImageCss } from './filter.js';
 
@@ -304,6 +305,7 @@ const STYLE_RULE = 1, IMPORT_RULE = 3, PAGE_RULE = 6, KEYFRAMES_RULE = 7, KEYFRA
 /**
  * Override CSS for a list of rules. `onImport(rule)` returns the override
  * CSS for an @import's sheet (or ''). opts.important: see rewriteDeclarations.
+ * opts.isDead(selectorText): true for a style rule to leave out (selector-index.js).
  */
 export function rewriteRules(rules, look, onImport = () => '', opts = {}) {
   let css = '';
@@ -321,6 +323,9 @@ export function rewriteRules(rules, look, onImport = () => '', opts = {}) {
     if (type === PAGE_RULE || type === KEYFRAMES_RULE || type === KEYFRAME_RULE) continue;
     const nested = rule.cssRules ? rewriteRules(rule.cssRules, look, onImport, opts) : '';
     if (type === STYLE_RULE) {
+      // A selector that can't match yet adds a rule the browser must index on
+      // every recalc: leave it out until the page grows what it needs.
+      if (nested === '' && !rule.cssRules?.length && opts.isDead?.(rule.selectorText)) continue;
       const decls = rewriteDeclarations(rule.style, look, opts);
       if (decls.length || nested) css += `${rule.selectorText}{${decls.join(';')}${decls.length && nested ? ';' : ''}${nested}}`;
       continue;
@@ -356,7 +361,7 @@ export function baseCss(look) {
 const HTML_NS = 'http://www.w3.org/1999/xhtml';
 const POLL_MS = 1000;
 const MAX_IMPORT_DEPTH = 4;
-const ATTR_FILTER = ['style', 'bgcolor', 'background', 'color', 'text', 'class', 'media', 'disabled', 'rel', 'href'];
+const ATTR_FILTER = ['style', 'bgcolor', 'background', 'color', 'text', 'class', 'id', 'media', 'disabled', 'rel', 'href'];
 const SHEET_ATTRS = new Set(['media', 'disabled', 'rel', 'href']);
 
 // Scheduling (T013). Mutation callbacks do only the cheap, flash-preventing
@@ -377,6 +382,8 @@ const YIELD = Symbol('yield');
  * returns the text of a stylesheet the CSSOM can't read (cross-origin).
  * opts.images: image mode (settings.IMAGE_MODES); opts.hideBackgroundImages
  * drops url()/image-set() background layers, keeping gradients.
+ * opts.prune (default true), test-only: false keeps the override rules of
+ * selectors that match nothing, as the engine did before T024.
  * opts.monitor(name, start, ms), test-only: called after each main-thread
  * task the engine runs (the perf harness sums them).
  * opts.onReady(), called once, in the task the override sheet first covers every
@@ -389,9 +396,25 @@ const YIELD = Symbol('yield');
  */
 export function startDynamic({
   document, window = document.defaultView, look, fetchSheet = async () => null,
-  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null,
+  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null, prune = true,
 }) {
-  const base = hideBackgroundImages ? { hideImages: true } : {};
+  // Classes, ids and tags the page has had (document and open shadow roots).
+  // A rule whose selector needs one that never appeared is left out of the
+  // override sheet; `sink` collects what a sheet's cached CSS left out, so the
+  // cache is dropped when one of those selectors may match again.
+  let pruneRevived = false;
+  const selectors = createSelectorIndex(() => { pruneRevived = true; });
+  let sink = null;
+  const isDead = (sel) => {
+    if (!selectors.isDead(sel)) return false;
+    sink?.push(sel);
+    return true;
+  };
+  const stillDead = (list) => list.every((sel) => selectors.isDead(sel));
+  const forward = (list) => {
+    if (sink) for (const sel of list) sink.push(sel);
+  };
+  const base = { ...(hideBackgroundImages ? { hideImages: true } : {}), ...(prune ? { isDead } : {}) };
   const win = window;
   const getCS = (el) => win.getComputedStyle(el);
   const now = () => win.performance?.now?.() ?? Date.now();
@@ -405,8 +428,8 @@ export function startDynamic({
     }
   };
   const scopes = new Map(); // Document | ShadowRoot → scope
-  const sheetCache = new WeakMap(); // CSSStyleSheet → { sig, css }
-  const remote = new Map(); // absolute URL → { done, parsed, css }
+  const sheetCache = new WeakMap(); // CSSStyleSheet → { sig, css, pruned }
+  const remote = new Map(); // absolute URL → { done, parsed, css, pruned }
   const pending = new Set();
   const pendingHosts = new Set();
   const touched = new Set(); // elements carrying our attributes or inline writes
@@ -523,7 +546,7 @@ export function startDynamic({
     }
     let entry = remote.get(url);
     if (!entry) {
-      entry = { done: false, parsed: null, css: null };
+      entry = { done: false, parsed: null, css: null, pruned: [] };
       remote.set(url, entry);
       const p = Promise.resolve()
         .then(() => fetchSheet(url))
@@ -542,15 +565,23 @@ export function startDynamic({
       return '';
     }
     if (!entry.parsed) return '';
-    if (entry.css === null) {
-      const outer = incomplete;
+    if (entry.css === null || !stillDead(entry.pruned)) {
+      const outer = incomplete, outerSink = sink;
       incomplete = false;
-      // `base` is the engine's rewrite options (hide background images).
+      sink = [];
+      // `base` is the engine's rewrite options (hide background images, pruning).
       const css = rewriteRules(entry.parsed.rules, look, (r) => remoteCss(r.href, url, depth + 1), base);
-      if (!incomplete) entry.css = css;
+      const pruned = sink;
+      sink = outerSink;
+      forward(pruned);
+      if (!incomplete) {
+        entry.css = css;
+        entry.pruned = pruned;
+      }
       incomplete = outer || incomplete;
       return css;
     }
+    forward(entry.pruned);
     return entry.css;
   }
 
@@ -585,11 +616,14 @@ export function startDynamic({
     const media = sheet.media?.mediaText;
     if (sig === null) return withMedia(remoteCss(sheet.href, undefined, 0), media);
     const cached = sheetCache.get(sheet);
-    if (cached && cached.sig === sig) return cached.css;
-    const outer = incomplete;
+    if (cached && cached.sig === sig && stillDead(cached.pruned)) return cached.css;
+    const outer = incomplete, outerSink = sink;
     incomplete = false;
+    sink = [];
     const css = withMedia(rewriteRules(sheet.cssRules, look, (r) => importCss(r, 0, opts), opts), media);
-    if (!incomplete) sheetCache.set(sheet, { sig, css });
+    const pruned = sink;
+    sink = outerSink;
+    if (!incomplete) sheetCache.set(sheet, { sig, css, pruned });
     incomplete = outer || incomplete;
     return css;
   }
@@ -790,6 +824,12 @@ export function startDynamic({
     return root.nodeType === 1 ? [root, ...all] : all;
   }
 
+  // Record every element under `root` (and `root` itself) in the selector index.
+  function indexTree(root) {
+    if (!prune) return;
+    for (const el of elementsIn(root)) selectors.addElement(el);
+  }
+
   function adoptShadow(host) {
     const sr = host.shadowRoot;
     if (!sr) {
@@ -798,6 +838,7 @@ export function startDynamic({
     }
     pendingHosts.delete(host);
     if (scopes.has(sr)) return;
+    indexTree(sr);
     syncSheets(ensureScope(sr));
     scanTree(sr);
     wantContrast(host);
@@ -825,7 +866,7 @@ export function startDynamic({
       entry.doc = doc;
       // A content script got there first (a host that does inject here).
       entry.engine = doc.querySelector(`[${MARK}],#sunglasses-at-night-early`) ? null : startDynamic({
-        document: doc, window: doc.defaultView, look, fetchSheet, images, hideBackgroundImages, monitor,
+        document: doc, window: doc.defaultView, look, fetchSheet, images, hideBackgroundImages, monitor, prune,
       });
     };
     entry.start = start;
@@ -963,6 +1004,21 @@ export function startDynamic({
     if (stopped) return;
     let sheetsChanged = false;
     const added = new Set();
+    if (prune) {
+      // Index before any sheet is rewritten, so a class that just arrived
+      // brings its rules back in this task, before the next paint.
+      for (const r of records) {
+        if (r.type === 'childList') {
+          for (const n of r.addedNodes) if (n.nodeType === 1 && n.isConnected && !isOurs(n)) indexTree(n);
+        } else if (r.type === 'attributes' && (r.attributeName === 'class' || r.attributeName === 'id') && !isOurs(r.target)) {
+          selectors.addElement(r.target);
+        }
+      }
+      if (pruneRevived) {
+        pruneRevived = false;
+        if (syncAll(Infinity) === true) wantContrastAll();
+      }
+    }
     const isSheetNode = (n) => n.localName === 'style' || (n.localName === 'link' && /stylesheet/i.test(n.rel));
     for (const r of records) {
       const t = r.target;
@@ -983,7 +1039,7 @@ export function startDynamic({
         } else {
           // A class can recolor the whole subtree; that only needs a contrast
           // check, not a rescan.
-          if (r.attributeName !== 'class') processInline(t);
+          if (r.attributeName !== 'class' && r.attributeName !== 'id') processInline(t);
           wantContrast(t);
         }
       }
@@ -1017,6 +1073,7 @@ export function startDynamic({
 
   timed('start', () => {
     ensureScope(document);
+    indexTree(document.documentElement);
     syncSheets(scopes.get(document));
     scanTree(document.documentElement);
     for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
