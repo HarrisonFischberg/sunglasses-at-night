@@ -1,12 +1,10 @@
 // Sunglasses at Night: background script entry (bundled to
-// Extension/Resources/background.js). T007: answers cross-origin stylesheet
-// re-fetch requests from our content scripts. Settings broadcast, toolbar
-// state and the keyboard shortcut come in T009.
+// Extension/Resources/background.js). Wires the real WebExtension API into
+// background-core.js: settings broadcast, toolbar state, the Mac keyboard
+// shortcut, and the cross-origin stylesheet re-fetch (T007).
 
-import { createSheetMessageHandler } from './sheet-fetch.js';
+import { createBackground } from './background-core.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 
-api.runtime.onMessage.addListener(
-  createSheetMessageHandler({ fetch: globalThis.fetch.bind(globalThis), extensionId: api.runtime.id }),
-);
+createBackground({ api, fetch: globalThis.fetch.bind(globalThis) });

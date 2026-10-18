@@ -8,6 +8,18 @@
   "background": {
     "service_worker": "background.js"
   },
+  "action": {
+    "default_title": "Sunglasses at Night"
+  },
+  "commands": {
+    "toggle-dark-mode": {
+      "suggested_key": {
+        "default": "Alt+Shift+N",
+        "mac": "Alt+Shift+N"
+      },
+      "description": "Turn dark mode on or off"
+    }
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

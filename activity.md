@@ -135,3 +135,20 @@
   - Stopped at 5 runs. The failure is the sandbox, not the engine. Logged as **B15**. T007 is **blocked (B15)**, not done. The e2e suite and fixtures have never run, so first-run harness bugs are possible.
 - Swift: only Extension resources changed (manifest, two new bundled JS files). The runner's next `verify-swift.sh` build will confirm they still copy into the appex.
 - Next (owner): run `npm run e2e` in a normal terminal (or approve the runner step in B15), then paste the summary here. Fixing any harness/engine failures it shows is the next iteration's T007 work.
+
+## 2026-10-17: T009 background.js (Ralph iteration). BLOCKED (B16, manual Safari)
+
+- Goal: T009 acceptance (storage change reaches open tabs < 200 ms; shortcut toggles), proven by unit tests + manual Safari.
+- Wrote:
+  - `engine/src/background-core.js` (new): `createBackground({ api, fetch })` with the API injected. It pushes every settings write to all open tabs as `SETTINGS_CHANGED` (validated through `migrate`; a tab with no receiver doesn't stop the rest). It tracks per-tab toolbar state from top-frame `TAB_STATE` reports (title plus an "off" badge until T017 icons; navigation resets to "not running on this page"; closing a tab forgets it). The `toggle-dark-mode` command toggles the master switch `off` ↔ the previous mode, stored under the separate key `shortcutRestoreMode`, falling back to `always`. The T007 sheet handler is kept.
+  - `engine/src/background.js`: now just wires the real API. `engine/src/messages.js`: `SETTINGS_CHANGED`, `TAB_STATE`.
+  - `engine/src/content.js`: accepts `SETTINGS_CHANGED` (sender-checked, validated) and dedupes it against its own `storage.onChanged` with a JSON comparison, so there's one restart per write. The top frame reports `TAB_STATE` after each decision.
+  - `Extension/Resources/manifest.json`: `action` (default title) and `commands.toggle-dark-mode` (Option+Shift+N on Mac, Alt+Shift+N elsewhere). No new permission.
+  - Tests: `engine/test/background.test.js` (17 cases). `engine/test/bundle.test.js`: the background-bundle listener test now expects the T009 listeners (message, storage, tabs.onRemoved/onUpdated, commands), one each. New manifest test: action + Mac shortcut present, permissions still `["storage"]`.
+- Verification:
+  - `npm test` attempt 1 → 232/233. One failure was a fake-API bug in my test (`onChanged.ls` undefined), fixed in the fake, assertion unchanged.
+  - `npm test` attempt 2 → **233 tests, 233 pass, 0 fail**. Includes "broadcast: a settings write reaches every open tab in < 200 ms" (50 fake tabs, real timing).
+  - `npm run check` → `node --check: 12 file(s) OK`.
+  - Swift: `ralph/evidence/swift-build-latest.md` (HEAD 378fa42) predates this manifest change. The runner's next build covers it.
+- Not done: manual Safari (real tabs < 200 ms, Option+Shift+N toggles, toolbar title/badge). Agents can't open Safari or load the unsigned extension. Logged as B16 with exact steps. Row set to `blocked (B16)`, not done.
+- Data flows: none new. `TAB_STATE`/`SETTINGS_CHANGED` are in-extension messages, nothing leaves the device.

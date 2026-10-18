@@ -23,17 +23,32 @@ test('bundles are classic scripts (no import/export) that compile', () => {
   }
 });
 
-test('the background bundle registers a message listener and nothing else', () => {
+test('the background bundle registers exactly its listeners and expects no other API', () => {
   const text = readFileSync(resolve(ROOT, 'Extension/Resources/background.js'), 'utf8');
-  const listeners = [];
+  const listeners = {};
+  const ev = (name) => ({ addListener: (fn) => { (listeners[name] ??= []).push(fn); } });
   const ctx = vm.createContext({
-    browser: { runtime: { id: 'ext', onMessage: { addListener: (fn) => listeners.push(fn) } } },
+    browser: {
+      runtime: { id: 'ext', onMessage: ev('message') },
+      storage: { local: {}, onChanged: ev('storage') },
+      tabs: { onRemoved: ev('removed'), onUpdated: ev('updated') },
+      commands: { onCommand: ev('command') },
+    },
     fetch: async () => { throw new Error('no network in tests'); },
     URL,
   });
   vm.runInContext(text, ctx);
-  assert.equal(listeners.length, 1);
-  assert.equal(listeners[0]({ type: 'unrelated' }, {}, () => {}), false);
+  assert.deepEqual(Object.keys(listeners).sort(), ['command', 'message', 'removed', 'storage', 'updated']);
+  for (const fns of Object.values(listeners)) assert.equal(fns.length, 1);
+  assert.equal(listeners.message[0]({ type: 'unrelated' }, {}, () => {}), false);
+});
+
+test('manifest declares the toolbar action and the toggle shortcut the background handles', async () => {
+  const manifest = JSON.parse(readFileSync(resolve(ROOT, 'Extension/Resources/manifest.json'), 'utf8'));
+  const { TOGGLE_COMMAND } = await import('../src/background-core.js');
+  assert.ok(manifest.action, 'manifest.action missing');
+  assert.ok(manifest.commands?.[TOGGLE_COMMAND]?.suggested_key?.mac, 'Mac shortcut missing');
+  assert.deepEqual(manifest.permissions, ['storage'], 'T009 needs no new permission');
 });
 
 test('network APIs appear only in the background sheet fetcher', () => {
