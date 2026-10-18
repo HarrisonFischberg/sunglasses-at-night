@@ -40,6 +40,9 @@ export const MARK = 'data-sunglasses-at-night';
 export const INLINE_ATTR = 'data-san-inline';
 export const FIX_ATTR = 'data-san-fix';
 export const VAR_PREFIX = '--san-';
+// Set on the root of a subtree the page inserted after load, in the mutation
+// callback (before paint), until its sheets and contrast are processed (T031).
+export const PENDING_ATTR = 'data-sunglasses-pending';
 
 const ROLES = ['bg', 'fg', 'border'];
 
@@ -89,6 +92,12 @@ const COLOR_FUNCS = new Set([
   'rgb', 'rgba', 'hsl', 'hsla', 'hwb', 'lab', 'lch', 'oklab', 'oklch', 'color', 'color-mix', 'light-dark',
 ]);
 const OPAQUE_FUNCS = new Set(['url', 'image-set', '-webkit-image-set', 'attr', 'env', 'element']);
+// Blend modes that turn a photo near-black once the backdrop under it is dark.
+const BLEND_FIX_RE = /^(?:multiply|darken|color-burn|luminosity)$/i;
+const MEDIA_TAGS = 'img,picture,video,canvas,svg,iframe,embed,object';
+const MEDIA_TAG_SET = new Set(MEDIA_TAGS.split(','));
+const PHOTO_MIN_W = 120, PHOTO_MIN_H = 80;
+const URL_IMAGE_RE =/(?:^|[^\w-])(?:url|image-set|-webkit-image-set)\(/i;
 
 // ------------------------------------------------------------ value rewrite
 
@@ -271,6 +280,12 @@ export function rewriteDeclarations(style, look, opts = {}) {
       }
       continue;
     }
+    if (prop === 'mix-blend-mode') {
+      // Product shots drawn with multiply over a light tile: once the tile is
+      // dark, multiply makes the photo black. Normal shows the photo as is.
+      if (BLEND_FIX_RE.test(value.trim())) out.push(`mix-blend-mode:normal${bangFor(prop)}`);
+      continue;
+    }
     if (prop === 'color-scheme') {
       if (/\blight\b/.test(value) && !/\bdark\b/.test(value)) out.push(`color-scheme:dark${bangFor(prop)}`);
       continue;
@@ -353,6 +368,22 @@ export function baseCss(look) {
   return (
     `:where(:root){color-scheme:dark;background-color:${formatRgb(bg)};color:${f('#000000')}}` +
     `:where(a:link){color:${f('#0000ee')}}:where(a:visited){color:${f('#551a8b')}}`
+  );
+}
+
+/**
+ * Rules for content the page inserted after load, keyed by PENDING_ATTR: until
+ * the engine has rewritten what the subtree needs, its backgrounds are
+ * transparent (the dark canvas shows through) and its text is the base text
+ * color. Media keeps its pixels; an img's own placeholder color is cleared.
+ */
+export function pendingCss(look) {
+  const bg = quantize(transformColor('#ffffff', 'bg', look));
+  const fg = formatRgb(ensureContrast(transformColor('#000000', 'fg', look), bg));
+  const a = `[${PENDING_ATTR}]`;
+  return (
+    `${a},${a} *:not(${MEDIA_TAGS}){background-color:transparent!important;color:${fg}!important}` +
+    `${a} img,img${a}{background-color:transparent!important}`
   );
 }
 
@@ -445,6 +476,8 @@ export function startDynamic({
   let syncWanted = false; // sheets changed (link load, remote sheet arrived)
   let timerId = null, timerAt = Infinity;
   let readyDone = !onReady, readyTimer = null;
+  const pendingTags = new Map(); // element tagged PENDING_ATTR → when
+  const keptColor = new Map(); // text over a photo → the authored color we restored
 
   function checkReady(force = false) {
     if (readyDone || stopped) return;
@@ -479,7 +512,7 @@ export function startDynamic({
     scopes.set(root, scope);
     if (root.nodeType === 9) {
       scope.baseEl = makeStyle('base');
-      scope.baseEl.textContent = baseCss(look) + dynamicImageCss(images);
+      scope.baseEl.textContent = baseCss(look) + dynamicImageCss(images) + pendingCss(look);
       const head = root.head ?? root.documentElement;
       head.insertBefore(scope.baseEl, head.firstChild);
     }
@@ -781,6 +814,68 @@ export function startDynamic({
     return { ...below, alpha: 1 };
   }
 
+  // True when the nearest painted backdrop of `el`'s text is a photo: an
+  // ancestor (up to the first opaque solid background) has a url() background,
+  // or a positioned media element inside one of its near ancestors covers its
+  // box. Contrast against our dark colors means nothing there, so the text
+  // keeps what the page authored. `cache` (element → boolean) is per slice.
+  function isPhotoSized(e) {
+    const r = e.getBoundingClientRect();
+    return r.width >= PHOTO_MIN_W && r.height >= PHOTO_MIN_H;
+  }
+
+  function overImage(el, cache) {
+    // url() backgrounds: shared along the chain, like effectiveBackground.
+    const chain = [];
+    let result = false;
+    for (let e = el; e; e = paintParent(e)) {
+      const hit = cache.urls.get(e);
+      if (hit !== undefined) {
+        result = hit;
+        break;
+      }
+      chain.push(e);
+      const cs = getCS(e);
+      // Small url() backgrounds are icons and sprites on a dark surface of ours.
+      if (URL_IMAGE_RE.test(cs.backgroundImage) && isPhotoSized(e)) {
+        result = true;
+        break;
+      }
+      const c = parseColor(cs.backgroundColor);
+      if (c && c.alpha >= 1) break;
+    }
+    for (const e of chain) cache.urls.set(e, result);
+    if (result) return true;
+    // Positioned media in a near ancestor, under this text's box.
+    let rect = null;
+    for (let e = paintParent(el), hops = 0; e && hops < 4; e = paintParent(e), hops++) {
+      let covers = cache.covers.get(e);
+      if (covers === undefined) {
+        covers = [];
+        if (getCS(e).position !== 'static') {
+          for (const kid of e.children) {
+            if (!MEDIA_TAG_SET.has(kid.localName) || isOurs(kid)) continue;
+            const kcs = getCS(kid);
+            if (kcs.position !== 'absolute' && kcs.position !== 'fixed') continue;
+            const r = kid.getBoundingClientRect();
+            if (r.width >= PHOTO_MIN_W && r.height >= PHOTO_MIN_H) covers.push({ kid, r });
+          }
+        }
+        cache.covers.set(e, covers);
+      }
+      if (covers.length) {
+        rect ??= el.getBoundingClientRect();
+        const x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
+        for (const { kid, r } of covers) {
+          if (!kid.contains(el) && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return true;
+        }
+      }
+      const c = parseColor(getCS(e).backgroundColor);
+      if (c && c.alpha >= 1) break;
+    }
+    return false;
+  }
+
   function hasOwnText(el) {
     for (let n = el.firstChild; n; n = n.nextSibling) {
       if (n.nodeType === 3 && n.data.trim()) return true;
@@ -795,7 +890,11 @@ export function startDynamic({
     if (cs.display === 'none' || cs.visibility !== 'visible') return null;
     const fg = parseColor(cs.color);
     if (!fg || fg.alpha === 0) return null;
-    const bg = effectiveBackground(el, cache);
+    if (overImage(el, cache)) {
+      // Already restored and still showing what we restored: nothing to read.
+      return keptColor.get(el) === cs.color ? null : { el, keep: true, current: cs.color };
+    }
+    const bg = effectiveBackground(el, cache.bg);
     if (contrastRatio(fg, bg) >= MIN_CONTRAST) return null;
     const fixed = ensureContrast(fg, bg);
     if (!fixed) return null;
@@ -806,13 +905,13 @@ export function startDynamic({
   }
 
   // Write half.
-  function applyFix({ el, color, important, fill }) {
+  function applyFix({ el, color, important, fill, fillColor }) {
     if (important) {
       setInlineImportant(el, 'color', color);
       return;
     }
     const decls = [`color:${color} !important`];
-    if (fill) decls.push(`-webkit-text-fill-color:${color} !important`);
+    if (fill) decls.push(`-webkit-text-fill-color:${fillColor ?? color} !important`);
     const scope = scopeOf(el);
     el.setAttribute(FIX_ATTR, ruleFor(scope, scope.fixIds, FIX_ATTR, decls));
     touched.add(el);
@@ -952,17 +1051,80 @@ export function startDynamic({
   }
 
   // Check contrast for pass.items until `deadline`: all reads, then all writes.
+  // ---- content inserted after load (PENDING_ATTR)
+  const NO_PAINT = new Set(['style', 'link', 'script', 'noscript', 'template', 'meta', 'base', 'title']);
+
+  function tagPending(el) {
+    if (NO_PAINT.has(el.localName) || !el.isConnected || isOurs(el)) return;
+    el.setAttribute(PENDING_ATTR, '');
+    pendingTags.set(el, now());
+  }
+
+  // A tagged subtree whose own stylesheets are still loading stays tagged: its
+  // link's load event re-syncs and re-checks everything, and releases it then.
+  function releasePending(force = false) {
+    // A sheet still being re-fetched means the override doesn't cover the subtree yet.
+    if (!force && (pending.size || incomplete)) return;
+    for (const el of [...pendingTags.keys()]) {
+      if (!force && el.isConnected && [...el.querySelectorAll('link[rel~="stylesheet" i]')].some((l) => !l.sheet && !l.disabled)) continue;
+      el.removeAttribute(PENDING_ATTR);
+      pendingTags.delete(el);
+    }
+  }
+
   function contrastSlice(p, deadline) {
-    const fixes = [], cache = new Map(), { items } = p;
+    if (!p.released) {
+      // The sheets are in place for everything inserted so far: lift the
+      // placeholder rule and check this pass in the same task, before paint.
+      p.released = true;
+      releasePending();
+    }
+    const fixes = [], keeps = [], cache = { bg: new Map(), urls: new Map(), covers: new Map() }, { items } = p;
     while (p.i < items.length) {
       const el = items[p.i++];
       if (el.isConnected) {
         const fix = contrastFix(el, cache);
-        if (fix) fixes.push(fix);
+        if (fix?.keep) keeps.push(fix);
+        else if (fix) fixes.push(fix);
       }
       if ((p.i & 31) === 0 && now() > deadline) break;
     }
+    if (keeps.length) fixes.push(...authoredColors(keeps));
     for (const fix of fixes) applyFix(fix);
+  }
+
+  // Text over a photo keeps the color the page gave it. Our sheets are switched
+  // off for one synchronous style read (no paint in between, as early.js does
+  // in readPageColors), then back on; a fix rule restores what was read.
+  function authoredColors(keeps) {
+    const sheets = [];
+    for (const scope of scopes.values()) sheets.push(scope.baseEl, scope.overrideEl, scope.dynEl);
+    const live = sheets.filter(Boolean);
+    const prior = live.map((st) => st.media);
+    const read = [];
+    for (const st of live) st.media = 'not all';
+    try {
+      for (const k of keeps) {
+        const cs = getCS(k.el);
+        read.push({ color: cs.color, fill: cs.webkitTextFillColor });
+      }
+    } finally {
+      live.forEach((st, i) => {
+        if (prior[i]) st.media = prior[i];
+        else st.removeAttribute('media');
+      });
+    }
+    const out = [];
+    keeps.forEach((k, i) => {
+      const important = k.el.style?.getPropertyPriority('color') === 'important';
+      const authored = important ? pageInlineValue(k.el, 'color') || read[i].color : read[i].color;
+      keptColor.set(k.el, authored);
+      if (authored === k.current) return;
+      const { color, fill } = read[i];
+      const fc = fill ? parseColor(fill) : null;
+      out.push({ el: k.el, color: authored, important, fill: Boolean(!important && fc && fc.alpha > 0 && fill !== color), fillColor: fill });
+    });
+    return out;
   }
 
   function syncAll(deadline) {
@@ -1044,6 +1206,9 @@ export function startDynamic({
         }
       }
     }
+    // Before paint: what the page inserted shows dark until the slices have
+    // checked it (the interim rule only covers the load, this covers after).
+    if (readyDone) for (const n of topmost(added)) tagPending(n);
     // New page sheets are rewritten now, so their content never shows light.
     if (sheetsChanged && syncSheets(scope)) wantContrastAll();
     for (const n of topmost(added)) {
@@ -1057,6 +1222,13 @@ export function startDynamic({
   // ---- lifecycle
   function refresh(forceContrast = false) {
     if (stopped) return;
+    const t = now();
+    for (const [el, at] of [...pendingTags]) {
+      if (el.isConnected && t - at <= READY_CAP_MS) continue;
+      el.removeAttribute(PENDING_ATTR);
+      pendingTags.delete(el);
+      if (el.isConnected) wantContrast(el);
+    }
     const changed = syncAll(now() + SLICE_MS);
     if (changed === YIELD) requestSync();
     let adopted = false;
@@ -1097,6 +1269,7 @@ export function startDynamic({
     timerId = null;
     pass = null;
     contrastRoots.clear();
+    releasePending(true);
     for (const scope of scopes.values()) {
       scope.observer?.disconnect();
       scope.baseEl?.remove();

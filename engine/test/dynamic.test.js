@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  rewriteValue, rewriteDeclarations, rewriteRules, baseCss, PROP_ROLES,
+  rewriteValue, rewriteDeclarations, rewriteRules, baseCss, pendingCss, PROP_ROLES,
 } from '../src/dynamic.js';
 import { parseColor, relativeLuminance, contrastRatio } from '../src/color.js';
 import { transformColor, quantize } from '../src/transform.js';
@@ -170,4 +170,21 @@ test('baseCss: dark canvas, readable default text and link colors, zero specific
     assert.ok(contrastRatio(m[1], bg) >= 4.5, `${m[1]} on ${bg}`);
   }
   assert.ok(!/pointer-events|position|z-index|display/.test(css));
+});
+
+test('rewriteDeclarations: multiply / darken / color-burn / luminosity blends become normal (T031)', () => {
+  for (const mode of ['multiply', 'darken', 'color-burn', 'luminosity']) {
+    assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': [mode] })), ['mix-blend-mode:normal'], mode);
+  }
+  assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': ['multiply', true] })), ['mix-blend-mode:normal !important']);
+  assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': ['multiply'] }), undefined, { important: true }), ['mix-blend-mode:normal !important']);
+  for (const mode of ['normal', 'screen', 'overlay', 'lighten', '']) {
+    assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': [mode] })), [], mode);
+  }
+});
+
+test('pendingCss: transparent backgrounds and base text color for the tagged subtree, media untouched (T031)', () => {
+  const css = pendingCss();
+  assert.match(css, /^\[data-sunglasses-pending\],\[data-sunglasses-pending\] \*:not\(img,picture,video,canvas,svg,iframe,embed,object\)\{background-color:transparent!important;color:rgb\(/);
+  assert.match(css, /\[data-sunglasses-pending\] img,img\[data-sunglasses-pending\]\{background-color:transparent!important\}/);
 });
