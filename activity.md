@@ -516,3 +516,10 @@
 ## 2026-10-18 16:43Z — owner trusted the workspace
 
 - `~/.claude.json` → `hasTrustDialogAccepted: true` for this project. Check: `claude -p` ran `ls docs` and `grep -c T0 prd.md` with no approval prompt, `permission_denials: []`, and no "Ignoring … permissions.allow entries" warning. The project allowlist now applies to the loop. Starting run 5.
+
+## T013 — perf run read, budget fails (2026-10-18, Builder). BLOCKED (B32)
+- Verification: `npm run perf` cannot launch WebKit in this sandbox (B15), so I read the runner's real output of the same code: `ralph/evidence/t013-perf.json` (head e9cc01a, 16:46Z) and `ralph/evidence/e2e-latest.md` (68 tests, 67 pass, 1 fail: `e2e/perf.test.js`, `gridStormRafGapMax: 32 > 28`).
+- Numbers: nodesInitialMedian 23 ms (<=50), nodesBatchMedian 3 ms (<=8), grid longest engine task after first paint 15 ms (<=50), storm engine share 1.28% worst (<=10%) all pass. rAF gap max with engine, 3 paired runs: 32/20, 39/21, 29/19; median 32 vs 20, limit 28: FAIL. Median-of-3 is implemented.
+- Cause: not engine JS (max task 6 ms). It is browser style recalc over the generated override CSS (4,992 rules, 486 KB), which is T024's job (blueprint fix 3); T024 depends on T013, so the dependency is circular.
+- No test or budget was changed. Row set to `blocked (B32)`; the owner picks (a) run T024 first or (b) loosen the allowance.
+- 16:52Z owner: amazon.com still shows a white pop-in for 0.5–2 s before turning dark (Mac dark mode, up-to-date build 76d154d). Far longer than the settings read, so this is not T023's case. Opus analysis + fix plan → T029 (blueprint fix 5), queued right after the current iteration.

@@ -116,3 +116,14 @@ same server the page already loaded it from, and (2) a user-initiated
    threshold), keep it as authored (only lift text contrast if needed). Map
    background lightness with a curve that keeps chroma and relative lightness
    order, so swatches stay distinct.
+
+5. **White pop-in on heavy sites (T029, owner report 2026-10-18).** Real
+   Safari on amazon.com shows white for 0.5–2 s before the page turns dark.
+   Cause: the base sheet only darkens `html`/`body`; the site's own white
+   containers stay white until the dynamic engine runs, which waits for full
+   HTML parse and then cross-origin sheet re-fetches. Fix: an interim
+   "neutralize backgrounds while loading" rule gated by
+   `:not([data-sunglasses-ready])`, removed atomically when the first override
+   sheet lands; start the engine on sheets as they arrive; cache rewritten CSS
+   per sheet URL in the background. Interim state is flat dark (dark → dark),
+   never white, and never touches media.
