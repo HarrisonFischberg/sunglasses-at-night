@@ -12,7 +12,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8019
+          "atMs": 8016
         },
         "pixels": {
           "max": 1,
@@ -31,10 +31,10 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8020
+          "atMs": 8022
         },
         "pixels": {
-          "max": 0.008,
+          "max": 0.009,
           "min": 0.007,
           "white": 0
         }
@@ -48,7 +48,7 @@
         "rootLuminance": 0.007,
         "checked": 18,
         "minRatio": 10.34,
-        "maxTextBgLuminance": 0.008,
+        "maxTextBgLuminance": 0.009,
         "failures": []
       }
     ],
@@ -70,7 +70,7 @@
             24
           ],
           "luminance": 0.007,
-          "atMs": 8014
+          "atMs": 8020
         },
         "pixels": {
           "max": 0.017,
@@ -89,7 +89,7 @@
             24
           ],
           "luminance": 0.007,
-          "atMs": 8010
+          "atMs": 8023
         },
         "pixels": {
           "max": 0.017,
@@ -128,7 +128,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8012
+          "atMs": 8014
         },
         "pixels": {
           "max": 1,
@@ -164,7 +164,7 @@
         "rootLuminance": 0.007,
         "checked": 9,
         "minRatio": 10.79,
-        "maxTextBgLuminance": 0.008,
+        "maxTextBgLuminance": 0.009,
         "failures": []
       }
     ],
@@ -186,7 +186,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8011
+          "atMs": 8012
         },
         "pixels": {
           "max": 1,
@@ -205,7 +205,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8016
+          "atMs": 8021
         },
         "pixels": {
           "max": 0.007,
@@ -221,8 +221,8 @@
         "kind": "text/html",
         "rootLuminance": 0.007,
         "checked": 6,
-        "minRatio": 11.19,
-        "maxTextBgLuminance": 0.008,
+        "minRatio": 11.01,
+        "maxTextBgLuminance": 0.009,
         "failures": []
       }
     ],
@@ -244,7 +244,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8017
+          "atMs": 8010
         },
         "pixels": {
           "max": 1,
@@ -302,7 +302,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8013
+          "atMs": 8010
         },
         "pixels": {
           "max": 1,
@@ -337,8 +337,8 @@
         "kind": "text/html",
         "rootLuminance": 0.007,
         "checked": 4,
-        "minRatio": 11.94,
-        "maxTextBgLuminance": 0.008,
+        "minRatio": 11.83,
+        "maxTextBgLuminance": 0.009,
         "failures": []
       }
     ],
@@ -360,7 +360,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8012
+          "atMs": 8013
         },
         "pixels": {
           "max": 1,
@@ -379,7 +379,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8018
+          "atMs": 8019
         },
         "pixels": {
           "max": 0.007,
@@ -395,8 +395,8 @@
         "kind": "text/html",
         "rootLuminance": 0.007,
         "checked": 9,
-        "minRatio": 5.45,
-        "maxTextBgLuminance": 0.027,
+        "minRatio": 4.51,
+        "maxTextBgLuminance": 0.049,
         "failures": []
       }
     ],
@@ -418,7 +418,7 @@
             246
           ],
           "luminance": 0.922,
-          "atMs": 8017
+          "atMs": 8020
         },
         "pixels": {
           "max": 0.991,
@@ -437,10 +437,10 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8020
+          "atMs": 8014
         },
         "pixels": {
-          "max": 0.041,
+          "max": 0.046,
           "min": 0.007,
           "white": 0
         }
@@ -453,8 +453,8 @@
         "kind": "text/html",
         "rootLuminance": 0.007,
         "checked": 16,
-        "minRatio": 6,
-        "maxTextBgLuminance": 0.02,
+        "minRatio": 4.96,
+        "maxTextBgLuminance": 0.035,
         "failures": []
       }
     ],
@@ -476,7 +476,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8013
+          "atMs": 8012
         },
         "pixels": {
           "max": 1,
@@ -495,7 +495,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8020
+          "atMs": 8015
         },
         "pixels": {
           "max": 0.038,
@@ -512,7 +512,7 @@
         "rootLuminance": 0.007,
         "checked": 6,
         "minRatio": 11.87,
-        "maxTextBgLuminance": 0.007,
+        "maxTextBgLuminance": 0.008,
         "failures": []
       }
     ],
@@ -534,7 +534,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8039
+          "atMs": 8038
         },
         "pixels": {
           "max": 1,
@@ -553,7 +553,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8052
+          "atMs": 8040
         },
         "pixels": {
           "max": 0.603,
@@ -568,9 +568,9 @@
         "top": true,
         "kind": "text/html",
         "rootLuminance": 0.007,
-        "checked": 60,
+        "checked": 111,
         "minRatio": 4.5,
-        "maxTextBgLuminance": 0.076,
+        "maxTextBgLuminance": 0.082,
         "failures": []
       },
       {
@@ -599,7 +599,7 @@
         "kind": "text/html",
         "rootLuminance": 0.007,
         "checked": 1,
-        "minRatio": 12.93,
+        "minRatio": 12.81,
         "maxTextBgLuminance": 0.007,
         "failures": []
       },
@@ -619,8 +619,8 @@
         "kind": "text/html",
         "rootLuminance": 0.007,
         "checked": 2,
-        "minRatio": 6.47,
-        "maxTextBgLuminance": 0.078,
+        "minRatio": 6.4,
+        "maxTextBgLuminance": 0.079,
         "failures": []
       }
     ],
@@ -1257,14 +1257,14 @@
           "nx": 121,
           "ny": 1311.515625,
           "px": [
-            125,
-            110,
-            85
+            126,
+            111,
+            86
           ],
           "around": [
-            21,
-            21,
-            21
+            22,
+            22,
+            22
           ],
           "expected": [
             126,
@@ -1274,6 +1274,12 @@
         }
       ]
     },
+    "islandPalette": {
+      "islandMove": 0,
+      "islandInk": 6.51,
+      "swatches": 48,
+      "collisions": 0
+    },
     "blankFramePixel": [
       20,
       20,
@@ -1282,6 +1288,6 @@
   },
   "_meta": {
     "engine": "webkit (Playwright 1.64.1)",
-    "date": "2026-10-18T06:31:45.342Z"
+    "date": "2026-10-18T07:38:52.793Z"
   }
 }

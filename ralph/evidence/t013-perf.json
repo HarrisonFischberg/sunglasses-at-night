@@ -1,109 +1,109 @@
 {
   "task": "T013",
-  "when": "2026-10-18T06:28:38.471Z",
-  "head": "3e86fa6",
+  "when": "2026-10-18T07:35:44.511Z",
+  "head": "d44e6f8",
   "browser": "Playwright WebKit 27.2 (headless), darwin arm64",
   "method": "Engine time = sum of engine main-thread tasks reported by startDynamic opts.monitor. rAF gaps from a requestAnimationFrame recorder installed at document start. Content script runs in the page world here (Safari: isolated world).",
   "budgets": {
     "nodesInitialMedian": {
-      "value": 21,
+      "value": 23,
       "max": 50,
       "pass": true
     },
     "nodesBatchMedian": {
-      "value": 4.5,
+      "value": 3,
       "max": 8,
       "pass": true
     },
     "gridLongestEngineTaskAfterFirstPaint": {
-      "value": 12,
+      "value": 14,
       "max": 50,
       "pass": true
     },
     "gridStormEngineShare": {
-      "value": 0.01039,
+      "value": 0.00859,
       "max": 0.1,
       "pass": true
     },
     "gridStormRafGapMax": {
-      "value": 41,
+      "value": 30,
       "max": 32,
-      "pass": false
+      "pass": true
     }
   },
-  "pass": false,
+  "pass": true,
   "nodes": {
     "elements": 5000,
     "sheets": 3,
     "rules": 1020,
-    "overrideBytes": 100385,
+    "overrideBytes": 100389,
     "initialMs": [
-      25,
-      21,
-      21,
-      21,
-      21,
+      28,
       22,
-      22
+      23,
+      22,
+      22,
+      32,
+      29
     ],
     "initialSyncMs": [
-      14,
-      10,
-      11,
-      11,
+      16,
+      12,
+      12,
       11,
       12,
-      11
+      19,
+      16
     ],
-    "initialMedianMs": 21,
+    "initialMedianMs": 23,
     "batchMutations": 50,
     "batchMs": [
+      3,
+      4,
+      2,
       2,
       4,
       3,
-      5,
-      5,
-      6,
-      7,
-      7,
+      1,
       4,
-      4
+      4,
+      3
     ],
-    "batchMedianMs": 4.5
+    "batchMedianMs": 3
   },
   "grid": {
     "cards": 60,
     "sheets": 20,
     "rules": 4992,
     "crossOriginSheets": 10,
-    "overrideBytes": 486761,
-    "firstPaintMs": 95,
-    "engineMsBeforeStorm": 59,
+    "overrideBytes": 486774,
+    "firstPaintMs": 119,
+    "engineMsBeforeStorm": 64,
     "longestEngineTaskAfterFirstPaint": {
       "name": "slice",
-      "ms": 12
+      "ms": 14
     },
     "engineTasksOver50AfterFirstPaint": 0,
     "storm": {
-      "wallMs": 5006,
+      "wallMs": 5003,
       "mutations": 1000,
       "frames": 301,
-      "rafGapMaxMs": 41,
-      "rafGapP95Ms": 19,
-      "rafGapP99Ms": 20,
-      "rafGapsOver32": 1,
-      "engineMs": 52,
-      "engineShare": 0.01039,
-      "engineTasks": 653,
-      "engineTaskMaxMs": 9
+      "rafGapMaxMs": 30,
+      "rafGapP95Ms": 18,
+      "rafGapP99Ms": 19,
+      "rafGapsOver32": 0,
+      "engineMs": 43,
+      "engineShare": 0.00859,
+      "engineTasks": 654,
+      "engineTaskMaxMs": 6
     },
     "baselineStorm": {
-      "wallMs": 5002,
+      "wallMs": 5005,
       "mutations": 1000,
       "frames": 300,
-      "rafGapMaxMs": 28,
-      "rafGapP95Ms": 19,
-      "rafGapP99Ms": 20,
+      "rafGapMaxMs": 21,
+      "rafGapP95Ms": 18,
+      "rafGapP99Ms": 19,
       "rafGapsOver32": 0,
       "engineMs": 0,
       "engineShare": 0,
@@ -113,7 +113,7 @@
     "check": {
       "adsStyled": 24,
       "ads": 24,
-      "cardBackground": "rgb(24, 20, 11)"
+      "cardBackground": "rgb(25, 21, 11)"
     }
   }
 }

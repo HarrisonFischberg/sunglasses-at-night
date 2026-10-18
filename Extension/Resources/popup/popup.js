@@ -1287,7 +1287,7 @@ const ROLES = Object.freeze(['bg', 'fg', 'border']);
 // OKLCH lightness bands per role. Input lightness is inverted into the band:
 // white backgrounds land at `lo`, black text lands at `hi`.
 const BANDS = {
-  bg: { lo: 0.19, hi: 0.42, chroma: 0.8, maxChroma: 0.12 },
+  bg: { lo: 0.19, hi: 0.44, chroma: 0.8, maxChroma: 0.12 },
   fg: { lo: 0.72, hi: 0.94, chroma: 0.9, maxChroma: 0.2 },
   border: { lo: 0.32, hi: 0.5, chroma: 0.7, maxChroma: 0.1 },
 };
@@ -1380,8 +1380,26 @@ function applyLook(color, look) {
 
 // --------------------------------------------------------------- mapping
 
+// A background already at or below this OKLCH lightness is a dark island on
+// a light page (a code block, a hero, a dark button): it stays as authored.
+// Lighter backgrounds are inverted across the whole bg band [lo, hi], so
+// lightness order among them is kept (lighter source → darker output, no ties)
+// with enough spread that swatches stay distinct, and chroma is tempered, not
+// crushed.
+const DARK_ISLAND_L = 0.3;
+
 function mapOklch(o, role) {
   const band = BANDS[role];
+  if (role === 'bg') {
+    if (o.l <= DARK_ISLAND_L) return { l: o.l, c: o.c, h: o.h, alpha: o.alpha };
+    const t = (1 - clip01(o.l)) / (1 - DARK_ISLAND_L);
+    return {
+      l: band.lo + t * (band.hi - band.lo),
+      c: Math.min(o.c * band.chroma, band.maxChroma),
+      h: o.h,
+      alpha: o.alpha,
+    };
+  }
   return {
     l: band.lo + (1 - clip01(o.l)) * (band.hi - band.lo),
     c: Math.min(o.c * band.chroma, band.maxChroma),
@@ -1495,7 +1513,7 @@ function transformPair(fg, bg, opts = {}) {
   const fgOut = ensureContrast(transformColor(fgIn, 'fg', look), backdrop, { min: opts.min });
   return { fg: fgOut, bg: bgOut, backdrop };
 }
-return { MIN_CONTRAST, ROLES, DEFAULT_LOOK, PRESETS, normalizeLook, isIdentityLook, applyLook, transformColor, quantize, opaqueBackdrop, ensureContrast, transformPair };
+return { MIN_CONTRAST, ROLES, DEFAULT_LOOK, PRESETS, normalizeLook, isIdentityLook, applyLook, DARK_ISLAND_L, transformColor, quantize, opaqueBackdrop, ensureContrast, transformPair };
 })();
 
 // ---- engine/src/messages.js

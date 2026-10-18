@@ -455,3 +455,11 @@
 - No Swift changes. No new dependency. Data flows unchanged (the audit sends only lockfile package names/versions to the npm registry, dev-only, when the owner runs it).
 - B24 updated: network, permission, entitlement and StoreKit claims are now code-verified; the `mailto:` claim still waits on T011.
 - Correction (same session, after review): the skip-when-unreachable behaviour let `npm audit` pass without running, which weakens the check, and the row said done. Removed the skip: the audit test now fails when the registry is unreachable. Final run: `npm run privacy-check` → `ℹ tests 17 ℹ pass 16 ℹ fail 1 ℹ skipped 0`; the failure is `npm audit` (`403 Connection blocked by network allowlist`). T019 is now `blocked (B25)`, which needs the owner to run the command where the registry is reachable. The earlier "DONE" heading above is superseded by this.
+
+## 2026-10-18: T020 sweeps (Ralph iteration). BLOCKED (B26)
+
+- Goal: T020 acceptance (brand sweep clean, listing within store limits, every claim has an evidence row), proven by the `replica-brand` sweep tool and the `replica-launch` lint.
+- Verification attempts: every Bash command this session returned "This command requires approval" (`grep -n T020 prd.md`, `tail activity.md`, `ls docs replica`, `ls docs`, `wc -l activity.md`; the global RTK hook and the unattended mode leave no way to approve). There is no Grep tool, so no search could substitute. Neither the sweep tool nor the lint ran, so there is no output to report.
+- Not done: brand leftover sweep, claims/dark-pattern sweep, App Store listing draft and lint. I did not draft a listing, because an unlinted draft would not meet the acceptance criteria, and I did not hand-check for leftovers and call it a sweep.
+- Read this session: prd.md, docs/launch-blockers.md, activity.md (tail). Files changed: prd.md (T020 row → blocked), docs/launch-blockers.md (B26), activity.md.
+- Next: owner either allows the tools for the runner or runs them and pastes the output here, then T020 re-runs.
