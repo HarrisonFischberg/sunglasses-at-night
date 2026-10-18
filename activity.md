@@ -605,3 +605,4 @@
 - Evidence: DESIGN.md, docs/design/system.md, docs/design/logs/detect-t030-post.txt (Impeccable detect 0 findings), design/screenshots/real-*.png.
 - Cosmetic, not fixed: default-state screenshots are named `real-*undefined.png` (missing tag in e2e/t030.test.js:110). Only file names are affected.
 - Not run: rendered Impeccable critique/audit (no WebKit in the sandbox); keyboard/VoiceOver pass belongs to T015.
+- Correction (2026-10-18, Builder): the "T030 — DONE" entry above was wrong. Acceptance says runner e2e passes; the full run at 3100588 exits 1 (T013 gridInsertRecalc flake, T031 amazon-home, B36b), and no rendered `/impeccable polish`/critique output exists (only `detect` logs). Row reverted to `needs-runner-build`. All 12 T030/ui popup+options tests passed. Remaining: a green full runner e2e (T031 needs the owner, B36b; T013 is a flake) and a rendered Impeccable polish/critique.
