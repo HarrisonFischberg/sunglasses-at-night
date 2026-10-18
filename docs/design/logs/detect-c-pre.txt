@@ -1,0 +1,10 @@
+
+2 files scanned with regex matching only (.css, .js).
+Rules that need a parsed page (tiny-text, low-contrast and other element rules) did not run on them; findings are an undercount, not a clean bill of health.
+For the full check, scan the running dev server (npx impeccable detect http://localhost:PORT) or a static site's built .html.
+
+/Users/harrison/projects/sunglasses-at-night/design/concepts/c/index.html
+  [dark-glow] Colored box-shadow glow (#ff9a76) on dark page
+    → Colored glow shadows — a zero-offset chromatic halo (box- or text-shadow) on any background, or any colored blurred shadow on a dark background — are the default "cool" look of AI-generated UIs. Use neutral elevation shadows and subtle, purposeful lighting instead.
+
+1 anti-pattern found.

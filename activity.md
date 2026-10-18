@@ -532,3 +532,10 @@
   - Verification so far: `npm test` → 308 pass, 0 fail; `npm run check` OK. e2e could not run in the sandbox. The runner's e2e must pass t029 and the T007/T012/T023 suites, then the owner rebuilds the owner copy and re-checks amazon.com.
   - Attempt to run e2e in the sandbox: `node --test e2e/t029.test.js` produced no output for over 3 minutes (WebKit does not launch here, as the runner contract says), so it was left to the runner. No e2e result exists yet.
 - 16:53Z owner: put the App Store listing (T020) on hold. Status set to `on hold`; the runner won't pick it.
+
+## T026 — design directions, first pass (2026-10-18, Builder). Status `needs-runner-build`
+- Done: `/impeccable context` loaded PRODUCT.md; shape brief with labeled assumptions in `docs/design/directions.md`; three worlds in `design/concepts/{a,b,c}` (Tortoiseshell, Polarized, Dusk) sharing `design/concepts/state.js`; `e2e/design-shots.test.js` (screenshots 1440×900 + 390×844, plus -off/-restricted at 390; measures overflow, 44 px targets, text contrast; evidence `ralph/evidence/t026-e2e.json`).
+- Verification run: `impeccable detect design/concepts/{a,b,c}` (regex-only on static files): A 0, B 0, C 1 (`dark-glow` on `.lamp`), fixed with a neutral shadow. Logs `docs/design/logs/detect-*-pre.txt`.
+- NOT done, not claimed: no screenshots exist (WebKit cannot launch in the sandbox, so I could not look at my own render); no `/impeccable critique` or `audit` output (they need rendered pages); no `comparison.md` (Opus). `docs/design/critique.md` says so. The new test asserts contrast, targets and overflow, so the first runner e2e may fail on a concept: the next iteration fixes from `ralph/evidence/e2e-latest.md`, never by weakening the test.
+- Node scripts of my own needed approval, so token contrast was not pre-computed; the e2e measures it.
+- Next iteration: read e2e-latest.md + screenshots, run critique → one fix batch → audit per concept, append output to `docs/design/critique.md`, then mark done and stop for owner approval.

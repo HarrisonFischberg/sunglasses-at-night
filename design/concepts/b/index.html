@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Concept B: Polarized</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="stage">
+    <section class="popup" aria-labelledby="popup-title">
+      <h1 class="visually-hidden" id="popup-title">Sunglasses for Safari</h1>
+
+      <div class="power" id="power">
+        <div class="power-text" role="status" aria-live="polite">
+          <p class="headline" id="headline"></p>
+          <p class="detail" id="detail"></p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="power-switch" role="switch">
+          <span class="switch-label">Dark mode</span>
+          <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+        </label>
+      </div>
+
+      <fieldset class="tiles-set">
+        <legend>When</legend>
+        <div class="tiles" id="mode-tiles"></div>
+      </fieldset>
+
+      <fieldset class="site" id="site">
+        <legend>This site</legend>
+        <p class="host" id="host"></p>
+        <div class="rail-seg" id="rule-seg"></div>
+      </fieldset>
+
+      <fieldset class="rails-set">
+        <legend>Look <span id="look-summary" class="tag"></span></legend>
+        <div id="sliders"></div>
+      </fieldset>
+    </section>
+
+    <section class="app" aria-labelledby="app-title">
+      <nav class="nav" aria-label="Settings sections">
+        <h2 id="app-title">Settings</h2>
+        <a href="#sec-schedule">Schedule</a>
+        <a href="#sec-pictures">Pictures</a>
+        <a href="#sec-sites">Sites</a>
+        <a href="#sec-privacy">Privacy</a>
+      </nav>
+
+      <div class="sections">
+        <section id="sec-schedule" class="sec" aria-labelledby="h-schedule">
+          <h3 id="h-schedule">Schedule</h3>
+          <div class="rowline"><label for="start">From</label><input type="time" id="start" value="21:00"></div>
+          <div class="rowline"><label for="end">To</label><input type="time" id="end" value="07:00"></div>
+          <p class="note">Used when When is set to On a schedule. Can cross midnight.</p>
+        </section>
+
+        <section id="sec-pictures" class="sec" aria-labelledby="h-pictures">
+          <h3 id="h-pictures">Pictures</h3>
+          <div class="rowline stack"><span id="images-label">Photos and video</span><div class="rail-seg" id="images-seg" role="radiogroup" aria-labelledby="images-label"></div></div>
+          <label class="rowline"><span>Hide background images</span><input type="checkbox" id="hide-bg"></label>
+          <label class="rowline"><span>Leave already-dark pages alone</span><input type="checkbox" id="detect-dark"></label>
+        </section>
+
+        <section id="sec-sites" class="sec" aria-labelledby="h-sites">
+          <h3 id="h-sites">Sites</h3>
+          <ul id="sites" class="sites"></ul>
+          <p id="sites-empty" class="note" hidden>No site rules yet. Every site follows the default.</p>
+        </section>
+
+        <section id="sec-privacy" class="sec" aria-labelledby="h-privacy">
+          <h3 id="h-privacy">Privacy</h3>
+          <p>Settings and site names stay on this device. No account, no analytics, no servers. Reporting a problem opens an email you send yourself.</p>
+          <button type="button" class="danger" id="reset">Reset all settings</button>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="../state.js"></script>
+  <script src="view.js"></script>
+</body>
+</html>

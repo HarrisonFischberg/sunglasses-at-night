@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Concept A: Tortoiseshell</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="stage">
+    <section class="popup" aria-labelledby="popup-title">
+      <header class="popup-head">
+        <p class="wordmark" id="popup-title">Sunglasses for Safari</p>
+        <button type="button" class="quiet" id="more" aria-label="More settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h10M18 7h2M4 12h4M12 12h8M4 17h12"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="17" r="2"/></svg>
+        </button>
+      </header>
+
+      <div class="status" role="status" aria-live="polite">
+        <h1 id="headline"></h1>
+        <p id="detail"></p>
+      </div>
+
+      <fieldset class="modes">
+        <legend>Dark mode</legend>
+        <div id="mode-list"></div>
+      </fieldset>
+
+      <fieldset class="site" id="site">
+        <legend>This site: <span id="host"></span></legend>
+        <div class="seg" id="rule-seg"></div>
+      </fieldset>
+
+      <details class="look" id="look-details" open>
+        <summary>Look <span id="look-summary" class="muted"></span></summary>
+        <div class="presets" id="preset-row" role="radiogroup" aria-label="Preset"></div>
+        <div id="sliders"></div>
+      </details>
+    </section>
+
+    <section class="app" aria-labelledby="app-title">
+      <h2 id="app-title" class="app-title">Settings</h2>
+      <p class="app-lede">Everything stays on this device. No account, no analytics, no servers.</p>
+
+      <div class="block">
+        <h3>Schedule</h3>
+        <p class="muted">Used when Dark mode is set to “On a schedule”. Can cross midnight.</p>
+        <div class="times">
+          <label>From <input type="time" id="start" value="21:00"></label>
+          <label>To <input type="time" id="end" value="07:00"></label>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Pictures</h3>
+        <div class="seg" id="images-seg"></div>
+        <label class="check"><input type="checkbox" id="hide-bg"> Hide background images</label>
+        <label class="check"><input type="checkbox" id="detect-dark" checked> Leave pages that are already dark alone</label>
+      </div>
+
+      <div class="block">
+        <h3>Sites you’ve set</h3>
+        <ul id="sites" class="sites"></ul>
+        <p id="sites-empty" class="muted" hidden>No site rules yet. Every site follows the default.</p>
+      </div>
+
+      <div class="block">
+        <h3>Privacy</h3>
+        <p>Your settings and the site names you set rules for live on this device and nowhere else. Reporting a problem opens an email you send yourself.</p>
+        <button type="button" class="danger" id="reset">Reset all settings</button>
+      </div>
+    </section>
+  </main>
+  <script src="../state.js"></script>
+  <script src="view.js"></script>
+</body>
+</html>

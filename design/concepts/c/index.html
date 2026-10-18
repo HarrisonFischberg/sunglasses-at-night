@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Concept C: Dusk</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="stage">
+    <section class="popup" aria-labelledby="popup-title">
+      <header class="top">
+        <h1 id="popup-title">Sunglasses for Safari</h1>
+        <button type="button" class="round" id="more" aria-label="More settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+        </button>
+      </header>
+
+      <div class="hero" role="status" aria-live="polite">
+        <div class="lamp" aria-hidden="true"></div>
+        <div>
+          <p class="headline" id="headline"></p>
+          <p class="detail" id="detail"></p>
+        </div>
+      </div>
+
+      <fieldset class="group">
+        <legend class="visually-hidden">Dark mode</legend>
+        <div class="segment" id="mode-seg"></div>
+        <p class="hint" id="mode-hint"></p>
+      </fieldset>
+
+      <fieldset class="group" id="site">
+        <legend class="group-title">This site</legend>
+        <p class="host" id="host"></p>
+        <div class="segment" id="rule-seg"></div>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend class="group-title">Look</legend>
+        <div class="presets" id="preset-row"></div>
+        <div id="sliders"></div>
+      </fieldset>
+    </section>
+
+    <section class="app" aria-labelledby="app-title">
+      <h2 id="app-title">Settings</h2>
+
+      <h3 class="cap">Schedule</h3>
+      <div class="list">
+        <label class="item"><span>From</span><input type="time" id="start" value="21:00"></label>
+        <label class="item"><span>To</span><input type="time" id="end" value="07:00"></label>
+      </div>
+      <p class="foot">Used when the mode is Schedule. Can cross midnight.</p>
+
+      <h3 class="cap">Pictures</h3>
+      <div class="list">
+        <div class="item col"><span id="images-label">Photos and video</span><div class="segment" id="images-seg" role="radiogroup" aria-labelledby="images-label"></div></div>
+        <label class="item"><span>Hide background images</span><input type="checkbox" id="hide-bg"></label>
+        <label class="item"><span>Leave already-dark pages alone</span><input type="checkbox" id="detect-dark"></label>
+      </div>
+
+      <h3 class="cap">Sites</h3>
+      <ul class="list" id="sites"></ul>
+      <p class="foot" id="sites-empty" hidden>No site rules yet. Every site follows the default.</p>
+
+      <h3 class="cap">Privacy</h3>
+      <div class="list">
+        <p class="item note">Settings and site names stay on this device. No account, no analytics, no servers. Reporting a problem opens an email you send yourself.</p>
+        <button type="button" class="item destructive" id="reset">Reset all settings</button>
+      </div>
+    </section>
+  </main>
+  <script src="../state.js"></script>
+  <script src="view.js"></script>
+</body>
+</html>
