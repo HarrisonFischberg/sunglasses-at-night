@@ -492,3 +492,4 @@
 - `engine/scripts/perf.js`: the grid fixture now runs 3 paired runs (each: no-engine storm, then engine storm). Budget `gridStormRafGapMax` = median rAF gap max with engine ≤ median without engine + 8 ms (owner-accepted). Engine-task and share budgets use the worst of the 3 runs. Per-run numbers go to `grid.runs` in `ralph/evidence/t013-perf.json`; the summary prints them.
 - Verification: `node --check engine/scripts/perf.js` OK. `npm run perf` in the sandbox produced no output for 300 s and was stopped (WebKit does not launch here, B15). That is not a result. The existing t013-perf.json still holds the old 32 ms metric run, so it does not prove the new metric.
 - Row set to `needs-runner-build`: the runner e2e (same code via e2e/perf.test.js) must write the new t013-perf.json. No pass claimed.
+- Stop-hook round: recorded B31 and set the row to `blocked (B31)`. No pass is claimed; `npm run perf` has no output from this session.
