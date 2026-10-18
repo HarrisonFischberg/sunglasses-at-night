@@ -283,3 +283,12 @@
 - The runner was killed mid-iteration 6 when the supervising session ended (no result JSON). The uncommitted T013 work in progress is left in the tree (`e2e/perf.test.js`, `e2e/perf/`, `engine/scripts/perf.js`, edits to `engine/src/dynamic.js`): continue from it, don't discard it.
 - Runner e2e at b497a77: 25/36. T012's first-paint check fails on all 10 pages; T010's popup keyboard case fails. Both re-queued as `needs-runner-build` (they were wrongly `blocked` on "waiting for runner", so the runner skipped them).
 - Resuming run 2 with the remaining 4 iterations.
+
+## 2026-10-17: T010 popup + options (Ralph iteration). BLOCKED (B18, owner manual check)
+
+- Goal: T010 acceptance (all controls native; names on icon buttons; restricted-page state), proven by "manual + T015".
+- Input: runner e2e at 11d2c57 (`ralph/evidence/e2e-latest.md`): T010 is 3/4. Restricted page, already-dark and options pass. `popup on a normal page` fails with `AssertionError: icon button reachable and named` (`e2e/ui.test.js:122`).
+- Cause: the test, not the popup. `#more` is a native `<button>` with `aria-label="More settings"`. WebKit, like Safari on default settings, moves plain Tab only between text fields and selects. The options walk in `ralph/evidence/t010-e2e.json` shows the same thing: mode → time fields → preset → images → engine, with no button, checkbox or range.
+- Fix (`e2e/ui.test.js`): `tabOrder` takes a key and blurs first. The popup and options tests now walk with both Tab and Option+Tab (`Alt+Tab`, Safari's "reach every control"). Every stop in both walks must be native and named. The Option+Tab walk must reach `More settings` and a site-rule radio (popup), plus `Remove rule for a.test`, `Remove rule for b.test` and `Reset all settings…` (options). Both orders go into `t010-e2e.json`. This is stricter than before. No assertion was removed.
+- Commands: `node --check e2e/ui.test.js` OK. `npm test` → `ℹ tests 286 ℹ pass 286 ℹ fail 0`. `npm run e2e` can't launch WebKit in-session (B15), so the runner's next `ralph/verify-e2e.sh` decides the 4 `ui.test.js` cases.
+- Status: `blocked (B18)`. Acceptance also needs the owner's manual Safari check (B18 steps, now including Option+Tab) and T015. Nothing is claimed passing until both of these hold: the next `e2e-latest.md` shows `popup on a normal page` ✔, and the owner has pasted B18 results. If the runner e2e still fails that case, set the row back to `needs-runner-build`.

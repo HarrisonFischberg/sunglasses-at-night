@@ -85,11 +85,15 @@ async function open(page, { scheme = 'light', settings = defaultSettings(), tabU
   return { p, context, errors };
 }
 
-// Tab through the page; describe each focused element.
-async function tabOrder(p, max = 40) {
+// Tab through the page; describe each focused element. WebKit, like Safari
+// with default settings, moves Tab only between text fields and selects;
+// Option+Tab ('Alt+Tab') reaches every control, as Tab does once "Press Tab
+// to highlight each item" / Keyboard navigation is on. Check both.
+async function tabOrder(p, max = 40, key = 'Tab') {
+  await p.evaluate(() => document.activeElement?.blur());
   const seen = [];
   for (let i = 0; i < max; i++) {
-    await p.keyboard.press('Tab');
+    await p.keyboard.press(key);
     const d = await p.evaluate(() => {
       const el = document.activeElement;
       if (!el || el === document.body) return null;
@@ -115,17 +119,19 @@ test('popup on a normal page: site controls, keyboard pass, rule saved from the 
     assert.equal(await p.textContent('#host'), 'example.com');
     assert.equal(await p.textContent('#status'), 'Dark mode is on for this page.');
     const order = await tabOrder(p);
-    for (const el of order) {
+    const allOrder = await tabOrder(p, 40, 'Alt+Tab');
+    for (const el of [...order, ...allOrder]) {
       assert.ok(NATIVE.has(el.tag), `non-native focus stop ${JSON.stringify(el)}`);
       assert.ok(el.name, `unnamed focus stop ${JSON.stringify(el)}`);
     }
-    assert.ok(order.some((e) => e.id === 'more' && e.name === 'More settings'), 'icon button reachable and named');
+    assert.ok(allOrder.some((e) => e.id === 'more' && e.name === 'More settings'), `icon button reachable and named ${JSON.stringify(allOrder)}`);
+    assert.ok(allOrder.some((e) => e.type === 'radio' && e.name), 'site rule reachable from the keyboard');
     await p.focus('input[name="rule"][value="never"]');
     await p.keyboard.press('Space');
     await p.waitForFunction(() => globalThis.__data.settings.sites?.['example.com']?.rule === 'never');
     await p.screenshot({ path: evidencePath(`t010-popup-${scheme}.png`), fullPage: true });
     assert.deepEqual(errors, []);
-    results.push({ case: `popup-${scheme}`, order });
+    results.push({ case: `popup-${scheme}`, order, allOrder });
     await context.close();
   }
 });
@@ -163,9 +169,13 @@ test('options page: named remove buttons, keyboard pass, Reset dialog focus', as
     assert.deepEqual(labels, ['Remove rule for a.test', 'Remove rule for b.test']);
     assert.equal(await p.isVisible('#schedule'), true);
     const order = await tabOrder(p, 60);
-    for (const el of order) {
+    const allOrder = await tabOrder(p, 60, 'Alt+Tab');
+    for (const el of [...order, ...allOrder]) {
       assert.ok(NATIVE.has(el.tag), `non-native focus stop ${JSON.stringify(el)}`);
       assert.ok(el.name, `unnamed focus stop ${JSON.stringify(el)}`);
+    }
+    for (const name of ['Remove rule for a.test', 'Remove rule for b.test', 'Reset all settings…']) {
+      assert.ok(allOrder.some((e) => e.tag === 'button' && e.name === name), `${name} reachable ${JSON.stringify(allOrder)}`);
     }
     await p.screenshot({ path: evidencePath(`t010-options-${scheme}.png`), fullPage: true });
     if (scheme === 'light') {
@@ -186,7 +196,7 @@ test('options page: named remove buttons, keyboard pass, Reset dialog focus', as
       assert.equal(await p.evaluate(() => globalThis.__data.settings.mode), 'system');
     }
     assert.deepEqual(errors, []);
-    results.push({ case: `options-${scheme}`, order });
+    results.push({ case: `options-${scheme}`, order, allOrder });
     await context.close();
   }
 });
