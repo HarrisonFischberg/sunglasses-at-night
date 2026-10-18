@@ -47,8 +47,10 @@ claim Impeccable ran unless its output is in this session.
   `needs-runner-build` status applies when your acceptance depends on an e2e run you just changed.
   e2e code must only contact 127.0.0.1 loopback servers it starts itself.
 - Engine tests: `npm test` (runs `node --test 'engine/test/**/*.test.js'`).
+- Never edit `ralph/*.sh` or `ralph/next-task.js`: the runner runs them outside the sandbox.
+- `/impeccable shape` in an unattended session: Impeccable allows inferring from PRODUCT.md when nobody can answer. Label every assumption in `docs/design/directions.md`. The owner approves the direction afterwards.
 - Never edit `.claude/settings.json`, never push, never add a dependency `prd.md` doesn't list as
   approved (approved: `playwright@1.64.1` dev-only; nothing else).
 - Never weaken or delete a test to make it pass. Never mark a blocked task done.
-- Product name is "Sunglasses at Night". Never use reference apps' names, copy, or visuals.
+- Product name: **Sunglasses for Safari** (renamed 2026-10-18 by T027; until T027 is done the code still says "Sunglasses at Night"). Never use reference apps' names, copy, or visuals.
 - No network code in the shipped extension or app except what prd.md T007 allows.

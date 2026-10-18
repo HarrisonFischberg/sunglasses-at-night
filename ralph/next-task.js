@@ -24,6 +24,6 @@ function depIds(deps, self) {
 }
 
 if (rows.length && rows.every((r) => r.status.startsWith('done'))) { console.log('ALL_DONE'); process.exit(10); }
-const ready = rows.find((r) => r.status.startsWith('needs-runner-build')) || rows.find((r) => r.status === 'pending' && depIds(r.deps, r.id).every((d) => done.has(d)));
+const ready = rows.find((r) => r.status.startsWith('needs-runner-build')) || rows.find((r) => r.status.startsWith('pending') && depIds(r.deps, r.id).every((d) => done.has(d)));
 if (!ready) { console.log('NONE_READY'); process.exit(11); }
 console.log(JSON.stringify(ready));
