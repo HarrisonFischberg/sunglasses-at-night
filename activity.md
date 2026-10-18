@@ -493,3 +493,16 @@
 - Verification: `node --check engine/scripts/perf.js` OK. `npm run perf` in the sandbox produced no output for 300 s and was stopped (WebKit does not launch here, B15). That is not a result. The existing t013-perf.json still holds the old 32 ms metric run, so it does not prove the new metric.
 - Row set to `needs-runner-build`: the runner e2e (same code via e2e/perf.test.js) must write the new t013-perf.json. No pass claimed.
 - Stop-hook round: recorded B31 and set the row to `blocked (B31)`. No pass is claimed; `npm run perf` has no output from this session.
+
+## 2026-10-18: T020 sweeps (second Ralph iteration). BLOCKED (B26 still open)
+- Verification attempt: `python3 -I ~/.claude/plugins/marketplaces/replica-skill/replica-brand/sweep.py --help` returned "This command requires approval". Plain read-only commands (grep, tail, ls) ran; only the Python sweep tool is refused. `replica-brand` and `replica-launch` are not on PATH.
+- Result: no sweep or lint output exists, so none is reported. No listing drafted (it could not be linted) and no brand-leftover result is claimed.
+- Row T020 set to `blocked (B26)`. B26 stays OPEN: the owner must allow `python3 -I` on the replica-skill tools for the runner, or run the sweep and lint and paste the output here.
+
+## 2026-10-18 08:55Z — supervisor (Opus): run 4 stopped after 5 iterations, fixes
+
+- Run 4: T023, T027, T028, T013, T020, all left "blocked" on runner checks or permissions; then no dependency-ready task (stop).
+- **Root cause of the permission refusals:** every `.err` log says `Ignoring 36 permissions.allow entries from .claude/settings.json: this workspace has not been trusted`. `--settings` does NOT bypass the trust gate, so the project allowlist has never applied in the loop. Fix needs the owner (trust dialog).
+- Swift build was broken by T028 (`Shared/ExtensionStatusModel.swift:32 sending 'self' risks causing data races`): made the model `@MainActor`, completion `@Sendable`, async test with `fulfillment(of:)`. Builds SUCCEEDED, Swift 15/15.
+- e2e 60/68 → 68/68: T023's harness stand-in for Safari's manifest css was an unmarked `<style>`, so the structure and "ours" checks counted it as a page or engine element. Marked it `data-sunglasses-at-night="manifest-base"` and excluded it in page-audit, filter and t012 checks (Safari injects manifest css as a user stylesheet, not a DOM node).
+- Brand sweep (supervised): no user-visible "Sunglasses at Night" left. T027 done. T028 done (B30 decided). T023 waits on the owner's amazon re-check. T013 re-queued (one perf run failed 36 > 28).

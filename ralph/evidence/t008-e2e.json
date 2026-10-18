@@ -292,7 +292,7 @@
   "toggle": {
     "timings": {
       "toFilterMs": 8,
-      "toDynamicMs": 7
+      "toDynamicMs": 9
     },
     "filter": {
       "plain": [
@@ -411,6 +411,6 @@
   },
   "_meta": {
     "engine": "webkit (Playwright 1.64.1)",
-    "date": "2026-10-18T07:35:18.336Z"
+    "date": "2026-10-18T08:52:11.802Z"
   }
 }

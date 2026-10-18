@@ -14,7 +14,7 @@ enum AppIdentifiers {
 /// Reads the extension's state from Safari. An error (for example, Safari has
 /// not registered the extension yet) is reported as `.unknown`.
 struct SafariExtensionStateProvider: ExtensionStateProviding {
-    func fetchStatus(completion: @escaping (ExtensionStatus) -> Void) {
+    func fetchStatus(completion: @escaping @Sendable (ExtensionStatus) -> Void) {
         SFSafariExtensionManager.getStateOfSafariExtension(withIdentifier: AppIdentifiers.extensionBundleID) { state, error in
             guard let state, error == nil else {
                 completion(.unknown)

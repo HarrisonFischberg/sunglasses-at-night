@@ -234,7 +234,7 @@ for (const fx of FIXTURES) {
 
     if (fx.alreadyDark) {
       const ours = await page.evaluate(() =>
-        document.querySelectorAll('[data-sunglasses-at-night],#sunglasses-at-night-early,[data-san-inline],[data-san-fix]').length);
+        document.querySelectorAll('[data-sunglasses-at-night]:not([data-sunglasses-at-night="manifest-base"]),#sunglasses-at-night-early,[data-san-inline],[data-san-fix]').length);
       assert.equal(ours, 0, 'engine left sheets or attributes on an already-dark page');
       assert.deepEqual(await page.evaluate(styleSignature), baseline.styles, 'computed colors changed on an already-dark page');
       await page.click('#go');

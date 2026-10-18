@@ -9,6 +9,9 @@ const SKIP_TAGS = new Set(['script', 'style', 'template', 'noscript', 'title', '
 const INTERACTIVE = 'a[href],button,input,select,textarea,summary,[role="button"],[onclick]';
 
 const isOurs = (el) => el.hasAttribute(MARK);
+// The harness's stand-in for Safari's manifest css (a user stylesheet, not a
+// DOM node in Safari): neither the page's nor the engine's element.
+const isManifestStandIn = (el) => el.getAttribute(MARK) === 'manifest-base';
 
 // Every element in tree order, descending into open shadow roots.
 function walk(root, out = []) {
@@ -77,7 +80,7 @@ export function canvasColor() {
 export function snapshot() {
   const els = walk(document).filter((el) => !isOurs(el));
   return {
-    ours: walk(document).filter(isOurs).map((el) => el.localName),
+    ours: walk(document).filter((el) => isOurs(el) && !isManifestStandIn(el)).map((el) => el.localName),
     elements: els.map((el) => {
       const cs = getComputedStyle(el);
       let hittable = null;

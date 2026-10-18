@@ -6,15 +6,16 @@ import AppKit
 
 private final class MockProvider: ExtensionStateProviding {
     var next: ExtensionStatus = .disabled
-    func fetchStatus(completion: @escaping (ExtensionStatus) -> Void) { completion(next) }
+    func fetchStatus(completion: @escaping @Sendable (ExtensionStatus) -> Void) { completion(next) }
 }
 
 private final class BackgroundProvider: ExtensionStateProviding {
-    func fetchStatus(completion: @escaping (ExtensionStatus) -> Void) {
+    func fetchStatus(completion: @escaping @Sendable (ExtensionStatus) -> Void) {
         DispatchQueue.global().async { completion(.enabled) }
     }
 }
 
+@MainActor
 final class ContainerAppTests: XCTestCase {
     func testStatusStartsUnknown() {
         XCTAssertEqual(ExtensionStatusModel(provider: MockProvider()).status, .unknown)
@@ -36,7 +37,7 @@ final class ContainerAppTests: XCTestCase {
         XCTAssertEqual(model.status, .disabled)
     }
 
-    func testBackgroundCompletionPublishesOnMain() {
+    func testBackgroundCompletionPublishesOnMain() async {
         let model = ExtensionStatusModel(provider: BackgroundProvider())
         let done = expectation(description: "status published")
         let cancellable = model.$status.dropFirst().sink { status in
@@ -45,7 +46,7 @@ final class ContainerAppTests: XCTestCase {
             done.fulfill()
         }
         model.refresh()
-        wait(for: [done], timeout: 2)
+        await fulfillment(of: [done], timeout: 2)
         cancellable.cancel()
     }
 

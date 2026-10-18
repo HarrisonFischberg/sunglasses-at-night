@@ -78,7 +78,9 @@ export const auditBundle = () => bundle(resolve(ROOT, 'e2e/page-audit.js'), { gl
 // Stand-in for the manifest `css` entry: Safari injects content/base.css
 // before first paint with no script. An init script that appends the same
 // text to the root at document start is the closest WebKit-under-Playwright
-// gets; it runs before the page's first rendering update.
+// gets; it runs before the page's first rendering update. Safari's manifest
+// css is a user stylesheet, not a DOM node, so the stand-in carries the
+// engine's mark: audits treat it as ours, and the engine never rewrites it.
 const baseCssText = () => readFileSync(resolve(ROOT, 'Extension/Resources/content/base.css'), 'utf8');
 const baseCssShim = (css) => `(() => {
   if (location.protocol === 'about:') return;
@@ -87,6 +89,7 @@ const baseCssShim = (css) => `(() => {
     if (!root) return false;
     const s = document.createElement('style');
     s.id = 'san-manifest-base';
+    s.setAttribute('data-sunglasses-at-night', 'manifest-base');
     s.textContent = ${JSON.stringify(css)};
     root.appendChild(s);
     return true;

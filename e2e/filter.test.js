@@ -139,7 +139,7 @@ test('per-site engine switches dynamic → filter → dynamic without a reload',
   const { page, context } = await openPage(browser, servers, '/images.html', { extension: true, settings: settingsWith({}) });
   await page.evaluate(() => { globalThis.__sameDocument = 'yes'; });
   const roles = () => page.evaluate(() =>
-    [...document.querySelectorAll('[data-sunglasses-at-night]')].map((e) => e.getAttribute('data-sunglasses-at-night')).sort());
+    [...document.querySelectorAll('[data-sunglasses-at-night]:not([data-sunglasses-at-night="manifest-base"])')].map((e) => e.getAttribute('data-sunglasses-at-night')).sort());
   const setSites = (sites) => page.evaluate(async (s) => {
     const t0 = performance.now();
     const { settings } = await browser.storage.local.get('settings');

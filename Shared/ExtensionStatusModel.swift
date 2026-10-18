@@ -11,11 +11,13 @@ enum ExtensionStatus: Equatable {
 /// Source of the extension's state. The macOS app backs it with
 /// `SFSafariExtensionManager.getStateOfSafariExtension`; tests use a mock.
 protocol ExtensionStateProviding {
-    func fetchStatus(completion: @escaping (ExtensionStatus) -> Void)
+    func fetchStatus(completion: @escaping @Sendable (ExtensionStatus) -> Void)
 }
 
 /// Holds the extension status the window shows. Completions may arrive on any
-/// thread; the published value is always set on the main queue.
+/// thread; the published value is always set on the main actor (synchronously
+/// when the completion already runs on the main thread).
+@MainActor
 final class ExtensionStatusModel: ObservableObject {
     @Published private(set) var status: ExtensionStatus = .unknown
     private let provider: ExtensionStateProviding
@@ -27,9 +29,9 @@ final class ExtensionStatusModel: ObservableObject {
     func refresh() {
         provider.fetchStatus { [weak self] newStatus in
             if Thread.isMainThread {
-                self?.status = newStatus
+                MainActor.assumeIsolated { self?.status = newStatus }
             } else {
-                DispatchQueue.main.async { self?.status = newStatus }
+                Task { @MainActor in self?.status = newStatus }
             }
         }
     }
