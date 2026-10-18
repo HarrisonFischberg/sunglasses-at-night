@@ -570,3 +570,5 @@
 - Risk to check in the runner output: tagging adds a style recalc on insert and another on release; watch T013 gridStormRafGapMax and the storm engine share.
 - New: e2e/fixtures/amazon-home.html, e2e/fixtures/cdn/amazon-carousel.css (500 ms late), e2e/t031.test.js (photo pixels dE<=8 vs the unmodified page, headline color equals authored, every frame <=2% light, nothing left tagged; evidence ralph/evidence/t031-e2e.json), unit tests for the blend rewrite and pendingCss.
 - Verification run here: `npm run check` OK; `npm test` -> 318 pass, 0 fail. e2e cannot launch WebKit in this sandbox, so no e2e result exists yet: the runner must pass t031 plus the T012/T023/T029/T013 suites, then the owner re-checks amazon.com. Not claimed: any WebKit result, owner check.
+
+- T031 (2026-10-18, Builder): `node --test e2e/t031.test.js` in the sandbox printed nothing for 120 s and was stopped (WebKit cannot launch). Row set to `blocked (B36)`: the owner amazon.com re-check is a human step and the runner e2e output does not exist yet. Nothing is marked done.
