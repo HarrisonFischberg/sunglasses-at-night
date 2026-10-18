@@ -367,6 +367,8 @@ const SHEET_ATTRS = new Set(['media', 'disabled', 'rel', 'href']);
 // it forces one style recalc instead of one per fixed element.
 export const SLICE_MS = 6;
 export const CONTRAST_DELAY_MS = 100;
+// Longest the engine waits for page sheets to load before calling itself ready.
+export const READY_CAP_MS = 2500;
 const YIELD = Symbol('yield');
 
 /**
@@ -377,13 +379,17 @@ const YIELD = Symbol('yield');
  * drops url()/image-set() background layers, keeping gradients.
  * opts.monitor(name, start, ms), test-only: called after each main-thread
  * task the engine runs (the perf harness sums them).
+ * opts.onReady(), called once, in the task the override sheet first covers every
+ * page sheet (cross-origin re-fetches applied, <link> sheets loaded), or after
+ * READY_CAP_MS. Until then contrast checks wait, because the caller's interim
+ * rule is still changing what they would read.
  * Returns { stop(), refresh(), settle() }; settle() resolves once every
  * cross-origin fetch started so far has been applied and all deferred work
  * is done.
  */
 export function startDynamic({
   document, window = document.defaultView, look, fetchSheet = async () => null,
-  images = 'leave', hideBackgroundImages = false, monitor = null,
+  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null,
 }) {
   const base = hideBackgroundImages ? { hideImages: true } : {};
   const win = window;
@@ -415,6 +421,21 @@ export function startDynamic({
   let pass = null; // { items, i }: the contrast pass in progress
   let syncWanted = false; // sheets changed (link load, remote sheet arrived)
   let timerId = null, timerAt = Infinity;
+  let readyDone = !onReady, readyTimer = null;
+
+  function checkReady(force = false) {
+    if (readyDone || stopped) return;
+    if (!force) {
+      if (pending.size || syncWanted) return;
+      for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
+        if (!link.sheet && !link.disabled) return;
+      }
+    }
+    readyDone = true;
+    win.clearTimeout(readyTimer);
+    onReady();
+    wantContrastAll();
+  }
 
   const isOurs = (node) => node?.nodeType === 1 && node.hasAttribute(MARK);
 
@@ -919,8 +940,10 @@ export function startDynamic({
     if (syncWanted) {
       if (syncAll(deadline) === YIELD) return false;
       syncWanted = false;
+      checkReady();
     }
     for (;;) {
+      if (!readyDone) return true;
       if (!pass) pass = nextPass();
       if (!pass) return true;
       if (now() > deadline) return false;
@@ -1002,6 +1025,8 @@ export function startDynamic({
     // Contrast fixes follow in slices right after; the override sheet is
     // already in place, so nothing shows light meanwhile.
     wantContrastAll();
+    if (onReady) readyTimer = win.setTimeout(() => checkReady(true), READY_CAP_MS);
+    checkReady();
   })();
   const timer = win.setInterval(timed('poll', () => {
     if (!document.hidden) refresh();
@@ -1010,6 +1035,7 @@ export function startDynamic({
   function stop() {
     stopped = true;
     win.clearInterval(timer);
+    win.clearTimeout(readyTimer);
     if (timerId !== null) win.clearTimeout(timerId);
     timerId = null;
     pass = null;

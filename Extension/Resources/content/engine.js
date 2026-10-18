@@ -1738,6 +1738,11 @@ const SHEET_ID = 'sunglasses-at-night-early';
 // so the page never flashes white while the async settings read is pending.
 const OFF_ATTRIBUTE = 'data-sunglasses-off';
 
+// Set on <html> in the task the dynamic engine's first complete override sheet
+// is in place (or the filter engine starts). It lifts the interim rule below.
+const READY_ATTRIBUTE = 'data-sunglasses-ready';
+
+const MEDIA = 'img,picture,video,canvas,svg,iframe,embed,object';
 const WHITE = { r: 1, g: 1, b: 1, alpha: 1 };
 const BLACK = { r: 0, g: 0, b: 0, alpha: 1 };
 
@@ -1754,6 +1759,26 @@ function antiFlashCss(look) {
     `:root{color-scheme:dark!important;background-color:${b}!important;color:${f}!important}` +
     `body{background-color:${b}!important}`
   );
+}
+
+/**
+ * The interim rule: while the page loads, before the engine has rewritten its
+ * sheets, every element but media gets a transparent background (so the dark
+ * root shows through), light text and a dim border. Dark to dark, never white,
+ * and media is untouched. `gate` is the :root selector with its attribute guards.
+ */
+function interimCss(look, gate = `:root:not([${READY_ATTRIBUTE}])`) {
+  const bg = quantize(transformColor(WHITE, 'bg', look));
+  const fg = ensureContrast(transformColor(BLACK, 'fg', look), bg);
+  return (
+    `${gate} body *:not(${MEDIA}){background-color:transparent!important;` +
+    `color:${formatRgb(fg)}!important;border-color:rgb(70 70 70)!important}`
+  );
+}
+
+/** The sheet startEarly injects: the anti-flash base plus the interim rule. */
+function earlySheetCss(look) {
+  return antiFlashCss(look) + interimCss(look);
 }
 
 /**
@@ -1803,7 +1828,10 @@ function startEarly({
   if (activation.on) {
     style = document.createElement('style');
     style.id = SHEET_ID;
-    style.textContent = antiFlashCss(site.look);
+    // Marked as ours so the dynamic engine never reads it as a page sheet; it
+    // stays until the engine is ready, because the interim rule is in it.
+    style.setAttribute?.('data-sunglasses-at-night', 'early');
+    style.textContent = earlySheetCss(site.look);
     (document.head ?? document.documentElement).appendChild(style);
   }
 
@@ -1850,7 +1878,7 @@ function whenParsed(document, fn) {
   if (document.readyState !== 'loading') return void fn();
   document.addEventListener('DOMContentLoaded', () => fn(), { once: true });
 }
-return { SHEET_ID, OFF_ATTRIBUTE, antiFlashCss, readPageColors, startEarly, whenRoot, whenParsed };
+return { SHEET_ID, OFF_ATTRIBUTE, READY_ATTRIBUTE, antiFlashCss, interimCss, earlySheetCss, readPageColors, startEarly, whenRoot, whenParsed };
 })();
 
 // ---- engine/src/filter.js
@@ -2325,6 +2353,8 @@ const SHEET_ATTRS = new Set(['media', 'disabled', 'rel', 'href']);
 // it forces one style recalc instead of one per fixed element.
 const SLICE_MS = 6;
 const CONTRAST_DELAY_MS = 100;
+// Longest the engine waits for page sheets to load before calling itself ready.
+const READY_CAP_MS = 2500;
 const YIELD = Symbol('yield');
 
 /**
@@ -2335,13 +2365,17 @@ const YIELD = Symbol('yield');
  * drops url()/image-set() background layers, keeping gradients.
  * opts.monitor(name, start, ms), test-only: called after each main-thread
  * task the engine runs (the perf harness sums them).
+ * opts.onReady(), called once, in the task the override sheet first covers every
+ * page sheet (cross-origin re-fetches applied, <link> sheets loaded), or after
+ * READY_CAP_MS. Until then contrast checks wait, because the caller's interim
+ * rule is still changing what they would read.
  * Returns { stop(), refresh(), settle() }; settle() resolves once every
  * cross-origin fetch started so far has been applied and all deferred work
  * is done.
  */
 function startDynamic({
   document, window = document.defaultView, look, fetchSheet = async () => null,
-  images = 'leave', hideBackgroundImages = false, monitor = null,
+  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null,
 }) {
   const base = hideBackgroundImages ? { hideImages: true } : {};
   const win = window;
@@ -2373,6 +2407,21 @@ function startDynamic({
   let pass = null; // { items, i }: the contrast pass in progress
   let syncWanted = false; // sheets changed (link load, remote sheet arrived)
   let timerId = null, timerAt = Infinity;
+  let readyDone = !onReady, readyTimer = null;
+
+  function checkReady(force = false) {
+    if (readyDone || stopped) return;
+    if (!force) {
+      if (pending.size || syncWanted) return;
+      for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
+        if (!link.sheet && !link.disabled) return;
+      }
+    }
+    readyDone = true;
+    win.clearTimeout(readyTimer);
+    onReady();
+    wantContrastAll();
+  }
 
   const isOurs = (node) => node?.nodeType === 1 && node.hasAttribute(MARK);
 
@@ -2877,8 +2926,10 @@ function startDynamic({
     if (syncWanted) {
       if (syncAll(deadline) === YIELD) return false;
       syncWanted = false;
+      checkReady();
     }
     for (;;) {
+      if (!readyDone) return true;
       if (!pass) pass = nextPass();
       if (!pass) return true;
       if (now() > deadline) return false;
@@ -2960,6 +3011,8 @@ function startDynamic({
     // Contrast fixes follow in slices right after; the override sheet is
     // already in place, so nothing shows light meanwhile.
     wantContrastAll();
+    if (onReady) readyTimer = win.setTimeout(() => checkReady(true), READY_CAP_MS);
+    checkReady();
   })();
   const timer = win.setInterval(timed('poll', () => {
     if (!document.hidden) refresh();
@@ -2968,6 +3021,7 @@ function startDynamic({
   function stop() {
     stopped = true;
     win.clearInterval(timer);
+    win.clearTimeout(readyTimer);
     if (timerId !== null) win.clearTimeout(timerId);
     timerId = null;
     pass = null;
@@ -3010,7 +3064,7 @@ function startDynamic({
 
   return { stop, refresh, settle };
 }
-return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, PROP_ROLES, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, SLICE_MS, CONTRAST_DELAY_MS, startDynamic };
+return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, PROP_ROLES, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, SLICE_MS, CONTRAST_DELAY_MS, READY_CAP_MS, startDynamic };
 })();
 
 // ---- engine/src/messages.js
@@ -3051,7 +3105,7 @@ const __m_engine_src_content_js = (() => {
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 const { createSettingsStore, resolveSite, migrate } = __m_engine_src_settings_js;
-const { startEarly, whenParsed, whenRoot } = __m_engine_src_early_js;
+const { startEarly, whenParsed, whenRoot, READY_ATTRIBUTE } = __m_engine_src_early_js;
 const { startDynamic } = __m_engine_src_dynamic_js;
 const { startFilter } = __m_engine_src_filter_js;
 const { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } = __m_engine_src_messages_js;
@@ -3082,9 +3136,41 @@ function localArea() {
   };
 }
 
-async function fetchSheet(url) {
-  const res = await api.runtime.sendMessage({ type: FETCH_SHEET, url });
-  return res?.ok ? res.text : null;
+// One request per sheet URL for the life of the page: the prefetch below and
+// the engine's own re-fetch share it. A failure is forgotten so it can retry.
+const sheetRequests = new Map();
+function fetchSheet(url) {
+  let request = sheetRequests.get(url);
+  if (!request) {
+    request = Promise.resolve(api.runtime.sendMessage({ type: FETCH_SHEET, url }))
+      .then((res) => (res?.ok ? res.text : null))
+      .catch(() => null);
+    sheetRequests.set(url, request);
+    request.then((text) => { if (text === null) sheetRequests.delete(url); });
+  }
+  return request;
+}
+
+// Cross-origin sheets can't be read from the page, so the engine asks the
+// background for their text. Ask as each <link> arrives instead of after the
+// whole document is parsed, so the answer is usually there when the engine starts.
+function prefetchSheets(doc, MutationObserver) {
+  const want = (node) => {
+    if (node.nodeType !== 1) return;
+    const links = node.localName === 'link' ? [node] : [...(node.querySelectorAll?.('link') ?? [])];
+    for (const link of links) {
+      if (!/\bstylesheet\b/i.test(link.rel) || !link.href) continue;
+      try {
+        if (new URL(link.href).origin !== location.origin) fetchSheet(link.href);
+      } catch { /* not a URL */ }
+    }
+  };
+  want(doc.documentElement);
+  const observer = new MutationObserver((records) => {
+    for (const r of records) for (const n of r.addedNodes) want(n);
+  });
+  observer.observe(doc, { childList: true, subtree: true });
+  return () => observer.disconnect();
 }
 
 // The top frame tells the background script what it decided, for the
@@ -3101,23 +3187,33 @@ function run(settings) {
   const ctl = startEarly({
     document, getComputedStyle: (el) => getComputedStyle(el), settings, hostname, systemDark,
   });
+  document.documentElement.removeAttribute(READY_ATTRIBUTE);
+  // The interim rule (in ctl.style, and in base.css for system dark) lifts when
+  // the engine is ready: its override sheet then covers every page sheet.
+  const ready = () => {
+    document.documentElement.setAttribute(READY_ATTRIBUTE, '');
+    ctl.style?.remove();
+  };
+  const stopPrefetch = ctl.activation.on && window.MutationObserver ? prefetchSheets(document, window.MutationObserver) : () => {};
   let engine = null, cancelled = false;
   whenParsed(document, () => {
+    stopPrefetch();
     if (cancelled) return;
     const result = ctl.finish();
     reportState(result);
     if (!result.apply) return;
     const site = resolveSite(settings, hostname);
     const media = { images: settings.images, hideBackgroundImages: settings.hideBackgroundImages };
-    // Same task, so no paint in between: drop the anti-flash sheet first so
-    // the engine never reads it as a page sheet.
-    ctl.style?.remove();
-    engine = site.engine === 'filter'
-      ? startFilter({ document, look: site.look, ...media })
-      : startDynamic({ document, window, look: site.look, fetchSheet, ...media });
+    if (site.engine === 'filter') {
+      engine = startFilter({ document, look: site.look, ...media });
+      ready();
+    } else {
+      engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, ...media });
+    }
   });
   return () => {
     cancelled = true;
+    stopPrefetch();
     engine?.stop();
     ctl.style?.remove();
   };

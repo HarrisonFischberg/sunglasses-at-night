@@ -5,7 +5,7 @@ import {
 } from '../src/detect.js';
 import { contrastRatio, parseColor } from '../src/color.js';
 import {
-  SHEET_ID, antiFlashCss, readPageColors, startEarly, whenParsed, whenRoot,
+  SHEET_ID, antiFlashCss, earlySheetCss, interimCss, READY_ATTRIBUTE, readPageColors, startEarly, whenParsed, whenRoot,
 } from '../src/early.js';
 import { defaultSettings, validateSettings } from '../src/settings.js';
 
@@ -163,8 +163,17 @@ test('startEarly: injects the sheet at document_start when active', () => {
   assert.equal(ctl.activation.on, true);
   assert.ok(ctl.style);
   assert.equal(ctl.style.id, SHEET_ID);
-  assert.equal(ctl.style.textContent, antiFlashCss());
+  assert.equal(ctl.style.textContent, earlySheetCss());
+  assert.ok(ctl.style.textContent.startsWith(antiFlashCss()), 'anti-flash base comes first');
   assert.equal(dom.document.getElementById(SHEET_ID), ctl.style);
+});
+
+test('interimCss: neutralizes backgrounds below <body> until ready, never media', () => {
+  const css = interimCss();
+  assert.ok(css.startsWith(`:root:not([${READY_ATTRIBUTE}]) body *:not(img,picture,video,canvas,svg,iframe,embed,object){`));
+  assert.match(css, /background-color:transparent!important/);
+  assert.match(css, /color:rgb\(\d+ \d+ \d+\)!important/);
+  assert.ok(!/filter|opacity|mix-blend|pointer-events|display|position/.test(css));
 });
 
 test('startEarly: no head yet → sheet goes on the root element', () => {

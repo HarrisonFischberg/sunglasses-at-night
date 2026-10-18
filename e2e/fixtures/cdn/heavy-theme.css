@@ -1,0 +1,5 @@
+.tile { background: #ffffff; color: #222222; border: 1px solid #d5d5d5; padding: 16px; min-height: 180px; }
+.tile h2 { background: #ffffff; margin: 8px 0; font-size: 17px; }
+.price { background: #ffffff; color: #b3261e; font-weight: bold; }
+.cta { background: #ffd814; color: #0f0f0f; border: 1px solid #e6b800; padding: 6px 12px; }
+.photo { display: block; background: #ffffff; }

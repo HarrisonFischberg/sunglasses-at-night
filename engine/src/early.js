@@ -21,6 +21,11 @@ export const SHEET_ID = 'sunglasses-at-night-early';
 // so the page never flashes white while the async settings read is pending.
 export const OFF_ATTRIBUTE = 'data-sunglasses-off';
 
+// Set on <html> in the task the dynamic engine's first complete override sheet
+// is in place (or the filter engine starts). It lifts the interim rule below.
+export const READY_ATTRIBUTE = 'data-sunglasses-ready';
+
+const MEDIA = 'img,picture,video,canvas,svg,iframe,embed,object';
 const WHITE = { r: 1, g: 1, b: 1, alpha: 1 };
 const BLACK = { r: 0, g: 0, b: 0, alpha: 1 };
 
@@ -37,6 +42,26 @@ export function antiFlashCss(look) {
     `:root{color-scheme:dark!important;background-color:${b}!important;color:${f}!important}` +
     `body{background-color:${b}!important}`
   );
+}
+
+/**
+ * The interim rule: while the page loads, before the engine has rewritten its
+ * sheets, every element but media gets a transparent background (so the dark
+ * root shows through), light text and a dim border. Dark to dark, never white,
+ * and media is untouched. `gate` is the :root selector with its attribute guards.
+ */
+export function interimCss(look, gate = `:root:not([${READY_ATTRIBUTE}])`) {
+  const bg = quantize(transformColor(WHITE, 'bg', look));
+  const fg = ensureContrast(transformColor(BLACK, 'fg', look), bg);
+  return (
+    `${gate} body *:not(${MEDIA}){background-color:transparent!important;` +
+    `color:${formatRgb(fg)}!important;border-color:rgb(70 70 70)!important}`
+  );
+}
+
+/** The sheet startEarly injects: the anti-flash base plus the interim rule. */
+export function earlySheetCss(look) {
+  return antiFlashCss(look) + interimCss(look);
 }
 
 /**
@@ -86,7 +111,10 @@ export function startEarly({
   if (activation.on) {
     style = document.createElement('style');
     style.id = SHEET_ID;
-    style.textContent = antiFlashCss(site.look);
+    // Marked as ours so the dynamic engine never reads it as a page sheet; it
+    // stays until the engine is ready, because the interim rule is in it.
+    style.setAttribute?.('data-sunglasses-at-night', 'early');
+    style.textContent = earlySheetCss(site.look);
     (document.head ?? document.documentElement).appendChild(style);
   }
 

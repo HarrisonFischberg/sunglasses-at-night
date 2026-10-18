@@ -40,6 +40,16 @@ function serve(dir, vars) {
     }
     let body = readFileSync(file, 'utf8');
     for (const [k, v] of Object.entries(vars())) body = body.replaceAll(`{{${k}}}`, v);
+    // `?delay=<ms>` holds the whole response back, like a slow sheet.
+    const delay = Number(url.searchParams.get('delay')) || 0;
+    if (delay > 0) {
+      const timer = setTimeout(() => {
+        res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'cache-control': 'no-store' });
+        res.end(body);
+      }, delay);
+      res.on('close', () => clearTimeout(timer));
+      return;
+    }
     res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'cache-control': 'no-store' });
     const stall = Number(url.searchParams.get('stall')) || 0;
     const bodyTag = extname(file) === '.html' ? /<body[^>]*>/i.exec(body) : null;
@@ -196,10 +206,14 @@ async function preparePage(browser, servers, { extension, settings, colorScheme 
 
 // Every rendered frame's canvas color from document start, recorded by a
 // rAF loop (page-audit canvasColor()).
-const FRAME_LOG = `if (location.protocol !== 'about:') {
+// With `sampler` 'light', each frame is the fraction of the viewport painted
+// light instead (page-audit lightFraction()), plus whether the engine is ready.
+const frameLog = (sampler) => `if (location.protocol !== 'about:') {
   globalThis.__sanFrames = [];
   const tick = () => {
-    globalThis.__sanFrames.push({ t: Math.round(performance.now()), ...__sanAudit.canvasColor() });
+    globalThis.__sanFrames.push({ t: Math.round(performance.now()), ${sampler === 'light'
+      ? "...__sanAudit.lightFraction(), ready: document.documentElement.hasAttribute('data-sunglasses-ready')"
+      : '...__sanAudit.canvasColor()'} });
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
@@ -210,10 +224,10 @@ const FRAME_LOG = `if (location.protocol !== 'about:') {
  * after the load event. Returns { frames, settingsAt } where settingsAt is
  * the performance.now() at which the settings read resolved.
  */
-export async function recordFrames(browser, servers, path, { extension = true, settings, colorScheme, settingsDelayMs, watchMs = 1200, stallMs = 1500 } = {}) {
+export async function recordFrames(browser, servers, path, { extension = true, settings, colorScheme, settingsDelayMs, watchMs = 1200, stallMs = 1500, sampler = 'canvas' } = {}) {
   const { page, context } = await preparePage(browser, servers, { extension, settings, colorScheme, settingsDelayMs });
-  await page.addInitScript({ content: FRAME_LOG });
-  await page.goto(`${servers.SITE}${path}?stall=${stallMs}`, { waitUntil: 'load' });
+  await page.addInitScript({ content: frameLog(sampler) });
+  await page.goto(`${servers.SITE}${path}${stallMs > 0 ? `?stall=${stallMs}` : ''}`, { waitUntil: 'load' });
   await page.waitForTimeout(watchMs);
   const out = await page.evaluate(() => ({ frames: globalThis.__sanFrames, settingsAt: globalThis.__sanSettingsAt ?? null }));
   return { ...out, page, context };

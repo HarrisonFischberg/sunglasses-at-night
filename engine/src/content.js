@@ -7,7 +7,7 @@
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 import { createSettingsStore, resolveSite, migrate } from './settings.js';
-import { startEarly, whenParsed, whenRoot } from './early.js';
+import { startEarly, whenParsed, whenRoot, READY_ATTRIBUTE } from './early.js';
 import { startDynamic } from './dynamic.js';
 import { startFilter } from './filter.js';
 import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
@@ -38,9 +38,41 @@ function localArea() {
   };
 }
 
-async function fetchSheet(url) {
-  const res = await api.runtime.sendMessage({ type: FETCH_SHEET, url });
-  return res?.ok ? res.text : null;
+// One request per sheet URL for the life of the page: the prefetch below and
+// the engine's own re-fetch share it. A failure is forgotten so it can retry.
+const sheetRequests = new Map();
+function fetchSheet(url) {
+  let request = sheetRequests.get(url);
+  if (!request) {
+    request = Promise.resolve(api.runtime.sendMessage({ type: FETCH_SHEET, url }))
+      .then((res) => (res?.ok ? res.text : null))
+      .catch(() => null);
+    sheetRequests.set(url, request);
+    request.then((text) => { if (text === null) sheetRequests.delete(url); });
+  }
+  return request;
+}
+
+// Cross-origin sheets can't be read from the page, so the engine asks the
+// background for their text. Ask as each <link> arrives instead of after the
+// whole document is parsed, so the answer is usually there when the engine starts.
+function prefetchSheets(doc, MutationObserver) {
+  const want = (node) => {
+    if (node.nodeType !== 1) return;
+    const links = node.localName === 'link' ? [node] : [...(node.querySelectorAll?.('link') ?? [])];
+    for (const link of links) {
+      if (!/\bstylesheet\b/i.test(link.rel) || !link.href) continue;
+      try {
+        if (new URL(link.href).origin !== location.origin) fetchSheet(link.href);
+      } catch { /* not a URL */ }
+    }
+  };
+  want(doc.documentElement);
+  const observer = new MutationObserver((records) => {
+    for (const r of records) for (const n of r.addedNodes) want(n);
+  });
+  observer.observe(doc, { childList: true, subtree: true });
+  return () => observer.disconnect();
 }
 
 // The top frame tells the background script what it decided, for the
@@ -57,23 +89,33 @@ function run(settings) {
   const ctl = startEarly({
     document, getComputedStyle: (el) => getComputedStyle(el), settings, hostname, systemDark,
   });
+  document.documentElement.removeAttribute(READY_ATTRIBUTE);
+  // The interim rule (in ctl.style, and in base.css for system dark) lifts when
+  // the engine is ready: its override sheet then covers every page sheet.
+  const ready = () => {
+    document.documentElement.setAttribute(READY_ATTRIBUTE, '');
+    ctl.style?.remove();
+  };
+  const stopPrefetch = ctl.activation.on && window.MutationObserver ? prefetchSheets(document, window.MutationObserver) : () => {};
   let engine = null, cancelled = false;
   whenParsed(document, () => {
+    stopPrefetch();
     if (cancelled) return;
     const result = ctl.finish();
     reportState(result);
     if (!result.apply) return;
     const site = resolveSite(settings, hostname);
     const media = { images: settings.images, hideBackgroundImages: settings.hideBackgroundImages };
-    // Same task, so no paint in between: drop the anti-flash sheet first so
-    // the engine never reads it as a page sheet.
-    ctl.style?.remove();
-    engine = site.engine === 'filter'
-      ? startFilter({ document, look: site.look, ...media })
-      : startDynamic({ document, window, look: site.look, fetchSheet, ...media });
+    if (site.engine === 'filter') {
+      engine = startFilter({ document, look: site.look, ...media });
+      ready();
+    } else {
+      engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, ...media });
+    }
   });
   return () => {
     cancelled = true;
+    stopPrefetch();
     engine?.stop();
     ctl.style?.remove();
   };

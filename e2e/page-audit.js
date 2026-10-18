@@ -2,7 +2,7 @@
 // exposed as globalThis.__sanAudit. Independent of the engine's own contrast
 // pass: it measures what the browser actually computed.
 
-import { parseColor, composite, contrastRatio, relativeLuminance } from '../engine/src/color.js';
+import { parseColor, composite, contrastRatio, relativeLuminance, srgbToOklch } from '../engine/src/color.js';
 
 const MARK = 'data-sunglasses-at-night';
 const SKIP_TAGS = new Set(['script', 'style', 'template', 'noscript', 'title', 'head', 'option']);
@@ -74,6 +74,39 @@ export function canvasColor() {
     root: rs.backgroundColor, scheme, bodyChildren: document.body ? document.body.children.length : -1,
     rgb: [out.r, out.g, out.b].map((v) => Math.round(v * 255)), luminance: +relativeLuminance(out).toFixed(3),
   };
+}
+
+const MEDIA_SELECTOR = 'img,picture,video,canvas,svg,iframe,embed,object';
+
+/**
+ * The share of the viewport painted light (OKLCH L > 0.9), from a grid of
+ * points: each point's color is the topmost element's background composited
+ * up the tree onto the canvas. Points on media boxes count as not light
+ * (images are allowed to be bright). Cheap enough to run every frame.
+ */
+export function lightFraction({ cols = 32, rows = 24, threshold = 0.9 } = {}) {
+  const canvas = canvasColor();
+  const base = { r: canvas.rgb[0] / 255, g: canvas.rgb[1] / 255, b: canvas.rgb[2] / 255, alpha: 1 };
+  let light = 0;
+  for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+      const x = ((i + 0.5) / cols) * innerWidth, y = ((j + 0.5) / rows) * innerHeight;
+      const el = document.elementFromPoint(x, y);
+      if (!el || el.closest(MEDIA_SELECTOR)) continue;
+      const layers = [];
+      for (let e = el; e; e = paintParent(e)) {
+        const c = parseColor(getComputedStyle(e).backgroundColor);
+        if (c && c.alpha > 0) {
+          layers.push(c);
+          if (c.alpha >= 1) break;
+        }
+      }
+      let bg = base;
+      for (let k = layers.length - 1; k >= 0; k--) bg = composite(layers[k], bg);
+      if (srgbToOklch(bg).l > threshold) light++;
+    }
+  }
+  return { lightShare: +(light / (cols * rows)).toFixed(4) };
 }
 
 /** Structure + pointer-events + hit-testing, for before/after comparison. */
