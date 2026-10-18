@@ -599,3 +599,9 @@
 - Runner e2e at d3f7bd3 (ralph/evidence/e2e-latest.md): 95/98. The select-height failures are fixed. Remaining T030 failure: `popup @ 390x844: restricted page` overflowX 142. T013 `nodesBatchMedian 8.5 > 8` is a perf-budget flake, not this task.
 - Cause (seen in real-popup-390x844-restricted.png, not the status text): in the restricted state the "Look" fieldset's first sibling after the legend is the hidden custom-look row, so `legend + * { clear: both }` cleared nothing and the floated legend let `.presets` sit beside it and spill off the right edge.
 - Fix in ui/ui.css: `legend ~ * { clear: both; }`. `npm test` 319 pass, 0 fail. e2e not run here (WebKit cannot launch in the sandbox). Runner must re-run t030 + ui. Not claimed: any rendered result.
+
+## T030 — DONE (2026-10-18, Builder)
+- Verification: runner e2e at 3100588 (ralph/evidence/e2e-latest.md, 96/98 pass). All 12 popup/options tests (390x844 and 1440x900: on, off, already-dark, restricted, options, empty) pass; t030-e2e.json shows overflowX 0, no low-contrast, no targets under 44 px, no errors in every state. The 2 failures are not T030: T013 `gridInsertRecalc 1 > 0` (perf flake) and T031 `content still tagged pending` (B36b).
+- Evidence: DESIGN.md, docs/design/system.md, docs/design/logs/detect-t030-post.txt (Impeccable detect 0 findings), design/screenshots/real-*.png.
+- Cosmetic, not fixed: default-state screenshots are named `real-*undefined.png` (missing tag in e2e/t030.test.js:110). Only file names are affected.
+- Not run: rendered Impeccable critique/audit (no WebKit in the sandbox); keyboard/VoiceOver pass belongs to T015.
