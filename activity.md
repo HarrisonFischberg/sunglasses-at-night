@@ -556,3 +556,9 @@
 - Why not done: CSS changed after capture, so the screenshots show the pre-fix state. The runner's e2e must re-capture them; then Opus writes `comparison.md` and the owner approves a direction (task says stop for owner approval).
 - Stop-hook round: row set to `blocked (B35)`. What remains is human work: Opus's `comparison.md` and the owner's choice of direction. The screenshots are pre-fix until the runner's next e2e re-captures them, so check `t026-e2e.json` before approving. Nothing is marked done.
 - 19:37Z owner approved design direction: B's layout in C's (Dusk) look → T026 done; T030 (Phase 3C design system + restyle real popup/options) queued; T011/T015/T017 now depend on T030; T024 deps fixed (was waiting on T029's owner check).
+
+## T024 — verified from runner output (2026-10-18, Builder). DONE
+- Verification: runner e2e (ralph/evidence/e2e-latest.md, HEAD 396fd9e, 19:57Z): 84 tests, 84 pass, 0 fail, incl. T013 perf and the T007/T012/T023/T029 suites. Perf evidence ralph/evidence/t013-perf.json.
+- gridGeneratedRules: 635 after storm vs 4,714 without pruning (limit 2,357): -86.5%, pass.
+- gridInsertRecalc: median of 3 paired runs 0 ms with engine, 0 ms without (per run 0/0, 0/0, 0/2); budget pass. Caveat: 1 ms timer resolution, so both medians round to 0; this shows no measurable recalc cost, not a precise ratio. Unpruned control: 2 ms.
+- gridStormRafGapMax (T013, B32) now also passes: 35 vs 41 ms without engine, median of 3. T013 row left unchanged for the supervisor to re-queue.
