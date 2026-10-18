@@ -1620,6 +1620,12 @@ function withDetectDark(entry, value) {
   return tidy(value === undefined ? rest : { ...rest, detectDark: value });
 }
 
+/** `engine` 'default' (or undefined) goes back to the global engine. */
+function withEngine(entry, engine) {
+  const { engine: _old, ...rest } = entry;
+  return tidy(engine === undefined || engine === 'default' ? rest : { ...rest, engine });
+}
+
 /** Name of the preset `look` matches exactly, or 'custom'. */
 function matchPreset(look) {
   for (const [name, p] of Object.entries(PRESETS)) {
@@ -1662,6 +1668,7 @@ function popupView({ settings, url, report }) {
     preset: matchPreset(look),
     alreadyDark: report?.on === false && report.reason === 'already-dark',
     forcedDark: entry.detectDark === false,
+    engine: entry.engine ?? 'default',
     status: statusText(report),
   };
 }
@@ -1692,7 +1699,7 @@ function scheduleHint(schedule) {
   if (schedule.start > schedule.end) return `Runs overnight, from ${schedule.start} until ${schedule.end} the next morning.`;
   return '';
 }
-return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENGINE_LABELS, pageHost, siteEntry, withRule, withLook, withDetectDark, matchPreset, presetLook, popupView, siteRows, scheduleHint };
+return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENGINE_LABELS, pageHost, siteEntry, withRule, withLook, withDetectDark, withEngine, matchPreset, presetLook, popupView, siteRows, scheduleHint };
 })();
 
 // ---- engine/src/popup.js
@@ -1704,7 +1711,7 @@ const __m_engine_src_popup_js = (() => {
 // No network.
 
 const { createSettingsStore, LOOK_RANGES } = __m_engine_src_settings_js;
-const { popupView, siteEntry, withRule, withLook, withDetectDark, presetLook } = __m_engine_src_ui_core_js;
+const { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, presetLook } = __m_engine_src_ui_core_js;
 const { GET_TAB_STATE } = __m_engine_src_messages_js;
 
 const api = globalThis.browser ?? globalThis.chrome;
@@ -1741,6 +1748,7 @@ function render() {
     for (const r of document.querySelectorAll('input[name="rule"]')) r.checked = r.value === view.rule;
     $('already-dark').hidden = !view.alreadyDark;
     $('force-dark').checked = view.forcedDark;
+    $('site-engine').value = view.engine;
     $('custom-look').checked = view.customLook;
   }
   $('preset').value = view.preset;
@@ -1773,6 +1781,8 @@ for (const radio of document.querySelectorAll('input[name="rule"]')) {
 }
 
 $('force-dark').addEventListener('change', (e) => editSite((s) => withDetectDark(s, e.target.checked ? false : undefined)));
+
+$('site-engine').addEventListener('change', (e) => editSite((s) => withEngine(s, e.target.value)));
 
 $('custom-look').addEventListener('change', (e) =>
   editSite((s) => withLook(s, e.target.checked ? { ...settings.look } : null)));

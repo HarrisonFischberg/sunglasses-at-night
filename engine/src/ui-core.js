@@ -91,6 +91,12 @@ export function withDetectDark(entry, value) {
   return tidy(value === undefined ? rest : { ...rest, detectDark: value });
 }
 
+/** `engine` 'default' (or undefined) goes back to the global engine. */
+export function withEngine(entry, engine) {
+  const { engine: _old, ...rest } = entry;
+  return tidy(engine === undefined || engine === 'default' ? rest : { ...rest, engine });
+}
+
 /** Name of the preset `look` matches exactly, or 'custom'. */
 export function matchPreset(look) {
   for (const [name, p] of Object.entries(PRESETS)) {
@@ -133,6 +139,7 @@ export function popupView({ settings, url, report }) {
     preset: matchPreset(look),
     alreadyDark: report?.on === false && report.reason === 'already-dark',
     forcedDark: entry.detectDark === false,
+    engine: entry.engine ?? 'default',
     status: statusText(report),
   };
 }

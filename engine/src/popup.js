@@ -5,7 +5,7 @@
 // No network.
 
 import { createSettingsStore, LOOK_RANGES } from './settings.js';
-import { popupView, siteEntry, withRule, withLook, withDetectDark, presetLook } from './ui-core.js';
+import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, presetLook } from './ui-core.js';
 import { GET_TAB_STATE } from './messages.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
@@ -42,6 +42,7 @@ function render() {
     for (const r of document.querySelectorAll('input[name="rule"]')) r.checked = r.value === view.rule;
     $('already-dark').hidden = !view.alreadyDark;
     $('force-dark').checked = view.forcedDark;
+    $('site-engine').value = view.engine;
     $('custom-look').checked = view.customLook;
   }
   $('preset').value = view.preset;
@@ -74,6 +75,8 @@ for (const radio of document.querySelectorAll('input[name="rule"]')) {
 }
 
 $('force-dark').addEventListener('change', (e) => editSite((s) => withDetectDark(s, e.target.checked ? false : undefined)));
+
+$('site-engine').addEventListener('change', (e) => editSite((s) => withEngine(s, e.target.value)));
 
 $('custom-look').addEventListener('change', (e) =>
   editSite((s) => withLook(s, e.target.checked ? { ...settings.look } : null)));

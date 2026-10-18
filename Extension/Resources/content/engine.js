@@ -1825,6 +1825,107 @@ function whenParsed(document, fn) {
 return { SHEET_ID, antiFlashCss, readPageColors, startEarly, whenRoot, whenParsed };
 })();
 
+// ---- engine/src/filter.js
+const __m_engine_src_filter_js = (() => {
+// Sunglasses at Night: filter fallback engine (T008, F10) and image modes (F5).
+// For pages the dynamic engine breaks: one sheet inverts the whole page with
+// a CSS filter on the root (invert, then hue-rotate so hues stay put) and
+// counter-inverts media so photos, video and frames show as authored.
+//
+// Not double-inverted: the counter-filter goes only on the outermost media
+// element. An <img> inside <picture>, a fallback inside <object>/<video>, or
+// anything inside another countered element is left alone, because its
+// ancestor's counter already undoes the page filter for it. Frames with a
+// real document run the content script themselves, so the parent counters
+// the <iframe> and the frame darkens itself; about:blank / srcdoc frames
+// don't run it and stay under the page filter.
+//
+// Like the dynamic engine, it only adds one <style>; filters don't change
+// layout, hit-testing or pointer events, and a filter on the root element
+// doesn't create a containing block for fixed-position descendants.
+
+const { normalizeLook } = __m_engine_src_transform_js;
+
+const FILTER_ROLE = 'filter';
+
+// Elements whose pixels should show as authored.
+const MEDIA = [
+  'img', 'video', 'canvas', 'embed', 'object',
+  'iframe[src]:not([src=""]):not([src^="about:" i]):not([src^="javascript:" i]):not([srcdoc])',
+];
+// Of those, the ones that can contain other media.
+const CONTAINERS = ['video', 'canvas', 'embed', 'object', 'iframe'];
+
+const COUNTER = 'invert(100%) hue-rotate(180deg)';
+const DIM = 'brightness(80%)';
+
+const outermost = (list, containers) => `:is(${list.join(',')}):not(:is(${containers.join(',')}) *)`;
+
+/** The root filter for a look: invert + hue-rotate, then the look sliders. */
+function pageFilter(look) {
+  const n = normalizeLook(look);
+  let f = COUNTER;
+  if (n.brightness !== 100) f += ` brightness(${n.brightness}%)`;
+  if (n.contrast !== 100) f += ` contrast(${n.contrast}%)`;
+  if (n.sepia) f += ` sepia(${n.sepia}%)`;
+  if (n.grayscale) f += ` grayscale(${n.grayscale}%)`;
+  return f;
+}
+
+/**
+ * The filter engine's sheet. `images`: 'leave' and 'no-invert' show media as
+ * authored ('no-invert' also keeps inline <svg> out of the inversion);
+ * 'dim' shows media as authored at 80% brightness.
+ */
+function filterCss(look, { images = 'leave', hideBackgroundImages = false } = {}) {
+  const media = images === 'no-invert' ? [...MEDIA, 'svg'] : MEDIA;
+  const containers = images === 'no-invert' ? [...CONTAINERS, 'svg'] : CONTAINERS;
+  // Dim first: page(counter(dim(x))) = dim(x), so dimmed media keep their hues.
+  const counter = images === 'dim' ? `${DIM} ${COUNTER}` : COUNTER;
+  // The root's own background (or white when the page sets none) is painted
+  // inside the filtered root, so the canvas inverts with everything else.
+  let css =
+    `:root{filter:${pageFilter(look)}!important;color-scheme:light!important}` +
+    `:where(:root){background-color:#fff}` +
+    `${outermost(media, containers)}{filter:${counter}!important}`;
+  if (hideBackgroundImages) css += `*:not(svg *),*::before,*::after{background-image:none!important}`;
+  return css;
+}
+
+/**
+ * CSS the dynamic engine adds for an image mode. The dynamic engine never
+ * inverts pixels, so 'leave' and 'no-invert' need nothing. Dim is opt-in, so
+ * it wins over the page's own image filters, as the filter engine's does.
+ */
+function dynamicImageCss(images) {
+  return images === 'dim' ? `img,video,canvas,embed,object{filter:${DIM}!important}` : '';
+}
+
+const HTML_NS = 'http://www.w3.org/1999/xhtml';
+
+/**
+ * Start the filter engine on `document`. opts as filterCss(). The sheet is
+ * the last child of the root so it follows every page sheet.
+ * Returns { stop(), refresh(), settle() } like startDynamic.
+ */
+function startFilter({ document, look, images, hideBackgroundImages, mark = 'data-sunglasses-at-night' }) {
+  const el = document.createElementNS(HTML_NS, 'style');
+  el.setAttribute(mark, FILTER_ROLE);
+  el.textContent = filterCss(look, { images, hideBackgroundImages });
+  const place = () => {
+    const root = document.documentElement;
+    if (root && root.lastChild !== el) root.appendChild(el);
+  };
+  place();
+  return {
+    stop: () => el.remove(),
+    refresh: place,
+    settle: async () => place(),
+  };
+}
+return { FILTER_ROLE, DIM, pageFilter, filterCss, dynamicImageCss, startFilter };
+})();
+
 // ---- engine/src/dynamic.js
 const __m_engine_src_dynamic_js = (() => {
 // Sunglasses at Night: dynamic engine (T007).
@@ -1862,6 +1963,7 @@ const __m_engine_src_dynamic_js = (() => {
 
 const { parseColor, formatRgb, composite, contrastRatio } = __m_engine_src_color_js;
 const { transformColor, ensureContrast, quantize, normalizeLook, MIN_CONTRAST } = __m_engine_src_transform_js;
+const { dynamicImageCss } = __m_engine_src_filter_js;
 
 const MARK = 'data-sunglasses-at-night';
 const INLINE_ATTR = 'data-san-inline';
@@ -2027,6 +2129,19 @@ function lookKey(look) {
   return `${n.brightness},${n.contrast},${n.sepia},${n.grayscale}`;
 }
 
+const IMAGE_FUNC_RE = /(?:^|[^\w-])(?:url|image-set|-webkit-image-set|image|cross-fade|-webkit-cross-fade|element)\(/i;
+
+/**
+ * A background-image value without its image layers (gradients stay), for
+ * "hide background images". 'none' when nothing is left; the value itself
+ * when it has no image layer.
+ */
+function withoutImages(value) {
+  if (!IMAGE_FUNC_RE.test(value)) return value;
+  const kept = splitTop(value).map((p) => p.trim()).filter((p) => /gradient\(/i.test(p) && !IMAGE_FUNC_RE.test(p));
+  return kept.length ? kept.join(', ') : 'none';
+}
+
 const valueCache = new Map();
 
 /**
@@ -2052,7 +2167,8 @@ function rewriteValue(value, role, look) {
 /**
  * Rewrite a CSSStyleDeclaration-like object (length, item(i) or [i],
  * getPropertyValue, getPropertyPriority) into override declarations.
- * opts.important forces `!important` on every declaration.
+ * opts.important forces `!important` on every declaration; opts.hideImages
+ * drops image layers from background-image (see withoutImages).
  * Returns an array of `prop:value[ !important]` strings.
  */
 function rewriteDeclarations(style, look, opts = {}) {
@@ -2080,7 +2196,12 @@ function rewriteDeclarations(style, look, opts = {}) {
     }
     const role = PROP_ROLES[prop];
     if (!role || !value) continue;
-    if (prop === 'background-image' && !/gradient\(|var\(/i.test(value)) continue;
+    if (prop === 'background-image') {
+      const shown = opts.hideImages ? withoutImages(value) : value;
+      if (shown === value && !/gradient\(|var\(/i.test(value)) continue;
+      out.push(`${prop}:${rewriteValue(shown, role, look) ?? shown}${bangFor(prop)}`);
+      continue;
+    }
     const v = rewriteValue(value, role, look);
     // Keyword values are copied verbatim, so an override for an earlier page
     // rule can't beat a later page rule that resets the color.
@@ -2154,17 +2275,23 @@ function baseCss(look) {
 const HTML_NS = 'http://www.w3.org/1999/xhtml';
 const POLL_MS = 1000;
 const MAX_IMPORT_DEPTH = 4;
-const ATTR_FILTER = ['style', 'bgcolor', 'color', 'text', 'class', 'media', 'disabled', 'rel', 'href'];
+const ATTR_FILTER = ['style', 'bgcolor', 'background', 'color', 'text', 'class', 'media', 'disabled', 'rel', 'href'];
 const SHEET_ATTRS = new Set(['media', 'disabled', 'rel', 'href']);
 
 /**
  * Start the dynamic engine on `document`.
  * opts.look: slider values. opts.fetchSheet(url) → Promise<string|null>
  * returns the text of a stylesheet the CSSOM can't read (cross-origin).
+ * opts.images: image mode (settings.IMAGE_MODES); opts.hideBackgroundImages
+ * drops url()/image-set() background layers, keeping gradients.
  * Returns { stop(), refresh(), settle() }; settle() resolves once every
  * cross-origin fetch started so far has been applied.
  */
-function startDynamic({ document, window = document.defaultView, look, fetchSheet = async () => null }) {
+function startDynamic({
+  document, window = document.defaultView, look, fetchSheet = async () => null,
+  images = 'leave', hideBackgroundImages = false,
+}) {
+  const base = hideBackgroundImages ? { hideImages: true } : {};
   const win = window;
   const getCS = (el) => win.getComputedStyle(el);
   const scopes = new Map(); // Document | ShadowRoot → scope
@@ -2197,7 +2324,7 @@ function startDynamic({ document, window = document.defaultView, look, fetchShee
     scopes.set(root, scope);
     if (root.nodeType === 9) {
       scope.baseEl = makeStyle('base');
-      scope.baseEl.textContent = baseCss(look);
+      scope.baseEl.textContent = baseCss(look) + dynamicImageCss(images);
       const head = root.head ?? root.documentElement;
       head.insertBefore(scope.baseEl, head.firstChild);
     }
@@ -2285,7 +2412,7 @@ function startDynamic({ document, window = document.defaultView, look, fetchShee
     if (entry.css === null) {
       const outer = incomplete;
       incomplete = false;
-      const css = rewriteRules(entry.parsed.rules, look, (r) => remoteCss(r.href, url, depth + 1));
+      const css = rewriteRules(entry.parsed.rules, look, (r) => remoteCss(r.href, url, depth + 1), base);
       if (!incomplete) entry.css = css;
       incomplete = outer || incomplete;
       return css;
@@ -2336,9 +2463,9 @@ function startDynamic({ document, window = document.defaultView, look, fetchShee
   function syncSheets(scope) {
     let css = '';
     for (const sheet of scope.root.styleSheets ?? []) {
-      if (!isOurs(sheet.ownerNode)) css += sheetCss(sheet, {});
+      if (!isOurs(sheet.ownerNode)) css += sheetCss(sheet, base);
     }
-    for (const sheet of scope.root.adoptedStyleSheets ?? []) css += sheetCss(sheet, { important: true });
+    for (const sheet of scope.root.adoptedStyleSheets ?? []) css += sheetCss(sheet, { ...base, important: true });
     const changed = css !== scope.css;
     if (changed) {
       scope.css = css;
@@ -2376,6 +2503,7 @@ function startDynamic({ document, window = document.defaultView, look, fetchShee
       const v = c && mapColor(c, role, look);
       if (v) decls.push(`${prop}:${v} !important`);
     }
+    if (hideBackgroundImages && el.hasAttribute('background')) decls.push('background-image:none !important');
     return decls;
   }
 
@@ -2411,7 +2539,9 @@ function startDynamic({ document, window = document.defaultView, look, fetchShee
       }
       const role = PROP_ROLES[prop];
       if (!role) continue;
-      const v = rewriteValue(pageInlineValue(el, prop), role, look);
+      const page = pageInlineValue(el, prop);
+      const shown = prop === 'background-image' && hideBackgroundImages ? withoutImages(page) : page;
+      const v = rewriteValue(shown, role, look) ?? (shown !== page ? shown : null);
       if (v !== null && el.style.getPropertyValue(prop) !== inlineOriginals.get(el)?.get(prop)?.written) {
         setInlineImportant(el, prop, v);
       }
@@ -2427,7 +2557,7 @@ function startDynamic({ document, window = document.defaultView, look, fetchShee
   function processInline(el) {
     if (el.nodeType !== 1 || isOurs(el)) return;
     let decls = presentational(el);
-    if (el.style?.length) decls = decls.concat(rewriteDeclarations(inlineView(el), look, { important: true }));
+    if (el.style?.length) decls = decls.concat(rewriteDeclarations(inlineView(el), look, { ...base, important: true }));
     if (!decls.length) {
       if (el.hasAttribute(INLINE_ATTR)) el.removeAttribute(INLINE_ATTR);
       return;
@@ -2512,7 +2642,8 @@ function startDynamic({ document, window = document.defaultView, look, fetchShee
   function scanTree(root) {
     for (const el of elementsIn(root)) {
       if (isOurs(el)) continue;
-      if (el.hasAttribute('style') || el.hasAttribute('bgcolor') || el.localName === 'font' || el.localName === 'body') {
+      if (el.hasAttribute('style') || el.hasAttribute('bgcolor') || el.localName === 'font' || el.localName === 'body' ||
+        (hideBackgroundImages && el.hasAttribute('background'))) {
         processInline(el);
       }
       if (el.shadowRoot || el.localName.includes('-')) adoptShadow(el);
@@ -2616,7 +2747,7 @@ function startDynamic({ document, window = document.defaultView, look, fetchShee
 
   return { stop, refresh, settle };
 }
-return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, PROP_ROLES, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, startDynamic };
+return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, PROP_ROLES, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, startDynamic };
 })();
 
 // ---- engine/src/messages.js
@@ -2652,12 +2783,14 @@ const __m_engine_src_content_js = (() => {
 // Extension/Resources/content/engine.js, run at document_start in every frame).
 // Loads settings, paints the anti-flash sheet, and once the DOM is parsed
 // either backs off (already-dark page, site rule, mode) or hands over to the
-// dynamic engine. Settings changes restart the decision. No network: the only
+// site's engine (dynamic, or the filter fallback). Settings changes, engine
+// switches included, restart the decision without a reload. No network: the only
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 const { createSettingsStore, resolveSite, migrate } = __m_engine_src_settings_js;
 const { startEarly, whenParsed, whenRoot } = __m_engine_src_early_js;
 const { startDynamic } = __m_engine_src_dynamic_js;
+const { startFilter } = __m_engine_src_filter_js;
 const { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } = __m_engine_src_messages_js;
 
 const api = globalThis.browser ?? globalThis.chrome;
@@ -2712,11 +2845,13 @@ function run(settings) {
     reportState(result);
     if (!result.apply) return;
     const site = resolveSite(settings, hostname);
-    if (site.engine !== 'dynamic') return; // filter engine: T008
+    const media = { images: settings.images, hideBackgroundImages: settings.hideBackgroundImages };
     // Same task, so no paint in between: drop the anti-flash sheet first so
     // the engine never reads it as a page sheet.
     ctl.style?.remove();
-    engine = startDynamic({ document, window, look: site.look, fetchSheet });
+    engine = site.engine === 'filter'
+      ? startFilter({ document, look: site.look, ...media })
+      : startDynamic({ document, window, look: site.look, fetchSheet, ...media });
   });
   return () => {
     cancelled = true;

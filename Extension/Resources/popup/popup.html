@@ -36,6 +36,15 @@
     <label class="check"><input type="radio" name="rule" value="never"> Never dark</label>
     <p id="already-dark" class="warning" hidden>This page looks dark already, so it was left as is.</p>
     <label class="check"><input type="checkbox" id="force-dark"> Darken even if the page looks dark already</label>
+    <div class="field">
+      <label for="site-engine">Engine</label>
+      <select id="site-engine" aria-describedby="site-engine-hint">
+        <option value="default">Default (from settings)</option>
+        <option value="dynamic">Dynamic</option>
+        <option value="filter">Filter</option>
+      </select>
+    </div>
+    <p id="site-engine-hint" class="muted">Try Filter if this site looks broken. It switches without reloading.</p>
   </fieldset>
 
   <fieldset id="look">

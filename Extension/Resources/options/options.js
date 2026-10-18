@@ -1620,6 +1620,12 @@ function withDetectDark(entry, value) {
   return tidy(value === undefined ? rest : { ...rest, detectDark: value });
 }
 
+/** `engine` 'default' (or undefined) goes back to the global engine. */
+function withEngine(entry, engine) {
+  const { engine: _old, ...rest } = entry;
+  return tidy(engine === undefined || engine === 'default' ? rest : { ...rest, engine });
+}
+
 /** Name of the preset `look` matches exactly, or 'custom'. */
 function matchPreset(look) {
   for (const [name, p] of Object.entries(PRESETS)) {
@@ -1662,6 +1668,7 @@ function popupView({ settings, url, report }) {
     preset: matchPreset(look),
     alreadyDark: report?.on === false && report.reason === 'already-dark',
     forcedDark: entry.detectDark === false,
+    engine: entry.engine ?? 'default',
     status: statusText(report),
   };
 }
@@ -1692,7 +1699,7 @@ function scheduleHint(schedule) {
   if (schedule.start > schedule.end) return `Runs overnight, from ${schedule.start} until ${schedule.end} the next morning.`;
   return '';
 }
-return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENGINE_LABELS, pageHost, siteEntry, withRule, withLook, withDetectDark, matchPreset, presetLook, popupView, siteRows, scheduleHint };
+return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENGINE_LABELS, pageHost, siteEntry, withRule, withLook, withDetectDark, withEngine, matchPreset, presetLook, popupView, siteRows, scheduleHint };
 })();
 
 // ---- engine/src/options.js

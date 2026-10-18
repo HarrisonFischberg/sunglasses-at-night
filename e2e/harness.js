@@ -83,9 +83,10 @@ export async function launch() {
 
 /**
  * Open `path` on the site origin. With `extension`, the content script runs
- * at document start with mode "always" (or `settings`).
+ * at document start with mode "always" (or `settings`); `ready` is the role
+ * of the engine sheet to wait for ('override' for dynamic, 'filter').
  */
-export async function openPage(browser, servers, path, { extension = false, settings } = {}) {
+export async function openPage(browser, servers, path, { extension = false, settings, ready = 'override' } = {}) {
   const context = await browser.newContext({ colorScheme: 'light', viewport: { width: 1024, height: 900 } });
   const page = await context.newPage();
   await page.addInitScript({ content: auditBundle() });
@@ -105,7 +106,7 @@ export async function openPage(browser, servers, path, { extension = false, sett
   }
   await page.goto(servers.SITE + path, { waitUntil: 'load' });
   if (extension) {
-    await page.waitForFunction(() => document.querySelector('style[data-sunglasses-at-night="override"]'));
+    await page.waitForFunction((role) => document.querySelector(`style[data-sunglasses-at-night="${role}"]`), ready);
   }
   // Let fixture scripts finish (they set __fixtureDone) and the 1 s poll run.
   await page.waitForFunction(() => globalThis.__fixtureDone !== false, null, { timeout: 10000 });

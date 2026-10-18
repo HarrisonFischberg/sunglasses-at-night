@@ -33,6 +33,7 @@
 
 import { parseColor, formatRgb, composite, contrastRatio } from './color.js';
 import { transformColor, ensureContrast, quantize, normalizeLook, MIN_CONTRAST } from './transform.js';
+import { dynamicImageCss } from './filter.js';
 
 export const MARK = 'data-sunglasses-at-night';
 export const INLINE_ATTR = 'data-san-inline';
@@ -198,6 +199,19 @@ function lookKey(look) {
   return `${n.brightness},${n.contrast},${n.sepia},${n.grayscale}`;
 }
 
+const IMAGE_FUNC_RE = /(?:^|[^\w-])(?:url|image-set|-webkit-image-set|image|cross-fade|-webkit-cross-fade|element)\(/i;
+
+/**
+ * A background-image value without its image layers (gradients stay), for
+ * "hide background images". 'none' when nothing is left; the value itself
+ * when it has no image layer.
+ */
+export function withoutImages(value) {
+  if (!IMAGE_FUNC_RE.test(value)) return value;
+  const kept = splitTop(value).map((p) => p.trim()).filter((p) => /gradient\(/i.test(p) && !IMAGE_FUNC_RE.test(p));
+  return kept.length ? kept.join(', ') : 'none';
+}
+
 const valueCache = new Map();
 
 /**
@@ -223,7 +237,8 @@ export function rewriteValue(value, role, look) {
 /**
  * Rewrite a CSSStyleDeclaration-like object (length, item(i) or [i],
  * getPropertyValue, getPropertyPriority) into override declarations.
- * opts.important forces `!important` on every declaration.
+ * opts.important forces `!important` on every declaration; opts.hideImages
+ * drops image layers from background-image (see withoutImages).
  * Returns an array of `prop:value[ !important]` strings.
  */
 export function rewriteDeclarations(style, look, opts = {}) {
@@ -251,7 +266,12 @@ export function rewriteDeclarations(style, look, opts = {}) {
     }
     const role = PROP_ROLES[prop];
     if (!role || !value) continue;
-    if (prop === 'background-image' && !/gradient\(|var\(/i.test(value)) continue;
+    if (prop === 'background-image') {
+      const shown = opts.hideImages ? withoutImages(value) : value;
+      if (shown === value && !/gradient\(|var\(/i.test(value)) continue;
+      out.push(`${prop}:${rewriteValue(shown, role, look) ?? shown}${bangFor(prop)}`);
+      continue;
+    }
     const v = rewriteValue(value, role, look);
     // Keyword values are copied verbatim, so an override for an earlier page
     // rule can't beat a later page rule that resets the color.
@@ -325,17 +345,23 @@ export function baseCss(look) {
 const HTML_NS = 'http://www.w3.org/1999/xhtml';
 const POLL_MS = 1000;
 const MAX_IMPORT_DEPTH = 4;
-const ATTR_FILTER = ['style', 'bgcolor', 'color', 'text', 'class', 'media', 'disabled', 'rel', 'href'];
+const ATTR_FILTER = ['style', 'bgcolor', 'background', 'color', 'text', 'class', 'media', 'disabled', 'rel', 'href'];
 const SHEET_ATTRS = new Set(['media', 'disabled', 'rel', 'href']);
 
 /**
  * Start the dynamic engine on `document`.
  * opts.look: slider values. opts.fetchSheet(url) → Promise<string|null>
  * returns the text of a stylesheet the CSSOM can't read (cross-origin).
+ * opts.images: image mode (settings.IMAGE_MODES); opts.hideBackgroundImages
+ * drops url()/image-set() background layers, keeping gradients.
  * Returns { stop(), refresh(), settle() }; settle() resolves once every
  * cross-origin fetch started so far has been applied.
  */
-export function startDynamic({ document, window = document.defaultView, look, fetchSheet = async () => null }) {
+export function startDynamic({
+  document, window = document.defaultView, look, fetchSheet = async () => null,
+  images = 'leave', hideBackgroundImages = false,
+}) {
+  const base = hideBackgroundImages ? { hideImages: true } : {};
   const win = window;
   const getCS = (el) => win.getComputedStyle(el);
   const scopes = new Map(); // Document | ShadowRoot → scope
@@ -368,7 +394,7 @@ export function startDynamic({ document, window = document.defaultView, look, fe
     scopes.set(root, scope);
     if (root.nodeType === 9) {
       scope.baseEl = makeStyle('base');
-      scope.baseEl.textContent = baseCss(look);
+      scope.baseEl.textContent = baseCss(look) + dynamicImageCss(images);
       const head = root.head ?? root.documentElement;
       head.insertBefore(scope.baseEl, head.firstChild);
     }
@@ -456,7 +482,7 @@ export function startDynamic({ document, window = document.defaultView, look, fe
     if (entry.css === null) {
       const outer = incomplete;
       incomplete = false;
-      const css = rewriteRules(entry.parsed.rules, look, (r) => remoteCss(r.href, url, depth + 1));
+      const css = rewriteRules(entry.parsed.rules, look, (r) => remoteCss(r.href, url, depth + 1), base);
       if (!incomplete) entry.css = css;
       incomplete = outer || incomplete;
       return css;
@@ -507,9 +533,9 @@ export function startDynamic({ document, window = document.defaultView, look, fe
   function syncSheets(scope) {
     let css = '';
     for (const sheet of scope.root.styleSheets ?? []) {
-      if (!isOurs(sheet.ownerNode)) css += sheetCss(sheet, {});
+      if (!isOurs(sheet.ownerNode)) css += sheetCss(sheet, base);
     }
-    for (const sheet of scope.root.adoptedStyleSheets ?? []) css += sheetCss(sheet, { important: true });
+    for (const sheet of scope.root.adoptedStyleSheets ?? []) css += sheetCss(sheet, { ...base, important: true });
     const changed = css !== scope.css;
     if (changed) {
       scope.css = css;
@@ -547,6 +573,7 @@ export function startDynamic({ document, window = document.defaultView, look, fe
       const v = c && mapColor(c, role, look);
       if (v) decls.push(`${prop}:${v} !important`);
     }
+    if (hideBackgroundImages && el.hasAttribute('background')) decls.push('background-image:none !important');
     return decls;
   }
 
@@ -582,7 +609,9 @@ export function startDynamic({ document, window = document.defaultView, look, fe
       }
       const role = PROP_ROLES[prop];
       if (!role) continue;
-      const v = rewriteValue(pageInlineValue(el, prop), role, look);
+      const page = pageInlineValue(el, prop);
+      const shown = prop === 'background-image' && hideBackgroundImages ? withoutImages(page) : page;
+      const v = rewriteValue(shown, role, look) ?? (shown !== page ? shown : null);
       if (v !== null && el.style.getPropertyValue(prop) !== inlineOriginals.get(el)?.get(prop)?.written) {
         setInlineImportant(el, prop, v);
       }
@@ -598,7 +627,7 @@ export function startDynamic({ document, window = document.defaultView, look, fe
   function processInline(el) {
     if (el.nodeType !== 1 || isOurs(el)) return;
     let decls = presentational(el);
-    if (el.style?.length) decls = decls.concat(rewriteDeclarations(inlineView(el), look, { important: true }));
+    if (el.style?.length) decls = decls.concat(rewriteDeclarations(inlineView(el), look, { ...base, important: true }));
     if (!decls.length) {
       if (el.hasAttribute(INLINE_ATTR)) el.removeAttribute(INLINE_ATTR);
       return;
@@ -683,7 +712,8 @@ export function startDynamic({ document, window = document.defaultView, look, fe
   function scanTree(root) {
     for (const el of elementsIn(root)) {
       if (isOurs(el)) continue;
-      if (el.hasAttribute('style') || el.hasAttribute('bgcolor') || el.localName === 'font' || el.localName === 'body') {
+      if (el.hasAttribute('style') || el.hasAttribute('bgcolor') || el.localName === 'font' || el.localName === 'body' ||
+        (hideBackgroundImages && el.hasAttribute('background'))) {
         processInline(el);
       }
       if (el.shadowRoot || el.localName.includes('-')) adoptShadow(el);

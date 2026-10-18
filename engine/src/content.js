@@ -2,12 +2,14 @@
 // Extension/Resources/content/engine.js, run at document_start in every frame).
 // Loads settings, paints the anti-flash sheet, and once the DOM is parsed
 // either backs off (already-dark page, site rule, mode) or hands over to the
-// dynamic engine. Settings changes restart the decision. No network: the only
+// site's engine (dynamic, or the filter fallback). Settings changes, engine
+// switches included, restart the decision without a reload. No network: the only
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 import { createSettingsStore, resolveSite, migrate } from './settings.js';
 import { startEarly, whenParsed, whenRoot } from './early.js';
 import { startDynamic } from './dynamic.js';
+import { startFilter } from './filter.js';
 import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
@@ -62,11 +64,13 @@ function run(settings) {
     reportState(result);
     if (!result.apply) return;
     const site = resolveSite(settings, hostname);
-    if (site.engine !== 'dynamic') return; // filter engine: T008
+    const media = { images: settings.images, hideBackgroundImages: settings.hideBackgroundImages };
     // Same task, so no paint in between: drop the anti-flash sheet first so
     // the engine never reads it as a page sheet.
     ctl.style?.remove();
-    engine = startDynamic({ document, window, look: site.look, fetchSheet });
+    engine = site.engine === 'filter'
+      ? startFilter({ document, look: site.look, ...media })
+      : startDynamic({ document, window, look: site.look, fetchSheet, ...media });
   });
   return () => {
     cancelled = true;
