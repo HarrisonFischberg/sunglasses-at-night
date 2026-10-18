@@ -52,3 +52,14 @@ Write `DESIGN.md` for the chosen direction, run `/impeccable extract` (tokens
 and every component state), then `/impeccable polish`. Only then do the real
 popup/options restyle (T010 follow-up), the app screens (T015), the icon (T017)
 and Report a problem (T011).
+
+## Owner decision (2026-10-18 19:33–19:37Z)
+
+Owner: "I like B and C" … "i prefer the layout of B generally speaking".
+
+**Approved direction: B's layout in C's visual language ("Polarized layout, Dusk skin").**
+- **From B (structure):** the large full-width on/off switch at the top of the popup; mode as tiles; "This site" as a segmented control; compact slider rows with values on the right; Settings with a section rail (desktop) and sectioned panels.
+- **From C (look):** warm-gray surfaces, coral accent, rounded system type, soft radii; Look presets as tiny page previews; grouped-list rhythm on iPhone.
+- **Night rule (from the critique):** no large bright block. The status/switch area is a dark panel; "on" shows as the coral switch fill plus the sunglasses status mark, never a full-bleed bright fill. One consistent selected style (coral) everywhere.
+- Full labels ("Match system", "On a schedule"); sunglasses mark beside the status line ("Lights low.").
+This is one world, not a 50/50 mix: C's tokens and component styling applied to B's information architecture.

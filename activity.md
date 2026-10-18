@@ -548,3 +548,4 @@
 - Audit: recorded from the measured evidence, not a fresh rendered run. Not claimed: keyboard/VoiceOver checks.
 - Why not done: CSS changed after capture, so the screenshots show the pre-fix state. The runner's e2e must re-capture them; then Opus writes `comparison.md` and the owner approves a direction (task says stop for owner approval).
 - Stop-hook round: row set to `blocked (B35)`. What remains is human work: Opus's `comparison.md` and the owner's choice of direction. The screenshots are pre-fix until the runner's next e2e re-captures them, so check `t026-e2e.json` before approving. Nothing is marked done.
+- 19:37Z owner approved design direction: B's layout in C's (Dusk) look → T026 done; T030 (Phase 3C design system + restyle real popup/options) queued; T011/T015/T017 now depend on T030; T024 deps fixed (was waiting on T029's owner check).
