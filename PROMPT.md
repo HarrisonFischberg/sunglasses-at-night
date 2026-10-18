@@ -1,4 +1,4 @@
-# Per-iteration instructions (sunglasses-at-night)
+# Per-iteration instructions (Sunglasses at Night)
 
 Each fresh session:
 
@@ -15,3 +15,13 @@ Each fresh session:
 Stop on verified completion, a documented blocker needing human input, or the
 turn limit. Never mark a blocked task passing to end the loop. Emit the success
 marker only when every approved task genuinely meets its acceptance criteria.
+
+## Runner contract (ralph/ralph.sh, adapted from coleam00/ralph-loop-quickstart @ f6a7781)
+
+- Completion marker: print `<promise>COMPLETE</promise>` only when every approved
+  task in `prd.md` is `done` with evidence. Blocked or review-dependent tasks
+  never count as done.
+- Print `<progress>NONE</progress>` if this iteration produced no meaningful
+  progress; the runner stops after two in a row.
+- Never edit `.claude/settings.json`, never `git push`, never add a dependency
+  that `prd.md` doesn't list as approved.

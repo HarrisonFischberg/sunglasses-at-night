@@ -1,4 +1,4 @@
-# sunglasses-at-night
+# Sunglasses at Night
 
 Sunglasses at Night: a free, privacy-first dark mode Safari Web Extension for macOS, iOS and iPadOS.
 
@@ -22,11 +22,20 @@ loop, Caveman. Verify each before claiming use: `docs/tool-environment.md`.
 
 | Check | Command |
 | --- | --- |
-| tests | TODO |
-| types | TODO |
-| lint | TODO |
-| build | TODO |
-| e2e | TODO |
+| engine unit tests | `node --test engine/test/` |
+| engine lint (syntax) | `node --check` on every `engine/src/*.js` via `npm run check` |
+| Swift build (macOS) | `xcodebuild -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' build` |
+| Swift build (iOS) | `xcodebuild -scheme "Sunglasses at Night (iOS)" -destination 'generic/platform=iOS Simulator' build` |
+| Swift tests | `xcodebuild test -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS'` |
+| e2e (WebKit fixtures) | `npm run e2e` (pending approval of Playwright dev dependency, see prd.md) |
+
+Exact scheme names are fixed by task T002; update this table if they change.
+
+## Naming
+
+Product name everywhere: **Sunglasses at Night**. Slug: `sunglasses-at-night`.
+Never use the working name "Dark Eyes" or any reference app's name or branding
+(Noir, Dark Reader, Midnight) in code, assets, copy, or metadata.
 
 ## Artifacts
 
