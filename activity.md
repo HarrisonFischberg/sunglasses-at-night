@@ -463,3 +463,4 @@
 - Not done: brand leftover sweep, claims/dark-pattern sweep, App Store listing draft and lint. I did not draft a listing, because an unlinted draft would not meet the acceptance criteria, and I did not hand-check for leftovers and call it a sweep.
 - Read this session: prd.md, docs/launch-blockers.md, activity.md (tail). Files changed: prd.md (T020 row → blocked), docs/launch-blockers.md (B26), activity.md.
 - Next: owner either allows the tools for the runner or runs them and pastes the output here, then T020 re-runs.
+- 07:41Z owner: with our extension unticked, Wikipedia goes light; after re-ticking, "Never dark" works and sticks. Cause of the "stuck dark" report: Safari kept running the previous build's extension after the rebuild until it was re-enabled. Practice: after each rebuild of the owner's test copy, untick + re-tick the extension (or restart Safari). T010 → done, B18 closed.
