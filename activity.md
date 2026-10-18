@@ -360,3 +360,13 @@
 - Owner: use the new /new-app version. Wrote `docs/blueprint.md`. Loop now pinned to `claude-sonnet-5-5` (Builder); Opus supervises and handles escalations. T013 metric revised (baseline + 8 ms, median of 3).
 - Impeccable install was blocked for me by the auto-mode classifier (adds hooks) → B21, owner action. T026 (Phase 3B design directions) and UI tasks T011/T015/T017 wait on it.
 - Starting run 3 (10 iterations, Sonnet).
+
+## 2026-10-18 — T022 popup host fallback (Builder, Sonnet 5.5)
+
+- `content.js` TAB_STATE now carries `host: location.hostname`; `background-core.js` stores it per tab (string, ≤253 chars) and GET_TAB_STATE returns it.
+- `ui-core.js` new `resolveHost({url, reportHost, focusedUrl})`: tab.url → report.host → lastFocusedWindow tab url; null (restricted) only when all are empty. A restricted tab.url (about:blank) is not overridden by a report host. `popupView` takes `focusedUrl`.
+- `popup.js`: when tab.url and report.host are both missing, queries `{active:true, lastFocusedWindow:true}` and re-fetches the report by that tab's id. No new permission.
+- Tests: `engine/test/popup-host.test.js` (all 4 source combinations, background host storage, manifest permissions `["storage","nativeMessaging"]` unchanged). `e2e/ui.test.js` gains "popup in Safari: tab.url undefined, host comes from the stored report" and "no tab.url and no stored host is restricted".
+- Command: `npm test` → `ℹ tests 294 ℹ pass 294 ℹ fail 0`. (First run failed the no-network bundle check because an `https://` template literal landed in the popup bundle; replaced with `normalizeHostname`.)
+- Not run here: `npm run e2e` (runner-only). Row set to `needs-runner-build`; the next iteration reads `ralph/evidence/e2e-latest.md` and marks it done or fixes it.
+- 06:17Z `/impeccable init` (Opus, this session): owner interview answered (users: everyone, with night reading and white pages most important; differentiators confirmed; voice: witty, a nod to the name). Wrote `PRODUCT.md` (platform `adaptive`). No image generation available → no buildPath recorded; app screens are code-first. Live mode skipped (native + extension). T026 unblocked.
