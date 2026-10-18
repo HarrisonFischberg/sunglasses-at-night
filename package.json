@@ -7,8 +7,10 @@
   "type": "module",
   "scripts": {
     "check": "node engine/scripts/check.js",
+    "pretest": "node engine/scripts/bundle.js",
     "test": "node --test 'engine/test/**/*.test.js'",
-    "e2e": "node --test e2e/",
+    "pree2e": "node engine/scripts/bundle.js",
+    "e2e": "node --test --test-concurrency=1 'e2e/**/*.test.js'",
     "perf": "node engine/scripts/perf.js",
     "privacy-check": "node --test privacy/"
   },

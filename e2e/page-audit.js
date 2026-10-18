@@ -1,0 +1,106 @@
+// In-page checks for the WebKit e2e run, bundled into a classic script and
+// exposed as globalThis.__sanAudit. Independent of the engine's own contrast
+// pass: it measures what the browser actually computed.
+
+import { parseColor, composite, contrastRatio, relativeLuminance } from '../engine/src/color.js';
+
+const MARK = 'data-sunglasses-at-night';
+const SKIP_TAGS = new Set(['script', 'style', 'template', 'noscript', 'title', 'head', 'option']);
+const INTERACTIVE = 'a[href],button,input,select,textarea,summary,[role="button"],[onclick]';
+
+const isOurs = (el) => el.hasAttribute(MARK);
+
+// Every element in tree order, descending into open shadow roots.
+function walk(root, out = []) {
+  for (const el of root.querySelectorAll('*')) {
+    out.push(el);
+    if (el.shadowRoot) walk(el.shadowRoot, out);
+  }
+  return out;
+}
+
+function paintParent(el) {
+  if (el.assignedSlot) return el.assignedSlot;
+  if (el.parentElement) return el.parentElement;
+  const root = el.parentNode;
+  return root && root.nodeType === 11 ? root.host : null;
+}
+
+// Composite background colors up the flat tree onto the UA canvas.
+function effectiveBackground(el) {
+  const layers = [];
+  for (let e = el; e; e = paintParent(e)) {
+    const c = parseColor(getComputedStyle(e).backgroundColor);
+    if (c && c.alpha > 0) {
+      layers.push(c);
+      if (c.alpha >= 1) break;
+    }
+  }
+  let bg = { r: 1, g: 1, b: 1, alpha: 1 }; // canvas when nothing paints: white (worst case)
+  for (let i = layers.length - 1; i >= 0; i--) bg = composite(layers[i], bg);
+  return { ...bg, alpha: 1 };
+}
+
+function describe(el) {
+  const id = el.id ? `#${el.id}` : '';
+  const cls = typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\s+/).join('.') : '';
+  const where = el.getRootNode() instanceof ShadowRoot ? ` (in shadow of <${el.getRootNode().host.localName}>)` : '';
+  return `<${el.localName}${id}${cls}>${where}`;
+}
+
+function visible(el, cs) {
+  if (cs.display === 'none' || cs.visibility !== 'visible' || Number(cs.opacity) === 0) return false;
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.height > 0;
+}
+
+/** Structure + pointer-events + hit-testing, for before/after comparison. */
+export function snapshot() {
+  const els = walk(document).filter((el) => !isOurs(el));
+  return {
+    ours: walk(document).filter(isOurs).map((el) => el.localName),
+    elements: els.map((el) => {
+      const cs = getComputedStyle(el);
+      let hittable = null;
+      if (el.matches(INTERACTIVE) && visible(el, cs)) {
+        const r = el.getBoundingClientRect();
+        const x = r.left + r.width / 2, y = r.top + r.height / 2;
+        if (x >= 0 && y >= 0 && x < innerWidth && y < innerHeight) {
+          const hit = el.getRootNode().elementFromPoint(x, y);
+          hittable = hit === el || el.contains(hit);
+        }
+      }
+      return { tag: el.localName, pointerEvents: cs.pointerEvents, hittable, label: describe(el) };
+    }),
+  };
+}
+
+/** Darkness and contrast of every visible text-bearing element. */
+export function audit({ minContrast = 4.5, maxTextBgLuminance = 0.2 } = {}) {
+  const rootBg = effectiveBackground(document.documentElement);
+  const failures = [];
+  let checked = 0, minRatio = Infinity, maxLum = 0;
+  for (const el of walk(document)) {
+    if (isOurs(el) || SKIP_TAGS.has(el.localName)) continue;
+    const text = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.data).join('').trim();
+    if (!text) continue;
+    const cs = getComputedStyle(el);
+    if (!visible(el, cs)) continue;
+    const fill = cs.webkitTextFillColor && cs.webkitTextFillColor !== cs.color ? cs.webkitTextFillColor : cs.color;
+    const fg = parseColor(fill);
+    if (!fg || fg.alpha === 0) continue;
+    const bg = effectiveBackground(el);
+    const ratio = contrastRatio(fg, bg);
+    const lum = relativeLuminance(bg);
+    checked++;
+    minRatio = Math.min(minRatio, ratio);
+    maxLum = Math.max(maxLum, lum);
+    if (ratio < minContrast || lum > maxTextBgLuminance) {
+      failures.push({ el: describe(el), text: text.slice(0, 40), color: fill, background: cs.backgroundColor, ratio: +ratio.toFixed(2), bgLuminance: +lum.toFixed(3) });
+    }
+  }
+  return {
+    rootLuminance: +relativeLuminance(rootBg).toFixed(3),
+    checked, minRatio: +minRatio.toFixed(2), maxTextBgLuminance: +maxLum.toFixed(3), failures,
+  };
+}

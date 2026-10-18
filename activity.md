@@ -106,3 +106,32 @@
 - Verification, attempt 1/5: `npm test` → `ℹ tests 191 ℹ pass 191 ℹ fail 0` (153 previous + 38 detect/early). `npm run check` → `node --check: 6 file(s) OK`.
 - No Swift changes, so no runner build is needed.
 - Note for T007: `engine/src/*.js` are ES modules, and MV3 content scripts are classic scripts. T007 has to bundle `early.js` and its imports into a classic `content/early.js`, register it in `manifest.json` (`run_at: document_start`, `all_frames`), read settings synchronously enough for document_start, call `whenParsed(document, ctl.finish)`, and remove or replace the early sheet once the dynamic engine applies. Not registered in the manifest in this task, so nothing has loaded in Safari yet.
+
+## 2026-10-17: T007 dynamic engine (Ralph iteration). BLOCKED (B15)
+
+- Goal: T007 acceptance criteria (fixture pages render dark; no element gets `pointer-events` changes or overlays), proven by the T012 command `npm run e2e` on WebKit.
+- Wrote:
+  - `engine/src/dynamic.js`: `startDynamic({ document, window, look, fetchSheet })` → `{ stop, refresh, settle }`.
+    - CSSOM: every readable sheet's style rules are rewritten (incl. @import, @media/@supports/@layer/@container/@scope blocks, CSS nesting). The results go into one override `<style>` kept last in the scope, with the same selectors, so source order and specificity still decide. Keyword values (inherit, currentcolor…) are copied verbatim so ordering stays exact. @keyframes and @page are skipped.
+    - Custom properties: `--x: <color>` also defines `--san-{bg,fg,border}--x`, and `var(--x)` reads become `var(--san-<role>--x, var(--x))`. Gradients have every color stop rewritten; url()/strings are never touched.
+    - Inline styles and `bgcolor` / `<font color>` / `<body text>`: `!important` rules keyed by `data-san-inline`. Inline `!important` declarations (which no sheet can beat) are rewritten in place, and the original is restored on `stop()`.
+    - Contrast pass: any visible text still under 4.5:1 on its composited flat-tree background gets a `data-san-fix` rule (`ensureContrast`).
+    - A MutationObserver per scope (childList/attributes) plus a 1 s poll for insertRule edits and late custom-element shadow roots. Open shadow roots are separate scopes; adopted sheets get `!important` copies.
+    - Cross-origin sheets (cssRules throws) are fetched via `fetchSheet` and parsed in a detached document (nothing applies, nothing loads).
+    - Only `<style>` elements and data attributes are added. No pointer-events, overlays or layout properties (unit-tested).
+  - `engine/src/sheet-fetch.js` (background): http(s) only, no URL credentials, our content-script senders only, `credentials: 'omit'`, `referrerPolicy: 'no-referrer'`, `cache: 'force-cache'`, text/css only, ≤ 4 MB, LRU 64. `engine/src/messages.js` holds the message type, so the content bundle has no fetch code.
+  - `engine/src/content.js` (load settings → `startEarly` → at DOMContentLoaded `finish()` → remove the early sheet → `startDynamic`; restarts on settings change). `engine/src/background.js`.
+  - `engine/scripts/bundle.js`: a zero-dependency ESM → classic-IIFE bundler, one function scope per module. Run by the new `pretest`/`pree2e` scripts. Outputs `Extension/Resources/content/engine.js` and `Extension/Resources/background.js`.
+  - `manifest.json`: `storage`, host `<all_urls>`, `background.service_worker`, content script at `document_start` with `all_frames`.
+  - Tests: `engine/test/dynamic.test.js` (14), `sheet-fetch.test.js` (6), `bundle.test.js` (5: bundles fresh, classic, compile; background registers one listener; no network APIs in the content bundle).
+  - E2E: `e2e/harness.js` (two loopback origins; the bundled content script plus an API shim whose sendMessage reaches the real background handler), `e2e/page-audit.js` (an independent in-page audit), `e2e/dynamic.test.js`, and 7 fixtures (`light`, `inline`, `spa`, `shadow`, `cross-origin` + `cdn/`, `links`, `shop`). Each fixture loads once without and once with the engine. The test asserts: baseline light; root luminance < 0.1; every visible text element on a background with luminance ≤ 0.2 at ≥ 4.5:1; only `<style>` added; same element structure; identical computed `pointer-events`; every baseline-hittable control still hittable; real clicks/fill/select on the shop page; re-fetches only to the CDN origin. Writes `ralph/evidence/t007-e2e.json` and `t007-<fixture>-{before,after}.png`.
+  - `docs/data-inventory.md`: a row for the cross-origin sheet re-fetch.
+- Verification:
+  - `npm test` → `ℹ tests 216 ℹ pass 216 ℹ fail 0` (191 previous + 25 new). `npm run check` → `node --check: 11 file(s) OK`.
+  - `npm run e2e`, runs 1–2: no output, killed after ~10 min (WebKit hung at launch; rtk buffers output until exit).
+  - Run 3 (probe with a 45 s launch timeout): `browserType.launch: Timeout 45000ms exceeded … sandbox_extension_issue_file_to_process failed for /Users/harrison/Library/Caches/ms-playwright/webkit-2370/Playwright.app: 1 (Operation not permitted) … Connection Invalid error for service com.apple.hiservices-xpcservice`.
+  - Run 4 (Chromium probe, only to debug the harness): `Executable doesn't exist at …/chromium_headless_shell-1248/…`. Not installed, and a download isn't approved.
+  - Run 5 (the real suite): all 7 fixture tests `✖ … browserType.launch: Timeout 180000ms exceeded`, with the same sandbox error. No page ever loaded.
+  - Stopped at 5 runs. The failure is the sandbox, not the engine. Logged as **B15**. T007 is **blocked (B15)**, not done. The e2e suite and fixtures have never run, so first-run harness bugs are possible.
+- Swift: only Extension resources changed (manifest, two new bundled JS files). The runner's next `verify-swift.sh` build will confirm they still copy into the appex.
+- Next (owner): run `npm run e2e` in a normal terminal (or approve the runner step in B15), then paste the summary here. Fixing any harness/engine failures it shows is the next iteration's T007 work.

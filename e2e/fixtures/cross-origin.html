@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture: cross-origin stylesheet</title>
+<!-- Served from another origin with no CORS headers: the CSSOM can't read it. -->
+<link rel="stylesheet" href="{{CDN}}/cross.css">
+</head>
+<body>
+  <h1 class="title">Stylesheet from another origin</h1>
+  <div class="xo-card">A card styled only by the cross-origin sheet.</div>
+  <div class="vars">Colors from custom properties defined cross-origin.</div>
+  <p class="imported">Styled by a sheet the cross-origin sheet imports.</p>
+</body>
+</html>

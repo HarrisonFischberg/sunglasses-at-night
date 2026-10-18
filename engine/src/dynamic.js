@@ -1,0 +1,789 @@
+// Sunglasses at Night: dynamic engine (T007).
+// Rewrites the colors a page declares, instead of filtering pixels:
+//   - CSSOM: every style rule in every readable sheet (incl. @import,
+//     @media/@supports/@layer/@container blocks and nested rules) gets an
+//     override rule with the same selector and transformed colors, in one
+//     sheet placed after all page sheets. Overrides keep source order and
+//     specificity, and keyword values (inherit, currentcolor…) are copied
+//     verbatim, so the page's own cascade still decides which color wins.
+//   - Custom properties: a color-valued `--x` also defines `--san-bg--x`,
+//     `--san-fg--x` and `--san-border--x`; overrides read `var(--x)` through
+//     the variant for their role and fall back to the original.
+//   - Inline styles and presentational attributes (bgcolor, <font color>)
+//     get rules keyed by a data attribute. Those rules are `!important`,
+//     which beats a normal inline declaration without touching the element's
+//     own style attribute.
+//   - Text whose final color still misses 4.5:1 on its effective background
+//     gets a per-color fix rule (ensureContrast moves lightness only).
+//   - A MutationObserver per scope handles added/changed nodes, sheets and
+//     attributes; a 1 s poll catches CSSOM edits (insertRule) and late
+//     custom-element shadow roots, which no mutation reports.
+//   - Open shadow roots are scopes of their own. Cross-origin sheets the
+//     CSSOM can't read are re-fetched through `fetchSheet` (the background
+//     script) and parsed in a detached document.
+//
+// The engine only ever adds <style> elements, and data attributes its own
+// rules select on. It never sets pointer-events, never adds an overlay or any
+// other element, and never writes layout properties. DOM and fetching are
+// injected so tests can drive it.
+//
+// Known limits: closed shadow roots are unreachable from a content script;
+// adopted sheets are overridden with `!important` copies because adopted
+// sheets cascade after every <style> we could add.
+
+import { parseColor, formatRgb, composite, contrastRatio } from './color.js';
+import { transformColor, ensureContrast, quantize, normalizeLook, MIN_CONTRAST } from './transform.js';
+
+export const MARK = 'data-sunglasses-at-night';
+export const INLINE_ATTR = 'data-san-inline';
+export const FIX_ATTR = 'data-san-fix';
+export const VAR_PREFIX = '--san-';
+
+const ROLES = ['bg', 'fg', 'border'];
+
+// Longhand color properties and the role their colors are mapped with.
+export const PROP_ROLES = Object.freeze({
+  'background-color': 'bg',
+  'background-image': 'bg',
+  color: 'fg',
+  'caret-color': 'fg',
+  'text-decoration-color': 'fg',
+  'text-emphasis-color': 'fg',
+  '-webkit-text-fill-color': 'fg',
+  '-webkit-text-stroke-color': 'fg',
+  'column-rule-color': 'border',
+  'outline-color': 'border',
+  'border-top-color': 'border',
+  'border-right-color': 'border',
+  'border-bottom-color': 'border',
+  'border-left-color': 'border',
+  'border-block-start-color': 'border',
+  'border-block-end-color': 'border',
+  'border-inline-start-color': 'border',
+  'border-inline-end-color': 'border',
+  fill: 'fg',
+  stroke: 'fg',
+});
+
+// Shorthands whose longhands read as '' while a var() is pending substitution.
+const SHORTHAND_ROLES = Object.freeze({
+  background: 'bg',
+  border: 'border',
+  'border-color': 'border',
+  'border-top': 'border',
+  'border-right': 'border',
+  'border-bottom': 'border',
+  'border-left': 'border',
+  'border-block': 'border',
+  'border-inline': 'border',
+  outline: 'border',
+  'text-decoration': 'fg',
+});
+
+const KEEP_KEYWORDS = new Set([
+  'inherit', 'initial', 'unset', 'revert', 'revert-layer', 'currentcolor', 'transparent', 'none', 'auto', '',
+]);
+const COLOR_FUNCS = new Set([
+  'rgb', 'rgba', 'hsl', 'hsla', 'hwb', 'lab', 'lch', 'oklab', 'oklch', 'color', 'color-mix', 'light-dark',
+]);
+const OPAQUE_FUNCS = new Set(['url', 'image-set', '-webkit-image-set', 'attr', 'env', 'element']);
+
+// ------------------------------------------------------------ value rewrite
+
+const roleVar = (role, name) => `${VAR_PREFIX}${role}${name}`;
+
+function mapColor(c, role, look) {
+  if ((c.alpha ?? 1) === 0) return null;
+  return formatRgb(quantize(transformColor(c, role, look)));
+}
+
+// Index of the ')' closing the '(' at `open`, skipping strings; -1 if none.
+function closeParen(s, open) {
+  let depth = 0, quote = null;
+  for (let i = open; i < s.length; i++) {
+    const ch = s[i];
+    if (quote) {
+      if (ch === '\\') i++;
+      else if (ch === quote) quote = null;
+    } else if (ch === '"' || ch === "'") quote = ch;
+    else if (ch === '(') depth++;
+    else if (ch === ')' && --depth === 0) return i;
+  }
+  return -1;
+}
+
+// Split at top-level commas.
+function splitTop(s) {
+  const out = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '(') depth++;
+    else if (s[i] === ')') depth--;
+    else if (s[i] === ',' && depth === 0) {
+      out.push(s.slice(start, i));
+      start = i + 1;
+    }
+  }
+  out.push(s.slice(start));
+  return out;
+}
+
+const HEX_RE = /^#[0-9a-fA-F]{3,8}(?![\w-])/;
+const IDENT_RE = /^-?[A-Za-z_][\w-]*/;
+
+// Rewrite every color token in `value` (any CSS value) for `role`.
+function rewriteTokens(value, role, look) {
+  let out = '', i = 0;
+  const n = value.length;
+  while (i < n) {
+    const ch = value[i];
+    if (ch === '"' || ch === "'") {
+      let j = i + 1;
+      while (j < n && value[j] !== ch) j += value[j] === '\\' ? 2 : 1;
+      out += value.slice(i, j + 1);
+      i = j + 1;
+      continue;
+    }
+    const rest = value.slice(i);
+    if (ch === '#') {
+      const m = HEX_RE.exec(rest);
+      if (m) {
+        const c = parseColor(m[0]);
+        out += (c && mapColor(c, role, look)) ?? m[0];
+        i += m[0].length;
+        continue;
+      }
+    }
+    const id = i === 0 || !/[\w-]/.test(value[i - 1]) ? IDENT_RE.exec(rest) : null;
+    if (id) {
+      const word = id[0], lower = word.toLowerCase(), end = i + word.length;
+      if (value[end] === '(') {
+        const close = closeParen(value, end);
+        if (close < 0) return value; // unbalanced: leave the whole value alone
+        const whole = value.slice(i, close + 1), body = value.slice(end + 1, close);
+        if (OPAQUE_FUNCS.has(lower)) {
+          out += whole;
+        } else if (lower === 'var') {
+          out += rewriteVar(body, role, look);
+        } else {
+          const c = COLOR_FUNCS.has(lower) ? parseColor(whole) : null;
+          out += c ? (mapColor(c, role, look) ?? whole) : `${word}(${rewriteTokens(body, role, look)})`;
+        }
+        i = close + 1;
+        continue;
+      }
+      const c = KEEP_KEYWORDS.has(lower) ? null : parseColor(lower);
+      out += (c && mapColor(c, role, look)) ?? word;
+      i = end;
+      continue;
+    }
+    out += ch;
+    i++;
+  }
+  return out;
+}
+
+// var(--x[, fallback]) → var(--san-<role>--x, var(--x[, fallback']))
+function rewriteVar(body, role, look) {
+  const parts = splitTop(body);
+  const name = parts[0].trim();
+  if (!name.startsWith('--') || name.startsWith(VAR_PREFIX)) return `var(${body})`;
+  const fallback = parts.length > 1 ? parts.slice(1).join(',') : null;
+  const inner = fallback === null ? `var(${name})` : `var(${name},${rewriteTokens(fallback, role, look)})`;
+  return `var(${roleVar(role, name)}, ${inner})`;
+}
+
+function lookKey(look) {
+  const n = normalizeLook(look);
+  return `${n.brightness},${n.contrast},${n.sepia},${n.grayscale}`;
+}
+
+const valueCache = new Map();
+
+/**
+ * Rewrite one declared value for `role`. Returns the new value, or null when
+ * there is nothing to change (keywords, transparent, images, unknown tokens).
+ */
+export function rewriteValue(value, role, look) {
+  if (typeof value !== 'string') return null;
+  const v = value.trim();
+  if (KEEP_KEYWORDS.has(v.toLowerCase())) return null;
+  const key = `${role}|${lookKey(look)}|${v}`;
+  if (valueCache.has(key)) return valueCache.get(key);
+  const c = parseColor(v);
+  let out = c ? mapColor(c, role, look) : rewriteTokens(v, role, look);
+  if (out === v) out = null;
+  if (valueCache.size > 20000) valueCache.clear();
+  valueCache.set(key, out);
+  return out;
+}
+
+// ----------------------------------------------------- declaration rewrite
+
+/**
+ * Rewrite a CSSStyleDeclaration-like object (length, item(i) or [i],
+ * getPropertyValue, getPropertyPriority) into override declarations.
+ * opts.important forces `!important` on every declaration.
+ * Returns an array of `prop:value[ !important]` strings.
+ */
+export function rewriteDeclarations(style, look, opts = {}) {
+  const out = [];
+  const seen = new Set();
+  const len = style?.length ?? 0;
+  const bangFor = (prop) =>
+    opts.important || style.getPropertyPriority(prop) === 'important' ? ' !important' : '';
+  for (let i = 0; i < len; i++) {
+    const prop = style.item ? style.item(i) : style[i];
+    if (!prop || seen.has(prop)) continue;
+    seen.add(prop);
+    const value = style.getPropertyValue(prop);
+    if (prop.startsWith('--')) {
+      if (prop.startsWith(VAR_PREFIX)) continue;
+      for (const role of ROLES) {
+        const v = rewriteValue(value, role, look);
+        if (v !== null) out.push(`${roleVar(role, prop)}:${v}${bangFor(prop)}`);
+      }
+      continue;
+    }
+    if (prop === 'color-scheme') {
+      if (/\blight\b/.test(value) && !/\bdark\b/.test(value)) out.push(`color-scheme:dark${bangFor(prop)}`);
+      continue;
+    }
+    const role = PROP_ROLES[prop];
+    if (!role || !value) continue;
+    if (prop === 'background-image' && !/gradient\(|var\(/i.test(value)) continue;
+    const v = rewriteValue(value, role, look);
+    // Keyword values are copied verbatim, so an override for an earlier page
+    // rule can't beat a later page rule that resets the color.
+    out.push(`${prop}:${v ?? value}${bangFor(prop)}`);
+  }
+  for (const [sh, role] of Object.entries(SHORTHAND_ROLES)) {
+    const value = style.getPropertyValue?.(sh);
+    if (!value || !value.includes('var(')) continue;
+    const v = rewriteValue(value, role, look);
+    if (v !== null) out.push(`${sh}:${v}${bangFor(sh)}`);
+  }
+  return out;
+}
+
+// ------------------------------------------------------------ rule rewrite
+
+const STYLE_RULE = 1, IMPORT_RULE = 3, PAGE_RULE = 6, KEYFRAMES_RULE = 7, KEYFRAME_RULE = 8;
+
+/**
+ * Override CSS for a list of rules. `onImport(rule)` returns the override
+ * CSS for an @import's sheet (or ''). opts.important: see rewriteDeclarations.
+ */
+export function rewriteRules(rules, look, onImport = () => '', opts = {}) {
+  let css = '';
+  const len = rules?.length ?? 0;
+  for (let i = 0; i < len; i++) {
+    const rule = rules[i];
+    if (!rule) continue;
+    const type = rule.type;
+    if (type === IMPORT_RULE) {
+      const inner = onImport(rule);
+      const media = rule.media?.mediaText;
+      css += inner && media && media !== 'all' ? `@media ${media}{${inner}}` : inner;
+      continue;
+    }
+    if (type === PAGE_RULE || type === KEYFRAMES_RULE || type === KEYFRAME_RULE) continue;
+    const nested = rule.cssRules ? rewriteRules(rule.cssRules, look, onImport, opts) : '';
+    if (type === STYLE_RULE) {
+      const decls = rewriteDeclarations(rule.style, look, opts);
+      if (decls.length || nested) css += `${rule.selectorText}{${decls.join(';')}${decls.length && nested ? ';' : ''}${nested}}`;
+      continue;
+    }
+    if (rule.style && rule.selectorText === undefined && !rule.cssRules) {
+      // CSSNestedDeclarations: bare declarations inside a nested style rule.
+      const decls = rewriteDeclarations(rule.style, look, opts);
+      if (decls.length) css += `${decls.join(';')};`;
+      continue;
+    }
+    if (rule.cssRules && nested) {
+      // @media, @supports, @layer, @container, @scope, @starting-style …
+      const text = rule.cssText ?? '';
+      const brace = text.indexOf('{');
+      if (brace > 0) css += `${text.slice(0, brace).trim()}{${nested}}`;
+    }
+  }
+  return css;
+}
+
+/** Base CSS: page canvas, default text and UA link colors at zero specificity. */
+export function baseCss(look) {
+  const bg = quantize(transformColor('#ffffff', 'bg', look));
+  const f = (hex) => formatRgb(ensureContrast(transformColor(hex, 'fg', look), bg));
+  return (
+    `:where(:root){color-scheme:dark;background-color:${formatRgb(bg)};color:${f('#000000')}}` +
+    `:where(a:link){color:${f('#0000ee')}}:where(a:visited){color:${f('#551a8b')}}`
+  );
+}
+
+// ------------------------------------------------------------- the engine
+
+const HTML_NS = 'http://www.w3.org/1999/xhtml';
+const POLL_MS = 1000;
+const MAX_IMPORT_DEPTH = 4;
+const ATTR_FILTER = ['style', 'bgcolor', 'color', 'text', 'class', 'media', 'disabled', 'rel', 'href'];
+const SHEET_ATTRS = new Set(['media', 'disabled', 'rel', 'href']);
+
+/**
+ * Start the dynamic engine on `document`.
+ * opts.look: slider values. opts.fetchSheet(url) → Promise<string|null>
+ * returns the text of a stylesheet the CSSOM can't read (cross-origin).
+ * Returns { stop(), refresh(), settle() }; settle() resolves once every
+ * cross-origin fetch started so far has been applied.
+ */
+export function startDynamic({ document, window = document.defaultView, look, fetchSheet = async () => null }) {
+  const win = window;
+  const getCS = (el) => win.getComputedStyle(el);
+  const scopes = new Map(); // Document | ShadowRoot → scope
+  const sheetCache = new WeakMap(); // CSSStyleSheet → { sig, css }
+  const remote = new Map(); // absolute URL → { done, parsed, css }
+  const pending = new Set();
+  const pendingHosts = new Set();
+  const touched = new Set(); // elements carrying our attributes or inline writes
+  const inlineOriginals = new WeakMap(); // element → Map(prop → { value, written })
+  const canvas = quantize(transformColor('#ffffff', 'bg', look));
+  let stopped = false;
+  let incomplete = false; // set while a needed remote sheet is still loading
+
+  const isOurs = (node) => node?.nodeType === 1 && node.hasAttribute(MARK);
+
+  function makeStyle(role) {
+    const el = document.createElementNS(HTML_NS, 'style');
+    el.setAttribute(MARK, role);
+    return el;
+  }
+
+  // ---- scopes and our sheets
+  function ensureScope(root) {
+    let scope = scopes.get(root);
+    if (scope) return scope;
+    scope = {
+      root, css: '', overrideEl: makeStyle('override'), dynEl: makeStyle('dynamic'),
+      dynRules: [], inlineIds: new Map(), fixIds: new Map(), observer: null, baseEl: null,
+    };
+    scopes.set(root, scope);
+    if (root.nodeType === 9) {
+      scope.baseEl = makeStyle('base');
+      scope.baseEl.textContent = baseCss(look);
+      const head = root.head ?? root.documentElement;
+      head.insertBefore(scope.baseEl, head.firstChild);
+    }
+    placeLast(scope);
+    scope.observer = new win.MutationObserver((records) => onMutations(scope, records));
+    scope.observer.observe(root, {
+      childList: true, subtree: true, attributes: true, attributeFilter: ATTR_FILTER,
+    });
+    return scope;
+  }
+
+  // Keep [override, dynamic] as the last two children of the scope, after
+  // every page sheet. Moving a <style> re-creates its sheet from text, so
+  // rules added with insertRule are restored from scope.dynRules.
+  function placeLast(scope) {
+    const parent = scope.root.nodeType === 9 ? scope.root.documentElement : scope.root;
+    if (!parent) return;
+    const { overrideEl: o, dynEl: d } = scope;
+    if (parent.lastChild === d && d.previousSibling === o) return;
+    parent.appendChild(o);
+    parent.appendChild(d);
+    d.textContent = scope.dynRules.join('\n');
+  }
+
+  function addRule(scope, rule) {
+    scope.dynRules.push(rule);
+    const sheet = scope.dynEl.sheet;
+    try {
+      if (sheet) sheet.insertRule(rule, sheet.cssRules.length);
+    } catch {
+      scope.dynRules.pop(); // not valid in this browser
+    }
+  }
+
+  // ---- sheets
+  function signature(sheet, depth = 0) {
+    let rules;
+    try {
+      rules = sheet.cssRules;
+    } catch {
+      return null; // cross-origin
+    }
+    let sig = `${rules.length}`;
+    if (depth < MAX_IMPORT_DEPTH) {
+      for (let i = 0; i < rules.length && rules[i].type === IMPORT_RULE; i++) {
+        const s = rules[i].styleSheet;
+        sig += `[${s ? signature(s, depth + 1) : '-'}]`;
+      }
+    }
+    return sig;
+  }
+
+  function withMedia(css, media) {
+    return css && media && media !== 'all' ? `@media ${media}{${css}}` : css;
+  }
+
+  function remoteCss(href, base, depth) {
+    if (!href || depth > MAX_IMPORT_DEPTH) return '';
+    let url;
+    try {
+      url = new URL(href, base ?? document.baseURI).href;
+    } catch {
+      return '';
+    }
+    let entry = remote.get(url);
+    if (!entry) {
+      entry = { done: false, parsed: null, css: null };
+      remote.set(url, entry);
+      const p = Promise.resolve()
+        .then(() => fetchSheet(url))
+        .then((text) => { if (typeof text === 'string') entry.parsed = parseDetached(text); })
+        .catch(() => {})
+        .finally(() => {
+          entry.done = true;
+          pending.delete(p);
+          if (!stopped) refresh(true);
+        });
+      pending.add(p);
+    }
+    if (!entry.done) {
+      incomplete = true;
+      return '';
+    }
+    if (!entry.parsed) return '';
+    if (entry.css === null) {
+      const outer = incomplete;
+      incomplete = false;
+      const css = rewriteRules(entry.parsed.rules, look, (r) => remoteCss(r.href, url, depth + 1));
+      if (!incomplete) entry.css = css;
+      incomplete = outer || incomplete;
+      return css;
+    }
+    return entry.css;
+  }
+
+  // Parse fetched CSS in a document of its own so nothing applies to the page.
+  function parseDetached(text) {
+    const doc = document.implementation.createHTMLDocument('');
+    const style = doc.createElement('style');
+    style.textContent = text;
+    doc.head.appendChild(style);
+    const rules = style.sheet?.cssRules;
+    return rules ? { rules, doc } : null;
+  }
+
+  function importCss(rule, depth, opts) {
+    let sheet = null;
+    try {
+      sheet = rule.styleSheet;
+    } catch {
+      sheet = null;
+    }
+    if (sheet && signature(sheet) !== null) {
+      return depth < MAX_IMPORT_DEPTH
+        ? rewriteRules(sheet.cssRules, look, (r) => importCss(r, depth + 1, opts), opts)
+        : '';
+    }
+    return remoteCss(rule.href, rule.parentStyleSheet?.href, depth + 1);
+  }
+
+  function sheetCss(sheet, opts) {
+    if (sheet.disabled) return '';
+    const sig = signature(sheet);
+    const media = sheet.media?.mediaText;
+    if (sig === null) return withMedia(remoteCss(sheet.href, undefined, 0), media);
+    const cached = sheetCache.get(sheet);
+    if (cached && cached.sig === sig) return cached.css;
+    const outer = incomplete;
+    incomplete = false;
+    const css = withMedia(rewriteRules(sheet.cssRules, look, (r) => importCss(r, 0, opts), opts), media);
+    if (!incomplete) sheetCache.set(sheet, { sig, css });
+    incomplete = outer || incomplete;
+    return css;
+  }
+
+  function syncSheets(scope) {
+    let css = '';
+    for (const sheet of scope.root.styleSheets ?? []) {
+      if (!isOurs(sheet.ownerNode)) css += sheetCss(sheet, {});
+    }
+    for (const sheet of scope.root.adoptedStyleSheets ?? []) css += sheetCss(sheet, { important: true });
+    const changed = css !== scope.css;
+    if (changed) {
+      scope.css = css;
+      scope.overrideEl.textContent = css;
+    }
+    placeLast(scope);
+    return changed;
+  }
+
+  // ---- inline styles and presentational attributes
+  function scopeOf(el) {
+    const root = el.getRootNode?.() ?? document;
+    return scopes.get(root) ?? ensureScope(root.nodeType === 11 ? root : document);
+  }
+
+  function ruleFor(scope, map, attr, decls) {
+    const key = decls.join(';');
+    let id = map.get(key);
+    if (id === undefined) {
+      id = String(map.size + 1);
+      map.set(key, id);
+      addRule(scope, `[${attr}="${id}"]{${key}}`);
+    }
+    return id;
+  }
+
+  function presentational(el) {
+    const decls = [];
+    const bgc = el.getAttribute('bgcolor');
+    const tag = el.localName;
+    const fc = tag === 'font' ? el.getAttribute('color') : tag === 'body' ? el.getAttribute('text') : null;
+    for (const [value, prop, role] of [[bgc, 'background-color', 'bg'], [fc, 'color', 'fg']]) {
+      if (!value) continue;
+      const c = parseColor(/^[0-9a-f]{6}$/i.test(value) ? '#' + value : value);
+      const v = c && mapColor(c, role, look);
+      if (v) decls.push(`${prop}:${v} !important`);
+    }
+    return decls;
+  }
+
+  // An inline `!important` declaration beats every sheet, so those are the
+  // one case written into the element's style attribute. The page's value is
+  // kept to restore on stop(), and to recognize our own write when the
+  // resulting attribute mutation comes back.
+  function setInlineImportant(el, prop, value) {
+    let own = inlineOriginals.get(el);
+    if (!own) inlineOriginals.set(el, (own = new Map()));
+    const current = el.style.getPropertyValue(prop);
+    const prior = own.get(prop);
+    const original = prior && prior.written === current ? prior.value : current;
+    el.style.setProperty(prop, value, 'important');
+    own.set(prop, { value: original, written: el.style.getPropertyValue(prop) });
+    touched.add(el);
+  }
+
+  // The page's own value for an inline property (ours replaced, if we wrote it).
+  function pageInlineValue(el, prop) {
+    const current = el.style.getPropertyValue(prop);
+    const prior = inlineOriginals.get(el)?.get(prop);
+    return prior && prior.written === current ? prior.value : current;
+  }
+
+  function inlineView(el) {
+    const style = el.style, normal = [];
+    for (let i = 0; i < style.length; i++) {
+      const prop = style.item(i);
+      if (style.getPropertyPriority(prop) !== 'important' || prop.startsWith('--')) {
+        normal.push(prop);
+        continue;
+      }
+      const role = PROP_ROLES[prop];
+      if (!role) continue;
+      const v = rewriteValue(pageInlineValue(el, prop), role, look);
+      if (v !== null && el.style.getPropertyValue(prop) !== inlineOriginals.get(el)?.get(prop)?.written) {
+        setInlineImportant(el, prop, v);
+      }
+    }
+    return {
+      length: normal.length,
+      item: (i) => normal[i],
+      getPropertyValue: (p) => style.getPropertyValue(p),
+      getPropertyPriority: (p) => style.getPropertyPriority(p),
+    };
+  }
+
+  function processInline(el) {
+    if (el.nodeType !== 1 || isOurs(el)) return;
+    let decls = presentational(el);
+    if (el.style?.length) decls = decls.concat(rewriteDeclarations(inlineView(el), look, { important: true }));
+    if (!decls.length) {
+      if (el.hasAttribute(INLINE_ATTR)) el.removeAttribute(INLINE_ATTR);
+      return;
+    }
+    const scope = scopeOf(el);
+    const id = ruleFor(scope, scope.inlineIds, INLINE_ATTR, decls);
+    if (el.getAttribute(INLINE_ATTR) !== id) el.setAttribute(INLINE_ATTR, id);
+    touched.add(el);
+  }
+
+  // ---- contrast
+  function paintParent(el) {
+    if (el.assignedSlot) return el.assignedSlot;
+    if (el.parentElement) return el.parentElement;
+    const root = el.parentNode;
+    return root && root.nodeType === 11 ? root.host : null;
+  }
+
+  function effectiveBackground(el) {
+    const layers = [];
+    for (let e = el; e; e = paintParent(e)) {
+      const c = parseColor(getCS(e).backgroundColor);
+      if (c && c.alpha > 0) {
+        layers.push(c);
+        if (c.alpha >= 1) break;
+      }
+    }
+    let bg = canvas;
+    for (let i = layers.length - 1; i >= 0; i--) bg = composite(layers[i], bg);
+    return { ...bg, alpha: 1 };
+  }
+
+  function hasOwnText(el) {
+    for (let n = el.firstChild; n; n = n.nextSibling) {
+      if (n.nodeType === 3 && n.data.trim()) return true;
+    }
+    return false;
+  }
+
+  function fixContrast(el) {
+    if (isOurs(el) || !hasOwnText(el)) return;
+    const cs = getCS(el);
+    if (cs.display === 'none' || cs.visibility !== 'visible') return;
+    const fg = parseColor(cs.color);
+    if (!fg || fg.alpha === 0) return;
+    const bg = effectiveBackground(el);
+    if (contrastRatio(fg, bg) >= MIN_CONTRAST) return;
+    const fixed = ensureContrast(fg, bg);
+    if (!fixed) return;
+    const color = formatRgb(fixed);
+    if (el.style?.getPropertyPriority('color') === 'important') {
+      setInlineImportant(el, 'color', color);
+      return;
+    }
+    const decls = [`color:${color} !important`];
+    const fill = cs.webkitTextFillColor;
+    const fillColor = fill ? parseColor(fill) : null;
+    if (fillColor && fillColor.alpha > 0 && fill !== cs.color) decls.push(`-webkit-text-fill-color:${color} !important`);
+    const scope = scopeOf(el);
+    el.setAttribute(FIX_ATTR, ruleFor(scope, scope.fixIds, FIX_ATTR, decls));
+    touched.add(el);
+  }
+
+  // ---- walking
+  function elementsIn(root) {
+    const all = root.querySelectorAll ? [...root.querySelectorAll('*')] : [];
+    return root.nodeType === 1 ? [root, ...all] : all;
+  }
+
+  function adoptShadow(host) {
+    const sr = host.shadowRoot;
+    if (!sr) {
+      if (host.localName.includes('-')) pendingHosts.add(host);
+      return;
+    }
+    pendingHosts.delete(host);
+    if (scopes.has(sr)) return;
+    syncSheets(ensureScope(sr));
+    scanTree(sr);
+  }
+
+  function scanTree(root) {
+    for (const el of elementsIn(root)) {
+      if (isOurs(el)) continue;
+      if (el.hasAttribute('style') || el.hasAttribute('bgcolor') || el.localName === 'font' || el.localName === 'body') {
+        processInline(el);
+      }
+      if (el.shadowRoot || el.localName.includes('-')) adoptShadow(el);
+    }
+  }
+
+  function contrastTree(root) {
+    for (const el of elementsIn(root)) {
+      fixContrast(el);
+      if (el.shadowRoot && scopes.has(el.shadowRoot)) contrastTree(el.shadowRoot);
+    }
+  }
+
+  function onMutations(scope, records) {
+    if (stopped) return;
+    let sheetsChanged = false;
+    const roots = new Set();
+    const isSheetNode = (n) => n.localName === 'style' || (n.localName === 'link' && /stylesheet/i.test(n.rel));
+    for (const r of records) {
+      const t = r.target;
+      if (r.type === 'childList') {
+        for (const n of r.addedNodes) {
+          if (n.nodeType !== 1 || isOurs(n)) continue;
+          if (isSheetNode(n) || n.querySelector?.('style,link')) sheetsChanged = true;
+          if (n.localName === 'link') n.addEventListener('load', () => refresh(true), { once: true });
+          roots.add(n);
+        }
+        for (const n of r.removedNodes) {
+          if (n.nodeType === 1 && (isSheetNode(n) || isOurs(n))) sheetsChanged = true;
+        }
+        if (t.nodeType === 1 && t.localName === 'style' && !isOurs(t)) sheetsChanged = true;
+      } else if (r.type === 'attributes' && !isOurs(t)) {
+        if (SHEET_ATTRS.has(r.attributeName) && isSheetNode(t)) sheetsChanged = true;
+        else if (r.attributeName !== 'class') processInline(t);
+        roots.add(t);
+      }
+    }
+    if (sheetsChanged && syncSheets(scope)) roots.add(scope.root.nodeType === 9 ? scope.root.documentElement : scope.root);
+    for (const n of roots) if (n.isConnected) scanTree(n);
+    for (const n of roots) if (n.isConnected) contrastTree(n);
+  }
+
+  // ---- lifecycle
+  function refresh(forceContrast = false) {
+    if (stopped) return;
+    let changed = forceContrast;
+    for (const scope of [...scopes.values()]) {
+      if (scope.root.nodeType === 11 && !scope.root.host?.isConnected) continue;
+      changed = syncSheets(scope) || changed;
+    }
+    for (const host of [...pendingHosts]) {
+      if (host.shadowRoot) {
+        adoptShadow(host);
+        changed = true;
+      } else if (!host.isConnected) {
+        pendingHosts.delete(host);
+      }
+    }
+    if (changed) contrastTree(document.documentElement);
+  }
+
+  ensureScope(document);
+  syncSheets(scopes.get(document));
+  scanTree(document.documentElement);
+  for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
+    if (!link.sheet) link.addEventListener('load', () => refresh(true), { once: true });
+  }
+  contrastTree(document.documentElement);
+  const timer = win.setInterval(() => {
+    if (!document.hidden) refresh();
+  }, POLL_MS);
+
+  function stop() {
+    stopped = true;
+    win.clearInterval(timer);
+    for (const scope of scopes.values()) {
+      scope.observer?.disconnect();
+      scope.baseEl?.remove();
+      scope.overrideEl.remove();
+      scope.dynEl.remove();
+    }
+    for (const el of touched) {
+      el.removeAttribute(INLINE_ATTR);
+      el.removeAttribute(FIX_ATTR);
+      for (const [prop, { value, written }] of inlineOriginals.get(el) ?? []) {
+        if (el.style.getPropertyValue(prop) !== written) continue; // the page changed it since
+        if (value) el.style.setProperty(prop, value, 'important');
+        else el.style.removeProperty(prop);
+      }
+      inlineOriginals.delete(el);
+    }
+    scopes.clear();
+    touched.clear();
+    pendingHosts.clear();
+  }
+
+  async function settle() {
+    while (pending.size) await Promise.all([...pending]);
+    refresh(true);
+  }
+
+  return { stop, refresh, settle };
+}
