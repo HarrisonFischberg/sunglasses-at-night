@@ -1065,8 +1065,10 @@ export function startDynamic({
   function releasePending(force = false) {
     // A sheet still being re-fetched means the override doesn't cover the subtree yet.
     if (!force && (pending.size || incomplete)) return;
+    // The page may insert a stylesheet link next to the subtree, not inside it.
+    const loading = !force && [...document.querySelectorAll('link[rel~="stylesheet" i]')].some((l) => !l.sheet && !l.disabled);
     for (const el of [...pendingTags.keys()]) {
-      if (!force && el.isConnected && [...el.querySelectorAll('link[rel~="stylesheet" i]')].some((l) => !l.sheet && !l.disabled)) continue;
+      if (loading && el.isConnected) continue;
       el.removeAttribute(PENDING_ATTR);
       pendingTags.delete(el);
     }
