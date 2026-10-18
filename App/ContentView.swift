@@ -50,7 +50,9 @@ struct ContentView: View {
             } else {
                 Text("Turn on Sunglasses for Safari in Safari Settings, under Extensions.")
                 Button("Open Safari Extension Settings") {
-                    SFSafariApplication.showPreferencesForExtension(withIdentifier: AppIdentifiers.extensionBundleID) { _ in }
+                    // Async API: Safari replies on an XPC queue, so no main-actor completion closure.
+                    let identifier = AppIdentifiers.extensionBundleID
+                    Task.detached { try? await SFSafariApplication.showPreferencesForExtension(withIdentifier: identifier) }
                 }
             }
             #else
