@@ -177,3 +177,9 @@
 - Result (`ralph/evidence/swift-build-latest.md`, 2026-10-18T02:00:38Z, HEAD c0e4c30): macOS build exit 0, iOS build exit 0, Swift tests exit 0: `Test Suite 'SettingsBridgeTests' passed … Executed 11 tests, with 0 failures (0 unexpected)`, `** TEST SUCCEEDED **`. Full log: `ralph/evidence/test-macOS.log`.
 - "Reset clears both": Swift side covered by `testAppResetAllClearsMirrorAndSignalsExtension` and `testExtensionResetMessageClearsMirror` (in the 11 that passed). Extension side covered by the 6 native cases in `engine/test/background.test.js` (`npm test` 239/239 from the previous iteration). Those cases use a fake host, so the real Safari ↔ App Group round trip with a signed build is still unverified (needs B7 signing; it belongs to T016's manual platform runs).
 - No code changes this iteration. Row set to `done`.
+
+## 2026-10-18 — end of Ralph run 1 (10 iterations total, $18.71)
+
+- Done: T000–T006, T014. Blocked: T007 (B15 e2e can't launch WebKit in sandbox), T009 (B16 manual Safari check).
+- Supervised re-check: `npm test` → `ℹ tests 239 ℹ pass 239 ℹ fail 0`. Runner Swift: macOS + iOS builds SUCCEEDED, `Executed 11 tests, with 0 failures`.
+- Supervised `npm run e2e` (outside sandbox, B15 option a): `ℹ tests 7 ℹ pass 0 ℹ fail 7`. Every fixture times out in `openPage` waiting for `style[data-sunglasses-at-night="override"]`; no page errors or console output. The engine or harness never injects the override sheet in WebKit. Not yet diagnosed. Log: `ralph/evidence/e2e-supervised.log`.
