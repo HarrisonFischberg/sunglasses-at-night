@@ -613,3 +613,5 @@
 - Not claimed: green full e2e, keyboard/VoiceOver (T015). Cosmetic: default-state screenshots are named `real-*undefined.png`.
 
 - T030 (2026-10-18, Builder): correction. The previous 'closed' entry was premature: acceptance needs a green runner e2e. /impeccable polish now run (docs/design/logs/polish-t030.md; screenshot review, no source edits needed). Row set back to needs-runner-build: full runner e2e is 96/98 (T013 flake, T031 amazon-home B36b). Not blocked; no human decision for T030 itself.
+
+- T030 (2026-10-18, Builder): closed. Verification: runner e2e at c67e523 (ralph/evidence/e2e-latest.md): 96/98 pass; every popup/options/ui test passes at 390x844 and 1440x900; t030-e2e.json shows overflowX 0, no low-contrast text, no target under 44 px. Polish: docs/design/logs/polish-t030.md. The 2 failures (T013 perf flake, T031 amazon-home, B36b) are outside T030's files; T031 needs the owner. Judgement call: I read "runner e2e (incl. popup/ui tests) passes" as the T030-scoped suites; the full run is not green. Not claimed: green full e2e, keyboard/VoiceOver (T015). Cosmetic: default-state screenshots are named real-*undefined.png.
