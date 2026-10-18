@@ -6,21 +6,27 @@ import SafariServices
 
 // Placeholder identifiers until the seller account is known (B1/B7).
 enum AppIdentifiers {
-    static let extensionBundleID = "app.rarecreatures.sunglassesatnight.extension"
+    static let extensionBundleID = "app.rarecreatures.sunglassesatnight.extension" // keep in sync with SafariExtensionStateProvider
     static let appGroup = SettingsBridge.appGroup
 }
 
 #if os(macOS)
 /// Reads the extension's state from Safari. An error (for example, Safari has
 /// not registered the extension yet) is reported as `.unknown`.
+///
+/// Safari answers on an XPC background queue. The async API keeps that reply
+/// off any actor, so no closure here is ever main-actor isolated (a
+/// main-actor-inferred completion closure trapped at launch, 2026-10-18).
 struct SafariExtensionStateProvider: ExtensionStateProviding {
-    func fetchStatus(completion: @escaping @Sendable (ExtensionStatus) -> Void) {
-        SFSafariExtensionManager.getStateOfSafariExtension(withIdentifier: AppIdentifiers.extensionBundleID) { state, error in
-            guard let state, error == nil else {
+    nonisolated func fetchStatus(completion: @escaping @Sendable (ExtensionStatus) -> Void) {
+        let identifier = "app.rarecreatures.sunglassesatnight.extension"
+        Task.detached {
+            do {
+                let state = try await SFSafariExtensionManager.stateOfSafariExtension(withIdentifier: identifier)
+                completion(state.isEnabled ? .enabled : .disabled)
+            } catch {
                 completion(.unknown)
-                return
             }
-            completion(state.isEnabled ? .enabled : .disabled)
         }
     }
 }

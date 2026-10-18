@@ -506,3 +506,9 @@
 - Swift build was broken by T028 (`Shared/ExtensionStatusModel.swift:32 sending 'self' risks causing data races`): made the model `@MainActor`, completion `@Sendable`, async test with `fulfillment(of:)`. Builds SUCCEEDED, Swift 15/15.
 - e2e 60/68 → 68/68: T023's harness stand-in for Safari's manifest css was an unmarked `<style>`, so the structure and "ours" checks counted it as a page or engine element. Marked it `data-sunglasses-at-night="manifest-base"` and excluded it in page-audit, filter and t012 checks (Safari injects manifest css as a user stylesheet, not a DOM node).
 - Brand sweep (supervised): no user-visible "Sunglasses at Night" left. T027 done. T028 done (B30 decided). T023 waits on the owner's amazon re-check. T013 re-queued (one perf run failed 36 > 28).
+
+## 2026-10-18 14:45Z — supervisor: container app launch crash (owner report)
+
+- Owner's crash report: `EXC_BREAKPOINT` ~0.3 s after launch on queue `com.apple.NSXPCConnection.user.com.apple.SafariServices.ExtensionHelper`, in `closure #1 in SafariExtensionStateProvider.fetchStatus(completion:)` via `swift_task_checkIsolated → dispatch_assert_queue`. The completion closure passed to `SFSafariExtensionManager.getStateOfSafariExtension` was main-actor isolated, but Safari calls it on an XPC queue; Swift 6 traps. Unit tests use a mock provider, so they never exercised it.
+- Fix: `SafariExtensionStateProvider.fetchStatus` is `nonisolated` and uses the async `SFSafariExtensionManager.stateOfSafariExtension(withIdentifier:)` in `Task.detached`; the model still publishes on the main actor.
+- Verified: built app launched directly, alive after 6 s, no new crash report (3 → 3). Added a **launch smoke test** to `ralph/verify-swift.sh` (alive after 6 s + no new DiagnosticReports entry); runner: builds SUCCEEDED, Swift 15/15, launch smoke PASS.
