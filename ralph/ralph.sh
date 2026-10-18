@@ -35,6 +35,7 @@ for f in PROMPT.md prd.md activity.md; do [ -f "$f" ] || { echo "missing $f" >&2
 grep -q "Status: \*\*APPROVED" prd.md || { echo "prd.md not approved" >&2; exit 1; }
 mkdir -p ralph/logs ralph/evidence
 ralph/verify-swift.sh || true
+ralph/verify-e2e.sh || true
 NOPROG=0
 for ((i=1; i<=MAX; i++)); do
   set +e; t=$(node ralph/next-task.js); rc=$?; set -e
@@ -48,6 +49,7 @@ for ((i=1; i<=MAX; i++)); do
     --model "$MODEL" --max-turns "$MAX_TURNS" --output-format json > "$log" 2> "$log.err" || true
   node -e 'try{const d=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log(`  ${d.subtype} turns=${d.num_turns} cost=$${(d.total_cost_usd||0).toFixed(2)}`)}catch(e){console.log("  (no JSON result)")}' "$log"
   ralph/verify-swift.sh || true
+  ralph/verify-e2e.sh || true
   after="$(git rev-parse HEAD)$(git status --porcelain | shasum)"
   if [ "$before" = "$after" ]; then NOPROG=$((NOPROG+1)); echo "  no progress ($NOPROG)"; else NOPROG=0; fi
   if [ "$NOPROG" -ge 2 ]; then echo "stopped: 2 iterations without progress"; exit 3; fi

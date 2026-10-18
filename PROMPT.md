@@ -30,6 +30,10 @@ marker only when every approved task genuinely meets its acceptance criteria.
   `xcodebuild`. If your task's acceptance needs a Swift build you just changed, set the row status to
   `needs-runner-build` and stop; the next iteration picks the same task first, reads the fresh log,
   and marks it done or fixes it. Code signing is off for these builds (B7).
+- WebKit e2e (`npm run e2e`) can't launch inside your sandbox either. The runner runs it before and
+  after every iteration and writes `ralph/evidence/e2e-latest.md` (+ `.log`); read that. Same
+  `needs-runner-build` status applies when your acceptance depends on an e2e run you just changed.
+  e2e code must only contact 127.0.0.1 loopback servers it starts itself.
 - Engine tests: `npm test` (runs `node --test 'engine/test/**/*.test.js'`).
 - Never edit `.claude/settings.json`, never push, never add a dependency `prd.md` doesn't list as
   approved (approved: `playwright@1.64.1` dev-only; nothing else).
