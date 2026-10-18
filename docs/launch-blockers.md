@@ -14,6 +14,7 @@
 | B10 | REA web capture | tool | Harold | discovery evidence | CLOSED 2026-10-18: headless Comet, isolated profile |
 | B11 | Caveman skill | tool | Harold | comms rule | CLOSED 2026-10-18: owner said never use it; removed from skill |
 | B12 | Playwright (WebKit) dev dependency for e2e fixtures | approval | Harold | T012 evidence for safeguards 14 + contrast claim | CLOSED 2026-10-18: approved |
+| B13 | Ralph session can't run any verification command: `node --test engine/test/`, `npm test`, `node engine/scripts/check.js` and `rtk proxy node --test engine/test/` all return "This command requires approval" despite the `Bash(node --test:*)` / `Bash(npm test:*)` / `Bash(node engine/scripts/:*)` allow rules. Likely cause: the global RTK hook rewrites commands (e.g. to `rtk …`) so they no longer match the project allowlist. Agents may not edit `.claude/settings.json` | failed check / approval (permissions) | Harold | T001 and every later task's verification | OPEN 2026-10-17 |
 
 ## Unknown business and legal inputs
 
