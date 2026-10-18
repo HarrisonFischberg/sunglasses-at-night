@@ -183,3 +183,8 @@
 - Done: T000–T006, T014. Blocked: T007 (B15 e2e can't launch WebKit in sandbox), T009 (B16 manual Safari check).
 - Supervised re-check: `npm test` → `ℹ tests 239 ℹ pass 239 ℹ fail 0`. Runner Swift: macOS + iOS builds SUCCEEDED, `Executed 11 tests, with 0 failures`.
 - Supervised `npm run e2e` (outside sandbox, B15 option a): `ℹ tests 7 ℹ pass 0 ℹ fail 7`. Every fixture times out in `openPage` waiting for `style[data-sunglasses-at-night="override"]`; no page errors or console output. The engine or harness never injects the override sheet in WebKit. Not yet diagnosed. Log: `ralph/evidence/e2e-supervised.log`.
+
+## 2026-10-18 02:30Z — owner manual Safari test (supervisor note for the loop)
+
+- Owner ran the signed test build (HEAD ~bdda3a0+, built 02:23Z) in real Safari on macOS with the extension enabled: **pages darken and "work well" on wikipedia.org and citizenfreepress.com.** So the T007 engine does inject in Safari; the 0/7 e2e result is most likely a **harness problem** (Playwright WebKit init-script/content-script setup), not the engine. Check the harness first.
+- Owner asked that testing also cover the hard cases from https://webbrowsertools.com/darkmode/. T012's acceptance now includes an original local fixture for those categories. e2e itself stays loopback-only. The supervisor will run the real page once, supervised.
