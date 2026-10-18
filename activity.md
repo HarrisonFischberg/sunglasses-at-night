@@ -78,3 +78,20 @@
 - No Swift changes, so no runner build is needed.
 - Owner decision worth confirming (not a blocker): equal start/end = never on, and global Off overrides per-site "Always dark". Both are documented in the `activation.js` header and pinned by tests.
 - Note for T009: the background script has to re-evaluate when the schedule crosses a boundary (e.g. a 1-minute `alarms` tick, or the next boundary computed from `schedule`) and when `prefers-color-scheme` changes.
+
+## 2026-10-17: T005 color transform (Ralph iteration). DONE
+
+- Goal: T005 acceptance criteria (property test: 10k random pairs → output ratio ≥4.5; slider identity at defaults), proven by `npm test`.
+- Wrote:
+  - `engine/src/transform.js` (ESM, pure, no DOM/network). `transformColor(color, role, look)` for roles `bg`/`fg`/`border`: OKLCH lightness is inverted into a per-role band (bg 0.19–0.42, fg 0.72–0.94, border 0.32–0.50), chroma is scaled and capped, hue is kept, alpha is kept. Out-of-gamut results lose chroma only. color.js's CSS gamut mapping clips within a just-noticeable difference, which turned hue by up to ~10° at low L, so transform uses its own chroma-only reduction.
+  - Sliders act in OKLCH: grayscale scales chroma, sepia blends toward amber (h 70°, C 0.06), contrast scales L around 0.5, brightness scales L. Each step is skipped at its default, so the default look is an exact no-op. `normalizeLook` clamps/rounds like the settings schema (reuses `LOOK_RANGES`).
+  - 4 original presets: `standard`, `soft`, `warm`, `mono`.
+  - `ensureContrast(fg, bg, { min = 4.5, canvas })` moves only text lightness (toward white or black, whichever has more headroom) by binary search. Translucent text that can't reach the target is made opaque. A translucent bg is composited over `canvas`. Candidates are snapped to `formatRgb` precision (`quantize`) and must pass against both the exact and the 8-bit backdrop. The returned color is always a verified one. `transformPair(fg, bg, { look, canvas, min })` → `{ fg, bg, backdrop }` (default canvas = mapped page white).
+  - `engine/test/transform.test.js`: 25 cases. Includes a 10,000-pair property over random fg/bg (25% translucent) × random looks via `transformPair`, measured after a `formatRgb` → `parseColor` round-trip; a 10,000-pair property over raw `ensureContrast` with light and dark backgrounds; slider identity (1,000 colors × `applyLook` and × 3 roles of `transformColor` at defaults, deep-equal); hue preservation; presets; sliders; edge cases.
+- Verification:
+  - Attempt 1/5: `npm test` → `ℹ tests 153 ℹ pass 150 ℹ fail 3`. The 10k `transformPair` property passed. Failures: raw `ensureContrast` worst 4.472 (checked against the unquantized bg, not the 8-bit one the browser renders), and two hue-preservation cases (gamut clipping shifted hue 9–10°). Fixed in the code (quantized backdrop check; chroma-only gamut reduction). Tests unchanged.
+  - Attempt 2/5: `npm test` → `ℹ tests 153 ℹ pass 152 ℹ fail 1`. A composited 50% white-over-black backdrop (127.5) passed at 8-bit but not exactly. Fixed in code: candidates must pass both. Test unchanged.
+  - Attempt 3/5: `npm test` → `ℹ tests 153 ℹ pass 153 ℹ fail 0` (62 color + 38 settings + 28 activation + 25 transform). `npm run check` → `node --check: 4 file(s) OK`.
+- No Swift changes, so no runner build is needed.
+- Note for T007: pass the real underlying color as `canvas` for translucent backgrounds when it's known. The guarantee is against `backdrop`. Write colors with `formatRgb` so the 8-bit check holds.
+- Note for T012: the property tests cover the math only. The ≥4.5:1 product claim still needs the WebKit fixture run.
