@@ -253,20 +253,14 @@ test('package-lock.json: dev-only dependency tree (nothing shipped)', () => {
   assert.deepEqual(prod.map(([k]) => k), [], 'every locked package must be dev-only');
 });
 
-// The audit endpoint needs the npm registry. Where the registry is unreachable
-// (the Ralph sandbox) the test is SKIPPED with a visible reason instead of
-// passing; PRIVACY_REQUIRE_AUDIT=1 turns an unreachable registry into a failure.
-test('npm audit: no known vulnerabilities in the lockfile', (t) => {
+// The audit endpoint needs the npm registry. If it can't be reached the test
+// FAILS: an audit that didn't run is not a pass.
+test('npm audit: no known vulnerabilities in the lockfile', () => {
   const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !/^npm_config_/i.test(k)));
   const r = spawnSync('npm', ['audit', '--json', '--audit-level=low'], { cwd: ROOT, encoding: 'utf8', env });
   let report;
   try { report = JSON.parse(r.stdout); } catch { report = null; }
-  const unreachable = !report || report.error || /403|ENOTFOUND|ECONN|ETIMEDOUT|EAI_AGAIN|audit endpoint/i.test(`${report?.message ?? ''}${r.stderr}`);
-  if (unreachable && !process.env.PRIVACY_REQUIRE_AUDIT) {
-    t.skip('npm registry unreachable here; run PRIVACY_REQUIRE_AUDIT=1 npm run privacy-check where the registry is reachable');
-    return;
-  }
-  assert.ok(report && !report.error && !report.message, `npm audit could not run: ${r.stdout || r.stderr}`);
+  assert.ok(report && !report.error && !report.message, `npm audit could not run (needs registry.npmjs.org): ${r.stdout || r.stderr}`);
   const v = report.metadata?.vulnerabilities ?? {};
   const total = ['info', 'low', 'moderate', 'high', 'critical'].reduce((n, k) => n + (v[k] ?? 0), 0);
   assert.equal(total, 0, `npm audit found vulnerabilities: ${JSON.stringify(v)}`);
