@@ -400,3 +400,57 @@
 - Verification: `npm test` → `ℹ tests 302 ℹ pass 302 ℹ fail 0` (includes engine/test/island-palette.test.js).
 - Runner e2e (ralph/evidence/e2e-latest.md, HEAD 17ff696, 07:09Z, exit 0): `ℹ tests 39 ℹ pass 39 ℹ fail 0`. The hard-cases test (e2e/t012.test.js lines 259-281) asserts the dark island stays within ΔE 5 with text ≥ 4.5:1 and that the 48 swatches have no collapsed pair and keep lightness order; all other T012 cases pass.
 - Row set to done in prd.md. No code changes this iteration.
+
+## 2026-10-18 T026 blocked (B23, Builder)
+- Read the T026 row, PRODUCT.md, launch-blockers; loaded the impeccable skill, reference/shape.md and new-work.md.
+- Command: .claude/skills/impeccable/scripts/impeccable context -> "This command requires approval" (refused twice). No Impeccable output exists, so no shape brief, critique or audit was produced and none is claimed.
+- Shape needs an owner answer round and this session is non-interactive. No concepts, screenshots or docs/design files were created. Row set to blocked (B23).
+
+## 2026-10-18 T018 draft privacy policy, terms, support (Builder)
+- Goal: every statement maps to a data-inventory row; proof is the manual cross-check table.
+- Wrote `docs/site/privacy.html`, `terms.html`, `support.html` (each banner "Draft for legal review", not hosted, B5) and `docs/site/in-app-copy.md` (S04 text for T015). Facts only from `docs/data-inventory.md`, prd.md intake and launch-blockers. Unknowns (publisher name B1, location B2, report-email retention B6, children/jurisdiction rights B4/B8, liability, dates) are bracketed placeholders, not invented.
+- Verification: manual cross-check (full copy also in `docs/site/claims-map.md`). Inventory rows: R1 settings · R2 per-site rules · R3 settings mirror · R4 page content/URL in memory · R5 cross-origin sheet re-fetch · R6 diagnostic report.
+
+| # | Statement | Maps to |
+| --- | --- | --- |
+| 1 | No account, analytics, ads, crash reporting, tracking, location, cookies, remote config, iCloud sync, ad ID, purchases | "Not collected"; PRD free/no IAP |
+| 2 | Never sends pages, addresses, settings to us or anyone | R4 "never transmitted"; R5 is the only request (row 8) |
+| 3 | Settings in extension storage + shared app storage; kept until changed/reset/uninstall; Reset all erases | R1 |
+| 4 | Per-site hostname + choice on device; delete via Sites, Reset all, uninstall | R2 |
+| 5 | Copy of settings incl. hostnames in app-shared storage, on device, replaced/removed on reset/uninstall | R3 |
+| 6 | Runs on all sites; reads styles + address in memory only; stores only a hostname when a rule is made | R4; "Not collected" host-access para |
+| 7 | User can restrict to chosen sites in Safari settings | Apple platform feature, no row needed |
+| 8 | Cross-origin sheets re-requested from the page's own address; no cookies, no referrer, usually cached; only the URL sent; text in memory only | R5 |
+| 9 | Report a problem: draft in user's Mail app to hello@rarecreatures.app with hostname, app/OS version, settings; sent only if user presses Send | R6; PRD F9 |
+| 10 | We receive sender email + draft only if sent; used only to investigate/reply | R6; Vendors |
+| 11 | Report-email retention [pending]; deletion on request | R6 (retention UNKNOWN, B6) |
+| 12 | No third-party services; Apple provides Safari/App Store | Vendors |
+| 13 | Children: no personal info collected [legal wording pending] | "Not collected"; B3/B4 |
+| 14 | Remove data via Reset all / Sites / uninstall; nothing on any server | R1–R3 deletion column |
+| 15 | Contact hello@rarecreatures.app | prd.md intake |
+| 16 | Publisher, location, dates, liability, governing law, rights by jurisdiction | bracketed placeholders, B1/B2/B8, not invented |
+
+- Result: 16 rows, 0 data statements without an inventory row or a named blocker placeholder.
+- Code spot-check (read-only, files read this session): `engine/src/sheet-fetch.js` confirms R5 as stated (GET, `credentials: 'omit'`, `referrerPolicy: 'no-referrer'`, `cache: 'force-cache'`, http(s) only, no URL credentials, text/css only, 4 MB cap, LRU 64 in memory). `Extension/Resources/manifest.json` permissions are `storage`, `nativeMessaging`, host `<all_urls>`, which matches rows 6 and 7. Not re-checked against code: R3 mirror (T014 evidence in its row), R6 mailto builder (T011 not built yet, so the report statement describes planned behavior), and "no analytics/network" overall (T019). The inventory header still says "re-verify at Phase 5".
+- Further code check (later this session): `Shared/SettingsBridge.swift` confirms R3 and table rows 3 and 5: the mirror is a JSON settings object (incl. hostnames) in App Group `UserDefaults`, capped at 1,000,000 bytes, replaced on each `sync`, removed by `resetAll()`, and the file header says "Nothing here touches the network".
+- Open item, tracked as B24: table row 9 (Report a problem draft contents) describes behavior that isn't built until T011, so it can't be code-verified yet. T011 and T019 must re-check privacy.html, support.html and in-app-copy.md against the real URL builder before release.
+- Limits: Bash was refused for all commands this session, so no command output exists. The proof is the manual cross-check table (the verification the T018 row specifies) plus the three file reads above, not a tool run.
+- Row set to done in prd.md. B8 text updated: drafts exist, counsel review still open.
+
+## 2026-10-18: T019 privacy verification (Ralph iteration). DONE (audit item open: B25)
+
+- Goal: T019 acceptance (test fails on any new network API or permission), proven by `npm run privacy-check`.
+- Wrote `privacy/privacy.test.js` (17 `node:test` cases, no dependencies) and fixed the script to `node --test 'privacy/**/*.test.js'` (Node 24 rejects a bare directory, same as B13). It checks:
+  - Shipped JS (`engine/src`, `Extension/Resources`, comments stripped): no `fetch`, XHR, WebSocket, EventSource, `sendBeacon`, WebTransport, RTCPeerConnection, `importScripts`, dynamic `import()`, `window.open`, `tabs.create/update`, `connectNative` or `http(s)://` literal (w3.org XML namespace URIs excepted). `fetch` is allowed only in `sheet-fetch.js` and the background wiring. `sheet-fetch.js` must have exactly one `fetch(` with GET, `credentials: 'omit'`, `referrerPolicy: 'no-referrer'` and the http(s)-only guard; no other file may call `fetch(`.
+  - Extension HTML/CSS load nothing remote.
+  - Manifest: permissions exactly `storage` + `nativeMessaging`; hosts exactly `<all_urls>`; only allowlisted top-level keys; no optional permissions, `externally_connectable`, `web_accessible_resources`, CSP override; every script/page reference is a local file.
+  - Swift (`App`, `Extension`, `Shared`): no `URLSession`/`URLRequest`/`Network`/CFNetwork/StoreKit/`WKWebView`/ad or analytics SDK/`contentsOf:`/download tasks; Xcode project links no StoreKit/Network/AdSupport/CloudKit/Swift packages/Pods; entitlements are only app-sandbox + App Group (no `network.client/server`); no ATS exceptions or tracking keys in the Info.plist.
+  - `package.json`: no runtime dependencies, devDependencies exactly `{ playwright: 1.64.1 }`, no install scripts; lockfile has only dev packages.
+  - `npm audit` (`--audit-level=low`).
+  - Self-check that the scanner flags a planted call.
+- Verification:
+  - Attempt 1/5: failed on the first run: bare `privacy/` argument (module not found), then 2 test bugs (my `fetch` regex matched the message name `'sunglasses-at-night/fetch-sheet'`, and the w3.org namespace URI matched the URL rule; `npm audit` failed with `EALLOWSCRIPTS` from inherited `npm_config_*`). Fixed in the test, no assertion weakened.
+  - Attempt 2/5: `npm run privacy-check` → `ℹ tests 17 ℹ pass 16 ℹ fail 0 ℹ skipped 1`. The skipped test is `npm audit`: the sandbox proxy returns `403 Connection blocked by network allowlist` for registry.npmjs.org. It is SKIPPED with a visible reason, not passed; `PRIVACY_REQUIRE_AUDIT=1` makes it fail instead. Logged as **B25**.
+  - Mutation check (real run): added `"tabs"` to manifest permissions and a planted `engine/src/zz-planted.js` with `new XMLHttpRequest().open('POST','https://t.example/')` → `ℹ fail 2`: "manifest: permission allowlist…" (`+ 'tabs'`) and "shipped JS: no network API…" (XMLHttpRequest + http(s) literal URL). Both plants reverted; the final run above is on the clean tree.
+- No Swift changes. No new dependency. Data flows unchanged (the audit sends only lockfile package names/versions to the npm registry, dev-only, when the owner runs it).
+- B24 updated: network, permission, entitlement and StoreKit claims are now code-verified; the `mailto:` claim still waits on T011.

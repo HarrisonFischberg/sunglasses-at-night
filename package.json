@@ -12,7 +12,7 @@
     "pree2e": "node engine/scripts/bundle.js",
     "e2e": "node --test --test-concurrency=1 'e2e/**/*.test.js'",
     "perf": "node engine/scripts/perf.js",
-    "privacy-check": "node --test privacy/"
+    "privacy-check": "node --test 'privacy/**/*.test.js'"
   },
   "devDependencies": {
     "playwright": "1.64.1"
