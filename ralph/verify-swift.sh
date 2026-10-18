@@ -20,4 +20,7 @@ out=ralph/evidence/swift-build-latest.md
     grep -E "error:|Test Suite .* (passed|failed)|Executed|TEST (SUCCEEDED|FAILED)" "$log" | tail -20
   fi
 } > "$out"
+# Keep the loop's unsigned builds out of LaunchServices so Safari only sees the owner's signed test copy (build/Manual).
+LSR=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+for a in build/DerivedData/Build/Products/*/"Sunglasses at Night.app"; do [ -d "$a" ] && "$LSR" -u "$PWD/$a" 2>/dev/null; done
 echo "swift verify → $out"

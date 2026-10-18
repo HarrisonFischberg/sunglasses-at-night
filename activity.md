@@ -277,3 +277,9 @@
   3. SVG embed/object documents getting the content script.
   4. The filter engine still inverts url() backgrounds once (T008 note). T012 tests the default dynamic engine.
 - Status change: the session goal accepts only done or blocked, and no in-session WebKit run is possible, so the row is now `blocked (B19)` with B19 in `docs/launch-blockers.md`. Caveat recorded there: `ralph/next-task.js` skips blocked rows. The owner must run `npm run e2e` or set the row back to `needs-runner-build` for the runner to decide T012. Nothing is claimed passing.
+
+## 2026-10-18 03:47Z — supervisor: run 2 interrupted at iteration 6 (T013)
+
+- The runner was killed mid-iteration 6 when the supervising session ended (no result JSON). The uncommitted T013 work in progress is left in the tree (`e2e/perf.test.js`, `e2e/perf/`, `engine/scripts/perf.js`, edits to `engine/src/dynamic.js`): continue from it, don't discard it.
+- Runner e2e at b497a77: 25/36. T012's first-paint check fails on all 10 pages; T010's popup keyboard case fails. Both re-queued as `needs-runner-build` (they were wrongly `blocked` on "waiting for runner", so the runner skipped them).
+- Resuming run 2 with the remaining 4 iterations.
