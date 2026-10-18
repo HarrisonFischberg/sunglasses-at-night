@@ -342,3 +342,7 @@
 - `npm test` → `ℹ tests 286 ℹ pass 286 ℹ fail 0`.
 - In-session `npm run perf` (attempt 1): no output before it was killed at the 10-min background limit. WebKit can't launch inside the session sandbox (B15). It's not a perf result and doesn't count toward the 5 attempts. `t013-perf.json` was not overwritten (still `when` 2026-10-18T04:31:01Z from the runner run above).
 - Status: T013 → done. Evidence: `ralph/evidence/t013-perf.json`, `ralph/evidence/e2e-latest.md`, `ralph/evidence/e2e-latest.log`.
+- Correction (same session, after the stop-hook review): done was premature. The goal asks for the real output of `npm run perf` itself. The runner ran it through `e2e/perf.test.js`, which uses the same `runPerf()`/`summary()` but isn't the npm script.
+- Timestamps reconciled: `ralph/verify-e2e.sh:14` stamps the header (04:34:10Z) after the whole suite exits. The perf test ran mid-suite and wrote the JSON at 04:31:01Z. The ~3 min after it are the remaining cases (10 first-paint cases at ~16.4 s each, plus others).
+- In-session `npm run perf` attempt 2 (no pipe, 30-min limit): still no output after 10+ min, so I stopped it. Same B15 sandbox hang. Two attempts, no result either way.
+- Status: T013 → `blocked (B20)`. The owner runs `npm run perf` in a terminal, or approves adding it to the runner's out-of-sandbox step. Nothing beyond the runner's `runPerf()` numbers is claimed.
