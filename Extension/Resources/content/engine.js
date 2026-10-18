@@ -2124,9 +2124,14 @@ function rewriteVar(body, role, look) {
   return `var(${roleVar(role, name)}, ${inner})`;
 }
 
+// rewriteValue runs once per declaration, so the last look's key is kept.
+let lastLook = null, lastLookKey = null;
 function lookKey(look) {
+  if (lastLookKey !== null && look === lastLook) return lastLookKey;
   const n = normalizeLook(look);
-  return `${n.brightness},${n.contrast},${n.sepia},${n.grayscale}`;
+  lastLook = look;
+  lastLookKey = `${n.brightness},${n.contrast},${n.sepia},${n.grayscale}`;
+  return lastLookKey;
 }
 
 const IMAGE_FUNC_RE = /(?:^|[^\w-])(?:url|image-set|-webkit-image-set|image|cross-fade|-webkit-cross-fade|element)\(/i;
@@ -2177,11 +2182,16 @@ function rewriteDeclarations(style, look, opts = {}) {
   const len = style?.length ?? 0;
   const bangFor = (prop) =>
     opts.important || style.getPropertyPriority(prop) === 'important' ? ' !important' : '';
+  // A shorthand set with var() leaves its color longhands reading as ''.
+  // Serializing every shorthand of every rule is costly, so only look when
+  // such an empty longhand showed up.
+  let pendingVar = false;
   for (let i = 0; i < len; i++) {
     const prop = style.item ? style.item(i) : style[i];
     if (!prop || seen.has(prop)) continue;
     seen.add(prop);
     const value = style.getPropertyValue(prop);
+    if (!value && PROP_ROLES[prop]) pendingVar = true;
     if (prop.startsWith('--')) {
       if (prop.startsWith(VAR_PREFIX)) continue;
       for (const role of ROLES) {
@@ -2207,6 +2217,7 @@ function rewriteDeclarations(style, look, opts = {}) {
     // rule can't beat a later page rule that resets the color.
     out.push(`${prop}:${v ?? value}${bangFor(prop)}`);
   }
+  if (!pendingVar) return out;
   for (const [sh, role] of Object.entries(SHORTHAND_ROLES)) {
     const value = style.getPropertyValue?.(sh);
     if (!value || !value.includes('var(')) continue;
@@ -2278,22 +2289,45 @@ const MAX_IMPORT_DEPTH = 4;
 const ATTR_FILTER = ['style', 'bgcolor', 'background', 'color', 'text', 'class', 'media', 'disabled', 'rel', 'href'];
 const SHEET_ATTRS = new Set(['media', 'disabled', 'rel', 'href']);
 
+// Scheduling (T013). Mutation callbacks do only the cheap, flash-preventing
+// work (inline styles, new sheets, shadow roots, frames). Contrast checks,
+// which need computed styles, are collected and run later in slices of at
+// most SLICE_MS, at most every CONTRAST_DELAY_MS while the page keeps
+// mutating. Each slice reads every computed style first and writes after, so
+// it forces one style recalc instead of one per fixed element.
+const SLICE_MS = 6;
+const CONTRAST_DELAY_MS = 100;
+const YIELD = Symbol('yield');
+
 /**
  * Start the dynamic engine on `document`.
  * opts.look: slider values. opts.fetchSheet(url) → Promise<string|null>
  * returns the text of a stylesheet the CSSOM can't read (cross-origin).
  * opts.images: image mode (settings.IMAGE_MODES); opts.hideBackgroundImages
  * drops url()/image-set() background layers, keeping gradients.
+ * opts.monitor(name, start, ms), test-only: called after each main-thread
+ * task the engine runs (the perf harness sums them).
  * Returns { stop(), refresh(), settle() }; settle() resolves once every
- * cross-origin fetch started so far has been applied.
+ * cross-origin fetch started so far has been applied and all deferred work
+ * is done.
  */
 function startDynamic({
   document, window = document.defaultView, look, fetchSheet = async () => null,
-  images = 'leave', hideBackgroundImages = false,
+  images = 'leave', hideBackgroundImages = false, monitor = null,
 }) {
   const base = hideBackgroundImages ? { hideImages: true } : {};
   const win = window;
   const getCS = (el) => win.getComputedStyle(el);
+  const now = () => win.performance?.now?.() ?? Date.now();
+  const timed = (name, fn) => (...args) => {
+    if (!monitor) return fn(...args);
+    const t0 = now();
+    try {
+      return fn(...args);
+    } finally {
+      monitor(name, t0, now() - t0);
+    }
+  };
   const scopes = new Map(); // Document | ShadowRoot → scope
   const sheetCache = new WeakMap(); // CSSStyleSheet → { sig, css }
   const remote = new Map(); // absolute URL → { done, parsed, css }
@@ -2305,6 +2339,12 @@ function startDynamic({
   const canvas = quantize(transformColor('#ffffff', 'bg', look));
   let stopped = false;
   let incomplete = false; // set while a needed remote sheet is still loading
+  // Deferred work: see SLICE_MS.
+  const contrastRoots = new Set(); // nodes whose subtree needs a contrast check
+  let contrastAll = false; // the whole document does
+  let pass = null; // { items, i }: the contrast pass in progress
+  let syncWanted = false; // sheets changed (link load, remote sheet arrived)
+  let timerId = null, timerAt = Infinity;
 
   const isOurs = (node) => node?.nodeType === 1 && node.hasAttribute(MARK);
 
@@ -2330,7 +2370,7 @@ function startDynamic({
       head.insertBefore(scope.baseEl, head.firstChild);
     }
     placeLast(scope);
-    scope.observer = new win.MutationObserver((records) => onMutations(scope, records));
+    scope.observer = new win.MutationObserver(timed('mutations', (records) => onMutations(scope, records)));
     scope.observer.observe(root, {
       childList: true, subtree: true, attributes: true, attributeFilter: ATTR_FILTER,
     });
@@ -2382,11 +2422,11 @@ function startDynamic({
     return css && media && media !== 'all' ? `@media ${media}{${css}}` : css;
   }
 
-  function remoteCss(href, base, depth) {
+  function remoteCss(href, baseUrl, depth) {
     if (!href || depth > MAX_IMPORT_DEPTH) return '';
     let url;
     try {
-      url = new URL(href, base ?? document.baseURI).href;
+      url = new URL(href, baseUrl ?? document.baseURI).href;
     } catch {
       return '';
     }
@@ -2401,7 +2441,8 @@ function startDynamic({
         .finally(() => {
           entry.done = true;
           pending.delete(p);
-          if (!stopped) refresh(true);
+          // Sheets arriving together are rewritten in the next slices, not here.
+          requestSync();
         });
       pending.add(p);
     }
@@ -2413,6 +2454,7 @@ function startDynamic({
     if (entry.css === null) {
       const outer = incomplete;
       incomplete = false;
+      // `base` is the engine's rewrite options (hide background images).
       const css = rewriteRules(entry.parsed.rules, look, (r) => remoteCss(r.href, url, depth + 1), base);
       if (!incomplete) entry.css = css;
       incomplete = outer || incomplete;
@@ -2461,12 +2503,20 @@ function startDynamic({
     return css;
   }
 
-  function syncSheets(scope) {
+  // Returns whether our override changed, or YIELD when `deadline` passed
+  // before every sheet was rewritten (rewrites done so far stay cached, so
+  // the next call picks up where this one stopped).
+  function syncSheets(scope, deadline = Infinity) {
     let css = '';
     for (const sheet of scope.root.styleSheets ?? []) {
-      if (!isOurs(sheet.ownerNode)) css += sheetCss(sheet, base);
+      if (isOurs(sheet.ownerNode)) continue;
+      if (now() > deadline) return YIELD;
+      css += sheetCss(sheet, base);
     }
-    for (const sheet of scope.root.adoptedStyleSheets ?? []) css += sheetCss(sheet, { ...base, important: true });
+    for (const sheet of scope.root.adoptedStyleSheets ?? []) {
+      if (now() > deadline) return YIELD;
+      css += sheetCss(sheet, { ...base, important: true });
+    }
     const changed = css !== scope.css;
     if (changed) {
       scope.css = css;
@@ -2577,18 +2627,33 @@ function startDynamic({
     return root && root.nodeType === 11 ? root.host : null;
   }
 
-  function effectiveBackground(el) {
-    const layers = [];
+  // The color an element's text is painted over: its own background and its
+  // ancestors', composited down to the first opaque one (or the canvas).
+  // `cache` (element → that element's result) is shared by one slice, where
+  // nothing is written between reads, so siblings reuse their ancestors.
+  function effectiveBackground(el, cache) {
+    const chain = [];
+    let below = canvas;
     for (let e = el; e; e = paintParent(e)) {
+      const hit = cache.get(e);
+      if (hit) {
+        below = hit;
+        break;
+      }
       const c = parseColor(getCS(e).backgroundColor);
-      if (c && c.alpha > 0) {
-        layers.push(c);
-        if (c.alpha >= 1) break;
+      const layer = c && c.alpha > 0 ? c : null;
+      chain.push([e, layer]);
+      if (layer && layer.alpha >= 1) {
+        below = null;
+        break;
       }
     }
-    let bg = canvas;
-    for (let i = layers.length - 1; i >= 0; i--) bg = composite(layers[i], bg);
-    return { ...bg, alpha: 1 };
+    for (let i = chain.length - 1; i >= 0; i--) {
+      const [e, layer] = chain[i];
+      if (layer) below = below ? composite(layer, below) : layer;
+      cache.set(e, below);
+    }
+    return { ...below, alpha: 1 };
   }
 
   function hasOwnText(el) {
@@ -2598,25 +2663,31 @@ function startDynamic({
     return false;
   }
 
-  function fixContrast(el) {
-    if (isOurs(el) || !hasOwnText(el)) return;
+  // Read half of a contrast fix: what `el` needs, or null. Writes nothing.
+  function contrastFix(el, cache) {
+    if (isOurs(el) || !hasOwnText(el)) return null;
     const cs = getCS(el);
-    if (cs.display === 'none' || cs.visibility !== 'visible') return;
+    if (cs.display === 'none' || cs.visibility !== 'visible') return null;
     const fg = parseColor(cs.color);
-    if (!fg || fg.alpha === 0) return;
-    const bg = effectiveBackground(el);
-    if (contrastRatio(fg, bg) >= MIN_CONTRAST) return;
+    if (!fg || fg.alpha === 0) return null;
+    const bg = effectiveBackground(el, cache);
+    if (contrastRatio(fg, bg) >= MIN_CONTRAST) return null;
     const fixed = ensureContrast(fg, bg);
-    if (!fixed) return;
-    const color = formatRgb(fixed);
-    if (el.style?.getPropertyPriority('color') === 'important') {
+    if (!fixed) return null;
+    const important = el.style?.getPropertyPriority('color') === 'important';
+    const fill = important ? null : cs.webkitTextFillColor;
+    const fillColor = fill ? parseColor(fill) : null;
+    return { el, color: formatRgb(fixed), important, fill: Boolean(fillColor && fillColor.alpha > 0 && fill !== cs.color) };
+  }
+
+  // Write half.
+  function applyFix({ el, color, important, fill }) {
+    if (important) {
       setInlineImportant(el, 'color', color);
       return;
     }
     const decls = [`color:${color} !important`];
-    const fill = cs.webkitTextFillColor;
-    const fillColor = fill ? parseColor(fill) : null;
-    if (fillColor && fillColor.alpha > 0 && fill !== cs.color) decls.push(`-webkit-text-fill-color:${color} !important`);
+    if (fill) decls.push(`-webkit-text-fill-color:${color} !important`);
     const scope = scopeOf(el);
     el.setAttribute(FIX_ATTR, ruleFor(scope, scope.fixIds, FIX_ATTR, decls));
     touched.add(el);
@@ -2638,6 +2709,7 @@ function startDynamic({
     if (scopes.has(sr)) return;
     syncSheets(ensureScope(sr));
     scanTree(sr);
+    wantContrast(host);
   }
 
   // about:blank and srcdoc frames get no content script (the manifest has no
@@ -2662,7 +2734,7 @@ function startDynamic({
       entry.doc = doc;
       // A content script got there first (a host that does inject here).
       entry.engine = doc.querySelector(`[${MARK}],#sunglasses-at-night-early`) ? null : startDynamic({
-        document: doc, window: doc.defaultView, look, fetchSheet, images, hideBackgroundImages,
+        document: doc, window: doc.defaultView, look, fetchSheet, images, hideBackgroundImages, monitor,
       });
     };
     entry.start = start;
@@ -2683,17 +2755,121 @@ function startDynamic({
     }
   }
 
-  function contrastTree(root) {
+  // ---- deferred work
+  // The parent a node is painted inside, crossing shadow boundaries.
+  const upFrom = (n) => n.parentNode ?? (n.nodeType === 11 ? n.host : null);
+
+  // The connected nodes of `nodes` that have no ancestor in `nodes`.
+  function topmost(nodes) {
+    const out = [];
+    for (const n of nodes) {
+      if (!n.isConnected) continue;
+      let covered = false;
+      for (let p = upFrom(n); p && !covered; p = upFrom(p)) covered = nodes.has(p);
+      if (!covered) out.push(n);
+    }
+    return out;
+  }
+
+  function collect(root, out) {
     for (const el of elementsIn(root)) {
-      fixContrast(el);
-      if (el.shadowRoot && scopes.has(el.shadowRoot)) contrastTree(el.shadowRoot);
+      out.push(el);
+      if (el.shadowRoot && scopes.has(el.shadowRoot)) collect(el.shadowRoot, out);
+    }
+    return out;
+  }
+
+  function wake(delay) {
+    if (stopped) return;
+    const at = now() + delay;
+    if (timerId !== null && timerAt <= at) return;
+    if (timerId !== null) win.clearTimeout(timerId);
+    timerAt = at;
+    timerId = win.setTimeout(runSlice, delay);
+  }
+
+  function wantContrast(node) {
+    contrastRoots.add(node);
+    wake(CONTRAST_DELAY_MS);
+  }
+
+  function wantContrastAll(delay = 0) {
+    contrastAll = true;
+    wake(delay);
+  }
+
+  function requestSync() {
+    if (stopped) return;
+    syncWanted = true;
+    contrastAll = true;
+    wake(0);
+  }
+
+  function nextPass() {
+    let items = null;
+    if (contrastAll) {
+      contrastAll = false;
+      contrastRoots.clear();
+      items = collect(document.documentElement, []);
+    } else if (contrastRoots.size) {
+      items = [];
+      for (const root of topmost(contrastRoots)) collect(root, items);
+      contrastRoots.clear();
+    }
+    return items && items.length ? { items, i: 0 } : null;
+  }
+
+  // Check contrast for pass.items until `deadline`: all reads, then all writes.
+  function contrastSlice(p, deadline) {
+    const fixes = [], cache = new Map(), { items } = p;
+    while (p.i < items.length) {
+      const el = items[p.i++];
+      if (el.isConnected) {
+        const fix = contrastFix(el, cache);
+        if (fix) fixes.push(fix);
+      }
+      if ((p.i & 31) === 0 && now() > deadline) break;
+    }
+    for (const fix of fixes) applyFix(fix);
+  }
+
+  function syncAll(deadline) {
+    let changed = false;
+    for (const scope of [...scopes.values()]) {
+      if (scope.root.nodeType === 11 && !scope.root.host?.isConnected) continue;
+      const r = syncSheets(scope, deadline);
+      if (r === YIELD) return YIELD;
+      changed = r || changed;
+    }
+    return changed;
+  }
+
+  // Run deferred work until `deadline`; false when some is left.
+  function work(deadline) {
+    if (syncWanted) {
+      if (syncAll(deadline) === YIELD) return false;
+      syncWanted = false;
+    }
+    for (;;) {
+      if (!pass) pass = nextPass();
+      if (!pass) return true;
+      if (now() > deadline) return false;
+      contrastSlice(pass, deadline);
+      if (pass.i >= pass.items.length) pass = null;
     }
   }
+
+  const runSlice = timed('slice', () => {
+    timerId = null;
+    timerAt = Infinity;
+    if (stopped) return;
+    if (!work(now() + SLICE_MS)) wake(0);
+  });
 
   function onMutations(scope, records) {
     if (stopped) return;
     let sheetsChanged = false;
-    const roots = new Set();
+    const added = new Set();
     const isSheetNode = (n) => n.localName === 'style' || (n.localName === 'link' && /stylesheet/i.test(n.rel));
     for (const r of records) {
       const t = r.target;
@@ -2701,57 +2877,73 @@ function startDynamic({
         for (const n of r.addedNodes) {
           if (n.nodeType !== 1 || isOurs(n)) continue;
           if (isSheetNode(n) || n.querySelector?.('style,link')) sheetsChanged = true;
-          if (n.localName === 'link') n.addEventListener('load', () => refresh(true), { once: true });
-          roots.add(n);
+          if (n.localName === 'link') n.addEventListener('load', onSheetLoad, { once: true });
+          added.add(n);
         }
         for (const n of r.removedNodes) {
           if (n.nodeType === 1 && (isSheetNode(n) || isOurs(n))) sheetsChanged = true;
         }
         if (t.nodeType === 1 && t.localName === 'style' && !isOurs(t)) sheetsChanged = true;
       } else if (r.type === 'attributes' && !isOurs(t)) {
-        if (SHEET_ATTRS.has(r.attributeName) && isSheetNode(t)) sheetsChanged = true;
-        else if (r.attributeName !== 'class') processInline(t);
-        roots.add(t);
+        if (SHEET_ATTRS.has(r.attributeName) && isSheetNode(t)) {
+          sheetsChanged = true;
+        } else {
+          // A class can recolor the whole subtree; that only needs a contrast
+          // check, not a rescan.
+          if (r.attributeName !== 'class') processInline(t);
+          wantContrast(t);
+        }
       }
     }
-    if (sheetsChanged && syncSheets(scope)) roots.add(scope.root.nodeType === 9 ? scope.root.documentElement : scope.root);
-    for (const n of roots) if (n.isConnected) scanTree(n);
-    for (const n of roots) if (n.isConnected) contrastTree(n);
+    // New page sheets are rewritten now, so their content never shows light.
+    if (sheetsChanged && syncSheets(scope)) wantContrastAll();
+    for (const n of topmost(added)) {
+      scanTree(n);
+      wantContrast(n);
+    }
   }
+
+  const onSheetLoad = timed('sheet-load', () => requestSync());
 
   // ---- lifecycle
   function refresh(forceContrast = false) {
     if (stopped) return;
-    let changed = forceContrast;
-    for (const scope of [...scopes.values()]) {
-      if (scope.root.nodeType === 11 && !scope.root.host?.isConnected) continue;
-      changed = syncSheets(scope) || changed;
-    }
+    const changed = syncAll(now() + SLICE_MS);
+    if (changed === YIELD) requestSync();
+    let adopted = false;
     for (const host of [...pendingHosts]) {
       if (host.shadowRoot) {
         adoptShadow(host);
-        changed = true;
+        adopted = true;
       } else if (!host.isConnected) {
         pendingHosts.delete(host);
       }
     }
-    if (changed) contrastTree(document.documentElement);
+    if (changed === true || forceContrast || adopted) wantContrastAll();
   }
 
-  ensureScope(document);
-  syncSheets(scopes.get(document));
-  scanTree(document.documentElement);
-  for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
-    if (!link.sheet) link.addEventListener('load', () => refresh(true), { once: true });
-  }
-  contrastTree(document.documentElement);
-  const timer = win.setInterval(() => {
+  timed('start', () => {
+    ensureScope(document);
+    syncSheets(scopes.get(document));
+    scanTree(document.documentElement);
+    for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
+      if (!link.sheet) link.addEventListener('load', onSheetLoad, { once: true });
+    }
+    // Contrast fixes follow in slices right after; the override sheet is
+    // already in place, so nothing shows light meanwhile.
+    wantContrastAll();
+  })();
+  const timer = win.setInterval(timed('poll', () => {
     if (!document.hidden) refresh();
-  }, POLL_MS);
+  }), POLL_MS);
 
   function stop() {
     stopped = true;
     win.clearInterval(timer);
+    if (timerId !== null) win.clearTimeout(timerId);
+    timerId = null;
+    pass = null;
+    contrastRoots.clear();
     for (const scope of scopes.values()) {
       scope.observer?.disconnect();
       scope.baseEl?.remove();
@@ -2780,12 +2972,17 @@ function startDynamic({
 
   async function settle() {
     while (pending.size) await Promise.all([...pending]);
-    refresh(true);
+    if (stopped) return;
+    timed('settle', () => {
+      refresh(true);
+      syncWanted = true;
+      work(Infinity);
+    })();
   }
 
   return { stop, refresh, settle };
 }
-return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, PROP_ROLES, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, startDynamic };
+return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, PROP_ROLES, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, SLICE_MS, CONTRAST_DELAY_MS, startDynamic };
 })();
 
 // ---- engine/src/messages.js

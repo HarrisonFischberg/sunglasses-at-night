@@ -310,3 +310,35 @@
 - Caveat: the first-frame `atMs` is still ~8 s on every fixture, baselines included. That's the fixture server's deliberate stall before WebKit paints, not the extension. The assertion reads the first frame actually rendered.
 - In-session `npm run e2e` is still not possible (B15 sandbox), so this rests on the runner's run, per the runner contract.
 - Status: T012 → done.
+
+## 2026-10-17: T013 performance budget (Ralph iteration). DONE
+
+- Goal: T013 acceptance. 5,000-node fixture: initial pass ≤ 50 ms median, mutation batch ≤ 8 ms. Product-grid fixture: no engine long task > 50 ms after first paint, engine time during the 5 s storm ≤ 10% of wall time, rAF gaps ≤ 32 ms. Numbers go in `ralph/evidence/t013-perf.json`, proven by `npm run perf`.
+- Work (continued from the interrupted run-2 iteration 6 tree):
+  - Fixtures, all original markup (`e2e/perf/fixtures.js`). The 5,000-element page has 3 sheets with 1,020 rules. The store-search grid has 60 cards, each with a lazy `<img>` whose src/srcset are swapped in by IntersectionObserver, plus price, stars, badges and sponsored labels. It loads 16 linked sheets (10 from a second loopback origin, so the CSSOM can't read them and the engine re-fetches) with 4,992 rules and many color declarations. It also has 3 carousels with nested tracks and auto-advance transforms. The storm makes 1,000 mutations over 5 s (200/s): ad inserts and removals, class and attribute flips, text swaps and inline style writes, while the page scrolls.
+  - Harness (`engine/scripts/perf.js`): `npm run perf`. `e2e/perf.test.js` runs the same `runPerf()` so the runner's e2e records it.
+  - Engine (`engine/src/dynamic.js`):
+    - Mutation callbacks now do only the work that prevents a light flash: inline styles, new sheets, shadow roots and frames.
+    - Contrast checks are deferred (100 ms coalescing) and run in ≤ 6 ms slices, all reads first and then all writes, with a per-slice background cache.
+    - Sheet rewrites after sheet loads or remote arrivals yield at the slice deadline.
+    - A `class` flip triggers only a contrast check, not a rescan.
+    - Shorthand var() serialization runs only when an empty color longhand shows up.
+    - `opts.monitor` is test-only task timing.
+- Verification (runner `ralph/verify-e2e.sh` → `npm run e2e` at HEAD e1e1115 + this tree, 2026-10-18T04:34Z, `ralph/evidence/e2e-latest.log` lines 25–35), output of `summary(runPerf())`:
+  ```
+  T013 perf (Playwright WebKit 27.2 (headless), darwin arm64, HEAD e1e1115)
+  PASS nodesInitialMedian: 22 (max 50)
+  PASS nodesBatchMedian: 2.5 (max 8)
+  PASS gridLongestEngineTaskAfterFirstPaint: 14 (max 50)
+  PASS gridStormEngineShare: 0.011 (max 0.1)
+  PASS gridStormRafGapMax: 24 (max 32)
+  grid storm: 1000 mutations in 5000 ms, engine 55 ms (1.1%), longest engine task 11 ms, rAF gap max 24 / p99 19 ms (baseline without engine: max 20 / p99 19 ms)
+  grid load: engine 60 ms before storm, longest after first paint slice 14 ms; ads styled 24/24; card bg rgb(24, 20, 11)
+  overall: PASS
+  ✔ T013 perf budget: 5,000-node page and product-grid storm (25683ms)
+  ```
+  The whole suite passed: `ℹ tests 37 ℹ pass 37 ℹ fail 0`.
+- History: earlier runner runs of work-in-progress versions missed the rAF budget (6c42c49: 36 ms; 2a8ec48: 47 ms). The deferred, sliced contrast work closed it. The rAF gap is the tightest budget: 24 ms against 32, with a 20 ms page-only baseline. Treat it as the one to watch on slower Macs.
+- `npm test` → `ℹ tests 286 ℹ pass 286 ℹ fail 0`.
+- In-session `npm run perf` (attempt 1): no output before it was killed at the 10-min background limit. WebKit can't launch inside the session sandbox (B15). It's not a perf result and doesn't count toward the 5 attempts. `t013-perf.json` was not overwritten (still `when` 2026-10-18T04:31:01Z from the runner run above).
+- Status: T013 → done. Evidence: `ralph/evidence/t013-perf.json`, `ralph/evidence/e2e-latest.md`, `ralph/evidence/e2e-latest.log`.
