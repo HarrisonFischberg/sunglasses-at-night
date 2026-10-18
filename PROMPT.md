@@ -16,6 +16,17 @@ Stop on verified completion, a documented blocker needing human input, or the
 turn limit. Never mark a blocked task passing to end the loop. Emit the success
 marker only when every approved task genuinely meets its acceptance criteria.
 
+## Role (new /new-app, adopted 2026-10-18)
+
+You are the **Builder** (Sonnet 5.5). Implement exactly what `docs/blueprint.md` and the task row say.
+If the blueprint is wrong or incomplete for your task, don't redesign: set the row to
+`blocked (escalate: <one line>)`, log the full error in `activity.md`, and stop. Opus reviews it.
+Write whole, working code. No placeholder comments (`// TODO: implement later`); blocked work goes in
+`docs/launch-blockers.md`. UI tasks need an approved design direction (T026) and Impeccable
+(`/impeccable polish <target>` and `/impeccable audit <target>`, checked at 390 px and 1440 px) before
+they can be done. If `/impeccable` isn't in your skill list, the UI task is blocked on B21. Never
+claim Impeccable ran unless its output is in this session.
+
 ## Runner contract (ralph/ralph.sh, adapted from coleam00/ralph-loop-quickstart @ f6a7781)
 
 - The runner already picked your one task and set its bounded `/goal` as the prompt

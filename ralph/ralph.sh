@@ -12,7 +12,7 @@
 #     excludedCommands doesn't match): the runner runs ralph/verify-swift.sh around each iteration
 set -euo pipefail
 cd "$(dirname "$0")/.."
-MODEL="${RALPH_MODEL:-claude-opus-5-5}"
+MODEL="${RALPH_MODEL:-claude-sonnet-5-5}"   # new /new-app: Sonnet builds, Opus supervises/escalation
 MAX_TURNS="${RALPH_MAX_TURNS:-200}"   # safety bound on tool turns inside one iteration
 
 goal_for() {
