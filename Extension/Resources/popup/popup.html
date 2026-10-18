@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunglasses at Night</title>
+  <link rel="stylesheet" href="../ui/ui.css">
+</head>
+<body class="popup">
+  <header>
+    <h1>Sunglasses at Night</h1>
+    <button id="more" type="button" class="icon-button" aria-label="More settings" title="More settings">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/>
+        <circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>
+      </svg>
+    </button>
+  </header>
+
+  <p id="status" role="status" class="muted">Loading…</p>
+
+  <div class="field">
+    <label for="mode">Dark mode</label>
+    <select id="mode">
+      <option value="system">Match system appearance</option>
+      <option value="always">Always</option>
+      <option value="schedule">On a schedule</option>
+      <option value="off">Off</option>
+    </select>
+  </div>
+
+  <fieldset id="site" hidden>
+    <legend>This site: <span id="host"></span></legend>
+    <label class="check"><input type="radio" name="rule" value="default"> Default</label>
+    <label class="check"><input type="radio" name="rule" value="always"> Always dark</label>
+    <label class="check"><input type="radio" name="rule" value="never"> Never dark</label>
+    <p id="already-dark" class="warning" hidden>This page looks dark already, so it was left as is.</p>
+    <label class="check"><input type="checkbox" id="force-dark"> Darken even if the page looks dark already</label>
+  </fieldset>
+
+  <fieldset id="look">
+    <legend>Look</legend>
+    <label class="check" id="custom-look-row" hidden><input type="checkbox" id="custom-look"> Use a separate look for this site</label>
+    <div class="field">
+      <label for="preset">Preset</label>
+      <select id="preset">
+        <option value="standard">Standard</option>
+        <option value="soft">Soft</option>
+        <option value="warm">Warm</option>
+        <option value="mono">Mono</option>
+        <option value="custom" disabled>Custom</option>
+      </select>
+    </div>
+    <div class="slider">
+      <div class="field"><label for="brightness">Brightness</label><output id="brightness-value" for="brightness"></output></div>
+      <input type="range" id="brightness" min="50" max="150" step="1">
+    </div>
+    <div class="slider">
+      <div class="field"><label for="contrast">Contrast</label><output id="contrast-value" for="contrast"></output></div>
+      <input type="range" id="contrast" min="50" max="150" step="1">
+    </div>
+    <div class="slider">
+      <div class="field"><label for="sepia">Sepia</label><output id="sepia-value" for="sepia"></output></div>
+      <input type="range" id="sepia" min="0" max="100" step="1">
+    </div>
+    <div class="slider">
+      <div class="field"><label for="grayscale">Grayscale</label><output id="grayscale-value" for="grayscale"></output></div>
+      <input type="range" id="grayscale" min="0" max="100" step="1">
+    </div>
+  </fieldset>
+
+  <script src="popup.js"></script>
+</body>
+</html>

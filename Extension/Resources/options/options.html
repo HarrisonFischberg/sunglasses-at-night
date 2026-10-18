@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunglasses at Night settings</title>
+  <link rel="stylesheet" href="../ui/ui.css">
+</head>
+<body class="options">
+<main>
+  <h1>Sunglasses at Night settings</h1>
+  <p class="muted">Changes save as you make them and stay on this device.</p>
+  <p id="load-error" class="warning" role="alert" hidden>Settings couldn’t be loaded. Reload this page to try again.</p>
+
+  <section aria-labelledby="h-when">
+    <h2 id="h-when">When to turn dark</h2>
+    <fieldset>
+      <legend>Activation</legend>
+      <div class="field">
+        <label for="mode">Dark mode</label>
+        <select id="mode">
+          <option value="system">Match system appearance</option>
+          <option value="always">Always</option>
+          <option value="schedule">On a schedule</option>
+          <option value="off">Off</option>
+        </select>
+      </div>
+      <div id="schedule" hidden>
+        <div class="field">
+          <label for="start">From</label>
+          <input type="time" id="start" required aria-describedby="schedule-hint">
+        </div>
+        <div class="field">
+          <label for="end">Until</label>
+          <input type="time" id="end" required aria-describedby="schedule-hint">
+        </div>
+        <p id="schedule-hint" class="muted" aria-live="polite"></p>
+      </div>
+    </fieldset>
+  </section>
+
+  <section aria-labelledby="h-look">
+    <h2 id="h-look">Look</h2>
+    <fieldset>
+      <legend>Every site</legend>
+      <div class="field">
+        <label for="preset">Preset</label>
+        <select id="preset">
+          <option value="standard">Standard</option>
+          <option value="soft">Soft</option>
+          <option value="warm">Warm</option>
+          <option value="mono">Mono</option>
+          <option value="custom" disabled>Custom</option>
+        </select>
+      </div>
+      <div class="slider">
+        <div class="field"><label for="brightness">Brightness</label><output id="brightness-value" for="brightness"></output></div>
+        <input type="range" id="brightness" min="50" max="150" step="1">
+      </div>
+      <div class="slider">
+        <div class="field"><label for="contrast">Contrast</label><output id="contrast-value" for="contrast"></output></div>
+        <input type="range" id="contrast" min="50" max="150" step="1">
+      </div>
+      <div class="slider">
+        <div class="field"><label for="sepia">Sepia</label><output id="sepia-value" for="sepia"></output></div>
+        <input type="range" id="sepia" min="0" max="100" step="1">
+      </div>
+      <div class="slider">
+        <div class="field"><label for="grayscale">Grayscale</label><output id="grayscale-value" for="grayscale"></output></div>
+        <input type="range" id="grayscale" min="0" max="100" step="1">
+      </div>
+    </fieldset>
+  </section>
+
+  <section aria-labelledby="h-pages">
+    <h2 id="h-pages">Images and pages</h2>
+    <fieldset>
+      <legend>Every site</legend>
+      <div class="field">
+        <label for="images">Images</label>
+        <select id="images">
+          <option value="leave">Leave as they are</option>
+          <option value="dim">Dim</option>
+          <option value="no-invert">Never invert</option>
+        </select>
+      </div>
+      <label class="check"><input type="checkbox" id="hide-bg"> Hide background images</label>
+      <label class="check"><input type="checkbox" id="detect-dark"> Leave pages that are already dark alone</label>
+      <div class="field">
+        <label for="engine">Engine</label>
+        <select id="engine">
+          <option value="dynamic">Dynamic (rewrites page colors)</option>
+          <option value="filter">Filter (for pages the dynamic engine breaks)</option>
+        </select>
+      </div>
+    </fieldset>
+  </section>
+
+  <section aria-labelledby="h-sites">
+    <h2 id="h-sites">Sites</h2>
+    <p id="sites-empty" class="muted">No site rules yet. Set one from the toolbar button on any website.</p>
+    <ul id="sites"></ul>
+    <template id="site-row">
+      <li>
+        <span><span class="host"></span><br><span class="summary muted"></span></span>
+        <button type="button" class="icon-button remove">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/>
+          </svg>
+        </button>
+      </li>
+    </template>
+  </section>
+
+  <section aria-labelledby="h-reset">
+    <h2 id="h-reset">Reset</h2>
+    <p class="muted">Puts every option back to its default and removes all site rules, here and in the Sunglasses at Night app.</p>
+    <button type="button" id="reset" class="danger">Reset all settings…</button>
+    <p id="reset-done" role="status" class="muted"></p>
+  </section>
+</main>
+
+<dialog id="reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-body">
+  <form method="dialog">
+    <h2 id="reset-title">Reset all settings?</h2>
+    <p id="reset-body">Every option goes back to its default and all site rules are removed, in Safari and in the app. This can’t be undone.</p>
+    <div class="actions">
+      <button value="cancel" autofocus>Cancel</button>
+      <button value="reset" class="danger">Reset all</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="options.js"></script>
+</body>
+</html>

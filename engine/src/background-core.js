@@ -16,7 +16,7 @@
 
 import { createSettingsStore, migrate, STORAGE_KEY, MODES } from './settings.js';
 import { createSheetMessageHandler } from './sheet-fetch.js';
-import { SETTINGS_CHANGED, TAB_STATE } from './messages.js';
+import { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT } from './messages.js';
 
 export const TOGGLE_COMMAND = 'toggle-dark-mode';
 // Separate storage key, so the settings schema stays unchanged.
@@ -38,14 +38,6 @@ export function toggleMode(mode, restore) {
   const back = MODES.includes(restore) && restore !== 'off' ? restore : 'always';
   return { mode: back, restore: null };
 }
-
-const OFF_TEXT = {
-  'mode-off': 'turned off',
-  'site-never': 'never dark on this site',
-  'system-light': 'system appearance is light',
-  'schedule-out': 'outside the schedule',
-  'already-dark': 'page is already dark',
-};
 
 /**
  * Toolbar title and badge for a tab. `report` is the tab's last TAB_STATE
@@ -154,9 +146,19 @@ export function createBackground({ api, fetch }) {
 
   const sheetHandler = createSheetMessageHandler({ fetch, extensionId: api.runtime.id });
   api.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    const fromUs = api.runtime.id === undefined || sender?.id === api.runtime.id;
+    // Popup and options page: extension pages, so no sender.tab.
+    if (message?.type === GET_TAB_STATE || message?.type === RESET_ALL) {
+      if (!fromUs || sender?.tab) return false;
+      if (message.type === GET_TAB_STATE) {
+        sendResponse(tabStates.get(message.tabId) ?? null);
+        return false;
+      }
+      resetAll().then(() => sendResponse({ ok: true }), () => sendResponse({ ok: false }));
+      return true;
+    }
     if (message?.type === TAB_STATE) {
       const tabId = sender?.tab?.id;
-      const fromUs = api.runtime.id === undefined || sender?.id === api.runtime.id;
       if (!fromUs || tabId === undefined || (sender.frameId ?? 0) !== 0) return false;
       tabStates.set(tabId, { on: message.on === true, reason: String(message.reason ?? '') });
       paint(tabId);
