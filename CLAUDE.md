@@ -22,12 +22,13 @@ loop. Verify each before claiming use: `docs/tool-environment.md`.
 
 | Check | Command |
 | --- | --- |
-| engine unit tests | `node --test engine/test/` |
+| engine unit tests | `npm test` |
 | engine lint (syntax) | `node --check` on every `engine/src/*.js` via `npm run check` |
-| Swift build (macOS) | `xcodebuild -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' build` |
-| Swift build (iOS) | `xcodebuild -scheme "Sunglasses at Night (iOS)" -destination 'generic/platform=iOS Simulator' build` |
-| Swift tests | `xcodebuild test -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS'` |
-| e2e (WebKit fixtures) | `npm run e2e` (pending approval of Playwright dev dependency, see prd.md) |
+| Swift build (macOS) | `xcodebuild -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build` |
+| Swift build (iOS) | `xcodebuild -scheme "Sunglasses at Night (iOS)" -destination 'generic/platform=iOS Simulator' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build` |
+| Swift tests | `xcodebuild test -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO` |
+| Swift (inside Ralph) | run by the runner: `ralph/verify-swift.sh` → `ralph/evidence/swift-build-latest.md` |
+| e2e (WebKit fixtures) | `npm run e2e` (Playwright 1.64.1, approved) |
 
 Exact scheme names are fixed by task T002; update this table if they change.
 

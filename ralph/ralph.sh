@@ -7,6 +7,9 @@
 #     PROMPT.md is appended to the system prompt
 #   - progress = git HEAD or working tree changed; logs in ralph/logs/
 #   - refuses to run unless prd.md is APPROVED; --dry-run prints the next goal
+#   - passes --settings explicitly (untrusted workspace otherwise ignores project allow rules)
+#   - Xcode can't run inside the Claude sandbox (RTK rewrites xcodebuild → rtk xcodebuild, so
+#     excludedCommands doesn't match): the runner runs ralph/verify-swift.sh around each iteration
 set -euo pipefail
 cd "$(dirname "$0")/.."
 MODEL="${RALPH_MODEL:-claude-opus-5-5}"
@@ -31,6 +34,7 @@ if [ "$MAX" -gt 10 ]; then echo "cap is 10 iterations per approved run" >&2; exi
 for f in PROMPT.md prd.md activity.md; do [ -f "$f" ] || { echo "missing $f" >&2; exit 1; }; done
 grep -q "Status: \*\*APPROVED" prd.md || { echo "prd.md not approved" >&2; exit 1; }
 mkdir -p ralph/logs ralph/evidence
+ralph/verify-swift.sh || true
 NOPROG=0
 for ((i=1; i<=MAX; i++)); do
   set +e; t=$(node ralph/next-task.js); rc=$?; set -e
@@ -40,9 +44,10 @@ for ((i=1; i<=MAX; i++)); do
   before="$(git rev-parse HEAD)$(git status --porcelain | shasum)"
   log="ralph/logs/$(date +%Y%m%d-%H%M%S)-iter$i-$id.json"
   echo "=== iteration $i/$MAX: $id → $log"
-  claude -p "$(goal_for "$t")" --append-system-prompt "$(cat PROMPT.md)" \
+  claude -p "$(goal_for "$t")" --append-system-prompt "$(cat PROMPT.md)" --settings .claude/settings.json \
     --model "$MODEL" --max-turns "$MAX_TURNS" --output-format json > "$log" 2> "$log.err" || true
   node -e 'try{const d=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log(`  ${d.subtype} turns=${d.num_turns} cost=$${(d.total_cost_usd||0).toFixed(2)}`)}catch(e){console.log("  (no JSON result)")}' "$log"
+  ralph/verify-swift.sh || true
   after="$(git rev-parse HEAD)$(git status --porcelain | shasum)"
   if [ "$before" = "$after" ]; then NOPROG=$((NOPROG+1)); echo "  no progress ($NOPROG)"; else NOPROG=0; fi
   if [ "$NOPROG" -ge 2 ]; then echo "stopped: 2 iterations without progress"; exit 3; fi

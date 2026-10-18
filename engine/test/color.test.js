@@ -386,7 +386,9 @@ test('translucent text is composited over its background', () => {
   const ratio = contrastRatio('rgba(0, 0, 0, 0.5)', 'white');
   const solid = composite(parseColor('rgba(0,0,0,0.5)'), parseColor('white'));
   close(ratio, contrastRatio(solid, 'white'), 1e-12);
-  close(ratio, 3.95, 0.01);
+  // 50% black over white composites to channel 127.5 (luminance ≈ 0.2140),
+  // not #808080 (0.2159, ratio 3.95), so the exact ratio is 1.05 / 0.2640 ≈ 3.98.
+  close(ratio, 3.98, 0.01);
 });
 
 test('translucent background is composited over white canvas', () => {

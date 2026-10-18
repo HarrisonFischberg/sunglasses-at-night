@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "check": "node engine/scripts/check.js",
-    "test": "node --test engine/test/",
+    "test": "node --test 'engine/test/**/*.test.js'",
     "e2e": "node --test e2e/",
     "perf": "node engine/scripts/perf.js",
     "privacy-check": "node --test privacy/"

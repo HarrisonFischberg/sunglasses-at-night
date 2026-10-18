@@ -73,16 +73,10 @@ const LMS_TO_OKLAB = [
   [1.9779984951, -2.428592205, 0.4505937099],
   [0.0259040371, 0.7827717662, -0.808675766],
 ];
-const OKLAB_TO_LMS = [
-  [1, 0.3963377774, 0.2158037573],
-  [1, -0.1055613458, -0.0638541728],
-  [1, -0.0894841775, -1.291485548],
-];
-const LMS_TO_LIN_SRGB = [
-  [4.0767416621, -3.3077115913, 0.2309699292],
-  [-1.2684380046, 2.6097574011, -0.3413193965],
-  [-0.0041960863, -0.7034186147, 1.707614701],
-];
+// Inverses are computed rather than hard-coded: the published 10-digit
+// inverse matrices round-trip only to ~1e-6.
+const OKLAB_TO_LMS = invert3(LMS_TO_OKLAB);
+const LMS_TO_LIN_SRGB = invert3(LIN_SRGB_TO_LMS);
 
 // --------------------------------------------------------- transfer curves
 
@@ -866,7 +860,9 @@ export function contrastRatio(fg, bg) {
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 }
 
-const byte = (v) => Math.round(clip01(v) * 255);
+// The epsilon keeps exact halves (e.g. hsl(0 0% 50%) → 127.5) from rounding
+// down when float error lands them at 127.49999…; CSS serializes them as 128.
+const byte = (v) => Math.round(clip01(v) * 255 + 1e-9);
 
 /** sRGB object → `rgb(r g b)` / `rgb(r g b / a)` with 8-bit channels. */
 export function formatRgb({ r, g, b, alpha = 1 }) {

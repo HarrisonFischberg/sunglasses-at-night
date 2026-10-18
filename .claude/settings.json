@@ -50,7 +50,10 @@
     "enabled": true,
     "autoAllowBashIfSandboxed": false,
     "allowUnsandboxedCommands": false,
-    "excludedCommands": ["xcodebuild", "xcrun"],
+    "excludedCommands": [
+      "xcodebuild",
+      "xcrun"
+    ],
     "network": {
       "allowLocalBinding": true
     }

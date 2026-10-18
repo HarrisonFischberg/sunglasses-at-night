@@ -25,6 +25,12 @@ marker only when every approved task genuinely meets its acceptance criteria.
 - Append an `activity.md` entry with the exact verification command and its real output summary.
 - Commit only this task's files: `git add <paths> && git commit -m "<id>: <summary>"` ending with
   `Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>`.
+- Xcode builds/tests can't run inside your sandbox. The runner runs them before and after every
+  iteration and writes `ralph/evidence/swift-build-latest.md`; read it instead of calling
+  `xcodebuild`. If your task's acceptance needs a Swift build you just changed, set the row status to
+  `needs-runner-build` and stop; the next iteration picks the same task first, reads the fresh log,
+  and marks it done or fixes it. Code signing is off for these builds (B7).
+- Engine tests: `npm test` (runs `node --test 'engine/test/**/*.test.js'`).
 - Never edit `.claude/settings.json`, never push, never add a dependency `prd.md` doesn't list as
   approved (approved: `playwright@1.64.1` dev-only; nothing else).
 - Never weaken or delete a test to make it pass. Never mark a blocked task done.
