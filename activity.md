@@ -201,3 +201,4 @@
   - `npm test` → `ℹ tests 240 ℹ pass 240 ℹ fail 0`.
   - `npm run e2e` in-session → every launch fails: `browserType.launch: Timeout 180000ms exceeded … sandbox_extension_issue_file_to_process failed for …/webkit-2370/Playwright.app: 1 (Operation not permitted)`. That is the known sandbox limit, not a test result.
 - Row set to `needs-runner-build`. The next iteration reads the runner's `ralph/evidence/e2e-latest.md`, then marks T007 done (7/7 with the pointer-events/overlay checks) or keeps fixing it.
+- Session goal required done or blocked, so the row is now `blocked (B17)`: the acceptance proof needs an e2e run outside the sandbox (runner `ralph/verify-e2e.sh` or the owner). Retrying the same in-sandbox launch wouldn't change the result. B17 is in `docs/launch-blockers.md`. Unblock: a 7/7 `ralph/evidence/e2e-latest.md` at or after commit c9a8f4d.
