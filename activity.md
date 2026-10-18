@@ -240,3 +240,16 @@
   - `npm run check` → `node --check: 16 file(s) OK`.
   - `npm run e2e -- --test-name-pattern="filter engine"` in-session: WebKit failed to launch (`browserType.launch` TimeoutError; `sandbox_extension_issue_file_to_process failed … Playwright.app: 1 (Operation not permitted)`, `Connection Invalid error for service com.apple.hiservices-xpcservice`), the same sandbox limit as B15. No test ran. This doesn't count against the 5 verification attempts; that count starts with the runner's run.
 - Status: `needs-runner-build`. The runner's `ralph/verify-e2e.sh` decides T008: 5/5 in `e2e/filter.test.js` → the next iteration marks it done using `ralph/evidence/e2e-latest.md` + `t008-e2e.json` + `t008-*.png`. Known risk: whether WebKit's root filter covers the canvas below short pages (the `belowContent` check).
+
+## 2026-10-17: T008 filter engine + image modes (Ralph iteration). DONE
+
+- Goal: T008 acceptance: fixture images not double-inverted; engines toggle without a reload. Decided by the runner's WebKit e2e run (`npm run e2e`).
+- Verification: read `ralph/evidence/e2e-latest.md` (runner, 2026-10-18T03:04:30Z, HEAD 3dd86e4): `ℹ tests 16 ℹ pass 15 ℹ fail 1`. All 5 T008 cases pass:
+  - ✔ filter engine: page dark, media as authored (not inverted, not double-inverted), nothing intercepts clicks
+  - ✔ dynamic engine: media untouched by default
+  - ✔ dynamic engine / ✔ filter engine: images "dim" dims media; "hide background images" hides url() backgrounds
+  - ✔ per-site engine switches dynamic → filter → dynamic without a reload (toFilterMs 10, toDynamicMs 9, same document, 1 navigation entry)
+- Pixels (`ralph/evidence/t008-e2e.json`): img/picture/linked/figure/canvas/`filter:none`/`all:revert` all read ≈230,199,151 vs authored 230,200,150 under the filter engine; page bg 0,0,0.
+- The 1 failure is `e2e/ui.test.js:122` "popup on a normal page… icon button reachable and named". It belongs to T010, already blocked (B18), and is out of scope here.
+- Known limitation, recorded and not hidden: under the filter engine, a CSS `url()` background image is inverted once (fixture `#bg` 230,200,150 → 79,49,0). It is not double-inverted, and no T008 criterion covers it. The dynamic engine shows it as authored. T012's "hard cases" (url() backgrounds, images must not be inverted) will need either the dynamic engine or a counter-filter for background images under filter mode.
+- Status: T008 done.
