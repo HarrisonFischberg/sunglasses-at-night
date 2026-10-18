@@ -60,6 +60,18 @@ export function pageHost(url) {
   return normalizeHostname(parsed.hostname);
 }
 
+/**
+ * The host the popup acts on. Safari hides `tab.url` without a per-site grant,
+ * so fall back through the sources in order: the active tab's URL, the host the
+ * page's own content script reported, the last-focused window's tab URL.
+ * Returns null (restricted) only when every source is empty or unusable.
+ */
+export function resolveHost({ url, reportHost, focusedUrl }) {
+  if (typeof url === 'string' && url !== '') return pageHost(url);
+  if (typeof reportHost === 'string' && reportHost !== '') return normalizeHostname(reportHost);
+  return pageHost(focusedUrl);
+}
+
 /** A site's stored entry, or the inherit-everything entry. */
 export function siteEntry(settings, host) {
   return (host && settings.sites[host]) || { rule: 'default' };
@@ -111,10 +123,11 @@ export function presetLook(name) {
 
 /**
  * Everything the popup renders, from settings, the active tab's URL and the
- * background's last report for that tab.
+ * background's last report for that tab. `focusedUrl` is the last-focused
+ * window's tab URL, the final fallback when neither of the others names a host.
  */
-export function popupView({ settings, url, report }) {
-  const host = pageHost(url);
+export function popupView({ settings, url, report, focusedUrl }) {
+  const host = resolveHost({ url, reportHost: report?.host, focusedUrl });
   if (!host) {
     return {
       restricted: true,

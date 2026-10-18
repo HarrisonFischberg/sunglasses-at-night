@@ -1507,7 +1507,7 @@ const __m_engine_src_messages_js = (() => {
 const FETCH_SHEET = 'sunglasses-at-night/fetch-sheet';
 // background → every tab: { type, settings } after a settings write.
 const SETTINGS_CHANGED = 'sunglasses-at-night/settings-changed';
-// top frame → background: { type, on, reason } once the page decision is made.
+// top frame → background: { type, on, reason, host } once the page decision is made.
 const TAB_STATE = 'sunglasses-at-night/tab-state';
 // popup → background: { type, tabId } → the tab's last TAB_STATE report, or null.
 const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
@@ -1589,6 +1589,18 @@ function pageHost(url) {
   return normalizeHostname(parsed.hostname);
 }
 
+/**
+ * The host the popup acts on. Safari hides `tab.url` without a per-site grant,
+ * so fall back through the sources in order: the active tab's URL, the host the
+ * page's own content script reported, the last-focused window's tab URL.
+ * Returns null (restricted) only when every source is empty or unusable.
+ */
+function resolveHost({ url, reportHost, focusedUrl }) {
+  if (typeof url === 'string' && url !== '') return pageHost(url);
+  if (typeof reportHost === 'string' && reportHost !== '') return normalizeHostname(reportHost);
+  return pageHost(focusedUrl);
+}
+
 /** A site's stored entry, or the inherit-everything entry. */
 function siteEntry(settings, host) {
   return (host && settings.sites[host]) || { rule: 'default' };
@@ -1640,10 +1652,11 @@ function presetLook(name) {
 
 /**
  * Everything the popup renders, from settings, the active tab's URL and the
- * background's last report for that tab.
+ * background's last report for that tab. `focusedUrl` is the last-focused
+ * window's tab URL, the final fallback when neither of the others names a host.
  */
-function popupView({ settings, url, report }) {
-  const host = pageHost(url);
+function popupView({ settings, url, report, focusedUrl }) {
+  const host = resolveHost({ url, reportHost: report?.host, focusedUrl });
   if (!host) {
     return {
       restricted: true,
@@ -1699,7 +1712,7 @@ function scheduleHint(schedule) {
   if (schedule.start > schedule.end) return `Runs overnight, from ${schedule.start} until ${schedule.end} the next morning.`;
   return '';
 }
-return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENGINE_LABELS, pageHost, siteEntry, withRule, withLook, withDetectDark, withEngine, matchPreset, presetLook, popupView, siteRows, scheduleHint };
+return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENGINE_LABELS, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, matchPreset, presetLook, popupView, siteRows, scheduleHint };
 })();
 
 // ---- engine/src/popup.js
@@ -1728,17 +1741,20 @@ let tab = null;
 let report = null;
 let view = null;
 
+let focused = null;
+
 async function fetchReport() {
-  if (tab?.id === undefined) return null;
+  const id = tab?.id ?? focused?.id;
+  if (id === undefined) return null;
   try {
-    return (await api.runtime.sendMessage({ type: GET_TAB_STATE, tabId: tab.id })) ?? null;
+    return (await api.runtime.sendMessage({ type: GET_TAB_STATE, tabId: id })) ?? null;
   } catch {
     return null;
   }
 }
 
 function render() {
-  view = popupView({ settings, url: tab?.url, report });
+  view = popupView({ settings, url: tab?.url, report, focusedUrl: focused?.url });
   $('status').textContent = view.status;
   $('mode').value = view.mode;
   $('site').hidden = view.restricted;
@@ -1806,6 +1822,11 @@ async function main() {
   [tab] = await api.tabs.query({ active: true, currentWindow: true });
   ({ settings } = await store.load());
   report = await fetchReport();
+  // Safari can hide tab.url, or return no tab, for the popup's own window.
+  if (!tab?.url && !report?.host) {
+    [focused] = await api.tabs.query({ active: true, lastFocusedWindow: true });
+    if (tab?.id === undefined) report = await fetchReport();
+  }
   render();
 }
 

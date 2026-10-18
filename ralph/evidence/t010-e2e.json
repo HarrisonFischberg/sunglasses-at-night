@@ -1,0 +1,566 @@
+[
+  {
+    "case": "popup-light",
+    "order": [
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "mode",
+        "name": "Dark mode"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "site-engine",
+        "name": "Engine"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "preset",
+        "name": "Preset"
+      }
+    ],
+    "allOrder": [
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "more",
+        "name": "More settings"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "mode",
+        "name": "Dark mode"
+      },
+      {
+        "tag": "input",
+        "type": "radio",
+        "id": "",
+        "name": "Default"
+      },
+      {
+        "tag": "input",
+        "type": "checkbox",
+        "id": "force-dark",
+        "name": "Darken even if the page looks dark already"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "site-engine",
+        "name": "Engine"
+      },
+      {
+        "tag": "input",
+        "type": "checkbox",
+        "id": "custom-look",
+        "name": "Use a separate look for this site"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "preset",
+        "name": "Preset"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "brightness",
+        "name": "Brightness"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "contrast",
+        "name": "Contrast"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "sepia",
+        "name": "Sepia"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "grayscale",
+        "name": "Grayscale"
+      }
+    ]
+  },
+  {
+    "case": "popup-dark",
+    "order": [
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "mode",
+        "name": "Dark mode"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "site-engine",
+        "name": "Engine"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "preset",
+        "name": "Preset"
+      }
+    ],
+    "allOrder": [
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "more",
+        "name": "More settings"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "mode",
+        "name": "Dark mode"
+      },
+      {
+        "tag": "input",
+        "type": "radio",
+        "id": "",
+        "name": "Default"
+      },
+      {
+        "tag": "input",
+        "type": "checkbox",
+        "id": "force-dark",
+        "name": "Darken even if the page looks dark already"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "site-engine",
+        "name": "Engine"
+      },
+      {
+        "tag": "input",
+        "type": "checkbox",
+        "id": "custom-look",
+        "name": "Use a separate look for this site"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "preset",
+        "name": "Preset"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "brightness",
+        "name": "Brightness"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "contrast",
+        "name": "Contrast"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "sepia",
+        "name": "Sepia"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "grayscale",
+        "name": "Grayscale"
+      }
+    ]
+  },
+  {
+    "case": "popup-restricted about:blank",
+    "ok": true
+  },
+  {
+    "case": "popup-restricted safari-web-extension://abc/options/options.html",
+    "ok": true
+  },
+  {
+    "case": "popup-restricted file:///x.html",
+    "ok": true
+  },
+  {
+    "case": "popup-safari-no-tab-url",
+    "ok": true
+  },
+  {
+    "case": "popup-already-dark",
+    "ok": true
+  },
+  {
+    "case": "options-light",
+    "order": [
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "mode",
+        "name": "Dark mode"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "preset",
+        "name": "Preset"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "images",
+        "name": "Images"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "engine",
+        "name": "Engine"
+      }
+    ],
+    "allOrder": [
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "mode",
+        "name": "Dark mode"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "preset",
+        "name": "Preset"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "brightness",
+        "name": "Brightness"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "contrast",
+        "name": "Contrast"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "sepia",
+        "name": "Sepia"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "grayscale",
+        "name": "Grayscale"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "images",
+        "name": "Images"
+      },
+      {
+        "tag": "input",
+        "type": "checkbox",
+        "id": "hide-bg",
+        "name": "Hide background images"
+      },
+      {
+        "tag": "input",
+        "type": "checkbox",
+        "id": "detect-dark",
+        "name": "Leave pages that are already dark alone"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "engine",
+        "name": "Engine"
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "",
+        "name": "Remove rule for a.test"
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "",
+        "name": "Remove rule for b.test"
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "reset",
+        "name": "Reset all settings…"
+      }
+    ]
+  },
+  {
+    "case": "options-dark",
+    "order": [
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "mode",
+        "name": "Dark mode"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "preset",
+        "name": "Preset"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "images",
+        "name": "Images"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "engine",
+        "name": "Engine"
+      }
+    ],
+    "allOrder": [
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "mode",
+        "name": "Dark mode"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "start",
+        "name": "From"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "input",
+        "type": "time",
+        "id": "end",
+        "name": "Until"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "preset",
+        "name": "Preset"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "brightness",
+        "name": "Brightness"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "contrast",
+        "name": "Contrast"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "sepia",
+        "name": "Sepia"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "id": "grayscale",
+        "name": "Grayscale"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "images",
+        "name": "Images"
+      },
+      {
+        "tag": "input",
+        "type": "checkbox",
+        "id": "hide-bg",
+        "name": "Hide background images"
+      },
+      {
+        "tag": "input",
+        "type": "checkbox",
+        "id": "detect-dark",
+        "name": "Leave pages that are already dark alone"
+      },
+      {
+        "tag": "select",
+        "type": "select-one",
+        "id": "engine",
+        "name": "Engine"
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "",
+        "name": "Remove rule for a.test"
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "",
+        "name": "Remove rule for b.test"
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "reset",
+        "name": "Reset all settings…"
+      }
+    ]
+  }
+]

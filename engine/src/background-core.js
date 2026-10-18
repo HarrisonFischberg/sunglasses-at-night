@@ -160,7 +160,9 @@ export function createBackground({ api, fetch }) {
     if (message?.type === TAB_STATE) {
       const tabId = sender?.tab?.id;
       if (!fromUs || tabId === undefined || (sender.frameId ?? 0) !== 0) return false;
-      tabStates.set(tabId, { on: message.on === true, reason: String(message.reason ?? '') });
+      const state = { on: message.on === true, reason: String(message.reason ?? '') };
+      if (typeof message.host === 'string' && message.host !== '') state.host = message.host.slice(0, 253);
+      tabStates.set(tabId, state);
       paint(tabId);
       return false;
     }

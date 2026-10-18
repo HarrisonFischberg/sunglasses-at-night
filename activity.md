@@ -369,4 +369,12 @@
 - Tests: `engine/test/popup-host.test.js` (all 4 source combinations, background host storage, manifest permissions `["storage","nativeMessaging"]` unchanged). `e2e/ui.test.js` gains "popup in Safari: tab.url undefined, host comes from the stored report" and "no tab.url and no stored host is restricted".
 - Command: `npm test` → `ℹ tests 294 ℹ pass 294 ℹ fail 0`. (First run failed the no-network bundle check because an `https://` template literal landed in the popup bundle; replaced with `normalizeHostname`.)
 - Not run here: `npm run e2e` (runner-only). Row set to `needs-runner-build`; the next iteration reads `ralph/evidence/e2e-latest.md` and marks it done or fixes it.
+- Runner e2e at 06:23Z (ralph/evidence/e2e-latest.md): 38/39, the one failure was "popup with no tab.url and no stored host is restricted" (#site visible). Cause is in the test, not the popup: `open()` has `tabUrl = 'https://example.com/'` as a default, so `tabUrl: undefined` was replaced by the default and both new cases ran with a real URL. Fix: `e2e/ui.test.js` now uses `tabUrl: null` to mean "tab object with no `url` property" (shim builds `{ id: 5 }`). The "Safari" case therefore now truly has `tab.url` undefined and gets its host from the stored report. `npm test` unchanged (294/294 earlier; no engine code touched this turn).
+- Re-ran after the e2e edit: `npm test` → `ℹ tests 294 ℹ pass 294 ℹ fail 0`; `node --check e2e/ui.test.js` → syntax-ok.
+- Status stays `needs-runner-build`: the next runner `npm run e2e` must show both cases passing.
 - 06:17Z `/impeccable init` (Opus, this session): owner interview answered (users: everyone, with night reading and white pages most important; differentiators confirmed; voice: witty, a nod to the name). Wrote `PRODUCT.md` (platform `adaptive`). No image generation available → no buildPath recorded; app screens are code-first. Live mode skipped (native + extension). T026 unblocked.
+
+## T022 — Popup host fallback (2026-10-18, Builder)
+- Verification: `npm test` → `tests 294, pass 294, fail 0` (includes engine/test/popup-host.test.js: 4 source combinations; manifest permissions asserted unchanged).
+- Runner e2e (ralph/evidence/e2e-latest.md, 06:31Z, HEAD 3e86fa6): `popup in Safari: tab.url undefined, host comes from the stored report` ✔; `popup with no tab.url and no stored host is restricted` ✔; other popup cases ✔. Only failure: T013 perf (`gridStormRafGapMax 41 > 32`), unrelated.
+- Status: T022 done. Next: owner re-check of the popup "This site" section in Safari clears B18 / T010.

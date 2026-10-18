@@ -5,7 +5,7 @@
 export const FETCH_SHEET = 'sunglasses-at-night/fetch-sheet';
 // background → every tab: { type, settings } after a settings write.
 export const SETTINGS_CHANGED = 'sunglasses-at-night/settings-changed';
-// top frame → background: { type, on, reason } once the page decision is made.
+// top frame → background: { type, on, reason, host } once the page decision is made.
 export const TAB_STATE = 'sunglasses-at-night/tab-state';
 // popup → background: { type, tabId } → the tab's last TAB_STATE report, or null.
 export const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';

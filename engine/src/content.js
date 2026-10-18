@@ -47,7 +47,7 @@ async function fetchSheet(url) {
 // toolbar. Subframes stay quiet: the toolbar describes the page.
 function reportState(result) {
   if (globalThis.top !== globalThis) return;
-  Promise.resolve(api.runtime?.sendMessage?.({ type: TAB_STATE, on: result.apply, reason: result.reason }))
+  Promise.resolve(api.runtime?.sendMessage?.({ type: TAB_STATE, on: result.apply, reason: result.reason, host: location.hostname }))
     .catch(() => {});
 }
 

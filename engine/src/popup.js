@@ -22,17 +22,20 @@ let tab = null;
 let report = null;
 let view = null;
 
+let focused = null;
+
 async function fetchReport() {
-  if (tab?.id === undefined) return null;
+  const id = tab?.id ?? focused?.id;
+  if (id === undefined) return null;
   try {
-    return (await api.runtime.sendMessage({ type: GET_TAB_STATE, tabId: tab.id })) ?? null;
+    return (await api.runtime.sendMessage({ type: GET_TAB_STATE, tabId: id })) ?? null;
   } catch {
     return null;
   }
 }
 
 function render() {
-  view = popupView({ settings, url: tab?.url, report });
+  view = popupView({ settings, url: tab?.url, report, focusedUrl: focused?.url });
   $('status').textContent = view.status;
   $('mode').value = view.mode;
   $('site').hidden = view.restricted;
@@ -100,6 +103,11 @@ async function main() {
   [tab] = await api.tabs.query({ active: true, currentWindow: true });
   ({ settings } = await store.load());
   report = await fetchReport();
+  // Safari can hide tab.url, or return no tab, for the popup's own window.
+  if (!tab?.url && !report?.host) {
+    [focused] = await api.tabs.query({ active: true, lastFocusedWindow: true });
+    if (tab?.id === undefined) report = await fetchReport();
+  }
   render();
 }
 

@@ -57,7 +57,7 @@ function shim({ settings, tabUrl, report }) {
       },
       onChanged: { addListener: (f) => listeners.add(f), removeListener: (f) => listeners.delete(f) },
     },
-    tabs: { query: async () => [{ id: 5, url: ${JSON.stringify(tabUrl)} }] },
+    tabs: { query: async () => [${tabUrl === null ? '{ id: 5 }' : `{ id: 5, url: ${JSON.stringify(tabUrl)} }`}] },
     runtime: {
       id: 'e2e',
       openOptionsPage: async () => { globalThis.__openedOptions = true; },
@@ -148,6 +148,26 @@ test('popup on a restricted page: no site controls, says why', async () => {
     results.push({ case: `popup-restricted ${tabUrl}`, ok: true });
     await context.close();
   }
+});
+
+test('popup in Safari: tab.url undefined, host comes from the stored report', async () => {
+  const { p, context, errors } = await open('popup', { tabUrl: null, report: { on: true, reason: 'mode-always', host: 'example.com' } });
+  assert.equal(await p.isVisible('#site'), true);
+  assert.equal(await p.textContent('#host'), 'example.com');
+  assert.equal(await p.textContent('#status'), 'Dark mode is on for this page.');
+  await p.focus('input[name="rule"][value="never"]');
+  await p.keyboard.press('Space');
+  await p.waitForFunction(() => globalThis.__data.settings.sites?.['example.com']?.rule === 'never');
+  assert.deepEqual(errors, []);
+  results.push({ case: 'popup-safari-no-tab-url', ok: true });
+  await context.close();
+});
+
+test('popup with no tab.url and no stored host is restricted', async () => {
+  const { p, context } = await open('popup', { tabUrl: null, report: null });
+  assert.equal(await p.isVisible('#site'), false);
+  assert.match(await p.textContent('#status'), /can’t change this page/);
+  await context.close();
 });
 
 test('popup on an already-dark page shows the note and the override', async () => {

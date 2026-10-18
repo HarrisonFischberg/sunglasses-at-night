@@ -2994,7 +2994,7 @@ const __m_engine_src_messages_js = (() => {
 const FETCH_SHEET = 'sunglasses-at-night/fetch-sheet';
 // background → every tab: { type, settings } after a settings write.
 const SETTINGS_CHANGED = 'sunglasses-at-night/settings-changed';
-// top frame → background: { type, on, reason } once the page decision is made.
+// top frame → background: { type, on, reason, host } once the page decision is made.
 const TAB_STATE = 'sunglasses-at-night/tab-state';
 // popup → background: { type, tabId } → the tab's last TAB_STATE report, or null.
 const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
@@ -3063,7 +3063,7 @@ async function fetchSheet(url) {
 // toolbar. Subframes stay quiet: the toolbar describes the page.
 function reportState(result) {
   if (globalThis.top !== globalThis) return;
-  Promise.resolve(api.runtime?.sendMessage?.({ type: TAB_STATE, on: result.apply, reason: result.reason }))
+  Promise.resolve(api.runtime?.sendMessage?.({ type: TAB_STATE, on: result.apply, reason: result.reason, host: location.hostname }))
     .catch(() => {});
 }
 

@@ -393,7 +393,7 @@ const __m_engine_src_messages_js = (() => {
 const FETCH_SHEET = 'sunglasses-at-night/fetch-sheet';
 // background → every tab: { type, settings } after a settings write.
 const SETTINGS_CHANGED = 'sunglasses-at-night/settings-changed';
-// top frame → background: { type, on, reason } once the page decision is made.
+// top frame → background: { type, on, reason, host } once the page decision is made.
 const TAB_STATE = 'sunglasses-at-night/tab-state';
 // popup → background: { type, tabId } → the tab's last TAB_STATE report, or null.
 const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
@@ -670,7 +670,9 @@ function createBackground({ api, fetch }) {
     if (message?.type === TAB_STATE) {
       const tabId = sender?.tab?.id;
       if (!fromUs || tabId === undefined || (sender.frameId ?? 0) !== 0) return false;
-      tabStates.set(tabId, { on: message.on === true, reason: String(message.reason ?? '') });
+      const state = { on: message.on === true, reason: String(message.reason ?? '') };
+      if (typeof message.host === 'string' && message.host !== '') state.host = message.host.slice(0, 253);
+      tabStates.set(tabId, state);
       paint(tabId);
       return false;
     }
