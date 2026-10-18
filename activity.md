@@ -169,3 +169,11 @@
   - `npm run check` → `node --check: 12 file(s) OK`.
   - Swift tests row (`xcodebuild test -scheme "Sunglasses at Night (macOS)" … CODE_SIGNING_ALLOWED=NO`), run in-session twice → `** TEST FAILED **` before compiling: `Couldn't create workspace arena folder '…/build/DerivedData': Unable to write to info file … Operation not permitted`. That is the known B14 sandbox failure, not a test result. Swift tests can't run in the agent sandbox (B14). `ralph/verify-swift.sh` runs `xcodebuild test` once `xcodebuild -list` shows a `Tests` target, which it now does, and writes `## Swift tests (macOS)` into `ralph/evidence/swift-build-latest.md`. Row set to `needs-runner-build`. The next iteration reads that section and either marks T014 done or fixes it.
 - Data flows: new on-device row in `docs/data-inventory.md` (settings mirror + reset generation in the App Group). No network.
+
+## 2026-10-17: T014 runner Swift verification (Ralph iteration). DONE
+
+- Goal: T014 acceptance (Swift unit tests; reset clears both stores), proven by the CLAUDE.md "Swift tests" row as run by the runner.
+- Command (runner, `ralph/verify-swift.sh`): `xcodebuild test -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO`.
+- Result (`ralph/evidence/swift-build-latest.md`, 2026-10-18T02:00:38Z, HEAD c0e4c30): macOS build exit 0, iOS build exit 0, Swift tests exit 0: `Test Suite 'SettingsBridgeTests' passed … Executed 11 tests, with 0 failures (0 unexpected)`, `** TEST SUCCEEDED **`. Full log: `ralph/evidence/test-macOS.log`.
+- "Reset clears both": Swift side covered by `testAppResetAllClearsMirrorAndSignalsExtension` and `testExtensionResetMessageClearsMirror` (in the 11 that passed). Extension side covered by the 6 native cases in `engine/test/background.test.js` (`npm test` 239/239 from the previous iteration). Those cases use a fake host, so the real Safari ↔ App Group round trip with a signed build is still unverified (needs B7 signing; it belongs to T016's manual platform runs).
+- No code changes this iteration. Row set to `done`.
