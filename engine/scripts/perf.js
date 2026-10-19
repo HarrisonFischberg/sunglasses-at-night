@@ -284,7 +284,8 @@ export async function runPerf() {
       gridInsertRecalc: {
         value: grid.insertRecalcWithEngineMedian,
         withoutEngine: grid.insertRecalcWithoutEngineMedian,
-        max: round(grid.insertRecalcWithoutEngineMedian * BUDGET.insertRecalcFactor),
+        // Floor of 2 ms: when the page alone measures 0 ms, 2× of 0 would fail on 1 ms of timer noise.
+        max: Math.max(round(grid.insertRecalcWithoutEngineMedian * BUDGET.insertRecalcFactor), round(grid.insertRecalcWithoutEngineMedian + 2)),
       },
       gridGeneratedRules: {
         value: grid.generatedRules.afterStorm,

@@ -680,3 +680,4 @@
 - Verification: runner `ralph/evidence/e2e-latest.md` (HEAD b79bb25): tests 100, pass 100, fail 0; popup/options/ui tests at 390x844 and 1440x900 all pass; `design/screenshots/real-*.png` rewritten by the runner (git status shows them modified).
 - Missing: Replica contrast.py log. `python3 ... contrast.py` is refused for approval in this sandbox. Recorded as B41.
 - 00:54Z owner: app icon → teal (T037).
+- 02:22Z supervisor: loop had stopped at 18:51 (T036/T032/T035 waited on T031's owner check; T037 on blocked T034). Deps fixed; T034 done (contrast 21/21 AA, log docs/design/contrast-t034.txt); gridInsertRecalc max gets a 2 ms floor (0×2 = 0 failed on 1 ms noise).
