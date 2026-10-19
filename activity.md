@@ -665,3 +665,5 @@
 - New test: e2e/t033.test.js (360×560, normal and restricted page; a commit triggers the 300 ms re-render; 20 wheel steps down and 20 up; asserts document height/width constant, scrollTop changes on every non-end step, CLS 0 via layout-shift observer where WebKit supports it).
 - Verification run here: `node --check e2e/t033.test.js` OK; `npm test` -> tests 333, pass 333, fail 0; `npm run check` -> 18 file(s) OK.
 - Not run: `npm run e2e` (cannot launch WebKit here). Runner must run it and write ralph/evidence/t033-e2e.json, and re-check T030 popup layout (padding moved to header + scroll container). Owner must confirm smooth scrolling in real Safari. Not claimed: Impeccable re-audit of the popup at 390/1440.
+
+- T033 follow-up (2026-10-18): recorded B40 in docs/launch-blockers.md for the owner Safari scroll check. Row remains needs-runner-build (runner e2e pending); not marked done.
