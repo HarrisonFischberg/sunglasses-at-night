@@ -659,3 +659,9 @@
 - Runner Swift build at 9abdbe5 (the T017 on/off-icon commit; ralph/evidence/swift-build-latest.md): macOS and iOS BUILD SUCCEEDED, Swift tests 19/19, launch smoke PASS. Runner e2e at bf5bd27 (ralph/evidence/e2e-latest.md): 98/98, including popup layout tests with the header mark. Commits 9abdbe5..bf5bd27 touch only docs/prd/.gitignore, so both runs cover the final T017 code.
 - Local: `npm test` -> tests 333, pass 333, fail 0; `npm run check` -> 18 file(s) OK. Asset rows are in docs/asset-licenses.md.
 - Not claimed: Safari rendering of toolbar glyph (light/dark, dimmed off state) and 1024 icon in App Store Connect; owner check.
+
+## T033 — Popup scrolling (2026-10-18, Builder). NEEDS-RUNNER-BUILD
+- Built: ui.css `body.popup` is a fixed 360×560 flex box (overflow hidden; on coarse-pointer/iOS width auto, height 100vh); everything below the header sits in one `<main class="popup-scroll">` with `overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; scroll-behavior: auto`; range inputs get `touch-action: pan-y`. No layout-property transitions existed (only colour/transform). Conditional sections (#site, #already-dark) now change only inner content height, never the document.
+- New test: e2e/t033.test.js (360×560, normal and restricted page; a commit triggers the 300 ms re-render; 20 wheel steps down and 20 up; asserts document height/width constant, scrollTop changes on every non-end step, CLS 0 via layout-shift observer where WebKit supports it).
+- Verification run here: `node --check e2e/t033.test.js` OK; `npm test` -> tests 333, pass 333, fail 0; `npm run check` -> 18 file(s) OK.
+- Not run: `npm run e2e` (cannot launch WebKit here). Runner must run it and write ralph/evidence/t033-e2e.json, and re-check T030 popup layout (padding moved to header + scroll container). Owner must confirm smooth scrolling in real Safari. Not claimed: Impeccable re-audit of the popup at 390/1440.
