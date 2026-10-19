@@ -54,6 +54,7 @@ claim Impeccable ran unless its output is in this session.
   after every iteration and writes `ralph/evidence/e2e-latest.md` (+ `.log`); read that. Same
   `needs-runner-build` status applies when your acceptance depends on an e2e run you just changed.
   e2e code must only contact 127.0.0.1 loopback servers it starts itself.
+- After changing anything in `engine/src`, run `node engine/scripts/bundle.js` and commit the regenerated `Extension/Resources/**` bundles in the same commit. Xcode ships the committed bundles, not the source.
 - Engine tests: `npm test` (runs `node --test 'engine/test/**/*.test.js'`).
 - Never edit `ralph/*.sh` or `ralph/next-task.js`: the runner runs them outside the sandbox.
 - `/impeccable shape` in an unattended session: Impeccable allows inferring from PRODUCT.md when nobody can answer. Label every assumption in `docs/design/directions.md`. The owner approves the direction afterwards.

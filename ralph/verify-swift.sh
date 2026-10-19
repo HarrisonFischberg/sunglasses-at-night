@@ -3,6 +3,9 @@
 # Writes ralph/evidence/swift-build-latest.md for the next iteration to read.
 cd "$(dirname "$0")/.."
 out=ralph/evidence/swift-build-latest.md
+# Xcode copies Extension/Resources as-is: regenerate the bundles from engine/src first,
+# so a build never ships stale extension scripts (2026-10-19).
+node engine/scripts/bundle.js > /dev/null 2>&1
 {
   echo "# Runner Swift build ($(date -u +%Y-%m-%dT%H:%M:%SZ), HEAD $(git rev-parse --short HEAD), dirty files: $(git status --porcelain | wc -l | tr -d ' '))"
   # Schemes are discovered so a product rename (T027) can't break the runner.
