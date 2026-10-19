@@ -9,6 +9,14 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const read = (p) => readFileSync(join(root, p));
 
+test('popup header mark and popup/options favicons use the generated icon', () => {
+  for (const page of ['Extension/Resources/popup/popup.html', 'Extension/Resources/options/options.html']) {
+    assert.match(read(page).toString(), /<link rel="icon"[^>]*href="\.\.\/images\/icon-48\.png"/, `${page} favicon`);
+  }
+  assert.match(read('Extension/Resources/popup/popup.html').toString(), /<img class="app-mark" src="\.\.\/images\/icon-48\.png"/);
+  assert.ok(existsSync(join(root, 'Extension/Resources/images/icon-48.png')));
+});
+
 function decode(buf) {
   assert.deepEqual([...buf.subarray(0, 8)], [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], 'PNG signature');
   const w = buf.readUInt32BE(16);

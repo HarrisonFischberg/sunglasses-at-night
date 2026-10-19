@@ -379,7 +379,8 @@ body.popup { min-width: 300px; max-width: 440px; padding: var(--s-3); }
   min-height: var(--target);
   margin-bottom: var(--s-2);
 }
-.popup .top h1 { color: var(--muted); }
+.popup .top h1 { color: var(--muted); flex: 1; }
+.popup .app-mark { width: 28px; height: 28px; border-radius: var(--r-sm); flex: none; }
 
 .hero {
   display: grid;
