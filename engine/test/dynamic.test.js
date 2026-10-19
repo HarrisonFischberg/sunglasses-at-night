@@ -183,6 +183,29 @@ test('rewriteDeclarations: multiply / darken / color-burn / luminosity blends be
   }
 });
 
+test('rewriteDeclarations: channel-list custom properties (Dawn/Shopify) get per-role variants in the same format', () => {
+  const out = rewriteDeclarations(decl({ '--color-background': ['255,255,255'], '--color-foreground': ['18, 18, 18'] }), undefined);
+  const bg = out.find((d) => d.startsWith('--san-bg--color-background:'));
+  const fg = out.find((d) => d.startsWith('--san-fg--color-foreground:'));
+  assert.match(bg, /^--san-bg--color-background:\d+,\d+,\d+$/);
+  assert.match(fg, /^--san-fg--color-foreground:\d+,\d+,\d+$/);
+  const lum = (s) => {
+    const [r, g, b] = s.split(':')[1].split(',').map(Number);
+    return relativeLuminance({ r: r / 255, g: g / 255, b: b / 255 });
+  };
+  assert.ok(lum(bg) < 0.1, 'white background becomes dark');
+  assert.ok(lum(fg) > 0.5, 'near-black text becomes light');
+  const space = rewriteDeclarations(decl({ '--c': ['255 255 255 / 0.5'] }), undefined);
+  assert.match(space.find((d) => d.startsWith('--san-bg--c:')), /^--san-bg--c:\d+ \d+ \d+ \/ 0\.5$/);
+  assert.deepEqual(rewriteDeclarations(decl({ '--cols': ['1, 2, 3, 4'] }), undefined), []);
+  assert.deepEqual(rewriteDeclarations(decl({ '--big': ['300,300,300'] }), undefined), []);
+});
+
+test('rewriteValue: rgb(var(--x)) reads the variant of the using property role', () => {
+  assert.match(rewriteValue('rgb(var(--color-background))', 'bg'), /var\(--san-bg--color-background/);
+  assert.match(rewriteValue('rgba(var(--color-foreground), .75)', 'fg'), /var\(--san-fg--color-foreground/);
+});
+
 test('pendingCss: transparent backgrounds and base text color for the tagged subtree, media untouched (T031)', () => {
   const css = pendingCss();
   assert.match(css, /^\[data-sunglasses-pending\],\[data-sunglasses-pending\] \*:not\(img,picture,video,canvas,svg,iframe,embed,object\)\{background-color:transparent!important;color:rgb\(/);

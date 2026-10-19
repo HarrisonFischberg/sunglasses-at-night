@@ -17,6 +17,7 @@ const FIXTURES = [
   { name: 'cross-origin', path: '/cross-origin.html', crossOrigin: true },
   { name: 'links', path: '/links.html' },
   { name: 'shop', path: '/shop.html' },
+  { name: 'shopify-dawn', path: '/shopify-dawn.html' },
 ];
 
 let servers, browser;
@@ -91,6 +92,31 @@ for (const fx of FIXTURES) {
       await page.selectOption('#size', 'l');
       assert.equal(await page.textContent('#cart-count'), '2');
       assert.equal(await page.inputValue('#qty'), '3');
+    }
+    if (fx.name === 'shopify-dawn') {
+      // Channel-list variables (T038): header, body and every section render dark,
+      // and buttons that use one variable for background and text stay readable.
+      const paint = await page.evaluate(() => {
+        const bg = (sel) => getComputedStyle(document.querySelector(sel)).backgroundColor;
+        return {
+          header: bg('.header'), body: bg('body'),
+          sections: [...document.querySelectorAll('section')].map((s) => getComputedStyle(s).backgroundColor),
+        };
+      });
+      const lum = (css) => {
+        const [r, g, b] = css.match(/[\d.]+/g).slice(0, 3).map((v) => {
+          const c = Number(v) / 255;
+          return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      summary[fx.name].paint = paint;
+      for (const [what, css] of Object.entries({ header: paint.header, body: paint.body })) {
+        assert.ok(lum(css) < 0.1, `${what} stays light: ${css}`);
+      }
+      paint.sections.forEach((css, i) => assert.ok(lum(css) < 0.1, `section ${i} stays light: ${css}`));
+      await page.click('#add-1');
+      await page.click('#add-2');
     }
     if (fx.name === 'links') {
       await page.click('#jump');

@@ -198,6 +198,32 @@ function rewriteTokens(value, role, look) {
   return out;
 }
 
+// Dawn-family themes (Shopify) keep colors as bare channel lists:
+// `--color-background: 255,255,255` painted with `rgb(var(--color-background))`.
+const TRIPLET_RE = /^(\d{1,3}(?:\.\d+)?)(\s*,\s*|\s+)(\d{1,3}(?:\.\d+)?)\2(\d{1,3}(?:\.\d+)?)(?:\s*([,/])\s*(\d*\.?\d+%?))?$/;
+
+/**
+ * A custom property value that is a channel list (`r,g,b`, `r g b`, with an
+ * optional alpha) → the same list transformed for `role`, in the same format.
+ * null when the value isn't one.
+ */
+export function rewriteTriplet(value, role, look) {
+  const m = TRIPLET_RE.exec(value.trim());
+  if (!m) return null;
+  const [r, g, b] = [m[1], m[3], m[4]].map(Number);
+  if (r > 255 || g > 255 || b > 255) return null;
+  let alpha = 1;
+  if (m[6] !== undefined) alpha = m[6].endsWith('%') ? parseFloat(m[6]) / 100 : parseFloat(m[6]);
+  const c = { r: r / 255, g: g / 255, b: b / 255, alpha };
+  if (alpha === 0 || alpha > 1) return null;
+  const t = quantize(transformColor(c, role, look));
+  const ch = [t.r, t.g, t.b].map((v) => Math.round(v * 255));
+  const sep = m[2].includes(',') ? ',' : ' ';
+  let out = ch.join(sep);
+  if (m[6] !== undefined) out += `${m[5] === '/' ? ' / ' : ','}${Math.round(t.alpha * 1000) / 1000}`;
+  return out;
+}
+
 // var(--x[, fallback]) → var(--san-<role>--x, var(--x[, fallback']))
 function rewriteVar(body, role, look) {
   const parts = splitTop(body);
@@ -279,7 +305,10 @@ export function rewriteDeclarations(style, look, opts = {}) {
     if (prop.startsWith('--')) {
       if (prop.startsWith(VAR_PREFIX)) continue;
       for (const role of ROLES) {
-        const v = rewriteValue(value, role, look);
+        // A channel list is no color: transform it per role. The using
+        // declaration reads the variant for its own property's role (rewriteVar),
+        // so a variable used as both background and text splits by itself.
+        const v = rewriteTriplet(value, role, look) ?? rewriteValue(value, role, look);
         if (v !== null) out.push(`${roleVar(role, prop)}:${v}${bangFor(prop)}`);
       }
       continue;
