@@ -679,3 +679,4 @@
 ## T034 follow-up (2026-10-18, Builder). BLOCKED (B41), otherwise verified
 - Verification: runner `ralph/evidence/e2e-latest.md` (HEAD b79bb25): tests 100, pass 100, fail 0; popup/options/ui tests at 390x844 and 1440x900 all pass; `design/screenshots/real-*.png` rewritten by the runner (git status shows them modified).
 - Missing: Replica contrast.py log. `python3 ... contrast.py` is refused for approval in this sandbox. Recorded as B41.
+- 00:54Z owner: app icon → teal (T037).
