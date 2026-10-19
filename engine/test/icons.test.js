@@ -107,16 +107,19 @@ test('app icon set: every declared file exists, is square at the stated pixel si
   for (let i = 3; i < ios.length; i += 4) assert.equal(ios[i], 255, 'iOS icon has no transparency');
 });
 
-test('app icon palette: warm only, no purple/violet or moon-style hues (R15)', () => {
-  const { px } = decode(read('App/Assets.xcassets/AppIcon.appiconset/ios-1024.png'));
-  let coral = 0;
-  for (let i = 0; i < px.length; i += 16) {
-    const h = hue([px[i], px[i + 1], px[i + 2]]);
-    if (h === null) continue;
-    assert.ok(h < 60 || h > 345, `unexpected hue ${Math.round(h)} at pixel ${i / 4}`);
-    coral++;
+test('app icon palette: teal glasses on cool charcoal, no coral/purple/moon hues (R15, T037)', () => {
+  for (const f of ['App/Assets.xcassets/AppIcon.appiconset/ios-1024.png', 'Extension/Resources/images/icon-128.png']) {
+    const { px } = decode(read(f));
+    let teal = 0;
+    for (let i = 0; i < px.length; i += 16) {
+      if (px[i + 3] === 0) continue;
+      const h = hue([px[i], px[i + 1], px[i + 2]]);
+      if (h === null) continue;
+      assert.ok(h > 150 && h < 200, `${f}: unexpected hue ${Math.round(h)} at pixel ${i / 4}`);
+      teal++;
+    }
+    assert.ok(teal > 500, `${f}: teal glasses present`);
   }
-  assert.ok(coral > 1000, 'coral glasses present');
 });
 
 test('licenses: icon rows recorded and no third-party art claimed', () => {

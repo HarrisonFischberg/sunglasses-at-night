@@ -127,17 +127,17 @@ function png(size, rgba) {
 }
 
 const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-const CORAL = hex('#ff9a76');
-const CORAL_DEEP = hex('#e0714c');
-const GLINT = hex('#ffe3d6');
-const BG_TOP = hex('#3a3430');
-const BG_BOTTOM = hex('#1f1b19');
+const TEAL = hex('#5fd7c9');
+const TEAL_DEEP = hex('#3fb0a3');
+const GLINT = hex('#d6faf5');
+const BG_TOP = hex('#2a3332');
+const BG_BOTTOM = hex('#161b1b');
 const mix = (a, b, t) => a.map((v, k) => Math.round(v + (b[k] - v) * t));
 
-// App icon: full-bleed warm charcoal square (the OS applies the mask), coral glasses.
+// App icon: full-bleed cool charcoal square (the OS applies the mask), teal glasses.
 function glyphColour(gx, gy) {
   if (glint(gx, gy)) return GLINT;
-  if (glasses(gx, gy)) return mix(CORAL, CORAL_DEEP, Math.max(0, Math.min(1, (gy - 36) / 28)));
+  if (glasses(gx, gy)) return mix(TEAL, TEAL_DEEP, Math.max(0, Math.min(1, (gy - 36) / 28)));
   return null;
 }
 // iOS / listing: full-bleed square, the OS applies its own mask.

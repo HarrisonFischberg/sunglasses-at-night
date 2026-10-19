@@ -708,4 +708,10 @@
 - Ran: npm run check -> 19 file(s) OK; npm test -> tests 339, pass 339, fail 0 (first run had 1 failure: alpha > 1 accepted as a color; fixed). Not run: npm run e2e (WebKit cannot launch here).
 - Open: runner e2e must pass; supervisor re-checks quiettownhome.com in WebKit; owner re-checks in Safari. Row is needs-runner-build, not done.
 - T038 (2026-10-18, Builder): row set to blocked (B45), following T032/T033/T035. The acceptance lines for the supervisor WebKit re-check of quiettownhome.com and the owner Safari re-check need a person, and the runner e2e has not run on 0e407b8. Not claimed: any WebKit or Safari result.
+
+## T037 — teal app icon (2026-10-18, Builder). NEEDS-RUNNER-BUILD
+- Built: `design/icons/generate.js` now draws teal `#5fd7c9` (deep `#3fb0a3`, glint `#d6faf5`) glasses on cool charcoal (`#2a3332` to `#161b1b`); regenerated all macOS sizes (icon-16..1024), `ios-1024.png` and `Extension/Resources/images/icon-{48,96,128,256,512}.png` (popup header mark uses icon-48). Toolbar template glyphs untouched (monochrome). `docs/asset-licenses.md` row updated.
+- Test: `engine/test/icons.test.js` palette test changed from "warm only" to "teal hue 150-200 only, non-transparent pixels" on ios-1024 and icon-128 (pixel check of no coral). Grep for coral/ff9a76/e0714c/ffe3d6 in generate.js: no matches.
+- Ran: `node design/icons/generate.js` (icons regenerated); `npm test` -> tests 339, pass 339, fail 0.
+- Open: the runner Swift builds (macOS + iOS) must run on this change; row is needs-runner-build, not done. Evidence will be ralph/evidence/swift-build-latest.md.
 - 03:16Z supervisor: e2e 104/110 at 18bff6a. T036 late-sheets ✔ and T038 shopify-dawn ✔ → owner check (real quiettown header now dark in WebKit). T032 fresh-grid 4/4 fail (reference case too, so the fixture is broken) and T035 amazon-home fail → needs-runner-build. Perf nodesBatchMedian 9 > 8 (watch: possible regression from T036/T038).
