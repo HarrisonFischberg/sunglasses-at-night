@@ -731,3 +731,7 @@
 - Ran: `npm run check` -> 19 files OK; `npm test` -> tests 339, pass 339, fail 0. Not run: `npm run e2e` (WebKit cannot launch here). T013 perf nodesBatchMedian 9 > 8 belongs to another task.
 - T035 (2026-10-19, Builder): row set to blocked (B44): the owner re-check on real amazon.com needs a person; the runner must also run e2e on 21259f2 or later (fixes the #h-slide-solid red from 6576096). Not claimed: any WebKit result for 21259f2.
 - 04:07Z supervisor: e2e 108/110 at 6576096; T037 done (builds + launch smoke pass). Perf nodesBatchMedian 9→10 ms over 8 in two runs → T039 (likely T036/T038 per-batch work).
+
+## T035 - runner e2e at 82ce4b2 (2026-10-19, Builder). NEEDS-RUNNER-BUILD
+- Runner e2e (ralph/evidence/e2e-latest.log, 04:22Z): 108/110. Reds: T013 perf nodesBatchMedian 11.5 > 8 (T039, not this task) and t031 `#h-slide-solid` rgb(164,164,164) vs white. The image-layer cases pass. Cause: the keep path now runs, but authored white on the saturated #d9822b card is ~2.9:1, under LARGE_TEXT_CONTRAST=3 (raised in 21259f2), so the fallback (our gray) applied. Fix: LARGE_TEXT_CONTRAST=2 in engine/src/dynamic.js (the earlier 2:1 attempt in 6576096 failed only because of the early-return ordering, since fixed).
+- Ran: `npm run check` -> 19 file(s) OK; `npm test` -> tests 339, pass 339, fail 0. Not run: `npm run e2e` (WebKit cannot launch here). Next: runner e2e must show #h-slide-solid green; B44 owner check on real amazon.com still stands.
