@@ -96,6 +96,10 @@ const COLOR_FUNCS = new Set([
 const OPAQUE_FUNCS = new Set(['url', 'image-set', '-webkit-image-set', 'attr', 'env', 'element']);
 // Blend modes that turn a photo near-black once the backdrop under it is dark.
 let blendMarked = false;
+// Set once any declaration we read carries a url()/image-set() background. Until
+// then no non-media element can be a photo layer, so overImage skips the style
+// reads that look for one (T039).
+let urlImagesSeen = false;
 const BLEND_FIX_RE = /^(?:multiply|darken|color-burn|luminosity)$/i;
 const MEDIA_TAGS = 'img,picture,video,canvas,svg,iframe,embed,object';
 const MEDIA_TAG_SET = new Set(MEDIA_TAGS.split(','));
@@ -309,6 +313,7 @@ export function rewriteDeclarations(style, look, opts = {}) {
     seen.add(prop);
     const value = style.getPropertyValue(prop);
     if (!value && PROP_ROLES[prop]) pendingVar = true;
+    if (!urlImagesSeen && (prop === 'background-image' || prop === 'background') && URL_IMAGE_RE.test(value)) urlImagesSeen = true;
     if (prop.startsWith('--')) {
       if (prop.startsWith(VAR_PREFIX)) continue;
       for (const role of ROLES) {
@@ -777,6 +782,7 @@ export function startDynamic({
       const v = c && mapColor(c, role, look);
       if (v) decls.push(`${prop}:${v} !important`);
     }
+    if (el.hasAttribute('background')) urlImagesSeen = true;
     if (hideBackgroundImages && el.hasAttribute('background')) decls.push('background-image:none !important');
     return decls;
   }
@@ -926,7 +932,7 @@ export function startDynamic({
             if (MEDIA_TAG_SET.has(kid.localName)) {
               const kcs = getCS(kid);
               if (kcs.display === 'none' || kcs.visibility !== 'visible') continue;
-            } else if (!URL_IMAGE_RE.test(getCS(kid).backgroundImage)) {
+            } else if (!urlImagesSeen || !URL_IMAGE_RE.test(getCS(kid).backgroundImage)) {
               continue;
             }
             const r = kid.getBoundingClientRect();
@@ -946,8 +952,13 @@ export function startDynamic({
           if (!kid.contains(el) && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return true;
         }
       }
-      const c = parseColor(getCS(e).backgroundColor);
-      if (c && c.alpha >= 1) break;
+      let opaque = cache.opaque.get(e);
+      if (opaque === undefined) {
+        const c = parseColor(getCS(e).backgroundColor);
+        opaque = Boolean(c && c.alpha >= 1);
+        cache.opaque.set(e, opaque);
+      }
+      if (opaque) break;
     }
     return false;
   }
@@ -1177,7 +1188,7 @@ export function startDynamic({
       p.released = true;
       releasePending();
     }
-    const fixes = [], keeps = [], blends = [], cache = { bg: new Map(), urls: new Map(), covers: new Map() }, { items } = p;
+    const fixes = [], keeps = [], blends = [], cache = { bg: new Map(), urls: new Map(), covers: new Map(), opaque: new Map() }, { items } = p;
     while (p.i < items.length) {
       const el = items[p.i++];
       if (el.isConnected) {
