@@ -13,6 +13,7 @@ const rows = prd.split('\n')
 const done = new Set(rows.filter((r) => r.status.startsWith('done')).map((r) => r.id));
 
 function depIds(deps, self) {
+  deps = deps.split('(')[0]; // notes in parentheses are not dependencies
   if (/\ball\b/i.test(deps)) return rows.map((r) => r.id).filter((id) => id !== self);
   const ids = new Set();
   for (const m of deps.matchAll(/T(\d{3})\s*[–-]\s*T(\d{3})/g)) {
@@ -24,6 +25,8 @@ function depIds(deps, self) {
 }
 
 if (rows.length && rows.every((r) => r.status.startsWith('done'))) { console.log('ALL_DONE'); process.exit(10); }
-const ready = rows.find((r) => r.status.startsWith('needs-runner-build')) || rows.find((r) => r.status.startsWith('pending') && depIds(r.deps, r.id).every((d) => done.has(d)));
+// The Builder keeps parking tasks as "blocked" when only runner output is missing.
+const waitsOnRunner = (r) => r.status.startsWith('blocked') && /runner (e2e|build|swift)|unverified by runner|not yet run by the runner|no runner e2e/i.test(r.status);
+const ready = rows.find((r) => r.status.startsWith('needs-runner-build') || waitsOnRunner(r)) || rows.find((r) => r.status.startsWith('pending') && depIds(r.deps, r.id).every((d) => done.has(d)));
 if (!ready) { console.log('NONE_READY'); process.exit(11); }
 console.log(JSON.stringify(ready));
