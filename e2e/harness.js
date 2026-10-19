@@ -182,7 +182,9 @@ export async function openFirstPaint(browser, servers, path, { extension = false
   return { page, context, canvas };
 }
 
-async function preparePage(browser, servers, { extension, settings, colorScheme = 'light', settingsDelayMs = 0 }) {
+// `fetchDelayMs` holds every background sheet re-fetch back, like Safari's
+// worker wake-up plus message round trip.
+async function preparePage(browser, servers, { extension, settings, colorScheme = 'light', settingsDelayMs = 0, fetchDelayMs = 0 }) {
   const context = await browser.newContext({ colorScheme, viewport: { width: 1024, height: 900 } });
   const page = await context.newPage();
   await page.addInitScript({ content: auditBundle() });
@@ -195,7 +197,8 @@ async function preparePage(browser, servers, { extension, settings, colorScheme 
     };
     const handler = createSheetMessageHandler({ fetch: nodeFetch, extensionId: 'e2e' });
     await page.exposeFunction('__sanBackground', (msg) => new Promise((resolveMsg) => {
-      if (handler(msg, { tab: { id: 1 }, id: 'e2e' }, resolveMsg) === false) resolveMsg(undefined);
+      const respond = fetchDelayMs > 0 ? (res) => setTimeout(() => resolveMsg(res), fetchDelayMs) : resolveMsg;
+      if (handler(msg, { tab: { id: 1 }, id: 'e2e' }, respond) === false) resolveMsg(undefined);
     }));
     await page.addInitScript({ content: baseCssShim(baseCssText()) });
     await page.addInitScript({ content: apiShim(settings ?? { ...defaultSettings(), mode: 'always' }, settingsDelayMs) });
@@ -224,8 +227,8 @@ const frameLog = (sampler) => `if (location.protocol !== 'about:') {
  * after the load event. Returns { frames, settingsAt } where settingsAt is
  * the performance.now() at which the settings read resolved.
  */
-export async function recordFrames(browser, servers, path, { extension = true, settings, colorScheme, settingsDelayMs, watchMs = 1200, stallMs = 1500, sampler = 'canvas' } = {}) {
-  const { page, context } = await preparePage(browser, servers, { extension, settings, colorScheme, settingsDelayMs });
+export async function recordFrames(browser, servers, path, { extension = true, settings, colorScheme, settingsDelayMs, fetchDelayMs, watchMs = 1200, stallMs = 1500, sampler = 'canvas' } = {}) {
+  const { page, context } = await preparePage(browser, servers, { extension, settings, colorScheme, settingsDelayMs, fetchDelayMs });
   await page.addInitScript({ content: frameLog(sampler) });
   await page.goto(`${servers.SITE}${path}${stallMs > 0 ? `?stall=${stallMs}` : ''}`, { waitUntil: 'load' });
   await page.waitForTimeout(watchMs);

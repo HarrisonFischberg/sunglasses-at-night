@@ -681,3 +681,9 @@
 - Missing: Replica contrast.py log. `python3 ... contrast.py` is refused for approval in this sandbox. Recorded as B41.
 - 00:54Z owner: app icon → teal (T037).
 - 02:22Z supervisor: loop had stopped at 18:51 (T036/T032/T035 waited on T031's owner check; T037 on blocked T034). Deps fixed; T034 done (contrast 21/21 AA, log docs/design/contrast-t034.txt); gridInsertRecalc max gets a 2 ms floor (0×2 = 0 failed on 1 ms noise).
+
+## T036 — white flash from sheets added after ready (2026-10-18, Builder)
+- Built: `startDynamic` takes `onBusy`; when a sheet node is added after ready and its sheets aren't settled (pending re-fetch or unloaded `<link>`), the engine marks itself not-announced, calls `onBusy()` in the mutation task (before paint), and calls `onReady()` again in the task the rewrite lands (READY_CAP_MS fallback). `content.js` `busy()` removes `data-sunglasses-ready` and re-adds a marked interim `<style>` (`interimCss(look)`); `ready()` removes it. The engine now starts the cross-origin re-fetch as soon as a `<link>` is seen (`prefetchLinks`, sharing content.js's per-URL request cache). The background's `createSheetFetcher` already caches fetched sheet text per URL across pages, so no new cache (rewritten CSS depends on look/DOM, so it stays per page).
+- Tests: `e2e/t036.test.js` + `e2e/fixtures/late-sheets.html`, `cdn/late-sheet.css`; harness gained `fetchDelayMs`.
+- Ran: `npm run check` → 18 files OK; `npm test` → 333 pass, 0 fail. e2e not run (WebKit can't launch in this sandbox).
+- Status: `needs-runner-build`. Next iteration: read `ralph/evidence/e2e-latest.md` / `t036-e2e.json`; the owner still re-checks amazon.com with a recording.

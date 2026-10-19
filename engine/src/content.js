@@ -7,7 +7,7 @@
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 import { createSettingsStore, resolveSite, migrate } from './settings.js';
-import { startEarly, whenParsed, whenRoot, READY_ATTRIBUTE } from './early.js';
+import { startEarly, whenParsed, whenRoot, interimCss, READY_ATTRIBUTE } from './early.js';
 import { startDynamic } from './dynamic.js';
 import { startFilter } from './filter.js';
 import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
@@ -95,6 +95,20 @@ function run(settings) {
   const ready = () => {
     document.documentElement.setAttribute(READY_ATTRIBUTE, '');
     ctl.style?.remove();
+    rearmed?.remove();
+  };
+  // The page added a sheet the override doesn't cover yet: bring the interim
+  // rule back (flat dark, media untouched) until the engine says ready again.
+  // Marked as ours so the engine never reads it as a page sheet.
+  let rearmed = null;
+  const busy = (look) => () => {
+    document.documentElement.removeAttribute(READY_ATTRIBUTE);
+    if (!rearmed) {
+      rearmed = document.createElement('style');
+      rearmed.setAttribute('data-sunglasses-at-night', 'interim');
+      rearmed.textContent = interimCss(look);
+    }
+    if (!rearmed.isConnected) (document.head ?? document.documentElement).appendChild(rearmed);
   };
   const stopPrefetch = ctl.activation.on && window.MutationObserver ? prefetchSheets(document, window.MutationObserver) : () => {};
   let engine = null, cancelled = false;
@@ -110,7 +124,7 @@ function run(settings) {
       engine = startFilter({ document, look: site.look, ...media });
       ready();
     } else {
-      engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, ...media });
+      engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, onBusy: busy(site.look), ...media });
     }
   });
   return () => {
@@ -118,6 +132,7 @@ function run(settings) {
     stopPrefetch();
     engine?.stop();
     ctl.style?.remove();
+    rearmed?.remove();
   };
 }
 

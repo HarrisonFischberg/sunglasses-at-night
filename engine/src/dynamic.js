@@ -421,13 +421,17 @@ const YIELD = Symbol('yield');
  * page sheet (cross-origin re-fetches applied, <link> sheets loaded), or after
  * READY_CAP_MS. Until then contrast checks wait, because the caller's interim
  * rule is still changing what they would read.
+ * opts.onBusy(), called when the page adds a stylesheet after onReady that the
+ * override sheet doesn't cover yet (in the mutation task, before paint), so the
+ * caller can re-arm its interim rule; onReady() is called again, in the task
+ * the rewrite lands (or after READY_CAP_MS).
  * Returns { stop(), refresh(), settle() }; settle() resolves once every
  * cross-origin fetch started so far has been applied and all deferred work
  * is done.
  */
 export function startDynamic({
   document, window = document.defaultView, look, fetchSheet = async () => null,
-  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null, prune = true,
+  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null, onBusy = null, prune = true,
 }) {
   // Classes, ids and tags the page has had (document and open shadow roots).
   // A rule whose selector needs one that never appeared is left out of the
@@ -476,21 +480,37 @@ export function startDynamic({
   let syncWanted = false; // sheets changed (link load, remote sheet arrived)
   let timerId = null, timerAt = Infinity;
   let readyDone = !onReady, readyTimer = null;
+  let announced = !onReady; // the caller was last told 'ready' (not 'busy')
   const pendingTags = new Map(); // element tagged PENDING_ATTR → when
   const keptColor = new Map(); // text over a photo → the authored color we restored
 
-  function checkReady(force = false) {
-    if (readyDone || stopped) return;
-    if (!force) {
-      if (pending.size || syncWanted) return;
-      for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
-        if (!link.sheet && !link.disabled) return;
-      }
+  function sheetsSettled() {
+    if (pending.size || syncWanted) return false;
+    for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
+      if (!link.sheet && !link.disabled) return false;
     }
-    readyDone = true;
+    return true;
+  }
+
+  function checkReady(force = false) {
+    if (announced || stopped) return;
+    if (!force && !sheetsSettled()) return;
+    announced = true;
     win.clearTimeout(readyTimer);
+    const first = !readyDone;
+    readyDone = true;
     onReady();
-    wantContrastAll();
+    if (first) wantContrastAll();
+  }
+
+  // A sheet the override doesn't cover yet: the caller's interim rule comes
+  // back until the rewrite lands, so the page's own colors never paint.
+  function markBusy() {
+    if (!announced || !onBusy || stopped || sheetsSettled()) return;
+    announced = false;
+    onBusy();
+    win.clearTimeout(readyTimer);
+    readyTimer = win.setTimeout(() => checkReady(true), READY_CAP_MS);
   }
 
   const isOurs = (node) => node?.nodeType === 1 && node.hasAttribute(MARK);
@@ -1203,6 +1223,7 @@ export function startDynamic({
           if (n.nodeType !== 1 || isOurs(n)) continue;
           if (isSheetNode(n) || n.querySelector?.('style,link')) sheetsChanged = true;
           if (n.localName === 'link') n.addEventListener('load', onSheetLoad, { once: true });
+          prefetchLinks(n);
           added.add(n);
         }
         for (const n of r.removedNodes) {
@@ -1225,6 +1246,7 @@ export function startDynamic({
     if (readyDone) for (const n of topmost(added)) tagPending(n);
     // New page sheets are rewritten now, so their content never shows light.
     if (sheetsChanged && syncSheets(scope)) wantContrastAll();
+    if (sheetsChanged) markBusy();
     for (const n of topmost(added)) {
       scanTree(n);
       wantContrast(n);
@@ -1232,6 +1254,18 @@ export function startDynamic({
   }
 
   const onSheetLoad = timed('sheet-load', () => requestSync());
+
+  // Start the re-fetch of a cross-origin sheet the moment its <link> is seen,
+  // not when it has loaded: the text is usually here by the time it applies.
+  function prefetchLinks(node) {
+    const links = node.localName === 'link' ? [node] : [...(node.querySelectorAll?.('link') ?? [])];
+    for (const link of links) {
+      if (!/\bstylesheet\b/i.test(link.rel) || !link.href || link.disabled) continue;
+      try {
+        if (new URL(link.href).origin !== document.location?.origin) remoteCss(link.href, undefined, 0);
+      } catch { /* not a URL */ }
+    }
+  }
 
   // ---- lifecycle
   function refresh(forceContrast = false) {
