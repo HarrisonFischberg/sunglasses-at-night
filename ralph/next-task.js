@@ -26,7 +26,7 @@ function depIds(deps, self) {
 
 if (rows.length && rows.every((r) => r.status.startsWith('done'))) { console.log('ALL_DONE'); process.exit(10); }
 // The Builder keeps parking tasks as "blocked" when only runner output is missing.
-const waitsOnRunner = (r) => r.status.startsWith('blocked') && /runner (e2e|build|swift)|unverified by runner|not yet run by the runner|no runner e2e/i.test(r.status);
+const waitsOnRunner = (r) => r.status.startsWith('blocked') && /unverified|not yet run|must (re-)?run|no runner e2e|awaits? (the )?runner/i.test(r.status) && !/\bgreen\b|all .* pass|✔/i.test(r.status);
 const ready = rows.find((r) => r.status.startsWith('needs-runner-build') || waitsOnRunner(r)) || rows.find((r) => r.status.startsWith('pending') && depIds(r.deps, r.id).every((d) => done.has(d)));
 if (!ready) { console.log('NONE_READY'); process.exit(11); }
 console.log(JSON.stringify(ready));
