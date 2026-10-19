@@ -2,7 +2,7 @@
   "light": {
     "systemDarkAlways": {
       "baselineFirst": {
-        "t": 163,
+        "t": 95,
         "root": "rgba(0, 0, 0, 0)",
         "scheme": "normal",
         "bodyChildren": 3,
@@ -13,14 +13,18 @@
         ],
         "luminance": 1
       },
-      "settingsAt": 328,
+      "settingsAt": 307,
       "frames": [
         {
-          "t": 33,
+          "t": 10,
           "luminance": 0.007
         },
         {
-          "t": 41,
+          "t": 24,
+          "luminance": 0.007
+        },
+        {
+          "t": 40,
           "luminance": 0.007
         },
         {
@@ -28,7 +32,7 @@
           "luminance": 0.007
         },
         {
-          "t": 74,
+          "t": 73,
           "luminance": 0.007
         },
         {
@@ -36,15 +40,15 @@
           "luminance": 0.007
         },
         {
-          "t": 108,
+          "t": 106,
           "luminance": 0.007
         },
         {
-          "t": 123,
+          "t": 124,
           "luminance": 0.007
         },
         {
-          "t": 141,
+          "t": 140,
           "luminance": 0.007
         },
         {
@@ -52,7 +56,7 @@
           "luminance": 0.007
         },
         {
-          "t": 173,
+          "t": 174,
           "luminance": 0.007
         },
         {
@@ -64,7 +68,626 @@
           "luminance": 0.007
         },
         {
-          "t": 223,
+          "t": 224,
+          "luminance": 0.007
+        },
+        {
+          "t": 241,
+          "luminance": 0.007
+        },
+        {
+          "t": 257,
+          "luminance": 0.007
+        },
+        {
+          "t": 274,
+          "luminance": 0.007
+        },
+        {
+          "t": 291,
+          "luminance": 0.007
+        },
+        {
+          "t": 317,
+          "luminance": 0.007
+        },
+        {
+          "t": 324,
+          "luminance": 0.007
+        },
+        {
+          "t": 341,
+          "luminance": 0.007
+        },
+        {
+          "t": 357,
+          "luminance": 0.007
+        },
+        {
+          "t": 374,
+          "luminance": 0.007
+        },
+        {
+          "t": 391,
+          "luminance": 0.007
+        },
+        {
+          "t": 407,
+          "luminance": 0.007
+        },
+        {
+          "t": 424,
+          "luminance": 0.007
+        },
+        {
+          "t": 440,
+          "luminance": 0.007
+        },
+        {
+          "t": 457,
+          "luminance": 0.007
+        },
+        {
+          "t": 474,
+          "luminance": 0.007
+        },
+        {
+          "t": 491,
+          "luminance": 0.007
+        },
+        {
+          "t": 507,
+          "luminance": 0.007
+        },
+        {
+          "t": 523,
+          "luminance": 0.007
+        },
+        {
+          "t": 541,
+          "luminance": 0.007
+        },
+        {
+          "t": 556,
+          "luminance": 0.007
+        },
+        {
+          "t": 574,
+          "luminance": 0.007
+        },
+        {
+          "t": 591,
+          "luminance": 0.007
+        },
+        {
+          "t": 607,
+          "luminance": 0.007
+        },
+        {
+          "t": 624,
+          "luminance": 0.007
+        },
+        {
+          "t": 641,
+          "luminance": 0.007
+        },
+        {
+          "t": 657,
+          "luminance": 0.007
+        },
+        {
+          "t": 674,
+          "luminance": 0.007
+        },
+        {
+          "t": 691,
+          "luminance": 0.007
+        },
+        {
+          "t": 707,
+          "luminance": 0.007
+        },
+        {
+          "t": 724,
+          "luminance": 0.007
+        },
+        {
+          "t": 741,
+          "luminance": 0.007
+        },
+        {
+          "t": 757,
+          "luminance": 0.007
+        },
+        {
+          "t": 774,
+          "luminance": 0.007
+        },
+        {
+          "t": 791,
+          "luminance": 0.007
+        },
+        {
+          "t": 807,
+          "luminance": 0.007
+        }
+      ]
+    },
+    "systemLightOff": {
+      "settingsAt": 307,
+      "frames": [
+        {
+          "t": 9,
+          "luminance": 1
+        },
+        {
+          "t": 25,
+          "luminance": 1
+        },
+        {
+          "t": 41,
+          "luminance": 1
+        },
+        {
+          "t": 58,
+          "luminance": 1
+        },
+        {
+          "t": 74,
+          "luminance": 1
+        },
+        {
+          "t": 92,
+          "luminance": 1
+        },
+        {
+          "t": 107,
+          "luminance": 1
+        },
+        {
+          "t": 125,
+          "luminance": 1
+        },
+        {
+          "t": 142,
+          "luminance": 1
+        },
+        {
+          "t": 158,
+          "luminance": 1
+        },
+        {
+          "t": 175,
+          "luminance": 1
+        },
+        {
+          "t": 192,
+          "luminance": 1
+        },
+        {
+          "t": 207,
+          "luminance": 1
+        },
+        {
+          "t": 225,
+          "luminance": 1
+        },
+        {
+          "t": 242,
+          "luminance": 1
+        },
+        {
+          "t": 258,
+          "luminance": 1
+        },
+        {
+          "t": 275,
+          "luminance": 1
+        },
+        {
+          "t": 292,
+          "luminance": 1
+        },
+        {
+          "t": 310,
+          "luminance": 1
+        },
+        {
+          "t": 325,
+          "luminance": 1
+        },
+        {
+          "t": 342,
+          "luminance": 1
+        },
+        {
+          "t": 358,
+          "luminance": 1
+        },
+        {
+          "t": 375,
+          "luminance": 1
+        },
+        {
+          "t": 392,
+          "luminance": 1
+        },
+        {
+          "t": 408,
+          "luminance": 1
+        },
+        {
+          "t": 425,
+          "luminance": 1
+        },
+        {
+          "t": 442,
+          "luminance": 1
+        },
+        {
+          "t": 458,
+          "luminance": 1
+        },
+        {
+          "t": 475,
+          "luminance": 1
+        },
+        {
+          "t": 492,
+          "luminance": 1
+        },
+        {
+          "t": 509,
+          "luminance": 1
+        },
+        {
+          "t": 525,
+          "luminance": 1
+        },
+        {
+          "t": 542,
+          "luminance": 1
+        },
+        {
+          "t": 558,
+          "luminance": 1
+        },
+        {
+          "t": 575,
+          "luminance": 1
+        },
+        {
+          "t": 591,
+          "luminance": 1
+        },
+        {
+          "t": 608,
+          "luminance": 1
+        },
+        {
+          "t": 625,
+          "luminance": 1
+        },
+        {
+          "t": 642,
+          "luminance": 1
+        },
+        {
+          "t": 658,
+          "luminance": 1
+        },
+        {
+          "t": 675,
+          "luminance": 1
+        },
+        {
+          "t": 691,
+          "luminance": 1
+        },
+        {
+          "t": 708,
+          "luminance": 1
+        },
+        {
+          "t": 725,
+          "luminance": 1
+        },
+        {
+          "t": 742,
+          "luminance": 1
+        },
+        {
+          "t": 758,
+          "luminance": 1
+        },
+        {
+          "t": 775,
+          "luminance": 1
+        },
+        {
+          "t": 792,
+          "luminance": 1
+        },
+        {
+          "t": 808,
+          "luminance": 1
+        }
+      ]
+    },
+    "systemDarkOff": {
+      "settingsAt": 307,
+      "frameMs": 17,
+      "darkMs": 299,
+      "frames": [
+        {
+          "t": 11,
+          "luminance": 0.007
+        },
+        {
+          "t": 27,
+          "luminance": 0.007
+        },
+        {
+          "t": 43,
+          "luminance": 0.007
+        },
+        {
+          "t": 60,
+          "luminance": 0.007
+        },
+        {
+          "t": 77,
+          "luminance": 0.007
+        },
+        {
+          "t": 94,
+          "luminance": 0.007
+        },
+        {
+          "t": 110,
+          "luminance": 0.007
+        },
+        {
+          "t": 127,
+          "luminance": 0.007
+        },
+        {
+          "t": 143,
+          "luminance": 0.007
+        },
+        {
+          "t": 160,
+          "luminance": 0.007
+        },
+        {
+          "t": 177,
+          "luminance": 0.007
+        },
+        {
+          "t": 193,
+          "luminance": 0.007
+        },
+        {
+          "t": 210,
+          "luminance": 0.007
+        },
+        {
+          "t": 227,
+          "luminance": 0.007
+        },
+        {
+          "t": 243,
+          "luminance": 0.007
+        },
+        {
+          "t": 260,
+          "luminance": 0.007
+        },
+        {
+          "t": 277,
+          "luminance": 0.007
+        },
+        {
+          "t": 294,
+          "luminance": 0.007
+        },
+        {
+          "t": 310,
+          "luminance": 1
+        },
+        {
+          "t": 327,
+          "luminance": 1
+        },
+        {
+          "t": 344,
+          "luminance": 1
+        },
+        {
+          "t": 360,
+          "luminance": 1
+        },
+        {
+          "t": 377,
+          "luminance": 1
+        },
+        {
+          "t": 394,
+          "luminance": 1
+        },
+        {
+          "t": 410,
+          "luminance": 1
+        },
+        {
+          "t": 427,
+          "luminance": 1
+        },
+        {
+          "t": 444,
+          "luminance": 1
+        },
+        {
+          "t": 460,
+          "luminance": 1
+        },
+        {
+          "t": 477,
+          "luminance": 1
+        },
+        {
+          "t": 494,
+          "luminance": 1
+        },
+        {
+          "t": 510,
+          "luminance": 1
+        },
+        {
+          "t": 527,
+          "luminance": 1
+        },
+        {
+          "t": 544,
+          "luminance": 1
+        },
+        {
+          "t": 560,
+          "luminance": 1
+        },
+        {
+          "t": 577,
+          "luminance": 1
+        },
+        {
+          "t": 594,
+          "luminance": 1
+        },
+        {
+          "t": 610,
+          "luminance": 1
+        },
+        {
+          "t": 627,
+          "luminance": 1
+        },
+        {
+          "t": 644,
+          "luminance": 1
+        },
+        {
+          "t": 660,
+          "luminance": 1
+        },
+        {
+          "t": 677,
+          "luminance": 1
+        },
+        {
+          "t": 694,
+          "luminance": 1
+        },
+        {
+          "t": 710,
+          "luminance": 1
+        },
+        {
+          "t": 727,
+          "luminance": 1
+        },
+        {
+          "t": 743,
+          "luminance": 1
+        },
+        {
+          "t": 760,
+          "luminance": 1
+        },
+        {
+          "t": 777,
+          "luminance": 1
+        },
+        {
+          "t": 794,
+          "luminance": 1
+        },
+        {
+          "t": 810,
+          "luminance": 1
+        }
+      ]
+    }
+  },
+  "already-dark": {
+    "systemDarkAlways": {
+      "baselineFirst": {
+        "t": 13,
+        "root": "rgb(18, 20, 24)",
+        "scheme": "normal",
+        "bodyChildren": 2,
+        "rgb": [
+          18,
+          20,
+          24
+        ],
+        "luminance": 0.007
+      },
+      "settingsAt": 307,
+      "frames": [
+        {
+          "t": 9,
+          "luminance": 0.007
+        },
+        {
+          "t": 24,
+          "luminance": 0.007
+        },
+        {
+          "t": 41,
+          "luminance": 0.007
+        },
+        {
+          "t": 58,
+          "luminance": 0.007
+        },
+        {
+          "t": 74,
+          "luminance": 0.007
+        },
+        {
+          "t": 91,
+          "luminance": 0.007
+        },
+        {
+          "t": 108,
+          "luminance": 0.007
+        },
+        {
+          "t": 124,
+          "luminance": 0.007
+        },
+        {
+          "t": 141,
+          "luminance": 0.007
+        },
+        {
+          "t": 158,
+          "luminance": 0.007
+        },
+        {
+          "t": 174,
+          "luminance": 0.007
+        },
+        {
+          "t": 191,
+          "luminance": 0.007
+        },
+        {
+          "t": 208,
+          "luminance": 0.007
+        },
+        {
+          "t": 224,
           "luminance": 0.007
         },
         {
@@ -84,7 +707,7 @@
           "luminance": 0.007
         },
         {
-          "t": 308,
+          "t": 316,
           "luminance": 0.007
         },
         {
@@ -116,7 +739,7 @@
           "luminance": 0.007
         },
         {
-          "t": 441,
+          "t": 442,
           "luminance": 0.007
         },
         {
@@ -136,7 +759,7 @@
           "luminance": 0.007
         },
         {
-          "t": 523,
+          "t": 524,
           "luminance": 0.007
         },
         {
@@ -144,11 +767,11 @@
           "luminance": 0.007
         },
         {
-          "t": 557,
+          "t": 558,
           "luminance": 0.007
         },
         {
-          "t": 574,
+          "t": 575,
           "luminance": 0.007
         },
         {
@@ -164,7 +787,7 @@
           "luminance": 0.007
         },
         {
-          "t": 640,
+          "t": 641,
           "luminance": 0.007
         },
         {
@@ -172,11 +795,11 @@
           "luminance": 0.007
         },
         {
-          "t": 674,
+          "t": 675,
           "luminance": 0.007
         },
         {
-          "t": 690,
+          "t": 691,
           "luminance": 0.007
         },
         {
@@ -184,7 +807,7 @@
           "luminance": 0.007
         },
         {
-          "t": 723,
+          "t": 724,
           "luminance": 0.007
         },
         {
@@ -200,296 +823,505 @@
           "luminance": 0.007
         },
         {
-          "t": 790,
+          "t": 791,
           "luminance": 0.007
         },
         {
-          "t": 807,
-          "luminance": 0.007
-        },
-        {
-          "t": 824,
+          "t": 808,
           "luminance": 0.007
         }
       ]
     },
     "systemLightOff": {
-      "settingsAt": 310,
+      "settingsAt": 306,
       "frames": [
         {
-          "t": 13,
-          "luminance": 1
+          "t": 9,
+          "luminance": 0.007
         },
         {
-          "t": 26,
-          "luminance": 1
+          "t": 25,
+          "luminance": 0.007
         },
         {
-          "t": 44,
-          "luminance": 1
+          "t": 42,
+          "luminance": 0.007
         },
         {
-          "t": 61,
-          "luminance": 1
+          "t": 59,
+          "luminance": 0.007
         },
         {
-          "t": 76,
-          "luminance": 1
+          "t": 75,
+          "luminance": 0.007
         },
         {
-          "t": 93,
-          "luminance": 1
+          "t": 92,
+          "luminance": 0.007
         },
         {
-          "t": 111,
-          "luminance": 1
+          "t": 109,
+          "luminance": 0.007
         },
         {
-          "t": 127,
-          "luminance": 1
+          "t": 125,
+          "luminance": 0.007
         },
         {
-          "t": 144,
-          "luminance": 1
+          "t": 142,
+          "luminance": 0.007
         },
         {
-          "t": 160,
-          "luminance": 1
+          "t": 159,
+          "luminance": 0.007
         },
         {
-          "t": 177,
-          "luminance": 1
+          "t": 175,
+          "luminance": 0.007
         },
         {
-          "t": 193,
-          "luminance": 1
+          "t": 192,
+          "luminance": 0.007
         },
         {
-          "t": 211,
-          "luminance": 1
+          "t": 209,
+          "luminance": 0.007
         },
         {
-          "t": 226,
-          "luminance": 1
+          "t": 225,
+          "luminance": 0.007
         },
         {
-          "t": 244,
-          "luminance": 1
+          "t": 242,
+          "luminance": 0.007
         },
         {
-          "t": 260,
-          "luminance": 1
+          "t": 259,
+          "luminance": 0.007
         },
         {
-          "t": 277,
-          "luminance": 1
+          "t": 275,
+          "luminance": 0.007
         },
         {
-          "t": 294,
-          "luminance": 1
+          "t": 292,
+          "luminance": 0.007
         },
         {
-          "t": 312,
-          "luminance": 1
+          "t": 309,
+          "luminance": 0.007
         },
         {
-          "t": 327,
-          "luminance": 1
+          "t": 326,
+          "luminance": 0.007
         },
         {
-          "t": 344,
-          "luminance": 1
+          "t": 342,
+          "luminance": 0.007
         },
         {
-          "t": 361,
-          "luminance": 1
+          "t": 359,
+          "luminance": 0.007
         },
         {
-          "t": 376,
-          "luminance": 1
+          "t": 375,
+          "luminance": 0.007
         },
         {
-          "t": 394,
-          "luminance": 1
+          "t": 392,
+          "luminance": 0.007
         },
         {
-          "t": 410,
-          "luminance": 1
+          "t": 409,
+          "luminance": 0.007
         },
         {
           "t": 426,
-          "luminance": 1
+          "luminance": 0.007
         },
         {
-          "t": 443,
-          "luminance": 1
+          "t": 441,
+          "luminance": 0.007
         },
         {
-          "t": 461,
-          "luminance": 1
+          "t": 458,
+          "luminance": 0.007
         },
         {
-          "t": 477,
-          "luminance": 1
+          "t": 476,
+          "luminance": 0.007
         },
         {
-          "t": 494,
-          "luminance": 1
+          "t": 492,
+          "luminance": 0.007
         },
         {
-          "t": 510,
-          "luminance": 1
+          "t": 509,
+          "luminance": 0.007
         },
         {
-          "t": 527,
-          "luminance": 1
+          "t": 526,
+          "luminance": 0.007
         },
         {
-          "t": 543,
-          "luminance": 1
+          "t": 541,
+          "luminance": 0.007
         },
         {
-          "t": 561,
-          "luminance": 1
+          "t": 559,
+          "luminance": 0.007
         },
         {
-          "t": 577,
-          "luminance": 1
+          "t": 575,
+          "luminance": 0.007
         },
         {
-          "t": 594,
-          "luminance": 1
+          "t": 592,
+          "luminance": 0.007
         },
         {
-          "t": 610,
-          "luminance": 1
+          "t": 608,
+          "luminance": 0.007
         },
         {
           "t": 626,
-          "luminance": 1
+          "luminance": 0.007
         },
         {
-          "t": 644,
-          "luminance": 1
+          "t": 642,
+          "luminance": 0.007
         },
         {
-          "t": 660,
-          "luminance": 1
+          "t": 659,
+          "luminance": 0.007
         },
         {
-          "t": 677,
-          "luminance": 1
+          "t": 676,
+          "luminance": 0.007
         },
         {
-          "t": 694,
-          "luminance": 1
+          "t": 692,
+          "luminance": 0.007
         },
         {
-          "t": 711,
-          "luminance": 1
+          "t": 708,
+          "luminance": 0.007
         },
         {
-          "t": 726,
-          "luminance": 1
+          "t": 725,
+          "luminance": 0.007
         },
         {
-          "t": 744,
-          "luminance": 1
+          "t": 742,
+          "luminance": 0.007
         },
         {
-          "t": 760,
-          "luminance": 1
+          "t": 759,
+          "luminance": 0.007
         },
         {
-          "t": 777,
-          "luminance": 1
+          "t": 775,
+          "luminance": 0.007
         },
         {
-          "t": 794,
-          "luminance": 1
+          "t": 792,
+          "luminance": 0.007
         },
         {
-          "t": 811,
-          "luminance": 1
+          "t": 809,
+          "luminance": 0.007
         }
       ]
-    },
-    "systemDarkOff": {
-      "settingsAt": 311,
-      "frameMs": 17,
-      "darkMs": 303,
+    }
+  },
+  "inline": {
+    "systemDarkAlways": {
+      "baselineFirst": {
+        "t": 5,
+        "root": "rgba(0, 0, 0, 0)",
+        "scheme": "normal",
+        "bodyChildren": 7,
+        "rgb": [
+          255,
+          255,
+          255
+        ],
+        "luminance": 1
+      },
+      "settingsAt": 305,
       "frames": [
         {
           "t": 15,
           "luminance": 0.007
         },
         {
-          "t": 35,
+          "t": 31,
           "luminance": 0.007
+        },
+        {
+          "t": 48,
+          "luminance": 0.007
+        },
+        {
+          "t": 65,
+          "luminance": 0.007
+        },
+        {
+          "t": 81,
+          "luminance": 0.007
+        },
+        {
+          "t": 98,
+          "luminance": 0.007
+        },
+        {
+          "t": 115,
+          "luminance": 0.007
+        },
+        {
+          "t": 131,
+          "luminance": 0.007
+        },
+        {
+          "t": 148,
+          "luminance": 0.007
+        },
+        {
+          "t": 164,
+          "luminance": 0.007
+        },
+        {
+          "t": 181,
+          "luminance": 0.007
+        },
+        {
+          "t": 197,
+          "luminance": 0.007
+        },
+        {
+          "t": 215,
+          "luminance": 0.007
+        },
+        {
+          "t": 231,
+          "luminance": 0.007
+        },
+        {
+          "t": 247,
+          "luminance": 0.007
+        },
+        {
+          "t": 264,
+          "luminance": 0.007
+        },
+        {
+          "t": 280,
+          "luminance": 0.007
+        },
+        {
+          "t": 297,
+          "luminance": 0.007
+        },
+        {
+          "t": 317,
+          "luminance": 0.007
+        },
+        {
+          "t": 331,
+          "luminance": 0.007
+        },
+        {
+          "t": 348,
+          "luminance": 0.007
+        },
+        {
+          "t": 365,
+          "luminance": 0.007
+        },
+        {
+          "t": 381,
+          "luminance": 0.007
+        },
+        {
+          "t": 398,
+          "luminance": 0.007
+        },
+        {
+          "t": 414,
+          "luminance": 0.007
+        },
+        {
+          "t": 431,
+          "luminance": 0.007
+        },
+        {
+          "t": 448,
+          "luminance": 0.007
+        },
+        {
+          "t": 465,
+          "luminance": 0.007
+        },
+        {
+          "t": 481,
+          "luminance": 0.007
+        },
+        {
+          "t": 498,
+          "luminance": 0.007
+        },
+        {
+          "t": 515,
+          "luminance": 0.007
+        },
+        {
+          "t": 531,
+          "luminance": 0.007
+        },
+        {
+          "t": 548,
+          "luminance": 0.007
+        },
+        {
+          "t": 565,
+          "luminance": 0.007
+        },
+        {
+          "t": 581,
+          "luminance": 0.007
+        },
+        {
+          "t": 598,
+          "luminance": 0.007
+        },
+        {
+          "t": 615,
+          "luminance": 0.007
+        },
+        {
+          "t": 631,
+          "luminance": 0.007
+        },
+        {
+          "t": 648,
+          "luminance": 0.007
+        },
+        {
+          "t": 664,
+          "luminance": 0.007
+        },
+        {
+          "t": 681,
+          "luminance": 0.007
+        },
+        {
+          "t": 698,
+          "luminance": 0.007
+        },
+        {
+          "t": 715,
+          "luminance": 0.007
+        },
+        {
+          "t": 731,
+          "luminance": 0.007
+        },
+        {
+          "t": 748,
+          "luminance": 0.007
+        },
+        {
+          "t": 765,
+          "luminance": 0.007
+        },
+        {
+          "t": 781,
+          "luminance": 0.007
+        },
+        {
+          "t": 798,
+          "luminance": 0.007
+        }
+      ]
+    },
+    "systemLightOff": {
+      "settingsAt": 309,
+      "frames": [
+        {
+          "t": 11,
+          "luminance": 1
+        },
+        {
+          "t": 18,
+          "luminance": 1
+        },
+        {
+          "t": 35,
+          "luminance": 1
         },
         {
           "t": 51,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 68,
-          "luminance": 0.007
+          "t": 67,
+          "luminance": 1
         },
         {
           "t": 84,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 101,
-          "luminance": 0.007
+          "t": 100,
+          "luminance": 1
         },
         {
-          "t": 118,
-          "luminance": 0.007
+          "t": 117,
+          "luminance": 1
         },
         {
           "t": 135,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 151,
-          "luminance": 0.007
+          "t": 150,
+          "luminance": 1
         },
         {
           "t": 168,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 184,
-          "luminance": 0.007
+          "t": 185,
+          "luminance": 1
         },
         {
           "t": 201,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
           "t": 218,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 235,
-          "luminance": 0.007
+          "t": 234,
+          "luminance": 1
         },
         {
-          "t": 252,
-          "luminance": 0.007
+          "t": 251,
+          "luminance": 1
         },
         {
           "t": 268,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
           "t": 284,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 302,
-          "luminance": 0.007
+          "t": 301,
+          "luminance": 1
         },
         {
           "t": 318,
@@ -508,11 +1340,11 @@
           "luminance": 1
         },
         {
-          "t": 385,
+          "t": 384,
           "luminance": 1
         },
         {
-          "t": 402,
+          "t": 401,
           "luminance": 1
         },
         {
@@ -524,7 +1356,7 @@
           "luminance": 1
         },
         {
-          "t": 452,
+          "t": 450,
           "luminance": 1
         },
         {
@@ -532,7 +1364,7 @@
           "luminance": 1
         },
         {
-          "t": 485,
+          "t": 484,
           "luminance": 1
         },
         {
@@ -544,15 +1376,15 @@
           "luminance": 1
         },
         {
-          "t": 534,
+          "t": 535,
           "luminance": 1
         },
         {
-          "t": 552,
+          "t": 551,
           "luminance": 1
         },
         {
-          "t": 567,
+          "t": 568,
           "luminance": 1
         },
         {
@@ -576,15 +1408,15 @@
           "luminance": 1
         },
         {
-          "t": 668,
+          "t": 667,
           "luminance": 1
         },
         {
-          "t": 685,
+          "t": 684,
           "luminance": 1
         },
         {
-          "t": 702,
+          "t": 701,
           "luminance": 1
         },
         {
@@ -592,7 +1424,7 @@
           "luminance": 1
         },
         {
-          "t": 735,
+          "t": 734,
           "luminance": 1
         },
         {
@@ -604,239 +1436,26 @@
           "luminance": 1
         },
         {
-          "t": 785,
+          "t": 784,
           "luminance": 1
-        },
-        {
-          "t": 802,
-          "luminance": 1
-        }
-      ]
-    }
-  },
-  "already-dark": {
-    "systemDarkAlways": {
-      "baselineFirst": {
-        "t": 14,
-        "root": "rgb(18, 20, 24)",
-        "scheme": "normal",
-        "bodyChildren": 2,
-        "rgb": [
-          18,
-          20,
-          24
-        ],
-        "luminance": 0.007
-      },
-      "settingsAt": 309,
-      "frames": [
-        {
-          "t": 13,
-          "luminance": 0.007
-        },
-        {
-          "t": 18,
-          "luminance": 0.007
-        },
-        {
-          "t": 34,
-          "luminance": 0.007
-        },
-        {
-          "t": 52,
-          "luminance": 0.007
-        },
-        {
-          "t": 68,
-          "luminance": 0.007
-        },
-        {
-          "t": 85,
-          "luminance": 0.007
-        },
-        {
-          "t": 101,
-          "luminance": 0.007
-        },
-        {
-          "t": 118,
-          "luminance": 0.007
-        },
-        {
-          "t": 134,
-          "luminance": 0.007
-        },
-        {
-          "t": 152,
-          "luminance": 0.007
-        },
-        {
-          "t": 168,
-          "luminance": 0.007
-        },
-        {
-          "t": 185,
-          "luminance": 0.007
-        },
-        {
-          "t": 201,
-          "luminance": 0.007
-        },
-        {
-          "t": 218,
-          "luminance": 0.007
-        },
-        {
-          "t": 234,
-          "luminance": 0.007
-        },
-        {
-          "t": 252,
-          "luminance": 0.007
-        },
-        {
-          "t": 268,
-          "luminance": 0.007
-        },
-        {
-          "t": 285,
-          "luminance": 0.007
-        },
-        {
-          "t": 302,
-          "luminance": 0.007
-        },
-        {
-          "t": 318,
-          "luminance": 0.007
-        },
-        {
-          "t": 335,
-          "luminance": 0.007
-        },
-        {
-          "t": 352,
-          "luminance": 0.007
-        },
-        {
-          "t": 368,
-          "luminance": 0.007
-        },
-        {
-          "t": 384,
-          "luminance": 0.007
-        },
-        {
-          "t": 402,
-          "luminance": 0.007
-        },
-        {
-          "t": 418,
-          "luminance": 0.007
-        },
-        {
-          "t": 435,
-          "luminance": 0.007
-        },
-        {
-          "t": 452,
-          "luminance": 0.007
-        },
-        {
-          "t": 468,
-          "luminance": 0.007
-        },
-        {
-          "t": 485,
-          "luminance": 0.007
-        },
-        {
-          "t": 502,
-          "luminance": 0.007
-        },
-        {
-          "t": 518,
-          "luminance": 0.007
-        },
-        {
-          "t": 535,
-          "luminance": 0.007
-        },
-        {
-          "t": 551,
-          "luminance": 0.007
-        },
-        {
-          "t": 568,
-          "luminance": 0.007
-        },
-        {
-          "t": 584,
-          "luminance": 0.007
-        },
-        {
-          "t": 601,
-          "luminance": 0.007
-        },
-        {
-          "t": 618,
-          "luminance": 0.007
-        },
-        {
-          "t": 634,
-          "luminance": 0.007
-        },
-        {
-          "t": 651,
-          "luminance": 0.007
-        },
-        {
-          "t": 668,
-          "luminance": 0.007
-        },
-        {
-          "t": 684,
-          "luminance": 0.007
-        },
-        {
-          "t": 701,
-          "luminance": 0.007
-        },
-        {
-          "t": 718,
-          "luminance": 0.007
-        },
-        {
-          "t": 734,
-          "luminance": 0.007
-        },
-        {
-          "t": 752,
-          "luminance": 0.007
-        },
-        {
-          "t": 768,
-          "luminance": 0.007
-        },
-        {
-          "t": 785,
-          "luminance": 0.007
         },
         {
           "t": 801,
-          "luminance": 0.007
+          "luminance": 1
         }
       ]
     },
-    "systemLightOff": {
-      "settingsAt": 308,
+    "systemDarkOff": {
+      "settingsAt": 307,
+      "frameMs": 17,
+      "darkMs": 301,
       "frames": [
         {
-          "t": 12,
+          "t": 9,
           "luminance": 0.007
         },
         {
-          "t": 26,
+          "t": 25,
           "luminance": 0.007
         },
         {
@@ -844,7 +1463,7 @@
           "luminance": 0.007
         },
         {
-          "t": 59,
+          "t": 58,
           "luminance": 0.007
         },
         {
@@ -856,7 +1475,7 @@
           "luminance": 0.007
         },
         {
-          "t": 110,
+          "t": 108,
           "luminance": 0.007
         },
         {
@@ -864,23 +1483,23 @@
           "luminance": 0.007
         },
         {
-          "t": 143,
+          "t": 142,
           "luminance": 0.007
         },
         {
-          "t": 159,
+          "t": 158,
           "luminance": 0.007
         },
         {
-          "t": 175,
+          "t": 174,
           "luminance": 0.007
         },
         {
-          "t": 193,
+          "t": 192,
           "luminance": 0.007
         },
         {
-          "t": 210,
+          "t": 209,
           "luminance": 0.007
         },
         {
@@ -888,15 +1507,15 @@
           "luminance": 0.007
         },
         {
-          "t": 243,
+          "t": 242,
           "luminance": 0.007
         },
         {
-          "t": 260,
+          "t": 259,
           "luminance": 0.007
         },
         {
-          "t": 276,
+          "t": 275,
           "luminance": 0.007
         },
         {
@@ -905,138 +1524,138 @@
         },
         {
           "t": 310,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 326,
-          "luminance": 0.007
+          "t": 325,
+          "luminance": 1
         },
         {
-          "t": 343,
-          "luminance": 0.007
+          "t": 342,
+          "luminance": 1
         },
         {
-          "t": 360,
-          "luminance": 0.007
+          "t": 358,
+          "luminance": 1
         },
         {
-          "t": 376,
-          "luminance": 0.007
+          "t": 375,
+          "luminance": 1
         },
         {
-          "t": 393,
-          "luminance": 0.007
+          "t": 392,
+          "luminance": 1
         },
         {
-          "t": 409,
-          "luminance": 0.007
+          "t": 408,
+          "luminance": 1
         },
         {
-          "t": 426,
-          "luminance": 0.007
+          "t": 425,
+          "luminance": 1
         },
         {
           "t": 442,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 460,
-          "luminance": 0.007
+          "t": 459,
+          "luminance": 1
         },
         {
-          "t": 476,
-          "luminance": 0.007
+          "t": 475,
+          "luminance": 1
         },
         {
-          "t": 493,
-          "luminance": 0.007
+          "t": 492,
+          "luminance": 1
         },
         {
           "t": 509,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 526,
-          "luminance": 0.007
+          "t": 525,
+          "luminance": 1
         },
         {
-          "t": 543,
-          "luminance": 0.007
+          "t": 542,
+          "luminance": 1
         },
         {
           "t": 559,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 576,
-          "luminance": 0.007
+          "t": 575,
+          "luminance": 1
         },
         {
           "t": 592,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 609,
-          "luminance": 0.007
+          "t": 608,
+          "luminance": 1
         },
         {
-          "t": 626,
-          "luminance": 0.007
+          "t": 625,
+          "luminance": 1
         },
         {
-          "t": 643,
-          "luminance": 0.007
+          "t": 642,
+          "luminance": 1
         },
         {
-          "t": 660,
-          "luminance": 0.007
+          "t": 658,
+          "luminance": 1
         },
         {
-          "t": 676,
-          "luminance": 0.007
+          "t": 675,
+          "luminance": 1
         },
         {
           "t": 692,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 709,
-          "luminance": 0.007
+          "t": 708,
+          "luminance": 1
         },
         {
-          "t": 726,
-          "luminance": 0.007
+          "t": 725,
+          "luminance": 1
         },
         {
           "t": 742,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 760,
-          "luminance": 0.007
+          "t": 758,
+          "luminance": 1
         },
         {
-          "t": 776,
-          "luminance": 0.007
+          "t": 775,
+          "luminance": 1
         },
         {
-          "t": 793,
-          "luminance": 0.007
+          "t": 792,
+          "luminance": 1
         },
         {
-          "t": 810,
-          "luminance": 0.007
+          "t": 809,
+          "luminance": 1
         }
       ]
     }
   },
-  "inline": {
+  "spa": {
     "systemDarkAlways": {
       "baselineFirst": {
-        "t": 12,
+        "t": 9,
         "root": "rgba(0, 0, 0, 0)",
         "scheme": "normal",
-        "bodyChildren": 7,
+        "bodyChildren": 2,
         "rgb": [
           255,
           255,
@@ -1044,414 +1663,406 @@
         ],
         "luminance": 1
       },
-      "settingsAt": 310,
+      "settingsAt": 306,
       "frames": [
         {
           "t": 13,
           "luminance": 0.007
         },
         {
-          "t": 22,
+          "t": 29,
           "luminance": 0.007
         },
         {
-          "t": 39,
+          "t": 47,
           "luminance": 0.007
         },
         {
-          "t": 55,
+          "t": 63,
           "luminance": 0.007
         },
         {
-          "t": 72,
+          "t": 80,
           "luminance": 0.007
         },
         {
-          "t": 88,
+          "t": 96,
           "luminance": 0.007
         },
         {
-          "t": 104,
+          "t": 113,
           "luminance": 0.007
         },
         {
-          "t": 122,
+          "t": 130,
           "luminance": 0.007
         },
         {
-          "t": 138,
+          "t": 146,
           "luminance": 0.007
         },
         {
-          "t": 155,
+          "t": 162,
           "luminance": 0.007
         },
         {
-          "t": 172,
+          "t": 179,
           "luminance": 0.007
         },
         {
-          "t": 188,
+          "t": 196,
           "luminance": 0.007
         },
         {
-          "t": 205,
+          "t": 213,
           "luminance": 0.007
         },
         {
-          "t": 222,
+          "t": 230,
           "luminance": 0.007
         },
         {
-          "t": 238,
+          "t": 246,
           "luminance": 0.007
         },
         {
-          "t": 254,
+          "t": 263,
           "luminance": 0.007
         },
         {
-          "t": 272,
+          "t": 279,
           "luminance": 0.007
         },
         {
-          "t": 288,
+          "t": 297,
           "luminance": 0.007
         },
         {
-          "t": 305,
+          "t": 319,
           "luminance": 0.007
         },
         {
-          "t": 322,
+          "t": 329,
           "luminance": 0.007
         },
         {
-          "t": 339,
+          "t": 346,
           "luminance": 0.007
         },
         {
-          "t": 354,
+          "t": 363,
           "luminance": 0.007
         },
         {
-          "t": 371,
+          "t": 380,
           "luminance": 0.007
         },
         {
-          "t": 388,
+          "t": 397,
           "luminance": 0.007
         },
         {
-          "t": 404,
+          "t": 413,
           "luminance": 0.007
         },
         {
-          "t": 422,
+          "t": 430,
           "luminance": 0.007
         },
         {
-          "t": 438,
+          "t": 447,
           "luminance": 0.007
         },
         {
-          "t": 455,
+          "t": 463,
           "luminance": 0.007
         },
         {
-          "t": 472,
+          "t": 480,
           "luminance": 0.007
         },
         {
-          "t": 488,
+          "t": 497,
           "luminance": 0.007
         },
         {
-          "t": 505,
+          "t": 513,
           "luminance": 0.007
         },
         {
-          "t": 521,
+          "t": 530,
           "luminance": 0.007
         },
         {
-          "t": 538,
+          "t": 547,
           "luminance": 0.007
         },
         {
-          "t": 555,
+          "t": 562,
           "luminance": 0.007
         },
         {
-          "t": 571,
+          "t": 580,
           "luminance": 0.007
         },
         {
-          "t": 589,
+          "t": 597,
           "luminance": 0.007
         },
         {
-          "t": 605,
+          "t": 613,
           "luminance": 0.007
         },
         {
-          "t": 621,
+          "t": 630,
           "luminance": 0.007
         },
         {
-          "t": 638,
+          "t": 646,
           "luminance": 0.007
         },
         {
-          "t": 655,
+          "t": 663,
           "luminance": 0.007
         },
         {
-          "t": 671,
+          "t": 680,
           "luminance": 0.007
         },
         {
-          "t": 688,
+          "t": 697,
           "luminance": 0.007
         },
         {
-          "t": 705,
+          "t": 713,
           "luminance": 0.007
         },
         {
-          "t": 721,
+          "t": 730,
           "luminance": 0.007
         },
         {
-          "t": 738,
+          "t": 747,
           "luminance": 0.007
         },
         {
-          "t": 754,
+          "t": 763,
           "luminance": 0.007
         },
         {
-          "t": 771,
+          "t": 780,
           "luminance": 0.007
         },
         {
-          "t": 788,
-          "luminance": 0.007
-        },
-        {
-          "t": 805,
+          "t": 797,
           "luminance": 0.007
         }
       ]
     },
     "systemLightOff": {
-      "settingsAt": 312,
+      "settingsAt": 307,
       "frames": [
         {
-          "t": 16,
+          "t": 11,
           "luminance": 1
         },
         {
-          "t": 34,
+          "t": 28,
           "luminance": 1
         },
         {
-          "t": 51,
+          "t": 45,
           "luminance": 1
         },
         {
-          "t": 67,
+          "t": 61,
           "luminance": 1
         },
         {
-          "t": 85,
+          "t": 78,
           "luminance": 1
         },
         {
-          "t": 101,
+          "t": 95,
           "luminance": 1
         },
         {
-          "t": 117,
+          "t": 111,
           "luminance": 1
         },
         {
-          "t": 134,
+          "t": 128,
           "luminance": 1
         },
         {
-          "t": 151,
+          "t": 145,
           "luminance": 1
         },
         {
-          "t": 168,
+          "t": 161,
           "luminance": 1
         },
         {
-          "t": 184,
+          "t": 178,
           "luminance": 1
         },
         {
-          "t": 201,
+          "t": 195,
           "luminance": 1
         },
         {
-          "t": 217,
+          "t": 211,
           "luminance": 1
         },
         {
-          "t": 234,
+          "t": 228,
           "luminance": 1
         },
         {
-          "t": 251,
+          "t": 244,
           "luminance": 1
         },
         {
-          "t": 267,
+          "t": 261,
           "luminance": 1
         },
         {
-          "t": 284,
+          "t": 278,
           "luminance": 1
         },
         {
-          "t": 301,
+          "t": 294,
           "luminance": 1
         },
         {
-          "t": 318,
+          "t": 311,
           "luminance": 1
         },
         {
-          "t": 335,
+          "t": 328,
           "luminance": 1
         },
         {
-          "t": 351,
+          "t": 345,
           "luminance": 1
         },
         {
-          "t": 368,
+          "t": 361,
           "luminance": 1
         },
         {
-          "t": 385,
+          "t": 377,
           "luminance": 1
         },
         {
-          "t": 400,
+          "t": 394,
           "luminance": 1
         },
         {
-          "t": 418,
+          "t": 411,
           "luminance": 1
         },
         {
-          "t": 435,
+          "t": 428,
           "luminance": 1
         },
         {
-          "t": 451,
+          "t": 445,
           "luminance": 1
         },
         {
-          "t": 467,
+          "t": 461,
           "luminance": 1
         },
         {
-          "t": 485,
+          "t": 478,
           "luminance": 1
         },
         {
-          "t": 501,
+          "t": 495,
           "luminance": 1
         },
         {
-          "t": 518,
+          "t": 511,
           "luminance": 1
         },
         {
-          "t": 534,
+          "t": 528,
           "luminance": 1
         },
         {
-          "t": 551,
+          "t": 545,
           "luminance": 1
         },
         {
-          "t": 568,
+          "t": 561,
           "luminance": 1
         },
         {
-          "t": 585,
+          "t": 578,
           "luminance": 1
         },
         {
-          "t": 601,
+          "t": 595,
           "luminance": 1
         },
         {
-          "t": 618,
+          "t": 612,
           "luminance": 1
         },
         {
-          "t": 634,
+          "t": 628,
           "luminance": 1
         },
         {
-          "t": 651,
+          "t": 645,
           "luminance": 1
         },
         {
-          "t": 668,
+          "t": 660,
           "luminance": 1
         },
         {
-          "t": 685,
+          "t": 678,
           "luminance": 1
         },
         {
-          "t": 700,
+          "t": 695,
           "luminance": 1
         },
         {
-          "t": 718,
+          "t": 711,
           "luminance": 1
         },
         {
-          "t": 734,
+          "t": 728,
           "luminance": 1
         },
         {
-          "t": 751,
+          "t": 744,
           "luminance": 1
         },
         {
-          "t": 767,
+          "t": 761,
           "luminance": 1
         },
         {
-          "t": 784,
+          "t": 778,
           "luminance": 1
         },
         {
-          "t": 800,
-          "luminance": 1
-        },
-        {
-          "t": 817,
+          "t": 794,
           "luminance": 1
         }
       ]
     },
     "systemDarkOff": {
-      "settingsAt": 308,
+      "settingsAt": 306,
       "frameMs": 17,
-      "darkMs": 313,
+      "darkMs": 302,
       "frames": [
         {
-          "t": 10,
+          "t": 8,
           "luminance": 0.007
         },
         {
@@ -1467,7 +2078,7 @@
           "luminance": 0.007
         },
         {
-          "t": 74,
+          "t": 73,
           "luminance": 0.007
         },
         {
@@ -1475,11 +2086,11 @@
           "luminance": 0.007
         },
         {
-          "t": 106,
+          "t": 107,
           "luminance": 0.007
         },
         {
-          "t": 123,
+          "t": 124,
           "luminance": 0.007
         },
         {
@@ -1523,15 +2134,15 @@
           "luminance": 0.007
         },
         {
-          "t": 306,
-          "luminance": 0.007
+          "t": 310,
+          "luminance": 1
         },
         {
           "t": 323,
           "luminance": 1
         },
         {
-          "t": 341,
+          "t": 340,
           "luminance": 1
         },
         {
@@ -1539,15 +2150,15 @@
           "luminance": 1
         },
         {
-          "t": 373,
+          "t": 374,
           "luminance": 1
         },
         {
-          "t": 391,
+          "t": 390,
           "luminance": 1
         },
         {
-          "t": 407,
+          "t": 408,
           "luminance": 1
         },
         {
@@ -1571,2479 +2182,7 @@
           "luminance": 1
         },
         {
-          "t": 507,
-          "luminance": 1
-        },
-        {
-          "t": 524,
-          "luminance": 1
-        },
-        {
-          "t": 540,
-          "luminance": 1
-        },
-        {
-          "t": 557,
-          "luminance": 1
-        },
-        {
-          "t": 574,
-          "luminance": 1
-        },
-        {
-          "t": 590,
-          "luminance": 1
-        },
-        {
-          "t": 606,
-          "luminance": 1
-        },
-        {
-          "t": 623,
-          "luminance": 1
-        },
-        {
-          "t": 641,
-          "luminance": 1
-        },
-        {
-          "t": 656,
-          "luminance": 1
-        },
-        {
-          "t": 673,
-          "luminance": 1
-        },
-        {
-          "t": 690,
-          "luminance": 1
-        },
-        {
-          "t": 707,
-          "luminance": 1
-        },
-        {
-          "t": 724,
-          "luminance": 1
-        },
-        {
-          "t": 740,
-          "luminance": 1
-        },
-        {
-          "t": 757,
-          "luminance": 1
-        },
-        {
-          "t": 774,
-          "luminance": 1
-        },
-        {
-          "t": 790,
-          "luminance": 1
-        },
-        {
-          "t": 807,
-          "luminance": 1
-        },
-        {
-          "t": 824,
-          "luminance": 1
-        }
-      ]
-    }
-  },
-  "spa": {
-    "systemDarkAlways": {
-      "baselineFirst": {
-        "t": 11,
-        "root": "rgba(0, 0, 0, 0)",
-        "scheme": "normal",
-        "bodyChildren": 2,
-        "rgb": [
-          255,
-          255,
-          255
-        ],
-        "luminance": 1
-      },
-      "settingsAt": 310,
-      "frames": [
-        {
-          "t": 13,
-          "luminance": 0.007
-        },
-        {
-          "t": 27,
-          "luminance": 0.007
-        },
-        {
-          "t": 44,
-          "luminance": 0.007
-        },
-        {
-          "t": 60,
-          "luminance": 0.007
-        },
-        {
-          "t": 76,
-          "luminance": 0.007
-        },
-        {
-          "t": 94,
-          "luminance": 0.007
-        },
-        {
-          "t": 110,
-          "luminance": 0.007
-        },
-        {
-          "t": 127,
-          "luminance": 0.007
-        },
-        {
-          "t": 144,
-          "luminance": 0.007
-        },
-        {
-          "t": 161,
-          "luminance": 0.007
-        },
-        {
-          "t": 177,
-          "luminance": 0.007
-        },
-        {
-          "t": 194,
-          "luminance": 0.007
-        },
-        {
-          "t": 211,
-          "luminance": 0.007
-        },
-        {
-          "t": 227,
-          "luminance": 0.007
-        },
-        {
-          "t": 244,
-          "luminance": 0.007
-        },
-        {
-          "t": 261,
-          "luminance": 0.007
-        },
-        {
-          "t": 277,
-          "luminance": 0.007
-        },
-        {
-          "t": 293,
-          "luminance": 0.007
-        },
-        {
-          "t": 319,
-          "luminance": 0.007
-        },
-        {
-          "t": 326,
-          "luminance": 0.007
-        },
-        {
-          "t": 344,
-          "luminance": 0.007
-        },
-        {
-          "t": 361,
-          "luminance": 0.007
-        },
-        {
-          "t": 376,
-          "luminance": 0.007
-        },
-        {
-          "t": 394,
-          "luminance": 0.007
-        },
-        {
-          "t": 411,
-          "luminance": 0.007
-        },
-        {
-          "t": 426,
-          "luminance": 0.007
-        },
-        {
-          "t": 444,
-          "luminance": 0.007
-        },
-        {
-          "t": 461,
-          "luminance": 0.007
-        },
-        {
-          "t": 477,
-          "luminance": 0.007
-        },
-        {
-          "t": 493,
-          "luminance": 0.007
-        },
-        {
-          "t": 511,
-          "luminance": 0.007
-        },
-        {
-          "t": 527,
-          "luminance": 0.007
-        },
-        {
-          "t": 544,
-          "luminance": 0.007
-        },
-        {
-          "t": 560,
-          "luminance": 0.007
-        },
-        {
-          "t": 577,
-          "luminance": 0.007
-        },
-        {
-          "t": 594,
-          "luminance": 0.007
-        },
-        {
-          "t": 611,
-          "luminance": 0.007
-        },
-        {
-          "t": 626,
-          "luminance": 0.007
-        },
-        {
-          "t": 644,
-          "luminance": 0.007
-        },
-        {
-          "t": 660,
-          "luminance": 0.007
-        },
-        {
-          "t": 677,
-          "luminance": 0.007
-        },
-        {
-          "t": 694,
-          "luminance": 0.007
-        },
-        {
-          "t": 711,
-          "luminance": 0.007
-        },
-        {
-          "t": 727,
-          "luminance": 0.007
-        },
-        {
-          "t": 743,
-          "luminance": 0.007
-        },
-        {
-          "t": 760,
-          "luminance": 0.007
-        },
-        {
-          "t": 777,
-          "luminance": 0.007
-        },
-        {
-          "t": 794,
-          "luminance": 0.007
-        },
-        {
-          "t": 811,
-          "luminance": 0.007
-        }
-      ]
-    },
-    "systemLightOff": {
-      "settingsAt": 312,
-      "frames": [
-        {
-          "t": 13,
-          "luminance": 1
-        },
-        {
-          "t": 22,
-          "luminance": 1
-        },
-        {
-          "t": 39,
-          "luminance": 1
-        },
-        {
-          "t": 55,
-          "luminance": 1
-        },
-        {
-          "t": 71,
-          "luminance": 1
-        },
-        {
-          "t": 88,
-          "luminance": 1
-        },
-        {
-          "t": 104,
-          "luminance": 1
-        },
-        {
-          "t": 122,
-          "luminance": 1
-        },
-        {
-          "t": 139,
-          "luminance": 1
-        },
-        {
-          "t": 155,
-          "luminance": 1
-        },
-        {
-          "t": 172,
-          "luminance": 1
-        },
-        {
-          "t": 189,
-          "luminance": 1
-        },
-        {
-          "t": 205,
-          "luminance": 1
-        },
-        {
-          "t": 222,
-          "luminance": 1
-        },
-        {
-          "t": 239,
-          "luminance": 1
-        },
-        {
-          "t": 255,
-          "luminance": 1
-        },
-        {
-          "t": 272,
-          "luminance": 1
-        },
-        {
-          "t": 289,
-          "luminance": 1
-        },
-        {
-          "t": 306,
-          "luminance": 1
-        },
-        {
-          "t": 322,
-          "luminance": 1
-        },
-        {
-          "t": 338,
-          "luminance": 1
-        },
-        {
-          "t": 355,
-          "luminance": 1
-        },
-        {
-          "t": 372,
-          "luminance": 1
-        },
-        {
-          "t": 389,
-          "luminance": 1
-        },
-        {
-          "t": 405,
-          "luminance": 1
-        },
-        {
-          "t": 422,
-          "luminance": 1
-        },
-        {
-          "t": 439,
-          "luminance": 1
-        },
-        {
-          "t": 455,
-          "luminance": 1
-        },
-        {
-          "t": 472,
-          "luminance": 1
-        },
-        {
-          "t": 488,
-          "luminance": 1
-        },
-        {
-          "t": 505,
-          "luminance": 1
-        },
-        {
-          "t": 522,
-          "luminance": 1
-        },
-        {
-          "t": 539,
-          "luminance": 1
-        },
-        {
-          "t": 555,
-          "luminance": 1
-        },
-        {
-          "t": 572,
-          "luminance": 1
-        },
-        {
-          "t": 589,
-          "luminance": 1
-        },
-        {
-          "t": 606,
-          "luminance": 1
-        },
-        {
-          "t": 622,
-          "luminance": 1
-        },
-        {
-          "t": 639,
-          "luminance": 1
-        },
-        {
-          "t": 655,
-          "luminance": 1
-        },
-        {
-          "t": 672,
-          "luminance": 1
-        },
-        {
-          "t": 689,
-          "luminance": 1
-        },
-        {
-          "t": 706,
-          "luminance": 1
-        },
-        {
-          "t": 722,
-          "luminance": 1
-        },
-        {
-          "t": 739,
-          "luminance": 1
-        },
-        {
-          "t": 755,
-          "luminance": 1
-        },
-        {
-          "t": 772,
-          "luminance": 1
-        },
-        {
-          "t": 789,
-          "luminance": 1
-        },
-        {
-          "t": 806,
-          "luminance": 1
-        }
-      ]
-    },
-    "systemDarkOff": {
-      "settingsAt": 310,
-      "frameMs": 17,
-      "darkMs": 309,
-      "frames": [
-        {
-          "t": 13,
-          "luminance": 0.007
-        },
-        {
-          "t": 21,
-          "luminance": 0.007
-        },
-        {
-          "t": 38,
-          "luminance": 0.007
-        },
-        {
-          "t": 54,
-          "luminance": 0.007
-        },
-        {
-          "t": 71,
-          "luminance": 0.007
-        },
-        {
-          "t": 88,
-          "luminance": 0.007
-        },
-        {
-          "t": 105,
-          "luminance": 0.007
-        },
-        {
-          "t": 122,
-          "luminance": 0.007
-        },
-        {
-          "t": 138,
-          "luminance": 0.007
-        },
-        {
-          "t": 155,
-          "luminance": 0.007
-        },
-        {
-          "t": 171,
-          "luminance": 0.007
-        },
-        {
-          "t": 188,
-          "luminance": 0.007
-        },
-        {
-          "t": 204,
-          "luminance": 0.007
-        },
-        {
-          "t": 221,
-          "luminance": 0.007
-        },
-        {
-          "t": 238,
-          "luminance": 0.007
-        },
-        {
-          "t": 255,
-          "luminance": 0.007
-        },
-        {
-          "t": 272,
-          "luminance": 0.007
-        },
-        {
-          "t": 288,
-          "luminance": 0.007
-        },
-        {
-          "t": 305,
-          "luminance": 0.007
-        },
-        {
-          "t": 322,
-          "luminance": 1
-        },
-        {
-          "t": 338,
-          "luminance": 1
-        },
-        {
-          "t": 355,
-          "luminance": 1
-        },
-        {
-          "t": 372,
-          "luminance": 1
-        },
-        {
-          "t": 388,
-          "luminance": 1
-        },
-        {
-          "t": 404,
-          "luminance": 1
-        },
-        {
-          "t": 421,
-          "luminance": 1
-        },
-        {
-          "t": 438,
-          "luminance": 1
-        },
-        {
-          "t": 455,
-          "luminance": 1
-        },
-        {
-          "t": 471,
-          "luminance": 1
-        },
-        {
-          "t": 488,
-          "luminance": 1
-        },
-        {
-          "t": 505,
-          "luminance": 1
-        },
-        {
-          "t": 522,
-          "luminance": 1
-        },
-        {
-          "t": 537,
-          "luminance": 1
-        },
-        {
-          "t": 555,
-          "luminance": 1
-        },
-        {
-          "t": 572,
-          "luminance": 1
-        },
-        {
-          "t": 588,
-          "luminance": 1
-        },
-        {
-          "t": 605,
-          "luminance": 1
-        },
-        {
-          "t": 622,
-          "luminance": 1
-        },
-        {
-          "t": 638,
-          "luminance": 1
-        },
-        {
-          "t": 655,
-          "luminance": 1
-        },
-        {
-          "t": 671,
-          "luminance": 1
-        },
-        {
-          "t": 688,
-          "luminance": 1
-        },
-        {
-          "t": 704,
-          "luminance": 1
-        },
-        {
-          "t": 722,
-          "luminance": 1
-        },
-        {
-          "t": 737,
-          "luminance": 1
-        },
-        {
-          "t": 754,
-          "luminance": 1
-        },
-        {
-          "t": 771,
-          "luminance": 1
-        },
-        {
-          "t": 788,
-          "luminance": 1
-        },
-        {
-          "t": 805,
-          "luminance": 1
-        }
-      ]
-    }
-  },
-  "images": {
-    "systemDarkAlways": {
-      "baselineFirst": {
-        "t": 8,
-        "root": "rgba(0, 0, 0, 0)",
-        "scheme": "normal",
-        "bodyChildren": 2,
-        "rgb": [
-          255,
-          255,
-          255
-        ],
-        "luminance": 1
-      },
-      "settingsAt": 308,
-      "frames": [
-        {
-          "t": 12,
-          "luminance": 0.007
-        },
-        {
-          "t": 21,
-          "luminance": 0.007
-        },
-        {
-          "t": 38,
-          "luminance": 0.007
-        },
-        {
-          "t": 54,
-          "luminance": 0.007
-        },
-        {
-          "t": 72,
-          "luminance": 0.007
-        },
-        {
-          "t": 88,
-          "luminance": 0.007
-        },
-        {
-          "t": 105,
-          "luminance": 0.007
-        },
-        {
-          "t": 122,
-          "luminance": 0.007
-        },
-        {
-          "t": 138,
-          "luminance": 0.007
-        },
-        {
-          "t": 154,
-          "luminance": 0.007
-        },
-        {
-          "t": 171,
-          "luminance": 0.007
-        },
-        {
-          "t": 188,
-          "luminance": 0.007
-        },
-        {
-          "t": 205,
-          "luminance": 0.007
-        },
-        {
-          "t": 222,
-          "luminance": 0.007
-        },
-        {
-          "t": 238,
-          "luminance": 0.007
-        },
-        {
-          "t": 255,
-          "luminance": 0.007
-        },
-        {
-          "t": 272,
-          "luminance": 0.007
-        },
-        {
-          "t": 288,
-          "luminance": 0.007
-        },
-        {
-          "t": 305,
-          "luminance": 0.007
-        },
-        {
-          "t": 322,
-          "luminance": 0.007
-        },
-        {
-          "t": 338,
-          "luminance": 0.007
-        },
-        {
-          "t": 355,
-          "luminance": 0.007
-        },
-        {
-          "t": 372,
-          "luminance": 0.007
-        },
-        {
-          "t": 388,
-          "luminance": 0.007
-        },
-        {
-          "t": 405,
-          "luminance": 0.007
-        },
-        {
-          "t": 422,
-          "luminance": 0.007
-        },
-        {
-          "t": 438,
-          "luminance": 0.007
-        },
-        {
-          "t": 455,
-          "luminance": 0.007
-        },
-        {
-          "t": 472,
-          "luminance": 0.007
-        },
-        {
-          "t": 488,
-          "luminance": 0.007
-        },
-        {
-          "t": 505,
-          "luminance": 0.007
-        },
-        {
-          "t": 522,
-          "luminance": 0.007
-        },
-        {
-          "t": 538,
-          "luminance": 0.007
-        },
-        {
-          "t": 555,
-          "luminance": 0.007
-        },
-        {
-          "t": 571,
-          "luminance": 0.007
-        },
-        {
-          "t": 588,
-          "luminance": 0.007
-        },
-        {
-          "t": 605,
-          "luminance": 0.007
-        },
-        {
-          "t": 622,
-          "luminance": 0.007
-        },
-        {
-          "t": 638,
-          "luminance": 0.007
-        },
-        {
-          "t": 654,
-          "luminance": 0.007
-        },
-        {
-          "t": 672,
-          "luminance": 0.007
-        },
-        {
-          "t": 688,
-          "luminance": 0.007
-        },
-        {
-          "t": 705,
-          "luminance": 0.007
-        },
-        {
-          "t": 722,
-          "luminance": 0.007
-        },
-        {
-          "t": 738,
-          "luminance": 0.007
-        },
-        {
-          "t": 755,
-          "luminance": 0.007
-        },
-        {
-          "t": 772,
-          "luminance": 0.007
-        },
-        {
-          "t": 788,
-          "luminance": 0.007
-        },
-        {
-          "t": 805,
-          "luminance": 0.007
-        }
-      ]
-    },
-    "systemLightOff": {
-      "settingsAt": 307,
-      "frames": [
-        {
-          "t": 11,
-          "luminance": 1
-        },
-        {
-          "t": 31,
-          "luminance": 1
-        },
-        {
-          "t": 47,
-          "luminance": 1
-        },
-        {
-          "t": 64,
-          "luminance": 1
-        },
-        {
-          "t": 80,
-          "luminance": 1
-        },
-        {
-          "t": 97,
-          "luminance": 1
-        },
-        {
-          "t": 114,
-          "luminance": 1
-        },
-        {
-          "t": 131,
-          "luminance": 1
-        },
-        {
-          "t": 148,
-          "luminance": 1
-        },
-        {
-          "t": 164,
-          "luminance": 1
-        },
-        {
-          "t": 180,
-          "luminance": 1
-        },
-        {
-          "t": 198,
-          "luminance": 1
-        },
-        {
-          "t": 214,
-          "luminance": 1
-        },
-        {
-          "t": 231,
-          "luminance": 1
-        },
-        {
-          "t": 248,
-          "luminance": 1
-        },
-        {
-          "t": 264,
-          "luminance": 1
-        },
-        {
-          "t": 281,
-          "luminance": 1
-        },
-        {
-          "t": 298,
-          "luminance": 1
-        },
-        {
-          "t": 314,
-          "luminance": 1
-        },
-        {
-          "t": 331,
-          "luminance": 1
-        },
-        {
-          "t": 348,
-          "luminance": 1
-        },
-        {
-          "t": 364,
-          "luminance": 1
-        },
-        {
-          "t": 381,
-          "luminance": 1
-        },
-        {
-          "t": 398,
-          "luminance": 1
-        },
-        {
-          "t": 414,
-          "luminance": 1
-        },
-        {
-          "t": 431,
-          "luminance": 1
-        },
-        {
-          "t": 448,
-          "luminance": 1
-        },
-        {
-          "t": 464,
-          "luminance": 1
-        },
-        {
-          "t": 481,
-          "luminance": 1
-        },
-        {
-          "t": 498,
-          "luminance": 1
-        },
-        {
-          "t": 514,
-          "luminance": 1
-        },
-        {
-          "t": 531,
-          "luminance": 1
-        },
-        {
-          "t": 548,
-          "luminance": 1
-        },
-        {
-          "t": 564,
-          "luminance": 1
-        },
-        {
-          "t": 580,
-          "luminance": 1
-        },
-        {
-          "t": 598,
-          "luminance": 1
-        },
-        {
-          "t": 614,
-          "luminance": 1
-        },
-        {
-          "t": 631,
-          "luminance": 1
-        },
-        {
-          "t": 648,
-          "luminance": 1
-        },
-        {
-          "t": 663,
-          "luminance": 1
-        },
-        {
-          "t": 681,
-          "luminance": 1
-        },
-        {
-          "t": 698,
-          "luminance": 1
-        },
-        {
-          "t": 714,
-          "luminance": 1
-        },
-        {
-          "t": 731,
-          "luminance": 1
-        },
-        {
-          "t": 748,
-          "luminance": 1
-        },
-        {
-          "t": 765,
-          "luminance": 1
-        },
-        {
-          "t": 781,
-          "luminance": 1
-        },
-        {
-          "t": 797,
-          "luminance": 1
-        },
-        {
-          "t": 815,
-          "luminance": 1
-        }
-      ]
-    },
-    "systemDarkOff": {
-      "settingsAt": 306,
-      "frameMs": 17,
-      "darkMs": 310,
-      "frames": [
-        {
-          "t": 11,
-          "luminance": 0.007
-        },
-        {
-          "t": 22,
-          "luminance": 0.007
-        },
-        {
-          "t": 39,
-          "luminance": 0.007
-        },
-        {
-          "t": 55,
-          "luminance": 0.007
-        },
-        {
-          "t": 72,
-          "luminance": 0.007
-        },
-        {
-          "t": 89,
-          "luminance": 0.007
-        },
-        {
-          "t": 105,
-          "luminance": 0.007
-        },
-        {
-          "t": 122,
-          "luminance": 0.007
-        },
-        {
-          "t": 139,
-          "luminance": 0.007
-        },
-        {
-          "t": 156,
-          "luminance": 0.007
-        },
-        {
-          "t": 172,
-          "luminance": 0.007
-        },
-        {
-          "t": 189,
-          "luminance": 0.007
-        },
-        {
-          "t": 206,
-          "luminance": 0.007
-        },
-        {
-          "t": 222,
-          "luminance": 0.007
-        },
-        {
-          "t": 239,
-          "luminance": 0.007
-        },
-        {
-          "t": 255,
-          "luminance": 0.007
-        },
-        {
-          "t": 272,
-          "luminance": 0.007
-        },
-        {
-          "t": 289,
-          "luminance": 0.007
-        },
-        {
-          "t": 306,
-          "luminance": 0.007
-        },
-        {
-          "t": 321,
-          "luminance": 1
-        },
-        {
-          "t": 338,
-          "luminance": 1
-        },
-        {
-          "t": 356,
-          "luminance": 1
-        },
-        {
-          "t": 372,
-          "luminance": 1
-        },
-        {
-          "t": 389,
-          "luminance": 1
-        },
-        {
-          "t": 405,
-          "luminance": 1
-        },
-        {
-          "t": 422,
-          "luminance": 1
-        },
-        {
-          "t": 439,
-          "luminance": 1
-        },
-        {
-          "t": 456,
-          "luminance": 1
-        },
-        {
-          "t": 472,
-          "luminance": 1
-        },
-        {
-          "t": 488,
-          "luminance": 1
-        },
-        {
-          "t": 506,
-          "luminance": 1
-        },
-        {
-          "t": 522,
-          "luminance": 1
-        },
-        {
-          "t": 539,
-          "luminance": 1
-        },
-        {
-          "t": 556,
-          "luminance": 1
-        },
-        {
-          "t": 571,
-          "luminance": 1
-        },
-        {
-          "t": 589,
-          "luminance": 1
-        },
-        {
-          "t": 605,
-          "luminance": 1
-        },
-        {
-          "t": 621,
-          "luminance": 1
-        },
-        {
-          "t": 638,
-          "luminance": 1
-        },
-        {
-          "t": 656,
-          "luminance": 1
-        },
-        {
-          "t": 672,
-          "luminance": 1
-        },
-        {
-          "t": 689,
-          "luminance": 1
-        },
-        {
-          "t": 706,
-          "luminance": 1
-        },
-        {
-          "t": 721,
-          "luminance": 1
-        },
-        {
-          "t": 739,
-          "luminance": 1
-        },
-        {
-          "t": 756,
-          "luminance": 1
-        },
-        {
-          "t": 772,
-          "luminance": 1
-        },
-        {
-          "t": 789,
-          "luminance": 1
-        },
-        {
-          "t": 806,
-          "luminance": 1
-        }
-      ]
-    }
-  },
-  "cross-origin": {
-    "systemDarkAlways": {
-      "baselineFirst": {
-        "t": 16,
-        "root": "rgba(0, 0, 0, 0)",
-        "scheme": "normal",
-        "bodyChildren": 4,
-        "rgb": [
-          255,
-          255,
-          255
-        ],
-        "luminance": 1
-      },
-      "settingsAt": 308,
-      "frames": [
-        {
-          "t": 15,
-          "luminance": 0.007
-        },
-        {
-          "t": 26,
-          "luminance": 0.007
-        },
-        {
-          "t": 42,
-          "luminance": 0.007
-        },
-        {
-          "t": 59,
-          "luminance": 0.007
-        },
-        {
-          "t": 75,
-          "luminance": 0.007
-        },
-        {
-          "t": 92,
-          "luminance": 0.007
-        },
-        {
-          "t": 109,
-          "luminance": 0.007
-        },
-        {
-          "t": 126,
-          "luminance": 0.007
-        },
-        {
-          "t": 141,
-          "luminance": 0.007
-        },
-        {
-          "t": 159,
-          "luminance": 0.007
-        },
-        {
-          "t": 176,
-          "luminance": 0.007
-        },
-        {
-          "t": 191,
-          "luminance": 0.007
-        },
-        {
-          "t": 209,
-          "luminance": 0.007
-        },
-        {
-          "t": 225,
-          "luminance": 0.007
-        },
-        {
-          "t": 241,
-          "luminance": 0.007
-        },
-        {
-          "t": 259,
-          "luminance": 0.007
-        },
-        {
-          "t": 275,
-          "luminance": 0.007
-        },
-        {
-          "t": 292,
-          "luminance": 0.007
-        },
-        {
-          "t": 315,
-          "luminance": 0.007
-        },
-        {
-          "t": 326,
-          "luminance": 0.007
-        },
-        {
-          "t": 342,
-          "luminance": 0.007
-        },
-        {
-          "t": 359,
-          "luminance": 0.007
-        },
-        {
-          "t": 376,
-          "luminance": 0.007
-        },
-        {
-          "t": 392,
-          "luminance": 0.007
-        },
-        {
-          "t": 409,
-          "luminance": 0.007
-        },
-        {
-          "t": 426,
-          "luminance": 0.007
-        },
-        {
-          "t": 442,
-          "luminance": 0.007
-        },
-        {
-          "t": 458,
-          "luminance": 0.007
-        },
-        {
-          "t": 476,
-          "luminance": 0.007
-        },
-        {
-          "t": 492,
-          "luminance": 0.007
-        },
-        {
           "t": 508,
-          "luminance": 0.007
-        },
-        {
-          "t": 525,
-          "luminance": 0.007
-        },
-        {
-          "t": 542,
-          "luminance": 0.007
-        },
-        {
-          "t": 559,
-          "luminance": 0.007
-        },
-        {
-          "t": 576,
-          "luminance": 0.007
-        },
-        {
-          "t": 592,
-          "luminance": 0.007
-        },
-        {
-          "t": 608,
-          "luminance": 0.007
-        },
-        {
-          "t": 625,
-          "luminance": 0.007
-        },
-        {
-          "t": 641,
-          "luminance": 0.007
-        },
-        {
-          "t": 658,
-          "luminance": 0.007
-        },
-        {
-          "t": 675,
-          "luminance": 0.007
-        },
-        {
-          "t": 692,
-          "luminance": 0.007
-        },
-        {
-          "t": 708,
-          "luminance": 0.007
-        },
-        {
-          "t": 726,
-          "luminance": 0.007
-        },
-        {
-          "t": 742,
-          "luminance": 0.007
-        },
-        {
-          "t": 758,
-          "luminance": 0.007
-        },
-        {
-          "t": 775,
-          "luminance": 0.007
-        },
-        {
-          "t": 792,
-          "luminance": 0.007
-        },
-        {
-          "t": 808,
-          "luminance": 0.007
-        }
-      ]
-    },
-    "systemLightOff": {
-      "settingsAt": 307,
-      "frames": [
-        {
-          "t": 12,
-          "luminance": 1
-        },
-        {
-          "t": 30,
-          "luminance": 1
-        },
-        {
-          "t": 47,
-          "luminance": 1
-        },
-        {
-          "t": 63,
-          "luminance": 1
-        },
-        {
-          "t": 80,
-          "luminance": 1
-        },
-        {
-          "t": 97,
-          "luminance": 1
-        },
-        {
-          "t": 113,
-          "luminance": 1
-        },
-        {
-          "t": 130,
-          "luminance": 1
-        },
-        {
-          "t": 146,
-          "luminance": 1
-        },
-        {
-          "t": 163,
-          "luminance": 1
-        },
-        {
-          "t": 180,
-          "luminance": 1
-        },
-        {
-          "t": 197,
-          "luminance": 1
-        },
-        {
-          "t": 213,
-          "luminance": 1
-        },
-        {
-          "t": 230,
-          "luminance": 1
-        },
-        {
-          "t": 247,
-          "luminance": 1
-        },
-        {
-          "t": 263,
-          "luminance": 1
-        },
-        {
-          "t": 280,
-          "luminance": 1
-        },
-        {
-          "t": 297,
-          "luminance": 1
-        },
-        {
-          "t": 313,
-          "luminance": 1
-        },
-        {
-          "t": 330,
-          "luminance": 1
-        },
-        {
-          "t": 347,
-          "luminance": 1
-        },
-        {
-          "t": 363,
-          "luminance": 1
-        },
-        {
-          "t": 380,
-          "luminance": 1
-        },
-        {
-          "t": 397,
-          "luminance": 1
-        },
-        {
-          "t": 413,
-          "luminance": 1
-        },
-        {
-          "t": 430,
-          "luminance": 1
-        },
-        {
-          "t": 447,
-          "luminance": 1
-        },
-        {
-          "t": 463,
-          "luminance": 1
-        },
-        {
-          "t": 480,
-          "luminance": 1
-        },
-        {
-          "t": 497,
-          "luminance": 1
-        },
-        {
-          "t": 513,
-          "luminance": 1
-        },
-        {
-          "t": 530,
-          "luminance": 1
-        },
-        {
-          "t": 547,
-          "luminance": 1
-        },
-        {
-          "t": 563,
-          "luminance": 1
-        },
-        {
-          "t": 580,
-          "luminance": 1
-        },
-        {
-          "t": 597,
-          "luminance": 1
-        },
-        {
-          "t": 613,
-          "luminance": 1
-        },
-        {
-          "t": 630,
-          "luminance": 1
-        },
-        {
-          "t": 647,
-          "luminance": 1
-        },
-        {
-          "t": 663,
-          "luminance": 1
-        },
-        {
-          "t": 680,
-          "luminance": 1
-        },
-        {
-          "t": 697,
-          "luminance": 1
-        },
-        {
-          "t": 714,
-          "luminance": 1
-        },
-        {
-          "t": 730,
-          "luminance": 1
-        },
-        {
-          "t": 747,
-          "luminance": 1
-        },
-        {
-          "t": 763,
-          "luminance": 1
-        },
-        {
-          "t": 780,
-          "luminance": 1
-        },
-        {
-          "t": 796,
-          "luminance": 1
-        }
-      ]
-    },
-    "systemDarkOff": {
-      "settingsAt": 309,
-      "frameMs": 17,
-      "darkMs": 296,
-      "frames": [
-        {
-          "t": 17,
-          "luminance": 0.007
-        },
-        {
-          "t": 26,
-          "luminance": 0.007
-        },
-        {
-          "t": 42,
-          "luminance": 0.007
-        },
-        {
-          "t": 59,
-          "luminance": 0.007
-        },
-        {
-          "t": 76,
-          "luminance": 0.007
-        },
-        {
-          "t": 92,
-          "luminance": 0.007
-        },
-        {
-          "t": 110,
-          "luminance": 0.007
-        },
-        {
-          "t": 126,
-          "luminance": 0.007
-        },
-        {
-          "t": 143,
-          "luminance": 0.007
-        },
-        {
-          "t": 159,
-          "luminance": 0.007
-        },
-        {
-          "t": 176,
-          "luminance": 0.007
-        },
-        {
-          "t": 192,
-          "luminance": 0.007
-        },
-        {
-          "t": 209,
-          "luminance": 0.007
-        },
-        {
-          "t": 226,
-          "luminance": 0.007
-        },
-        {
-          "t": 243,
-          "luminance": 0.007
-        },
-        {
-          "t": 259,
-          "luminance": 0.007
-        },
-        {
-          "t": 276,
-          "luminance": 0.007
-        },
-        {
-          "t": 292,
-          "luminance": 0.007
-        },
-        {
-          "t": 313,
-          "luminance": 1
-        },
-        {
-          "t": 326,
-          "luminance": 1
-        },
-        {
-          "t": 342,
-          "luminance": 1
-        },
-        {
-          "t": 359,
-          "luminance": 1
-        },
-        {
-          "t": 376,
-          "luminance": 1
-        },
-        {
-          "t": 393,
-          "luminance": 1
-        },
-        {
-          "t": 409,
-          "luminance": 1
-        },
-        {
-          "t": 426,
-          "luminance": 1
-        },
-        {
-          "t": 442,
-          "luminance": 1
-        },
-        {
-          "t": 460,
-          "luminance": 1
-        },
-        {
-          "t": 476,
-          "luminance": 1
-        },
-        {
-          "t": 493,
-          "luminance": 1
-        },
-        {
-          "t": 510,
-          "luminance": 1
-        },
-        {
-          "t": 526,
-          "luminance": 1
-        },
-        {
-          "t": 543,
-          "luminance": 1
-        },
-        {
-          "t": 560,
-          "luminance": 1
-        },
-        {
-          "t": 575,
-          "luminance": 1
-        },
-        {
-          "t": 593,
-          "luminance": 1
-        },
-        {
-          "t": 610,
-          "luminance": 1
-        },
-        {
-          "t": 626,
-          "luminance": 1
-        },
-        {
-          "t": 643,
-          "luminance": 1
-        },
-        {
-          "t": 660,
-          "luminance": 1
-        },
-        {
-          "t": 676,
-          "luminance": 1
-        },
-        {
-          "t": 692,
-          "luminance": 1
-        },
-        {
-          "t": 710,
-          "luminance": 1
-        },
-        {
-          "t": 726,
-          "luminance": 1
-        },
-        {
-          "t": 743,
-          "luminance": 1
-        },
-        {
-          "t": 760,
-          "luminance": 1
-        },
-        {
-          "t": 776,
-          "luminance": 1
-        },
-        {
-          "t": 792,
-          "luminance": 1
-        },
-        {
-          "t": 810,
-          "luminance": 1
-        }
-      ]
-    }
-  },
-  "links": {
-    "systemDarkAlways": {
-      "baselineFirst": {
-        "t": 7,
-        "root": "rgba(0, 0, 0, 0)",
-        "scheme": "normal",
-        "bodyChildren": 5,
-        "rgb": [
-          255,
-          255,
-          255
-        ],
-        "luminance": 1
-      },
-      "settingsAt": 309,
-      "frames": [
-        {
-          "t": 12,
-          "luminance": 0.007
-        },
-        {
-          "t": 25,
-          "luminance": 0.007
-        },
-        {
-          "t": 43,
-          "luminance": 0.007
-        },
-        {
-          "t": 59,
-          "luminance": 0.007
-        },
-        {
-          "t": 76,
-          "luminance": 0.007
-        },
-        {
-          "t": 92,
-          "luminance": 0.007
-        },
-        {
-          "t": 109,
-          "luminance": 0.007
-        },
-        {
-          "t": 126,
-          "luminance": 0.007
-        },
-        {
-          "t": 143,
-          "luminance": 0.007
-        },
-        {
-          "t": 159,
-          "luminance": 0.007
-        },
-        {
-          "t": 176,
-          "luminance": 0.007
-        },
-        {
-          "t": 193,
-          "luminance": 0.007
-        },
-        {
-          "t": 209,
-          "luminance": 0.007
-        },
-        {
-          "t": 226,
-          "luminance": 0.007
-        },
-        {
-          "t": 243,
-          "luminance": 0.007
-        },
-        {
-          "t": 259,
-          "luminance": 0.007
-        },
-        {
-          "t": 276,
-          "luminance": 0.007
-        },
-        {
-          "t": 293,
-          "luminance": 0.007
-        },
-        {
-          "t": 308,
-          "luminance": 0.007
-        },
-        {
-          "t": 326,
-          "luminance": 0.007
-        },
-        {
-          "t": 342,
-          "luminance": 0.007
-        },
-        {
-          "t": 359,
-          "luminance": 0.007
-        },
-        {
-          "t": 375,
-          "luminance": 0.007
-        },
-        {
-          "t": 393,
-          "luminance": 0.007
-        },
-        {
-          "t": 409,
-          "luminance": 0.007
-        },
-        {
-          "t": 426,
-          "luminance": 0.007
-        },
-        {
-          "t": 443,
-          "luminance": 0.007
-        },
-        {
-          "t": 458,
-          "luminance": 0.007
-        },
-        {
-          "t": 475,
-          "luminance": 0.007
-        },
-        {
-          "t": 492,
-          "luminance": 0.007
-        },
-        {
-          "t": 509,
-          "luminance": 0.007
-        },
-        {
-          "t": 525,
-          "luminance": 0.007
-        },
-        {
-          "t": 542,
-          "luminance": 0.007
-        },
-        {
-          "t": 559,
-          "luminance": 0.007
-        },
-        {
-          "t": 576,
-          "luminance": 0.007
-        },
-        {
-          "t": 592,
-          "luminance": 0.007
-        },
-        {
-          "t": 609,
-          "luminance": 0.007
-        },
-        {
-          "t": 625,
-          "luminance": 0.007
-        },
-        {
-          "t": 642,
-          "luminance": 0.007
-        },
-        {
-          "t": 659,
-          "luminance": 0.007
-        },
-        {
-          "t": 676,
-          "luminance": 0.007
-        },
-        {
-          "t": 692,
-          "luminance": 0.007
-        },
-        {
-          "t": 709,
-          "luminance": 0.007
-        },
-        {
-          "t": 726,
-          "luminance": 0.007
-        },
-        {
-          "t": 742,
-          "luminance": 0.007
-        },
-        {
-          "t": 758,
-          "luminance": 0.007
-        },
-        {
-          "t": 775,
-          "luminance": 0.007
-        },
-        {
-          "t": 793,
-          "luminance": 0.007
-        },
-        {
-          "t": 809,
-          "luminance": 0.007
-        }
-      ]
-    },
-    "systemLightOff": {
-      "settingsAt": 307,
-      "frames": [
-        {
-          "t": 8,
-          "luminance": 1
-        },
-        {
-          "t": 31,
-          "luminance": 1
-        },
-        {
-          "t": 48,
-          "luminance": 1
-        },
-        {
-          "t": 64,
-          "luminance": 1
-        },
-        {
-          "t": 81,
-          "luminance": 1
-        },
-        {
-          "t": 98,
-          "luminance": 1
-        },
-        {
-          "t": 113,
-          "luminance": 1
-        },
-        {
-          "t": 131,
-          "luminance": 1
-        },
-        {
-          "t": 147,
-          "luminance": 1
-        },
-        {
-          "t": 164,
-          "luminance": 1
-        },
-        {
-          "t": 180,
-          "luminance": 1
-        },
-        {
-          "t": 198,
-          "luminance": 1
-        },
-        {
-          "t": 213,
-          "luminance": 1
-        },
-        {
-          "t": 230,
-          "luminance": 1
-        },
-        {
-          "t": 248,
-          "luminance": 1
-        },
-        {
-          "t": 265,
-          "luminance": 1
-        },
-        {
-          "t": 281,
-          "luminance": 1
-        },
-        {
-          "t": 297,
-          "luminance": 1
-        },
-        {
-          "t": 314,
-          "luminance": 1
-        },
-        {
-          "t": 331,
-          "luminance": 1
-        },
-        {
-          "t": 348,
-          "luminance": 1
-        },
-        {
-          "t": 364,
-          "luminance": 1
-        },
-        {
-          "t": 384,
-          "luminance": 1
-        },
-        {
-          "t": 398,
-          "luminance": 1
-        },
-        {
-          "t": 414,
-          "luminance": 1
-        },
-        {
-          "t": 431,
-          "luminance": 1
-        },
-        {
-          "t": 447,
-          "luminance": 1
-        },
-        {
-          "t": 464,
-          "luminance": 1
-        },
-        {
-          "t": 481,
-          "luminance": 1
-        },
-        {
-          "t": 497,
-          "luminance": 1
-        },
-        {
-          "t": 513,
-          "luminance": 1
-        },
-        {
-          "t": 530,
-          "luminance": 1
-        },
-        {
-          "t": 548,
-          "luminance": 1
-        },
-        {
-          "t": 564,
-          "luminance": 1
-        },
-        {
-          "t": 581,
-          "luminance": 1
-        },
-        {
-          "t": 598,
-          "luminance": 1
-        },
-        {
-          "t": 614,
-          "luminance": 1
-        },
-        {
-          "t": 630,
-          "luminance": 1
-        },
-        {
-          "t": 648,
-          "luminance": 1
-        },
-        {
-          "t": 664,
-          "luminance": 1
-        },
-        {
-          "t": 681,
-          "luminance": 1
-        },
-        {
-          "t": 698,
-          "luminance": 1
-        },
-        {
-          "t": 714,
-          "luminance": 1
-        },
-        {
-          "t": 730,
-          "luminance": 1
-        },
-        {
-          "t": 747,
-          "luminance": 1
-        },
-        {
-          "t": 765,
-          "luminance": 1
-        },
-        {
-          "t": 781,
-          "luminance": 1
-        },
-        {
-          "t": 798,
-          "luminance": 1
-        }
-      ]
-    },
-    "systemDarkOff": {
-      "settingsAt": 308,
-      "frameMs": 17,
-      "darkMs": 301,
-      "frames": [
-        {
-          "t": 11,
-          "luminance": 0.007
-        },
-        {
-          "t": 24,
-          "luminance": 0.007
-        },
-        {
-          "t": 41,
-          "luminance": 0.007
-        },
-        {
-          "t": 57,
-          "luminance": 0.007
-        },
-        {
-          "t": 73,
-          "luminance": 0.007
-        },
-        {
-          "t": 91,
-          "luminance": 0.007
-        },
-        {
-          "t": 106,
-          "luminance": 0.007
-        },
-        {
-          "t": 124,
-          "luminance": 0.007
-        },
-        {
-          "t": 141,
-          "luminance": 0.007
-        },
-        {
-          "t": 157,
-          "luminance": 0.007
-        },
-        {
-          "t": 174,
-          "luminance": 0.007
-        },
-        {
-          "t": 190,
-          "luminance": 0.007
-        },
-        {
-          "t": 206,
-          "luminance": 0.007
-        },
-        {
-          "t": 224,
-          "luminance": 0.007
-        },
-        {
-          "t": 240,
-          "luminance": 0.007
-        },
-        {
-          "t": 257,
-          "luminance": 0.007
-        },
-        {
-          "t": 274,
-          "luminance": 0.007
-        },
-        {
-          "t": 290,
-          "luminance": 0.007
-        },
-        {
-          "t": 312,
-          "luminance": 1
-        },
-        {
-          "t": 324,
-          "luminance": 1
-        },
-        {
-          "t": 340,
-          "luminance": 1
-        },
-        {
-          "t": 357,
-          "luminance": 1
-        },
-        {
-          "t": 373,
-          "luminance": 1
-        },
-        {
-          "t": 391,
-          "luminance": 1
-        },
-        {
-          "t": 407,
-          "luminance": 1
-        },
-        {
-          "t": 424,
-          "luminance": 1
-        },
-        {
-          "t": 440,
-          "luminance": 1
-        },
-        {
-          "t": 457,
-          "luminance": 1
-        },
-        {
-          "t": 473,
-          "luminance": 1
-        },
-        {
-          "t": 490,
-          "luminance": 1
-        },
-        {
-          "t": 506,
           "luminance": 1
         },
         {
@@ -4071,11 +2210,11 @@
           "luminance": 1
         },
         {
-          "t": 623,
+          "t": 624,
           "luminance": 1
         },
         {
-          "t": 641,
+          "t": 640,
           "luminance": 1
         },
         {
@@ -4087,7 +2226,7 @@
           "luminance": 1
         },
         {
-          "t": 691,
+          "t": 690,
           "luminance": 1
         },
         {
@@ -4095,11 +2234,11 @@
           "luminance": 1
         },
         {
-          "t": 724,
+          "t": 723,
           "luminance": 1
         },
         {
-          "t": 741,
+          "t": 740,
           "luminance": 1
         },
         {
@@ -4111,642 +2250,23 @@
           "luminance": 1
         },
         {
-          "t": 791,
-          "luminance": 1
-        },
-        {
-          "t": 807,
-          "luminance": 1
-        }
-      ]
-    }
-  },
-  "shop": {
-    "systemDarkAlways": {
-      "baselineFirst": {
-        "t": 16,
-        "root": "rgba(0, 0, 0, 0)",
-        "scheme": "normal",
-        "bodyChildren": 3,
-        "rgb": [
-          246,
-          246,
-          246
-        ],
-        "luminance": 0.922
-      },
-      "settingsAt": 309,
-      "frames": [
-        {
-          "t": 14,
-          "luminance": 0.007
-        },
-        {
-          "t": 28,
-          "luminance": 0.007
-        },
-        {
-          "t": 45,
-          "luminance": 0.007
-        },
-        {
-          "t": 61,
-          "luminance": 0.007
-        },
-        {
-          "t": 78,
-          "luminance": 0.007
-        },
-        {
-          "t": 94,
-          "luminance": 0.007
-        },
-        {
-          "t": 111,
-          "luminance": 0.007
-        },
-        {
-          "t": 128,
-          "luminance": 0.007
-        },
-        {
-          "t": 144,
-          "luminance": 0.007
-        },
-        {
-          "t": 161,
-          "luminance": 0.007
-        },
-        {
-          "t": 178,
-          "luminance": 0.007
-        },
-        {
-          "t": 194,
-          "luminance": 0.007
-        },
-        {
-          "t": 212,
-          "luminance": 0.007
-        },
-        {
-          "t": 227,
-          "luminance": 0.007
-        },
-        {
-          "t": 245,
-          "luminance": 0.007
-        },
-        {
-          "t": 262,
-          "luminance": 0.007
-        },
-        {
-          "t": 278,
-          "luminance": 0.007
-        },
-        {
-          "t": 295,
-          "luminance": 0.007
-        },
-        {
-          "t": 318,
-          "luminance": 0.007
-        },
-        {
-          "t": 327,
-          "luminance": 0.007
-        },
-        {
-          "t": 344,
-          "luminance": 0.007
-        },
-        {
-          "t": 362,
-          "luminance": 0.007
-        },
-        {
-          "t": 378,
-          "luminance": 0.007
-        },
-        {
-          "t": 395,
-          "luminance": 0.007
-        },
-        {
-          "t": 412,
-          "luminance": 0.007
-        },
-        {
-          "t": 428,
-          "luminance": 0.007
-        },
-        {
-          "t": 445,
-          "luminance": 0.007
-        },
-        {
-          "t": 461,
-          "luminance": 0.007
-        },
-        {
-          "t": 477,
-          "luminance": 0.007
-        },
-        {
-          "t": 495,
-          "luminance": 0.007
-        },
-        {
-          "t": 512,
-          "luminance": 0.007
-        },
-        {
-          "t": 527,
-          "luminance": 0.007
-        },
-        {
-          "t": 544,
-          "luminance": 0.007
-        },
-        {
-          "t": 562,
-          "luminance": 0.007
-        },
-        {
-          "t": 577,
-          "luminance": 0.007
-        },
-        {
-          "t": 594,
-          "luminance": 0.007
-        },
-        {
-          "t": 611,
-          "luminance": 0.007
-        },
-        {
-          "t": 628,
-          "luminance": 0.007
-        },
-        {
-          "t": 645,
-          "luminance": 0.007
-        },
-        {
-          "t": 662,
-          "luminance": 0.007
-        },
-        {
-          "t": 677,
-          "luminance": 0.007
-        },
-        {
-          "t": 694,
-          "luminance": 0.007
-        },
-        {
-          "t": 712,
-          "luminance": 0.007
-        },
-        {
-          "t": 728,
-          "luminance": 0.007
-        },
-        {
-          "t": 745,
-          "luminance": 0.007
-        },
-        {
-          "t": 761,
-          "luminance": 0.007
-        },
-        {
-          "t": 778,
-          "luminance": 0.007
-        },
-        {
-          "t": 794,
-          "luminance": 0.007
-        },
-        {
-          "t": 811,
-          "luminance": 0.007
-        }
-      ]
-    },
-    "systemLightOff": {
-      "settingsAt": 310,
-      "frames": [
-        {
-          "t": 14,
-          "luminance": 0.922
-        },
-        {
-          "t": 26,
-          "luminance": 0.922
-        },
-        {
-          "t": 43,
-          "luminance": 0.922
-        },
-        {
-          "t": 60,
-          "luminance": 0.922
-        },
-        {
-          "t": 76,
-          "luminance": 0.922
-        },
-        {
-          "t": 92,
-          "luminance": 0.922
-        },
-        {
-          "t": 109,
-          "luminance": 0.922
-        },
-        {
-          "t": 127,
-          "luminance": 0.922
-        },
-        {
-          "t": 143,
-          "luminance": 0.922
-        },
-        {
-          "t": 160,
-          "luminance": 0.922
-        },
-        {
-          "t": 177,
-          "luminance": 0.922
-        },
-        {
-          "t": 193,
-          "luminance": 0.922
-        },
-        {
-          "t": 210,
-          "luminance": 0.922
-        },
-        {
-          "t": 226,
-          "luminance": 0.922
-        },
-        {
-          "t": 243,
-          "luminance": 0.922
-        },
-        {
-          "t": 260,
-          "luminance": 0.922
-        },
-        {
-          "t": 277,
-          "luminance": 0.922
-        },
-        {
-          "t": 293,
-          "luminance": 0.922
-        },
-        {
-          "t": 312,
-          "luminance": 0.922
-        },
-        {
-          "t": 326,
-          "luminance": 0.922
-        },
-        {
-          "t": 343,
-          "luminance": 0.922
-        },
-        {
-          "t": 361,
-          "luminance": 0.922
-        },
-        {
-          "t": 377,
-          "luminance": 0.922
-        },
-        {
-          "t": 393,
-          "luminance": 0.922
-        },
-        {
-          "t": 410,
-          "luminance": 0.922
-        },
-        {
-          "t": 426,
-          "luminance": 0.922
-        },
-        {
-          "t": 443,
-          "luminance": 0.922
-        },
-        {
-          "t": 459,
-          "luminance": 0.922
-        },
-        {
-          "t": 476,
-          "luminance": 0.922
-        },
-        {
-          "t": 493,
-          "luminance": 0.922
-        },
-        {
-          "t": 509,
-          "luminance": 0.922
-        },
-        {
-          "t": 526,
-          "luminance": 0.922
-        },
-        {
-          "t": 543,
-          "luminance": 0.922
-        },
-        {
-          "t": 560,
-          "luminance": 0.922
-        },
-        {
-          "t": 576,
-          "luminance": 0.922
-        },
-        {
-          "t": 593,
-          "luminance": 0.922
-        },
-        {
-          "t": 609,
-          "luminance": 0.922
-        },
-        {
-          "t": 626,
-          "luminance": 0.922
-        },
-        {
-          "t": 642,
-          "luminance": 0.922
-        },
-        {
-          "t": 659,
-          "luminance": 0.922
-        },
-        {
-          "t": 676,
-          "luminance": 0.922
-        },
-        {
-          "t": 693,
-          "luminance": 0.922
-        },
-        {
-          "t": 710,
-          "luminance": 0.922
-        },
-        {
-          "t": 726,
-          "luminance": 0.922
-        },
-        {
-          "t": 743,
-          "luminance": 0.922
-        },
-        {
-          "t": 759,
-          "luminance": 0.922
-        },
-        {
-          "t": 777,
-          "luminance": 0.922
-        },
-        {
-          "t": 793,
-          "luminance": 0.922
-        },
-        {
-          "t": 810,
-          "luminance": 0.922
-        }
-      ]
-    },
-    "systemDarkOff": {
-      "settingsAt": 307,
-      "frameMs": 17,
-      "darkMs": 310,
-      "frames": [
-        {
-          "t": 13,
-          "luminance": 0.007
-        },
-        {
-          "t": 23,
-          "luminance": 0.007
-        },
-        {
-          "t": 39,
-          "luminance": 0.007
-        },
-        {
-          "t": 56,
-          "luminance": 0.007
-        },
-        {
-          "t": 73,
-          "luminance": 0.007
-        },
-        {
-          "t": 90,
-          "luminance": 0.007
-        },
-        {
-          "t": 106,
-          "luminance": 0.007
-        },
-        {
-          "t": 122,
-          "luminance": 0.007
-        },
-        {
-          "t": 140,
-          "luminance": 0.007
-        },
-        {
-          "t": 157,
-          "luminance": 0.007
-        },
-        {
-          "t": 172,
-          "luminance": 0.007
-        },
-        {
-          "t": 189,
-          "luminance": 0.007
-        },
-        {
-          "t": 206,
-          "luminance": 0.007
-        },
-        {
-          "t": 223,
-          "luminance": 0.007
-        },
-        {
-          "t": 240,
-          "luminance": 0.007
-        },
-        {
-          "t": 256,
-          "luminance": 0.007
-        },
-        {
-          "t": 273,
-          "luminance": 0.007
-        },
-        {
-          "t": 290,
-          "luminance": 0.007
-        },
-        {
-          "t": 307,
-          "luminance": 0.007
-        },
-        {
-          "t": 323,
-          "luminance": 0.922
-        },
-        {
-          "t": 339,
-          "luminance": 0.922
-        },
-        {
-          "t": 357,
-          "luminance": 0.922
-        },
-        {
-          "t": 373,
-          "luminance": 0.922
-        },
-        {
-          "t": 389,
-          "luminance": 0.922
-        },
-        {
-          "t": 406,
-          "luminance": 0.922
-        },
-        {
-          "t": 423,
-          "luminance": 0.922
-        },
-        {
-          "t": 440,
-          "luminance": 0.922
-        },
-        {
-          "t": 456,
-          "luminance": 0.922
-        },
-        {
-          "t": 472,
-          "luminance": 0.922
-        },
-        {
-          "t": 489,
-          "luminance": 0.922
-        },
-        {
-          "t": 506,
-          "luminance": 0.922
-        },
-        {
-          "t": 523,
-          "luminance": 0.922
-        },
-        {
-          "t": 540,
-          "luminance": 0.922
-        },
-        {
-          "t": 557,
-          "luminance": 0.922
-        },
-        {
-          "t": 572,
-          "luminance": 0.922
-        },
-        {
-          "t": 590,
-          "luminance": 0.922
-        },
-        {
-          "t": 607,
-          "luminance": 0.922
-        },
-        {
-          "t": 623,
-          "luminance": 0.922
-        },
-        {
-          "t": 640,
-          "luminance": 0.922
-        },
-        {
-          "t": 656,
-          "luminance": 0.922
-        },
-        {
-          "t": 673,
-          "luminance": 0.922
-        },
-        {
-          "t": 689,
-          "luminance": 0.922
-        },
-        {
-          "t": 707,
-          "luminance": 0.922
-        },
-        {
-          "t": 723,
-          "luminance": 0.922
-        },
-        {
-          "t": 740,
-          "luminance": 0.922
-        },
-        {
-          "t": 757,
-          "luminance": 0.922
-        },
-        {
-          "t": 773,
-          "luminance": 0.922
-        },
-        {
           "t": 790,
-          "luminance": 0.922
+          "luminance": 1
         },
         {
           "t": 807,
-          "luminance": 0.922
+          "luminance": 1
         }
       ]
     }
   },
-  "shadow": {
+  "images": {
     "systemDarkAlways": {
       "baselineFirst": {
-        "t": 15,
+        "t": 6,
         "root": "rgba(0, 0, 0, 0)",
         "scheme": "normal",
-        "bodyChildren": 6,
+        "bodyChildren": 2,
         "rgb": [
           255,
           255,
@@ -4754,410 +2274,410 @@
         ],
         "luminance": 1
       },
-      "settingsAt": 307,
+      "settingsAt": 306,
       "frames": [
         {
-          "t": 13,
+          "t": 14,
           "luminance": 0.007
         },
         {
-          "t": 33,
+          "t": 31,
           "luminance": 0.007
         },
         {
-          "t": 50,
+          "t": 48,
           "luminance": 0.007
         },
         {
-          "t": 67,
+          "t": 64,
           "luminance": 0.007
         },
         {
-          "t": 82,
+          "t": 81,
           "luminance": 0.007
         },
         {
-          "t": 100,
+          "t": 98,
           "luminance": 0.007
         },
         {
-          "t": 117,
+          "t": 114,
           "luminance": 0.007
         },
         {
-          "t": 133,
+          "t": 131,
           "luminance": 0.007
         },
         {
-          "t": 150,
+          "t": 148,
           "luminance": 0.007
         },
         {
-          "t": 167,
+          "t": 165,
           "luminance": 0.007
         },
         {
-          "t": 183,
+          "t": 181,
           "luminance": 0.007
         },
         {
-          "t": 200,
+          "t": 198,
           "luminance": 0.007
         },
         {
-          "t": 217,
+          "t": 215,
           "luminance": 0.007
         },
         {
-          "t": 233,
+          "t": 231,
           "luminance": 0.007
         },
         {
-          "t": 250,
+          "t": 248,
           "luminance": 0.007
         },
         {
-          "t": 267,
+          "t": 265,
           "luminance": 0.007
         },
         {
-          "t": 283,
+          "t": 281,
           "luminance": 0.007
         },
         {
-          "t": 300,
+          "t": 298,
           "luminance": 0.007
         },
         {
-          "t": 316,
+          "t": 328,
           "luminance": 0.007
         },
         {
-          "t": 333,
+          "t": 330,
           "luminance": 0.007
         },
         {
-          "t": 349,
+          "t": 348,
           "luminance": 0.007
         },
         {
-          "t": 366,
+          "t": 365,
           "luminance": 0.007
         },
         {
-          "t": 383,
+          "t": 381,
           "luminance": 0.007
         },
         {
-          "t": 400,
+          "t": 398,
           "luminance": 0.007
         },
         {
-          "t": 417,
+          "t": 415,
           "luminance": 0.007
         },
         {
-          "t": 433,
+          "t": 431,
           "luminance": 0.007
         },
         {
-          "t": 450,
+          "t": 448,
           "luminance": 0.007
         },
         {
-          "t": 467,
+          "t": 465,
           "luminance": 0.007
         },
         {
-          "t": 483,
+          "t": 481,
           "luminance": 0.007
         },
         {
-          "t": 500,
+          "t": 498,
           "luminance": 0.007
         },
         {
-          "t": 517,
+          "t": 515,
           "luminance": 0.007
         },
         {
-          "t": 533,
+          "t": 531,
           "luminance": 0.007
         },
         {
-          "t": 550,
+          "t": 548,
           "luminance": 0.007
         },
         {
-          "t": 566,
+          "t": 565,
           "luminance": 0.007
         },
         {
-          "t": 583,
+          "t": 580,
           "luminance": 0.007
         },
         {
-          "t": 600,
+          "t": 597,
           "luminance": 0.007
         },
         {
-          "t": 617,
+          "t": 615,
           "luminance": 0.007
         },
         {
-          "t": 633,
+          "t": 631,
           "luminance": 0.007
         },
         {
-          "t": 650,
+          "t": 648,
           "luminance": 0.007
         },
         {
-          "t": 667,
+          "t": 665,
           "luminance": 0.007
         },
         {
-          "t": 683,
+          "t": 681,
           "luminance": 0.007
         },
         {
-          "t": 700,
+          "t": 698,
           "luminance": 0.007
         },
         {
-          "t": 716,
+          "t": 715,
           "luminance": 0.007
         },
         {
-          "t": 733,
+          "t": 731,
           "luminance": 0.007
         },
         {
-          "t": 750,
+          "t": 748,
           "luminance": 0.007
         },
         {
-          "t": 767,
+          "t": 764,
           "luminance": 0.007
         },
         {
-          "t": 783,
+          "t": 781,
           "luminance": 0.007
         },
         {
-          "t": 800,
+          "t": 798,
           "luminance": 0.007
         }
       ]
     },
     "systemLightOff": {
-      "settingsAt": 310,
+      "settingsAt": 307,
       "frames": [
         {
-          "t": 14,
+          "t": 12,
           "luminance": 1
         },
         {
-          "t": 18,
+          "t": 29,
           "luminance": 1
         },
         {
-          "t": 35,
+          "t": 46,
           "luminance": 1
         },
         {
-          "t": 53,
+          "t": 62,
           "luminance": 1
         },
         {
-          "t": 68,
+          "t": 79,
           "luminance": 1
         },
         {
-          "t": 86,
+          "t": 95,
           "luminance": 1
         },
         {
-          "t": 103,
+          "t": 112,
           "luminance": 1
         },
         {
-          "t": 119,
+          "t": 129,
           "luminance": 1
         },
         {
-          "t": 135,
+          "t": 145,
           "luminance": 1
         },
         {
-          "t": 153,
+          "t": 162,
           "luminance": 1
         },
         {
-          "t": 169,
+          "t": 179,
           "luminance": 1
         },
         {
-          "t": 186,
+          "t": 196,
           "luminance": 1
         },
         {
-          "t": 203,
+          "t": 212,
           "luminance": 1
         },
         {
-          "t": 218,
+          "t": 229,
           "luminance": 1
         },
         {
-          "t": 235,
+          "t": 246,
           "luminance": 1
         },
         {
-          "t": 253,
+          "t": 261,
           "luminance": 1
         },
         {
-          "t": 269,
+          "t": 278,
           "luminance": 1
         },
         {
-          "t": 286,
+          "t": 296,
           "luminance": 1
         },
         {
-          "t": 303,
+          "t": 312,
           "luminance": 1
         },
         {
-          "t": 319,
+          "t": 328,
           "luminance": 1
         },
         {
-          "t": 337,
+          "t": 346,
           "luminance": 1
         },
         {
-          "t": 352,
+          "t": 362,
           "luminance": 1
         },
         {
-          "t": 369,
+          "t": 379,
           "luminance": 1
         },
         {
-          "t": 386,
+          "t": 395,
           "luminance": 1
         },
         {
-          "t": 403,
+          "t": 412,
           "luminance": 1
         },
         {
-          "t": 418,
+          "t": 429,
           "luminance": 1
         },
         {
-          "t": 436,
+          "t": 446,
           "luminance": 1
         },
         {
-          "t": 453,
+          "t": 462,
           "luminance": 1
         },
         {
-          "t": 469,
+          "t": 479,
           "luminance": 1
         },
         {
-          "t": 486,
+          "t": 496,
           "luminance": 1
         },
         {
-          "t": 503,
+          "t": 513,
           "luminance": 1
         },
         {
-          "t": 519,
+          "t": 529,
           "luminance": 1
         },
         {
-          "t": 536,
+          "t": 546,
           "luminance": 1
         },
         {
-          "t": 552,
+          "t": 562,
           "luminance": 1
         },
         {
-          "t": 569,
+          "t": 579,
           "luminance": 1
         },
         {
-          "t": 586,
+          "t": 596,
           "luminance": 1
         },
         {
-          "t": 603,
+          "t": 612,
           "luminance": 1
         },
         {
-          "t": 619,
+          "t": 629,
           "luminance": 1
         },
         {
-          "t": 636,
+          "t": 646,
           "luminance": 1
         },
         {
-          "t": 653,
+          "t": 662,
           "luminance": 1
         },
         {
-          "t": 669,
+          "t": 679,
           "luminance": 1
         },
         {
-          "t": 685,
+          "t": 696,
           "luminance": 1
         },
         {
-          "t": 703,
+          "t": 712,
           "luminance": 1
         },
         {
-          "t": 719,
+          "t": 729,
           "luminance": 1
         },
         {
-          "t": 736,
+          "t": 746,
           "luminance": 1
         },
         {
-          "t": 753,
+          "t": 761,
           "luminance": 1
         },
         {
-          "t": 769,
+          "t": 779,
           "luminance": 1
         },
         {
-          "t": 785,
+          "t": 795,
           "luminance": 1
         },
         {
-          "t": 803,
+          "t": 812,
           "luminance": 1
         }
       ]
     },
     "systemDarkOff": {
-      "settingsAt": 309,
+      "settingsAt": 307,
       "frameMs": 17,
-      "darkMs": 302,
+      "darkMs": 300,
       "frames": [
         {
-          "t": 12,
+          "t": 11,
           "luminance": 0.007
         },
         {
@@ -5165,11 +2685,11 @@
           "luminance": 0.007
         },
         {
-          "t": 44,
+          "t": 43,
           "luminance": 0.007
         },
         {
-          "t": 61,
+          "t": 60,
           "luminance": 0.007
         },
         {
@@ -5177,15 +2697,15 @@
           "luminance": 0.007
         },
         {
-          "t": 94,
+          "t": 93,
           "luminance": 0.007
         },
         {
-          "t": 111,
+          "t": 110,
           "luminance": 0.007
         },
         {
-          "t": 126,
+          "t": 127,
           "luminance": 0.007
         },
         {
@@ -5193,19 +2713,19 @@
           "luminance": 0.007
         },
         {
-          "t": 161,
+          "t": 160,
           "luminance": 0.007
         },
         {
-          "t": 176,
+          "t": 177,
           "luminance": 0.007
         },
         {
-          "t": 194,
+          "t": 192,
           "luminance": 0.007
         },
         {
-          "t": 210,
+          "t": 211,
           "luminance": 0.007
         },
         {
@@ -5217,31 +2737,31 @@
           "luminance": 0.007
         },
         {
-          "t": 261,
+          "t": 260,
           "luminance": 0.007
         },
         {
-          "t": 277,
+          "t": 276,
           "luminance": 0.007
         },
         {
-          "t": 294,
+          "t": 293,
           "luminance": 0.007
         },
         {
-          "t": 314,
+          "t": 311,
           "luminance": 1
         },
         {
-          "t": 327,
+          "t": 326,
           "luminance": 1
         },
         {
-          "t": 344,
+          "t": 343,
           "luminance": 1
         },
         {
-          "t": 361,
+          "t": 359,
           "luminance": 1
         },
         {
@@ -5253,7 +2773,7 @@
           "luminance": 1
         },
         {
-          "t": 411,
+          "t": 410,
           "luminance": 1
         },
         {
@@ -5261,11 +2781,11 @@
           "luminance": 1
         },
         {
-          "t": 444,
+          "t": 443,
           "luminance": 1
         },
         {
-          "t": 461,
+          "t": 460,
           "luminance": 1
         },
         {
@@ -5273,19 +2793,19 @@
           "luminance": 1
         },
         {
-          "t": 494,
+          "t": 493,
           "luminance": 1
         },
         {
-          "t": 512,
+          "t": 510,
           "luminance": 1
         },
         {
-          "t": 528,
+          "t": 527,
           "luminance": 1
         },
         {
-          "t": 544,
+          "t": 543,
           "luminance": 1
         },
         {
@@ -5297,23 +2817,23 @@
           "luminance": 1
         },
         {
-          "t": 594,
+          "t": 593,
           "luminance": 1
         },
         {
-          "t": 611,
+          "t": 610,
           "luminance": 1
         },
         {
-          "t": 626,
+          "t": 627,
           "luminance": 1
         },
         {
-          "t": 644,
+          "t": 643,
           "luminance": 1
         },
         {
-          "t": 661,
+          "t": 660,
           "luminance": 1
         },
         {
@@ -5321,11 +2841,11 @@
           "luminance": 1
         },
         {
-          "t": 694,
+          "t": 693,
           "luminance": 1
         },
         {
-          "t": 711,
+          "t": 710,
           "luminance": 1
         },
         {
@@ -5337,7 +2857,7 @@
           "luminance": 1
         },
         {
-          "t": 761,
+          "t": 760,
           "luminance": 1
         },
         {
@@ -5349,19 +2869,19 @@
           "luminance": 1
         },
         {
-          "t": 811,
+          "t": 809,
           "luminance": 1
         }
       ]
     }
   },
-  "hard-cases": {
+  "cross-origin": {
     "systemDarkAlways": {
       "baselineFirst": {
-        "t": 18,
-        "root": "rgb(255, 255, 255)",
+        "t": 8,
+        "root": "rgba(0, 0, 0, 0)",
         "scheme": "normal",
-        "bodyChildren": 2,
+        "bodyChildren": 4,
         "rgb": [
           255,
           255,
@@ -5369,18 +2889,414 @@
         ],
         "luminance": 1
       },
-      "settingsAt": 308,
+      "settingsAt": 306,
       "frames": [
         {
-          "t": 26,
+          "t": 13,
           "luminance": 0.007
         },
         {
-          "t": 48,
+          "t": 30,
+          "luminance": 0.007
+        },
+        {
+          "t": 46,
           "luminance": 0.007
         },
         {
           "t": 63,
+          "luminance": 0.007
+        },
+        {
+          "t": 80,
+          "luminance": 0.007
+        },
+        {
+          "t": 96,
+          "luminance": 0.007
+        },
+        {
+          "t": 112,
+          "luminance": 0.007
+        },
+        {
+          "t": 130,
+          "luminance": 0.007
+        },
+        {
+          "t": 145,
+          "luminance": 0.007
+        },
+        {
+          "t": 163,
+          "luminance": 0.007
+        },
+        {
+          "t": 180,
+          "luminance": 0.007
+        },
+        {
+          "t": 195,
+          "luminance": 0.007
+        },
+        {
+          "t": 213,
+          "luminance": 0.007
+        },
+        {
+          "t": 230,
+          "luminance": 0.007
+        },
+        {
+          "t": 246,
+          "luminance": 0.007
+        },
+        {
+          "t": 263,
+          "luminance": 0.007
+        },
+        {
+          "t": 279,
+          "luminance": 0.007
+        },
+        {
+          "t": 296,
+          "luminance": 0.007
+        },
+        {
+          "t": 314,
+          "luminance": 0.007
+        },
+        {
+          "t": 330,
+          "luminance": 0.007
+        },
+        {
+          "t": 345,
+          "luminance": 0.007
+        },
+        {
+          "t": 363,
+          "luminance": 0.007
+        },
+        {
+          "t": 379,
+          "luminance": 0.007
+        },
+        {
+          "t": 397,
+          "luminance": 0.007
+        },
+        {
+          "t": 413,
+          "luminance": 0.007
+        },
+        {
+          "t": 430,
+          "luminance": 0.007
+        },
+        {
+          "t": 446,
+          "luminance": 0.007
+        },
+        {
+          "t": 462,
+          "luminance": 0.007
+        },
+        {
+          "t": 479,
+          "luminance": 0.007
+        },
+        {
+          "t": 495,
+          "luminance": 0.007
+        },
+        {
+          "t": 513,
+          "luminance": 0.007
+        },
+        {
+          "t": 530,
+          "luminance": 0.007
+        },
+        {
+          "t": 546,
+          "luminance": 0.007
+        },
+        {
+          "t": 563,
+          "luminance": 0.007
+        },
+        {
+          "t": 580,
+          "luminance": 0.007
+        },
+        {
+          "t": 596,
+          "luminance": 0.007
+        },
+        {
+          "t": 613,
+          "luminance": 0.007
+        },
+        {
+          "t": 630,
+          "luminance": 0.007
+        },
+        {
+          "t": 646,
+          "luminance": 0.007
+        },
+        {
+          "t": 663,
+          "luminance": 0.007
+        },
+        {
+          "t": 680,
+          "luminance": 0.007
+        },
+        {
+          "t": 696,
+          "luminance": 0.007
+        },
+        {
+          "t": 713,
+          "luminance": 0.007
+        },
+        {
+          "t": 730,
+          "luminance": 0.007
+        },
+        {
+          "t": 746,
+          "luminance": 0.007
+        },
+        {
+          "t": 763,
+          "luminance": 0.007
+        },
+        {
+          "t": 780,
+          "luminance": 0.007
+        },
+        {
+          "t": 796,
+          "luminance": 0.007
+        }
+      ]
+    },
+    "systemLightOff": {
+      "settingsAt": 307,
+      "frames": [
+        {
+          "t": 16,
+          "luminance": 1
+        },
+        {
+          "t": 45,
+          "luminance": 1
+        },
+        {
+          "t": 54,
+          "luminance": 1
+        },
+        {
+          "t": 71,
+          "luminance": 1
+        },
+        {
+          "t": 88,
+          "luminance": 1
+        },
+        {
+          "t": 104,
+          "luminance": 1
+        },
+        {
+          "t": 121,
+          "luminance": 1
+        },
+        {
+          "t": 138,
+          "luminance": 1
+        },
+        {
+          "t": 154,
+          "luminance": 1
+        },
+        {
+          "t": 171,
+          "luminance": 1
+        },
+        {
+          "t": 188,
+          "luminance": 1
+        },
+        {
+          "t": 204,
+          "luminance": 1
+        },
+        {
+          "t": 221,
+          "luminance": 1
+        },
+        {
+          "t": 238,
+          "luminance": 1
+        },
+        {
+          "t": 254,
+          "luminance": 1
+        },
+        {
+          "t": 271,
+          "luminance": 1
+        },
+        {
+          "t": 288,
+          "luminance": 1
+        },
+        {
+          "t": 305,
+          "luminance": 1
+        },
+        {
+          "t": 321,
+          "luminance": 1
+        },
+        {
+          "t": 337,
+          "luminance": 1
+        },
+        {
+          "t": 355,
+          "luminance": 1
+        },
+        {
+          "t": 371,
+          "luminance": 1
+        },
+        {
+          "t": 387,
+          "luminance": 1
+        },
+        {
+          "t": 404,
+          "luminance": 1
+        },
+        {
+          "t": 421,
+          "luminance": 1
+        },
+        {
+          "t": 459,
+          "luminance": 1
+        },
+        {
+          "t": 471,
+          "luminance": 1
+        },
+        {
+          "t": 488,
+          "luminance": 1
+        },
+        {
+          "t": 504,
+          "luminance": 1
+        },
+        {
+          "t": 521,
+          "luminance": 1
+        },
+        {
+          "t": 538,
+          "luminance": 1
+        },
+        {
+          "t": 554,
+          "luminance": 1
+        },
+        {
+          "t": 571,
+          "luminance": 1
+        },
+        {
+          "t": 588,
+          "luminance": 1
+        },
+        {
+          "t": 604,
+          "luminance": 1
+        },
+        {
+          "t": 621,
+          "luminance": 1
+        },
+        {
+          "t": 638,
+          "luminance": 1
+        },
+        {
+          "t": 654,
+          "luminance": 1
+        },
+        {
+          "t": 671,
+          "luminance": 1
+        },
+        {
+          "t": 688,
+          "luminance": 1
+        },
+        {
+          "t": 704,
+          "luminance": 1
+        },
+        {
+          "t": 721,
+          "luminance": 1
+        },
+        {
+          "t": 738,
+          "luminance": 1
+        },
+        {
+          "t": 754,
+          "luminance": 1
+        },
+        {
+          "t": 771,
+          "luminance": 1
+        },
+        {
+          "t": 788,
+          "luminance": 1
+        },
+        {
+          "t": 804,
+          "luminance": 1
+        }
+      ]
+    },
+    "systemDarkOff": {
+      "settingsAt": 307,
+      "frameMs": 17,
+      "darkMs": 300,
+      "frames": [
+        {
+          "t": 14,
+          "luminance": 0.007
+        },
+        {
+          "t": 31,
+          "luminance": 0.007
+        },
+        {
+          "t": 47,
+          "luminance": 0.007
+        },
+        {
+          "t": 64,
           "luminance": 0.007
         },
         {
@@ -5404,11 +3320,11 @@
           "luminance": 0.007
         },
         {
-          "t": 163,
+          "t": 164,
           "luminance": 0.007
         },
         {
-          "t": 180,
+          "t": 181,
           "luminance": 0.007
         },
         {
@@ -5416,11 +3332,11 @@
           "luminance": 0.007
         },
         {
-          "t": 213,
+          "t": 214,
           "luminance": 0.007
         },
         {
-          "t": 230,
+          "t": 231,
           "luminance": 0.007
         },
         {
@@ -5432,7 +3348,7 @@
           "luminance": 0.007
         },
         {
-          "t": 280,
+          "t": 281,
           "luminance": 0.007
         },
         {
@@ -5440,156 +3356,355 @@
           "luminance": 0.007
         },
         {
-          "t": 336,
-          "luminance": 0.007
+          "t": 314,
+          "luminance": 1
         },
         {
-          "t": 353,
-          "luminance": 0.007
+          "t": 331,
+          "luminance": 1
         },
         {
-          "t": 359,
-          "luminance": 0.007
+          "t": 347,
+          "luminance": 1
         },
         {
-          "t": 363,
-          "luminance": 0.007
+          "t": 364,
+          "luminance": 1
         },
         {
-          "t": 380,
-          "luminance": 0.007
+          "t": 381,
+          "luminance": 1
         },
         {
           "t": 397,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 413,
-          "luminance": 0.007
+          "t": 414,
+          "luminance": 1
         },
         {
-          "t": 431,
-          "luminance": 0.007
+          "t": 430,
+          "luminance": 1
         },
         {
           "t": 447,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 463,
-          "luminance": 0.007
+          "t": 464,
+          "luminance": 1
         },
         {
-          "t": 481,
-          "luminance": 0.007
+          "t": 480,
+          "luminance": 1
         },
         {
           "t": 497,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
           "t": 514,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
           "t": 531,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 548,
-          "luminance": 0.007
+          "t": 547,
+          "luminance": 1
         },
         {
           "t": 564,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
           "t": 581,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
           "t": 597,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 615,
-          "luminance": 0.007
+          "t": 614,
+          "luminance": 1
         },
         {
           "t": 631,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
           "t": 647,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
           "t": 664,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 680,
-          "luminance": 0.007
+          "t": 681,
+          "luminance": 1
         },
         {
           "t": 697,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
           "t": 714,
-          "luminance": 0.007
+          "luminance": 1
         },
         {
-          "t": 730,
-          "luminance": 0.007
+          "t": 731,
+          "luminance": 1
         },
         {
-          "t": 748,
-          "luminance": 0.007
+          "t": 747,
+          "luminance": 1
         },
         {
           "t": 764,
+          "luminance": 1
+        },
+        {
+          "t": 781,
+          "luminance": 1
+        },
+        {
+          "t": 797,
+          "luminance": 1
+        }
+      ]
+    }
+  },
+  "links": {
+    "systemDarkAlways": {
+      "baselineFirst": {
+        "t": 5,
+        "root": "rgba(0, 0, 0, 0)",
+        "scheme": "normal",
+        "bodyChildren": 5,
+        "rgb": [
+          255,
+          255,
+          255
+        ],
+        "luminance": 1
+      },
+      "settingsAt": 306,
+      "frames": [
+        {
+          "t": 10,
           "luminance": 0.007
         },
         {
-          "t": 780,
+          "t": 27,
           "luminance": 0.007
         },
         {
-          "t": 796,
+          "t": 43,
           "luminance": 0.007
         },
         {
-          "t": 814,
+          "t": 59,
           "luminance": 0.007
         },
         {
-          "t": 831,
+          "t": 77,
           "luminance": 0.007
         },
         {
-          "t": 847,
+          "t": 94,
+          "luminance": 0.007
+        },
+        {
+          "t": 110,
+          "luminance": 0.007
+        },
+        {
+          "t": 127,
+          "luminance": 0.007
+        },
+        {
+          "t": 144,
+          "luminance": 0.007
+        },
+        {
+          "t": 160,
+          "luminance": 0.007
+        },
+        {
+          "t": 177,
+          "luminance": 0.007
+        },
+        {
+          "t": 193,
+          "luminance": 0.007
+        },
+        {
+          "t": 210,
+          "luminance": 0.007
+        },
+        {
+          "t": 227,
+          "luminance": 0.007
+        },
+        {
+          "t": 244,
+          "luminance": 0.007
+        },
+        {
+          "t": 260,
+          "luminance": 0.007
+        },
+        {
+          "t": 276,
+          "luminance": 0.007
+        },
+        {
+          "t": 294,
+          "luminance": 0.007
+        },
+        {
+          "t": 320,
+          "luminance": 0.007
+        },
+        {
+          "t": 327,
+          "luminance": 0.007
+        },
+        {
+          "t": 344,
+          "luminance": 0.007
+        },
+        {
+          "t": 361,
+          "luminance": 0.007
+        },
+        {
+          "t": 376,
+          "luminance": 0.007
+        },
+        {
+          "t": 393,
+          "luminance": 0.007
+        },
+        {
+          "t": 410,
+          "luminance": 0.007
+        },
+        {
+          "t": 426,
+          "luminance": 0.007
+        },
+        {
+          "t": 443,
+          "luminance": 0.007
+        },
+        {
+          "t": 460,
+          "luminance": 0.007
+        },
+        {
+          "t": 477,
+          "luminance": 0.007
+        },
+        {
+          "t": 494,
+          "luminance": 0.007
+        },
+        {
+          "t": 510,
+          "luminance": 0.007
+        },
+        {
+          "t": 527,
+          "luminance": 0.007
+        },
+        {
+          "t": 544,
+          "luminance": 0.007
+        },
+        {
+          "t": 560,
+          "luminance": 0.007
+        },
+        {
+          "t": 577,
+          "luminance": 0.007
+        },
+        {
+          "t": 594,
+          "luminance": 0.007
+        },
+        {
+          "t": 610,
+          "luminance": 0.007
+        },
+        {
+          "t": 626,
+          "luminance": 0.007
+        },
+        {
+          "t": 643,
+          "luminance": 0.007
+        },
+        {
+          "t": 660,
+          "luminance": 0.007
+        },
+        {
+          "t": 677,
+          "luminance": 0.007
+        },
+        {
+          "t": 694,
+          "luminance": 0.007
+        },
+        {
+          "t": 710,
+          "luminance": 0.007
+        },
+        {
+          "t": 727,
+          "luminance": 0.007
+        },
+        {
+          "t": 744,
+          "luminance": 0.007
+        },
+        {
+          "t": 759,
+          "luminance": 0.007
+        },
+        {
+          "t": 776,
+          "luminance": 0.007
+        },
+        {
+          "t": 793,
           "luminance": 0.007
         }
       ]
     },
     "systemLightOff": {
-      "settingsAt": 311,
+      "settingsAt": 307,
       "frames": [
         {
-          "t": 25,
+          "t": 8,
           "luminance": 1
         },
         {
-          "t": 30,
+          "t": 23,
           "luminance": 1
         },
         {
-          "t": 41,
+          "t": 39,
           "luminance": 1
         },
         {
-          "t": 56,
+          "t": 57,
           "luminance": 1
         },
         {
@@ -5601,7 +3716,7 @@
           "luminance": 1
         },
         {
-          "t": 107,
+          "t": 106,
           "luminance": 1
         },
         {
@@ -5613,7 +3728,7 @@
           "luminance": 1
         },
         {
-          "t": 156,
+          "t": 157,
           "luminance": 1
         },
         {
@@ -5621,15 +3736,15 @@
           "luminance": 1
         },
         {
-          "t": 189,
+          "t": 190,
           "luminance": 1
         },
         {
-          "t": 206,
+          "t": 207,
           "luminance": 1
         },
         {
-          "t": 223,
+          "t": 224,
           "luminance": 1
         },
         {
@@ -5649,11 +3764,11 @@
           "luminance": 1
         },
         {
-          "t": 306,
+          "t": 309,
           "luminance": 1
         },
         {
-          "t": 322,
+          "t": 324,
           "luminance": 1
         },
         {
@@ -5661,11 +3776,11 @@
           "luminance": 1
         },
         {
-          "t": 356,
+          "t": 357,
           "luminance": 1
         },
         {
-          "t": 372,
+          "t": 373,
           "luminance": 1
         },
         {
@@ -5673,23 +3788,23 @@
           "luminance": 1
         },
         {
-          "t": 405,
+          "t": 407,
           "luminance": 1
         },
         {
-          "t": 422,
+          "t": 424,
           "luminance": 1
         },
         {
-          "t": 441,
+          "t": 440,
           "luminance": 1
         },
         {
-          "t": 456,
+          "t": 457,
           "luminance": 1
         },
         {
-          "t": 472,
+          "t": 473,
           "luminance": 1
         },
         {
@@ -5697,7 +3812,7 @@
           "luminance": 1
         },
         {
-          "t": 506,
+          "t": 507,
           "luminance": 1
         },
         {
@@ -5709,11 +3824,11 @@
           "luminance": 1
         },
         {
-          "t": 556,
+          "t": 557,
           "luminance": 1
         },
         {
-          "t": 572,
+          "t": 573,
           "luminance": 1
         },
         {
@@ -5721,7 +3836,7 @@
           "luminance": 1
         },
         {
-          "t": 606,
+          "t": 607,
           "luminance": 1
         },
         {
@@ -5757,11 +3872,11 @@
           "luminance": 1
         },
         {
-          "t": 756,
+          "t": 757,
           "luminance": 1
         },
         {
-          "t": 772,
+          "t": 773,
           "luminance": 1
         },
         {
@@ -5769,26 +3884,233 @@
           "luminance": 1
         },
         {
-          "t": 807,
-          "luminance": 1
-        },
-        {
-          "t": 824,
-          "luminance": 1
-        },
-        {
-          "t": 840,
+          "t": 806,
           "luminance": 1
         }
       ]
     },
     "systemDarkOff": {
-      "settingsAt": 311,
+      "settingsAt": 306,
       "frameMs": 17,
-      "darkMs": 293,
+      "darkMs": 300,
       "frames": [
         {
-          "t": 25,
+          "t": 15,
+          "luminance": 0.007
+        },
+        {
+          "t": 32,
+          "luminance": 0.007
+        },
+        {
+          "t": 49,
+          "luminance": 0.007
+        },
+        {
+          "t": 65,
+          "luminance": 0.007
+        },
+        {
+          "t": 81,
+          "luminance": 0.007
+        },
+        {
+          "t": 99,
+          "luminance": 0.007
+        },
+        {
+          "t": 115,
+          "luminance": 0.007
+        },
+        {
+          "t": 132,
+          "luminance": 0.007
+        },
+        {
+          "t": 149,
+          "luminance": 0.007
+        },
+        {
+          "t": 165,
+          "luminance": 0.007
+        },
+        {
+          "t": 182,
+          "luminance": 0.007
+        },
+        {
+          "t": 199,
+          "luminance": 0.007
+        },
+        {
+          "t": 215,
+          "luminance": 0.007
+        },
+        {
+          "t": 232,
+          "luminance": 0.007
+        },
+        {
+          "t": 249,
+          "luminance": 0.007
+        },
+        {
+          "t": 265,
+          "luminance": 0.007
+        },
+        {
+          "t": 282,
+          "luminance": 0.007
+        },
+        {
+          "t": 299,
+          "luminance": 0.007
+        },
+        {
+          "t": 315,
+          "luminance": 1
+        },
+        {
+          "t": 332,
+          "luminance": 1
+        },
+        {
+          "t": 349,
+          "luminance": 1
+        },
+        {
+          "t": 365,
+          "luminance": 1
+        },
+        {
+          "t": 382,
+          "luminance": 1
+        },
+        {
+          "t": 399,
+          "luminance": 1
+        },
+        {
+          "t": 415,
+          "luminance": 1
+        },
+        {
+          "t": 432,
+          "luminance": 1
+        },
+        {
+          "t": 449,
+          "luminance": 1
+        },
+        {
+          "t": 465,
+          "luminance": 1
+        },
+        {
+          "t": 482,
+          "luminance": 1
+        },
+        {
+          "t": 499,
+          "luminance": 1
+        },
+        {
+          "t": 515,
+          "luminance": 1
+        },
+        {
+          "t": 531,
+          "luminance": 1
+        },
+        {
+          "t": 548,
+          "luminance": 1
+        },
+        {
+          "t": 565,
+          "luminance": 1
+        },
+        {
+          "t": 582,
+          "luminance": 1
+        },
+        {
+          "t": 599,
+          "luminance": 1
+        },
+        {
+          "t": 615,
+          "luminance": 1
+        },
+        {
+          "t": 631,
+          "luminance": 1
+        },
+        {
+          "t": 649,
+          "luminance": 1
+        },
+        {
+          "t": 665,
+          "luminance": 1
+        },
+        {
+          "t": 682,
+          "luminance": 1
+        },
+        {
+          "t": 699,
+          "luminance": 1
+        },
+        {
+          "t": 715,
+          "luminance": 1
+        },
+        {
+          "t": 732,
+          "luminance": 1
+        },
+        {
+          "t": 748,
+          "luminance": 1
+        },
+        {
+          "t": 765,
+          "luminance": 1
+        },
+        {
+          "t": 782,
+          "luminance": 1
+        },
+        {
+          "t": 799,
+          "luminance": 1
+        }
+      ]
+    }
+  },
+  "shop": {
+    "systemDarkAlways": {
+      "baselineFirst": {
+        "t": 7,
+        "root": "rgba(0, 0, 0, 0)",
+        "scheme": "normal",
+        "bodyChildren": 3,
+        "rgb": [
+          246,
+          246,
+          246
+        ],
+        "luminance": 0.922
+      },
+      "settingsAt": 306,
+      "frames": [
+        {
+          "t": 12,
+          "luminance": 0.007
+        },
+        {
+          "t": 29,
           "luminance": 0.007
         },
         {
@@ -5796,7 +4118,7 @@
           "luminance": 0.007
         },
         {
-          "t": 62,
+          "t": 61,
           "luminance": 0.007
         },
         {
@@ -5808,11 +4130,11 @@
           "luminance": 0.007
         },
         {
-          "t": 112,
+          "t": 111,
           "luminance": 0.007
         },
         {
-          "t": 128,
+          "t": 129,
           "luminance": 0.007
         },
         {
@@ -5820,11 +4142,11 @@
           "luminance": 0.007
         },
         {
-          "t": 161,
+          "t": 162,
           "luminance": 0.007
         },
         {
-          "t": 178,
+          "t": 179,
           "luminance": 0.007
         },
         {
@@ -5836,7 +4158,7 @@
           "luminance": 0.007
         },
         {
-          "t": 229,
+          "t": 228,
           "luminance": 0.007
         },
         {
@@ -5844,19 +4166,831 @@
           "luminance": 0.007
         },
         {
-          "t": 261,
+          "t": 262,
           "luminance": 0.007
         },
         {
-          "t": 278,
+          "t": 279,
           "luminance": 0.007
         },
         {
-          "t": 294,
+          "t": 295,
           "luminance": 0.007
         },
         {
-          "t": 318,
+          "t": 317,
+          "luminance": 0.007
+        },
+        {
+          "t": 329,
+          "luminance": 0.007
+        },
+        {
+          "t": 345,
+          "luminance": 0.007
+        },
+        {
+          "t": 362,
+          "luminance": 0.007
+        },
+        {
+          "t": 379,
+          "luminance": 0.007
+        },
+        {
+          "t": 395,
+          "luminance": 0.007
+        },
+        {
+          "t": 412,
+          "luminance": 0.007
+        },
+        {
+          "t": 429,
+          "luminance": 0.007
+        },
+        {
+          "t": 445,
+          "luminance": 0.007
+        },
+        {
+          "t": 462,
+          "luminance": 0.007
+        },
+        {
+          "t": 479,
+          "luminance": 0.007
+        },
+        {
+          "t": 496,
+          "luminance": 0.007
+        },
+        {
+          "t": 512,
+          "luminance": 0.007
+        },
+        {
+          "t": 529,
+          "luminance": 0.007
+        },
+        {
+          "t": 546,
+          "luminance": 0.007
+        },
+        {
+          "t": 562,
+          "luminance": 0.007
+        },
+        {
+          "t": 578,
+          "luminance": 0.007
+        },
+        {
+          "t": 596,
+          "luminance": 0.007
+        },
+        {
+          "t": 612,
+          "luminance": 0.007
+        },
+        {
+          "t": 629,
+          "luminance": 0.007
+        },
+        {
+          "t": 646,
+          "luminance": 0.007
+        },
+        {
+          "t": 662,
+          "luminance": 0.007
+        },
+        {
+          "t": 678,
+          "luminance": 0.007
+        },
+        {
+          "t": 696,
+          "luminance": 0.007
+        },
+        {
+          "t": 712,
+          "luminance": 0.007
+        },
+        {
+          "t": 729,
+          "luminance": 0.007
+        },
+        {
+          "t": 746,
+          "luminance": 0.007
+        },
+        {
+          "t": 762,
+          "luminance": 0.007
+        },
+        {
+          "t": 778,
+          "luminance": 0.007
+        },
+        {
+          "t": 796,
+          "luminance": 0.007
+        }
+      ]
+    },
+    "systemLightOff": {
+      "settingsAt": 306,
+      "frames": [
+        {
+          "t": 13,
+          "luminance": 0.922
+        },
+        {
+          "t": 29,
+          "luminance": 0.922
+        },
+        {
+          "t": 46,
+          "luminance": 0.922
+        },
+        {
+          "t": 63,
+          "luminance": 0.922
+        },
+        {
+          "t": 79,
+          "luminance": 0.922
+        },
+        {
+          "t": 96,
+          "luminance": 0.922
+        },
+        {
+          "t": 112,
+          "luminance": 0.922
+        },
+        {
+          "t": 129,
+          "luminance": 0.922
+        },
+        {
+          "t": 146,
+          "luminance": 0.922
+        },
+        {
+          "t": 163,
+          "luminance": 0.922
+        },
+        {
+          "t": 179,
+          "luminance": 0.922
+        },
+        {
+          "t": 196,
+          "luminance": 0.922
+        },
+        {
+          "t": 213,
+          "luminance": 0.922
+        },
+        {
+          "t": 229,
+          "luminance": 0.922
+        },
+        {
+          "t": 246,
+          "luminance": 0.922
+        },
+        {
+          "t": 263,
+          "luminance": 0.922
+        },
+        {
+          "t": 279,
+          "luminance": 0.922
+        },
+        {
+          "t": 295,
+          "luminance": 0.922
+        },
+        {
+          "t": 313,
+          "luminance": 0.922
+        },
+        {
+          "t": 329,
+          "luminance": 0.922
+        },
+        {
+          "t": 346,
+          "luminance": 0.922
+        },
+        {
+          "t": 363,
+          "luminance": 0.922
+        },
+        {
+          "t": 379,
+          "luminance": 0.922
+        },
+        {
+          "t": 396,
+          "luminance": 0.922
+        },
+        {
+          "t": 413,
+          "luminance": 0.922
+        },
+        {
+          "t": 429,
+          "luminance": 0.922
+        },
+        {
+          "t": 446,
+          "luminance": 0.922
+        },
+        {
+          "t": 463,
+          "luminance": 0.922
+        },
+        {
+          "t": 479,
+          "luminance": 0.922
+        },
+        {
+          "t": 496,
+          "luminance": 0.922
+        },
+        {
+          "t": 512,
+          "luminance": 0.922
+        },
+        {
+          "t": 530,
+          "luminance": 0.922
+        },
+        {
+          "t": 546,
+          "luminance": 0.922
+        },
+        {
+          "t": 563,
+          "luminance": 0.922
+        },
+        {
+          "t": 580,
+          "luminance": 0.922
+        },
+        {
+          "t": 596,
+          "luminance": 0.922
+        },
+        {
+          "t": 613,
+          "luminance": 0.922
+        },
+        {
+          "t": 629,
+          "luminance": 0.922
+        },
+        {
+          "t": 646,
+          "luminance": 0.922
+        },
+        {
+          "t": 663,
+          "luminance": 0.922
+        },
+        {
+          "t": 679,
+          "luminance": 0.922
+        },
+        {
+          "t": 696,
+          "luminance": 0.922
+        },
+        {
+          "t": 713,
+          "luminance": 0.922
+        },
+        {
+          "t": 729,
+          "luminance": 0.922
+        },
+        {
+          "t": 746,
+          "luminance": 0.922
+        },
+        {
+          "t": 763,
+          "luminance": 0.922
+        },
+        {
+          "t": 778,
+          "luminance": 0.922
+        },
+        {
+          "t": 796,
+          "luminance": 0.922
+        },
+        {
+          "t": 813,
+          "luminance": 0.922
+        }
+      ]
+    },
+    "systemDarkOff": {
+      "settingsAt": 307,
+      "frameMs": 17,
+      "darkMs": 299,
+      "frames": [
+        {
+          "t": 14,
+          "luminance": 0.007
+        },
+        {
+          "t": 30,
+          "luminance": 0.007
+        },
+        {
+          "t": 46,
+          "luminance": 0.007
+        },
+        {
+          "t": 63,
+          "luminance": 0.007
+        },
+        {
+          "t": 79,
+          "luminance": 0.007
+        },
+        {
+          "t": 95,
+          "luminance": 0.007
+        },
+        {
+          "t": 113,
+          "luminance": 0.007
+        },
+        {
+          "t": 130,
+          "luminance": 0.007
+        },
+        {
+          "t": 146,
+          "luminance": 0.007
+        },
+        {
+          "t": 163,
+          "luminance": 0.007
+        },
+        {
+          "t": 180,
+          "luminance": 0.007
+        },
+        {
+          "t": 196,
+          "luminance": 0.007
+        },
+        {
+          "t": 213,
+          "luminance": 0.007
+        },
+        {
+          "t": 230,
+          "luminance": 0.007
+        },
+        {
+          "t": 246,
+          "luminance": 0.007
+        },
+        {
+          "t": 263,
+          "luminance": 0.007
+        },
+        {
+          "t": 280,
+          "luminance": 0.007
+        },
+        {
+          "t": 296,
+          "luminance": 0.007
+        },
+        {
+          "t": 313,
+          "luminance": 0.922
+        },
+        {
+          "t": 330,
+          "luminance": 0.922
+        },
+        {
+          "t": 346,
+          "luminance": 0.922
+        },
+        {
+          "t": 363,
+          "luminance": 0.922
+        },
+        {
+          "t": 380,
+          "luminance": 0.922
+        },
+        {
+          "t": 396,
+          "luminance": 0.922
+        },
+        {
+          "t": 413,
+          "luminance": 0.922
+        },
+        {
+          "t": 430,
+          "luminance": 0.922
+        },
+        {
+          "t": 446,
+          "luminance": 0.922
+        },
+        {
+          "t": 463,
+          "luminance": 0.922
+        },
+        {
+          "t": 480,
+          "luminance": 0.922
+        },
+        {
+          "t": 496,
+          "luminance": 0.922
+        },
+        {
+          "t": 513,
+          "luminance": 0.922
+        },
+        {
+          "t": 530,
+          "luminance": 0.922
+        },
+        {
+          "t": 546,
+          "luminance": 0.922
+        },
+        {
+          "t": 563,
+          "luminance": 0.922
+        },
+        {
+          "t": 580,
+          "luminance": 0.922
+        },
+        {
+          "t": 597,
+          "luminance": 0.922
+        },
+        {
+          "t": 612,
+          "luminance": 0.922
+        },
+        {
+          "t": 630,
+          "luminance": 0.922
+        },
+        {
+          "t": 646,
+          "luminance": 0.922
+        },
+        {
+          "t": 663,
+          "luminance": 0.922
+        },
+        {
+          "t": 680,
+          "luminance": 0.922
+        },
+        {
+          "t": 696,
+          "luminance": 0.922
+        },
+        {
+          "t": 712,
+          "luminance": 0.922
+        },
+        {
+          "t": 730,
+          "luminance": 0.922
+        },
+        {
+          "t": 746,
+          "luminance": 0.922
+        },
+        {
+          "t": 763,
+          "luminance": 0.922
+        },
+        {
+          "t": 780,
+          "luminance": 0.922
+        },
+        {
+          "t": 796,
+          "luminance": 0.922
+        },
+        {
+          "t": 813,
+          "luminance": 0.922
+        }
+      ]
+    }
+  },
+  "shadow": {
+    "systemDarkAlways": {
+      "baselineFirst": {
+        "t": 5,
+        "root": "rgba(0, 0, 0, 0)",
+        "scheme": "normal",
+        "bodyChildren": 6,
+        "rgb": [
+          255,
+          255,
+          255
+        ],
+        "luminance": 1
+      },
+      "settingsAt": 307,
+      "frames": [
+        {
+          "t": 12,
+          "luminance": 0.007
+        },
+        {
+          "t": 29,
+          "luminance": 0.007
+        },
+        {
+          "t": 46,
+          "luminance": 0.007
+        },
+        {
+          "t": 62,
+          "luminance": 0.007
+        },
+        {
+          "t": 79,
+          "luminance": 0.007
+        },
+        {
+          "t": 95,
+          "luminance": 0.007
+        },
+        {
+          "t": 112,
+          "luminance": 0.007
+        },
+        {
+          "t": 129,
+          "luminance": 0.007
+        },
+        {
+          "t": 146,
+          "luminance": 0.007
+        },
+        {
+          "t": 162,
+          "luminance": 0.007
+        },
+        {
+          "t": 179,
+          "luminance": 0.007
+        },
+        {
+          "t": 196,
+          "luminance": 0.007
+        },
+        {
+          "t": 212,
+          "luminance": 0.007
+        },
+        {
+          "t": 229,
+          "luminance": 0.007
+        },
+        {
+          "t": 246,
+          "luminance": 0.007
+        },
+        {
+          "t": 262,
+          "luminance": 0.007
+        },
+        {
+          "t": 279,
+          "luminance": 0.007
+        },
+        {
+          "t": 296,
+          "luminance": 0.007
+        },
+        {
+          "t": 315,
+          "luminance": 0.007
+        },
+        {
+          "t": 329,
+          "luminance": 0.007
+        },
+        {
+          "t": 346,
+          "luminance": 0.007
+        },
+        {
+          "t": 362,
+          "luminance": 0.007
+        },
+        {
+          "t": 379,
+          "luminance": 0.007
+        },
+        {
+          "t": 396,
+          "luminance": 0.007
+        },
+        {
+          "t": 413,
+          "luminance": 0.007
+        },
+        {
+          "t": 429,
+          "luminance": 0.007
+        },
+        {
+          "t": 446,
+          "luminance": 0.007
+        },
+        {
+          "t": 462,
+          "luminance": 0.007
+        },
+        {
+          "t": 479,
+          "luminance": 0.007
+        },
+        {
+          "t": 496,
+          "luminance": 0.007
+        },
+        {
+          "t": 512,
+          "luminance": 0.007
+        },
+        {
+          "t": 529,
+          "luminance": 0.007
+        },
+        {
+          "t": 546,
+          "luminance": 0.007
+        },
+        {
+          "t": 563,
+          "luminance": 0.007
+        },
+        {
+          "t": 579,
+          "luminance": 0.007
+        },
+        {
+          "t": 596,
+          "luminance": 0.007
+        },
+        {
+          "t": 612,
+          "luminance": 0.007
+        },
+        {
+          "t": 629,
+          "luminance": 0.007
+        },
+        {
+          "t": 646,
+          "luminance": 0.007
+        },
+        {
+          "t": 663,
+          "luminance": 0.007
+        },
+        {
+          "t": 679,
+          "luminance": 0.007
+        },
+        {
+          "t": 696,
+          "luminance": 0.007
+        },
+        {
+          "t": 713,
+          "luminance": 0.007
+        },
+        {
+          "t": 728,
+          "luminance": 0.007
+        },
+        {
+          "t": 746,
+          "luminance": 0.007
+        },
+        {
+          "t": 763,
+          "luminance": 0.007
+        },
+        {
+          "t": 778,
+          "luminance": 0.007
+        },
+        {
+          "t": 796,
+          "luminance": 0.007
+        }
+      ]
+    },
+    "systemLightOff": {
+      "settingsAt": 307,
+      "frames": [
+        {
+          "t": 12,
+          "luminance": 1
+        },
+        {
+          "t": 29,
+          "luminance": 1
+        },
+        {
+          "t": 45,
+          "luminance": 1
+        },
+        {
+          "t": 62,
+          "luminance": 1
+        },
+        {
+          "t": 79,
+          "luminance": 1
+        },
+        {
+          "t": 95,
+          "luminance": 1
+        },
+        {
+          "t": 111,
+          "luminance": 1
+        },
+        {
+          "t": 129,
+          "luminance": 1
+        },
+        {
+          "t": 145,
+          "luminance": 1
+        },
+        {
+          "t": 162,
+          "luminance": 1
+        },
+        {
+          "t": 179,
+          "luminance": 1
+        },
+        {
+          "t": 195,
+          "luminance": 1
+        },
+        {
+          "t": 212,
+          "luminance": 1
+        },
+        {
+          "t": 229,
+          "luminance": 1
+        },
+        {
+          "t": 246,
+          "luminance": 1
+        },
+        {
+          "t": 262,
+          "luminance": 1
+        },
+        {
+          "t": 279,
+          "luminance": 1
+        },
+        {
+          "t": 296,
+          "luminance": 1
+        },
+        {
+          "t": 312,
           "luminance": 1
         },
         {
@@ -5864,7 +4998,7 @@
           "luminance": 1
         },
         {
-          "t": 344,
+          "t": 345,
           "luminance": 1
         },
         {
@@ -5872,15 +5006,15 @@
           "luminance": 1
         },
         {
-          "t": 378,
+          "t": 379,
           "luminance": 1
         },
         {
-          "t": 396,
+          "t": 395,
           "luminance": 1
         },
         {
-          "t": 411,
+          "t": 412,
           "luminance": 1
         },
         {
@@ -5888,11 +5022,11 @@
           "luminance": 1
         },
         {
-          "t": 445,
+          "t": 446,
           "luminance": 1
         },
         {
-          "t": 461,
+          "t": 462,
           "luminance": 1
         },
         {
@@ -5900,7 +5034,7 @@
           "luminance": 1
         },
         {
-          "t": 496,
+          "t": 495,
           "luminance": 1
         },
         {
@@ -5908,11 +5042,11 @@
           "luminance": 1
         },
         {
-          "t": 528,
+          "t": 529,
           "luminance": 1
         },
         {
-          "t": 545,
+          "t": 546,
           "luminance": 1
         },
         {
@@ -5920,11 +5054,11 @@
           "luminance": 1
         },
         {
-          "t": 577,
+          "t": 579,
           "luminance": 1
         },
         {
-          "t": 594,
+          "t": 596,
           "luminance": 1
         },
         {
@@ -5932,7 +5066,7 @@
           "luminance": 1
         },
         {
-          "t": 628,
+          "t": 629,
           "luminance": 1
         },
         {
@@ -5944,11 +5078,11 @@
           "luminance": 1
         },
         {
-          "t": 678,
+          "t": 679,
           "luminance": 1
         },
         {
-          "t": 694,
+          "t": 695,
           "luminance": 1
         },
         {
@@ -5974,17 +5108,847 @@
         {
           "t": 795,
           "luminance": 1
+        }
+      ]
+    },
+    "systemDarkOff": {
+      "settingsAt": 307,
+      "frameMs": 17,
+      "darkMs": 305,
+      "frames": [
+        {
+          "t": 8,
+          "luminance": 0.007
         },
         {
-          "t": 812,
+          "t": 25,
+          "luminance": 0.007
+        },
+        {
+          "t": 41,
+          "luminance": 0.007
+        },
+        {
+          "t": 57,
+          "luminance": 0.007
+        },
+        {
+          "t": 75,
+          "luminance": 0.007
+        },
+        {
+          "t": 91,
+          "luminance": 0.007
+        },
+        {
+          "t": 108,
+          "luminance": 0.007
+        },
+        {
+          "t": 124,
+          "luminance": 0.007
+        },
+        {
+          "t": 141,
+          "luminance": 0.007
+        },
+        {
+          "t": 158,
+          "luminance": 0.007
+        },
+        {
+          "t": 175,
+          "luminance": 0.007
+        },
+        {
+          "t": 191,
+          "luminance": 0.007
+        },
+        {
+          "t": 208,
+          "luminance": 0.007
+        },
+        {
+          "t": 224,
+          "luminance": 0.007
+        },
+        {
+          "t": 241,
+          "luminance": 0.007
+        },
+        {
+          "t": 258,
+          "luminance": 0.007
+        },
+        {
+          "t": 275,
+          "luminance": 0.007
+        },
+        {
+          "t": 291,
+          "luminance": 0.007
+        },
+        {
+          "t": 313,
           "luminance": 1
         },
         {
-          "t": 828,
+          "t": 324,
           "luminance": 1
         },
         {
-          "t": 845,
+          "t": 340,
+          "luminance": 1
+        },
+        {
+          "t": 358,
+          "luminance": 1
+        },
+        {
+          "t": 375,
+          "luminance": 1
+        },
+        {
+          "t": 391,
+          "luminance": 1
+        },
+        {
+          "t": 408,
+          "luminance": 1
+        },
+        {
+          "t": 425,
+          "luminance": 1
+        },
+        {
+          "t": 441,
+          "luminance": 1
+        },
+        {
+          "t": 458,
+          "luminance": 1
+        },
+        {
+          "t": 475,
+          "luminance": 1
+        },
+        {
+          "t": 491,
+          "luminance": 1
+        },
+        {
+          "t": 508,
+          "luminance": 1
+        },
+        {
+          "t": 525,
+          "luminance": 1
+        },
+        {
+          "t": 541,
+          "luminance": 1
+        },
+        {
+          "t": 558,
+          "luminance": 1
+        },
+        {
+          "t": 575,
+          "luminance": 1
+        },
+        {
+          "t": 591,
+          "luminance": 1
+        },
+        {
+          "t": 608,
+          "luminance": 1
+        },
+        {
+          "t": 625,
+          "luminance": 1
+        },
+        {
+          "t": 640,
+          "luminance": 1
+        },
+        {
+          "t": 658,
+          "luminance": 1
+        },
+        {
+          "t": 674,
+          "luminance": 1
+        },
+        {
+          "t": 691,
+          "luminance": 1
+        },
+        {
+          "t": 708,
+          "luminance": 1
+        },
+        {
+          "t": 725,
+          "luminance": 1
+        },
+        {
+          "t": 740,
+          "luminance": 1
+        },
+        {
+          "t": 758,
+          "luminance": 1
+        },
+        {
+          "t": 775,
+          "luminance": 1
+        },
+        {
+          "t": 791,
+          "luminance": 1
+        },
+        {
+          "t": 808,
+          "luminance": 1
+        }
+      ]
+    }
+  },
+  "hard-cases": {
+    "systemDarkAlways": {
+      "baselineFirst": {
+        "t": 17,
+        "root": "rgb(255, 255, 255)",
+        "scheme": "normal",
+        "bodyChildren": 2,
+        "rgb": [
+          255,
+          255,
+          255
+        ],
+        "luminance": 1
+      },
+      "settingsAt": 309,
+      "frames": [
+        {
+          "t": 27,
+          "luminance": 0.007
+        },
+        {
+          "t": 47,
+          "luminance": 0.007
+        },
+        {
+          "t": 49,
+          "luminance": 0.007
+        },
+        {
+          "t": 60,
+          "luminance": 0.007
+        },
+        {
+          "t": 76,
+          "luminance": 0.007
+        },
+        {
+          "t": 92,
+          "luminance": 0.007
+        },
+        {
+          "t": 109,
+          "luminance": 0.007
+        },
+        {
+          "t": 126,
+          "luminance": 0.007
+        },
+        {
+          "t": 142,
+          "luminance": 0.007
+        },
+        {
+          "t": 159,
+          "luminance": 0.007
+        },
+        {
+          "t": 176,
+          "luminance": 0.007
+        },
+        {
+          "t": 192,
+          "luminance": 0.007
+        },
+        {
+          "t": 209,
+          "luminance": 0.007
+        },
+        {
+          "t": 226,
+          "luminance": 0.007
+        },
+        {
+          "t": 242,
+          "luminance": 0.007
+        },
+        {
+          "t": 259,
+          "luminance": 0.007
+        },
+        {
+          "t": 276,
+          "luminance": 0.007
+        },
+        {
+          "t": 292,
+          "luminance": 0.007
+        },
+        {
+          "t": 328,
+          "luminance": 0.007
+        },
+        {
+          "t": 334,
+          "luminance": 0.007
+        },
+        {
+          "t": 342,
+          "luminance": 0.007
+        },
+        {
+          "t": 361,
+          "luminance": 0.007
+        },
+        {
+          "t": 376,
+          "luminance": 0.007
+        },
+        {
+          "t": 392,
+          "luminance": 0.007
+        },
+        {
+          "t": 409,
+          "luminance": 0.007
+        },
+        {
+          "t": 426,
+          "luminance": 0.007
+        },
+        {
+          "t": 442,
+          "luminance": 0.007
+        },
+        {
+          "t": 459,
+          "luminance": 0.007
+        },
+        {
+          "t": 476,
+          "luminance": 0.007
+        },
+        {
+          "t": 492,
+          "luminance": 0.007
+        },
+        {
+          "t": 509,
+          "luminance": 0.007
+        },
+        {
+          "t": 526,
+          "luminance": 0.007
+        },
+        {
+          "t": 543,
+          "luminance": 0.007
+        },
+        {
+          "t": 560,
+          "luminance": 0.007
+        },
+        {
+          "t": 575,
+          "luminance": 0.007
+        },
+        {
+          "t": 593,
+          "luminance": 0.007
+        },
+        {
+          "t": 609,
+          "luminance": 0.007
+        },
+        {
+          "t": 626,
+          "luminance": 0.007
+        },
+        {
+          "t": 643,
+          "luminance": 0.007
+        },
+        {
+          "t": 658,
+          "luminance": 0.007
+        },
+        {
+          "t": 676,
+          "luminance": 0.007
+        },
+        {
+          "t": 692,
+          "luminance": 0.007
+        },
+        {
+          "t": 709,
+          "luminance": 0.007
+        },
+        {
+          "t": 726,
+          "luminance": 0.007
+        },
+        {
+          "t": 742,
+          "luminance": 0.007
+        },
+        {
+          "t": 759,
+          "luminance": 0.007
+        },
+        {
+          "t": 776,
+          "luminance": 0.007
+        },
+        {
+          "t": 792,
+          "luminance": 0.007
+        },
+        {
+          "t": 809,
+          "luminance": 0.007
+        },
+        {
+          "t": 826,
+          "luminance": 0.007
+        },
+        {
+          "t": 842,
+          "luminance": 0.007
+        },
+        {
+          "t": 859,
+          "luminance": 0.007
+        }
+      ]
+    },
+    "systemLightOff": {
+      "settingsAt": 307,
+      "frames": [
+        {
+          "t": 21,
+          "luminance": 1
+        },
+        {
+          "t": 32,
+          "luminance": 1
+        },
+        {
+          "t": 47,
+          "luminance": 1
+        },
+        {
+          "t": 64,
+          "luminance": 1
+        },
+        {
+          "t": 81,
+          "luminance": 1
+        },
+        {
+          "t": 97,
+          "luminance": 1
+        },
+        {
+          "t": 114,
+          "luminance": 1
+        },
+        {
+          "t": 130,
+          "luminance": 1
+        },
+        {
+          "t": 147,
+          "luminance": 1
+        },
+        {
+          "t": 164,
+          "luminance": 1
+        },
+        {
+          "t": 181,
+          "luminance": 1
+        },
+        {
+          "t": 197,
+          "luminance": 1
+        },
+        {
+          "t": 214,
+          "luminance": 1
+        },
+        {
+          "t": 231,
+          "luminance": 1
+        },
+        {
+          "t": 247,
+          "luminance": 1
+        },
+        {
+          "t": 263,
+          "luminance": 1
+        },
+        {
+          "t": 281,
+          "luminance": 1
+        },
+        {
+          "t": 297,
+          "luminance": 1
+        },
+        {
+          "t": 316,
+          "luminance": 1
+        },
+        {
+          "t": 330,
+          "luminance": 1
+        },
+        {
+          "t": 347,
+          "luminance": 1
+        },
+        {
+          "t": 363,
+          "luminance": 1
+        },
+        {
+          "t": 380,
+          "luminance": 1
+        },
+        {
+          "t": 397,
+          "luminance": 1
+        },
+        {
+          "t": 414,
+          "luminance": 1
+        },
+        {
+          "t": 430,
+          "luminance": 1
+        },
+        {
+          "t": 447,
+          "luminance": 1
+        },
+        {
+          "t": 464,
+          "luminance": 1
+        },
+        {
+          "t": 480,
+          "luminance": 1
+        },
+        {
+          "t": 496,
+          "luminance": 1
+        },
+        {
+          "t": 514,
+          "luminance": 1
+        },
+        {
+          "t": 530,
+          "luminance": 1
+        },
+        {
+          "t": 547,
+          "luminance": 1
+        },
+        {
+          "t": 564,
+          "luminance": 1
+        },
+        {
+          "t": 580,
+          "luminance": 1
+        },
+        {
+          "t": 597,
+          "luminance": 1
+        },
+        {
+          "t": 614,
+          "luminance": 1
+        },
+        {
+          "t": 631,
+          "luminance": 1
+        },
+        {
+          "t": 647,
+          "luminance": 1
+        },
+        {
+          "t": 664,
+          "luminance": 1
+        },
+        {
+          "t": 680,
+          "luminance": 1
+        },
+        {
+          "t": 697,
+          "luminance": 1
+        },
+        {
+          "t": 713,
+          "luminance": 1
+        },
+        {
+          "t": 730,
+          "luminance": 1
+        },
+        {
+          "t": 747,
+          "luminance": 1
+        },
+        {
+          "t": 764,
+          "luminance": 1
+        },
+        {
+          "t": 780,
+          "luminance": 1
+        },
+        {
+          "t": 797,
+          "luminance": 1
+        },
+        {
+          "t": 814,
+          "luminance": 1
+        },
+        {
+          "t": 830,
+          "luminance": 1
+        }
+      ]
+    },
+    "systemDarkOff": {
+      "settingsAt": 306,
+      "frameMs": 17,
+      "darkMs": 298,
+      "frames": [
+        {
+          "t": 19,
+          "luminance": 0.007
+        },
+        {
+          "t": 30,
+          "luminance": 0.007
+        },
+        {
+          "t": 46,
+          "luminance": 0.007
+        },
+        {
+          "t": 63,
+          "luminance": 0.007
+        },
+        {
+          "t": 79,
+          "luminance": 0.007
+        },
+        {
+          "t": 95,
+          "luminance": 0.007
+        },
+        {
+          "t": 112,
+          "luminance": 0.007
+        },
+        {
+          "t": 130,
+          "luminance": 0.007
+        },
+        {
+          "t": 146,
+          "luminance": 0.007
+        },
+        {
+          "t": 163,
+          "luminance": 0.007
+        },
+        {
+          "t": 180,
+          "luminance": 0.007
+        },
+        {
+          "t": 196,
+          "luminance": 0.007
+        },
+        {
+          "t": 213,
+          "luminance": 0.007
+        },
+        {
+          "t": 230,
+          "luminance": 0.007
+        },
+        {
+          "t": 247,
+          "luminance": 0.007
+        },
+        {
+          "t": 263,
+          "luminance": 0.007
+        },
+        {
+          "t": 279,
+          "luminance": 0.007
+        },
+        {
+          "t": 296,
+          "luminance": 0.007
+        },
+        {
+          "t": 317,
+          "luminance": 1
+        },
+        {
+          "t": 330,
+          "luminance": 1
+        },
+        {
+          "t": 345,
+          "luminance": 1
+        },
+        {
+          "t": 363,
+          "luminance": 1
+        },
+        {
+          "t": 380,
+          "luminance": 1
+        },
+        {
+          "t": 397,
+          "luminance": 1
+        },
+        {
+          "t": 413,
+          "luminance": 1
+        },
+        {
+          "t": 430,
+          "luminance": 1
+        },
+        {
+          "t": 446,
+          "luminance": 1
+        },
+        {
+          "t": 463,
+          "luminance": 1
+        },
+        {
+          "t": 480,
+          "luminance": 1
+        },
+        {
+          "t": 496,
+          "luminance": 1
+        },
+        {
+          "t": 514,
+          "luminance": 1
+        },
+        {
+          "t": 530,
+          "luminance": 1
+        },
+        {
+          "t": 546,
+          "luminance": 1
+        },
+        {
+          "t": 564,
+          "luminance": 1
+        },
+        {
+          "t": 580,
+          "luminance": 1
+        },
+        {
+          "t": 596,
+          "luminance": 1
+        },
+        {
+          "t": 613,
+          "luminance": 1
+        },
+        {
+          "t": 630,
+          "luminance": 1
+        },
+        {
+          "t": 646,
+          "luminance": 1
+        },
+        {
+          "t": 663,
+          "luminance": 1
+        },
+        {
+          "t": 680,
+          "luminance": 1
+        },
+        {
+          "t": 696,
+          "luminance": 1
+        },
+        {
+          "t": 713,
+          "luminance": 1
+        },
+        {
+          "t": 730,
+          "luminance": 1
+        },
+        {
+          "t": 746,
+          "luminance": 1
+        },
+        {
+          "t": 763,
+          "luminance": 1
+        },
+        {
+          "t": 780,
+          "luminance": 1
+        },
+        {
+          "t": 795,
+          "luminance": 1
+        },
+        {
+          "t": 813,
+          "luminance": 1
+        },
+        {
+          "t": 830,
           "luminance": 1
         }
       ]
@@ -5993,6 +5957,6 @@
   "_meta": {
     "engine": "webkit (Playwright 1.64.1)",
     "settingsDelayMs": 300,
-    "date": "2026-10-18T22:18:35.385Z"
+    "date": "2026-10-19T05:43:52.619Z"
   }
 }

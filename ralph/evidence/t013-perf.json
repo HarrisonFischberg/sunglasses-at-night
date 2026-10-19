@@ -1,34 +1,34 @@
 {
   "task": "T013",
-  "when": "2026-10-18T22:14:47.879Z",
-  "head": "cf76d05",
+  "when": "2026-10-19T05:40:10.602Z",
+  "head": "f998c20",
   "browser": "Playwright WebKit 27.2 (headless), darwin arm64",
   "method": "Engine time = sum of engine main-thread tasks reported by startDynamic opts.monitor. rAF gaps from a requestAnimationFrame recorder installed at document start. Content script runs in the page world here (Safari: isolated world).",
   "budgets": {
     "nodesInitialMedian": {
-      "value": 40,
+      "value": 34,
       "max": 50,
       "pass": true
     },
     "nodesBatchMedian": {
-      "value": 5,
+      "value": 10.5,
       "max": 8,
-      "pass": true
+      "pass": false
     },
     "gridLongestEngineTaskAfterFirstPaint": {
-      "value": 15,
+      "value": 20,
       "max": 50,
       "pass": true
     },
     "gridStormEngineShare": {
-      "value": 0.0216,
+      "value": 0.025160000000000002,
       "max": 0.1,
       "pass": true
     },
     "gridInsertRecalc": {
       "value": 0,
       "withoutEngine": 0,
-      "max": 0,
+      "max": 2,
       "pass": true
     },
     "gridGeneratedRules": {
@@ -38,52 +38,52 @@
       "pass": true
     },
     "gridStormRafGapMax": {
-      "value": 44,
-      "withoutEngine": 32,
-      "max": 40,
+      "value": 45,
+      "withoutEngine": 28,
+      "max": 36,
       "advisory": true,
       "pass": false
     }
   },
-  "pass": true,
+  "pass": false,
   "nodes": {
     "elements": 5000,
     "sheets": 3,
     "rules": 1020,
     "overrideBytes": 1054,
     "initialMs": [
-      52,
-      41,
-      41,
-      37,
-      40,
-      40,
-      40
+      35,
+      34,
+      32,
+      33,
+      35,
+      33,
+      34
     ],
     "initialSyncMs": [
-      12,
       8,
       8,
-      8,
-      8,
+      7,
+      7,
+      7,
       8,
       8
     ],
-    "initialMedianMs": 40,
+    "initialMedianMs": 34,
     "batchMutations": 50,
     "batchMs": [
+      10,
+      3,
+      6,
+      11,
+      11,
+      12,
+      11,
       12,
       5,
-      5,
-      4,
-      5,
-      5,
-      4,
-      5,
-      3,
-      4
+      10
     ],
-    "batchMedianMs": 5
+    "batchMedianMs": 10.5
   },
   "grid": {
     "cards": 60,
@@ -91,34 +91,34 @@
     "rules": 4992,
     "crossOriginSheets": 10,
     "overrideBytes": 64098,
-    "firstPaintMs": 109,
-    "engineMsBeforeStorm": 60,
+    "firstPaintMs": 99,
+    "engineMsBeforeStorm": 65,
     "longestEngineTaskAfterFirstPaint": {
       "name": "slice",
-      "ms": 15
+      "ms": 19
     },
     "engineTasksOver50AfterFirstPaint": 0,
     "storm": {
-      "wallMs": 5000,
-      "mutations": 1000,
-      "frames": 294,
-      "rafGapMaxMs": 44,
-      "rafGapP95Ms": 18,
-      "rafGapP99Ms": 26,
-      "rafGapsOver32": 2,
-      "engineMs": 105,
-      "engineShare": 0.021,
-      "engineTasks": 651,
-      "engineTaskMaxMs": 9
-    },
-    "baselineStorm": {
       "wallMs": 5003,
       "mutations": 1000,
-      "frames": 300,
-      "rafGapMaxMs": 35,
-      "rafGapP95Ms": 18,
-      "rafGapP99Ms": 24,
+      "frames": 296,
+      "rafGapMaxMs": 45,
+      "rafGapP95Ms": 19,
+      "rafGapP99Ms": 20,
       "rafGapsOver32": 1,
+      "engineMs": 119,
+      "engineShare": 0.02379,
+      "engineTasks": 651,
+      "engineTaskMaxMs": 10
+    },
+    "baselineStorm": {
+      "wallMs": 5000,
+      "mutations": 1000,
+      "frames": 300,
+      "rafGapMaxMs": 19,
+      "rafGapP95Ms": 18,
+      "rafGapP99Ms": 19,
+      "rafGapsOver32": 0,
       "engineMs": 0,
       "engineShare": 0,
       "engineTasks": 0,
@@ -131,7 +131,7 @@
       },
       "withoutEngine": {
         "inserted": 160,
-        "recalcMs": 1
+        "recalcMs": 2
       }
     },
     "generatedRules": {
@@ -146,22 +146,22 @@
     },
     "runs": [
       {
-        "rafGapMaxWithEngine": 46,
-        "rafGapMaxWithoutEngine": 32,
-        "engineShare": 0.02157,
-        "longestEngineTaskAfterFirstPaint": 15
+        "rafGapMaxWithEngine": 51,
+        "rafGapMaxWithoutEngine": 28,
+        "engineShare": 0.02159,
+        "longestEngineTaskAfterFirstPaint": 20
       },
       {
-        "rafGapMaxWithEngine": 44,
-        "rafGapMaxWithoutEngine": 35,
-        "engineShare": 0.021,
-        "longestEngineTaskAfterFirstPaint": 15
+        "rafGapMaxWithEngine": 45,
+        "rafGapMaxWithoutEngine": 19,
+        "engineShare": 0.02379,
+        "longestEngineTaskAfterFirstPaint": 19
       },
       {
-        "rafGapMaxWithEngine": 35,
-        "rafGapMaxWithoutEngine": 25,
-        "engineShare": 0.0216,
-        "longestEngineTaskAfterFirstPaint": 11
+        "rafGapMaxWithEngine": 29,
+        "rafGapMaxWithoutEngine": 31,
+        "engineShare": 0.025160000000000002,
+        "longestEngineTaskAfterFirstPaint": 12
       }
     ],
     "insertRecalcRuns": [
@@ -171,19 +171,19 @@
       },
       {
         "withEngine": 0,
-        "withoutEngine": 1
+        "withoutEngine": 2
       },
       {
-        "withEngine": 1,
+        "withEngine": 0,
         "withoutEngine": 0
       }
     ],
-    "insertRecalcWithoutPruningMs": 0,
+    "insertRecalcWithoutPruningMs": 1,
     "insertRecalcWithEngineMedian": 0,
     "insertRecalcWithoutEngineMedian": 0,
-    "rafGapMaxWithEngineMedian": 44,
-    "rafGapMaxWithoutEngineMedian": 32,
-    "worstEngineTaskAfterFirstPaint": 15,
-    "worstEngineShare": 0.0216
+    "rafGapMaxWithEngineMedian": 45,
+    "rafGapMaxWithoutEngineMedian": 28,
+    "worstEngineTaskAfterFirstPaint": 20,
+    "worstEngineShare": 0.025160000000000002
   }
 }

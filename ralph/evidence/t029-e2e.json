@@ -1,11 +1,11 @@
 {
   "baseline": {
     "peakLightShare": 0.9609,
-    "frames": 24
+    "frames": 25
   },
   "systemDarkAlways": {
-    "settingsAt": 314,
-    "readyAt": 1850,
+    "settingsAt": 312,
+    "readyAt": 1844,
     "peakLightShare": 0,
     "peakBeforeReady": 0,
     "framesBeforeReady": 19,
@@ -28,459 +28,459 @@
     },
     "frames": [
       {
-        "t": 1526,
+        "t": 1527,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1550,
+        "t": 1548,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1567,
+        "t": 1561,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1583,
+        "t": 1578,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1599,
+        "t": 1594,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1616,
+        "t": 1611,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1633,
+        "t": 1628,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1649,
+        "t": 1644,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1666,
+        "t": 1661,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1682,
+        "t": 1678,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1700,
+        "t": 1694,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1716,
+        "t": 1711,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1733,
+        "t": 1728,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1749,
+        "t": 1744,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1766,
+        "t": 1761,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1782,
+        "t": 1778,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1800,
+        "t": 1794,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1817,
+        "t": 1811,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1832,
+        "t": 1828,
         "lightShare": 0,
         "ready": false
       },
       {
-        "t": 1850,
+        "t": 1844,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 1866,
+        "t": 1861,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 1883,
+        "t": 1878,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 1900,
+        "t": 1894,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 1917,
+        "t": 1911,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 1933,
+        "t": 1928,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 1950,
+        "t": 1944,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 1966,
+        "t": 1960,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 1983,
+        "t": 1978,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2000,
+        "t": 1994,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2016,
+        "t": 2011,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2032,
+        "t": 2028,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2050,
+        "t": 2044,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2066,
+        "t": 2060,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2082,
+        "t": 2078,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2100,
+        "t": 2094,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2117,
+        "t": 2111,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2133,
+        "t": 2128,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2150,
+        "t": 2144,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2166,
+        "t": 2161,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2183,
+        "t": 2178,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2200,
+        "t": 2194,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2216,
+        "t": 2211,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2232,
+        "t": 2227,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2250,
+        "t": 2244,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2267,
+        "t": 2261,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2283,
+        "t": 2278,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2300,
+        "t": 2294,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2316,
+        "t": 2311,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2333,
+        "t": 2327,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2350,
+        "t": 2344,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2367,
+        "t": 2360,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2383,
+        "t": 2377,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2400,
+        "t": 2394,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2416,
+        "t": 2410,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2433,
+        "t": 2427,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2450,
+        "t": 2443,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2466,
+        "t": 2461,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2483,
+        "t": 2478,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2500,
+        "t": 2494,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2516,
+        "t": 2511,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2533,
+        "t": 2527,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2550,
+        "t": 2544,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2566,
+        "t": 2561,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2582,
+        "t": 2578,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2600,
+        "t": 2594,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2616,
+        "t": 2611,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2633,
+        "t": 2628,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2650,
+        "t": 2643,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2666,
+        "t": 2661,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2683,
+        "t": 2678,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2699,
+        "t": 2694,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2717,
+        "t": 2711,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2732,
+        "t": 2728,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2749,
+        "t": 2744,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2766,
+        "t": 2761,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2783,
+        "t": 2777,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2800,
+        "t": 2794,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2816,
+        "t": 2811,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2833,
+        "t": 2828,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2850,
+        "t": 2844,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2867,
+        "t": 2861,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2883,
+        "t": 2878,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2899,
+        "t": 2894,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2916,
+        "t": 2911,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2932,
+        "t": 2927,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2950,
+        "t": 2944,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2967,
+        "t": 2961,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2983,
+        "t": 2978,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 2999,
+        "t": 2994,
         "lightShare": 0,
         "ready": true
       },
       {
-        "t": 3017,
+        "t": 3011,
         "lightShare": 0,
         "ready": true
       }
     ]
   },
   "systemDarkOff": {
-    "settingsAt": 322,
+    "settingsAt": 308,
     "state": {
       "tileBg": "rgb(255, 255, 255)",
       "ready": false,
@@ -490,369 +490,374 @@
     "peakLightShare": 0.9609,
     "frames": [
       {
-        "t": 1534,
+        "t": 1519,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1555,
+        "t": 1529,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1572,
+        "t": 1542,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1588,
+        "t": 1559,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1605,
+        "t": 1575,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1622,
+        "t": 1592,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1639,
+        "t": 1609,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1656,
+        "t": 1624,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1672,
+        "t": 1642,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1688,
+        "t": 1658,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1706,
+        "t": 1675,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1722,
+        "t": 1692,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1739,
+        "t": 1708,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1756,
+        "t": 1724,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1771,
+        "t": 1742,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1789,
+        "t": 1759,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1805,
+        "t": 1775,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1822,
+        "t": 1792,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1838,
+        "t": 1808,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1855,
+        "t": 1825,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1872,
+        "t": 1842,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1888,
+        "t": 1859,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1905,
+        "t": 1875,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1923,
+        "t": 1892,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1939,
+        "t": 1908,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1956,
+        "t": 1925,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1972,
+        "t": 1942,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1988,
+        "t": 1958,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2006,
+        "t": 1975,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2021,
+        "t": 1992,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2038,
+        "t": 2009,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2055,
+        "t": 2025,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2072,
+        "t": 2042,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2089,
+        "t": 2058,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2106,
+        "t": 2075,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2121,
+        "t": 2092,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2139,
+        "t": 2108,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2155,
+        "t": 2125,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2172,
+        "t": 2142,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2189,
+        "t": 2159,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2206,
+        "t": 2175,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2222,
+        "t": 2192,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2238,
+        "t": 2208,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2255,
+        "t": 2225,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2272,
+        "t": 2242,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2289,
+        "t": 2259,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2305,
+        "t": 2275,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2322,
+        "t": 2292,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2338,
+        "t": 2309,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2355,
+        "t": 2325,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2371,
+        "t": 2342,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2389,
+        "t": 2359,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2405,
+        "t": 2375,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2422,
+        "t": 2392,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2438,
+        "t": 2408,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2456,
+        "t": 2425,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2471,
+        "t": 2442,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2489,
+        "t": 2458,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2506,
+        "t": 2475,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2522,
+        "t": 2492,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2539,
+        "t": 2509,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2555,
+        "t": 2525,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2572,
+        "t": 2542,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2589,
+        "t": 2559,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2605,
+        "t": 2575,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2622,
+        "t": 2592,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2639,
+        "t": 2609,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2656,
+        "t": 2625,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2672,
+        "t": 2642,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2689,
+        "t": 2659,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2705,
+        "t": 2675,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2722,
+        "t": 2692,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2709,
         "lightShare": 0.9609,
         "ready": false
       }
     ]
   },
   "neverSite": {
-    "settingsAt": 306,
+    "settingsAt": 307,
     "state": {
       "tileBg": "rgb(255, 255, 255)",
       "ready": false,
@@ -867,357 +872,367 @@
         "ready": false
       },
       {
-        "t": 1539,
+        "t": 1529,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1556,
+        "t": 1532,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1572,
+        "t": 1547,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1589,
+        "t": 1563,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1606,
+        "t": 1581,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1622,
+        "t": 1597,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1639,
+        "t": 1614,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1656,
+        "t": 1631,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1672,
+        "t": 1647,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1689,
+        "t": 1664,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1706,
+        "t": 1681,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1722,
+        "t": 1697,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1738,
+        "t": 1714,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1755,
+        "t": 1731,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1771,
+        "t": 1747,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1788,
+        "t": 1764,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1805,
+        "t": 1781,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1822,
+        "t": 1797,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1839,
+        "t": 1814,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1855,
+        "t": 1831,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1872,
+        "t": 1847,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1888,
+        "t": 1864,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1906,
+        "t": 1881,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1922,
+        "t": 1896,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1939,
+        "t": 1914,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1955,
+        "t": 1931,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1972,
+        "t": 1947,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 1989,
+        "t": 1964,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2006,
+        "t": 1980,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2022,
+        "t": 1997,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2039,
+        "t": 2014,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2056,
+        "t": 2031,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2072,
+        "t": 2047,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2088,
+        "t": 2064,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2106,
+        "t": 2081,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2121,
+        "t": 2097,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2139,
+        "t": 2114,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2155,
+        "t": 2131,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2172,
+        "t": 2147,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2189,
+        "t": 2164,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2205,
+        "t": 2181,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2222,
+        "t": 2197,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2238,
+        "t": 2214,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2256,
+        "t": 2231,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2272,
+        "t": 2247,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2289,
+        "t": 2264,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2305,
+        "t": 2281,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2322,
+        "t": 2297,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2339,
+        "t": 2314,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2356,
+        "t": 2331,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2372,
+        "t": 2347,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2389,
+        "t": 2364,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2405,
+        "t": 2381,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2422,
+        "t": 2397,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2438,
+        "t": 2414,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2455,
+        "t": 2431,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2472,
+        "t": 2447,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2489,
+        "t": 2464,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2505,
+        "t": 2481,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2521,
+        "t": 2497,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2539,
+        "t": 2514,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2555,
+        "t": 2531,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2572,
+        "t": 2547,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2588,
+        "t": 2564,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2605,
+        "t": 2581,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2622,
+        "t": 2597,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2639,
+        "t": 2614,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2655,
+        "t": 2631,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2672,
+        "t": 2647,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2688,
+        "t": 2664,
         "lightShare": 0.9609,
         "ready": false
       },
       {
-        "t": 2705,
+        "t": 2681,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2697,
+        "lightShare": 0.9609,
+        "ready": false
+      },
+      {
+        "t": 2713,
         "lightShare": 0.9609,
         "ready": false
       }
@@ -1227,6 +1242,6 @@
     "engine": "webkit (Playwright 1.64.1)",
     "settingsDelayMs": 300,
     "sheetDelayMs": 1500,
-    "date": "2026-10-18T22:18:47.141Z"
+    "date": "2026-10-19T05:44:04.060Z"
   }
 }

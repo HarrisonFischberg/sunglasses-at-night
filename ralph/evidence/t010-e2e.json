@@ -81,6 +81,12 @@
         "type": "range",
         "id": "grayscale",
         "name": "Grayscale"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "report",
+        "name": "Report a problem"
       }
     ]
   },
@@ -166,6 +172,12 @@
         "type": "range",
         "id": "grayscale",
         "name": "Grayscale"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "report",
+        "name": "Report a problem"
       }
     ]
   },
