@@ -747,3 +747,8 @@
 - Fix (engine/src/dynamic.js): SATURATED_C 0.09 -> 0.05, commented as measured on the drawn color. White on that backdrop is 13.8:1, so authored white stands.
 - Ran: `npm run check` -> 19 file(s) OK; `npm test` -> tests 339, pass 339, fail 0. Not run: `npm run e2e` (WebKit cannot launch here), so nothing is claimed about WebKit. Row set to needs-runner-build; B44 owner check stands.
 - T035 (2026-10-19, Builder): row set to blocked (B44): the owner check on real amazon.com needs a person. Not claimed: any WebKit result for 48e5926; the runner should re-run e2e and reopen the row if #h-slide-solid is still red.
+
+## T035 - verified green (2026-10-19, Builder). DONE
+- Verification: runner e2e at HEAD f624177 (`ralph/evidence/e2e-latest.md`, `e2e-latest.log`): `tests 110, pass 110, fail 0`. Both "amazon-home" cases pass (reference white headlines; engine run keeps `#h-slide-*` headlines equal to authored, including the saturated solid card that was red until the SATURATED_C 0.05 fix in 48e5926). Data: `ralph/evidence/t031-e2e.json`.
+- Not run by me: `npm run e2e` (WebKit cannot launch in the sandbox); I read the runner's output. No code changed this iteration.
+- Open: B44 owner check on real amazon.com is advisory (fixture is a reconstruction); if headlines are still gray, send the card's outer HTML.
