@@ -144,3 +144,10 @@ same server the page already loaded it from, and (2) a user-initiated
    overlay turns multiply into black. In both engines, a multiply/darken
    element with a light or near-transparent background becomes transparent
    with `mix-blend-mode: normal`.
+
+8. **White flash after "ready" (T036, owner screen recording 2026-10-19).**
+   The interim rule switched off once the first override sheet landed, but
+   Amazon adds its main-content stylesheets afterwards, and their white
+   backgrounds paint before our re-fetched rewrite arrives (~0.75 s in
+   Safari). The interim rule must follow completeness: re-armed while any
+   known sheet is unrewritten, lifted in the same task the rewrite lands.
