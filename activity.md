@@ -762,3 +762,4 @@
 - Runner perf at a4abed1 (ralph/evidence/t013-perf.json): nodesBatchMedian 8.5 > 8. Suspect: T032 isBlendCandidate reads computed style twice per element in every contrast slice, even on pages with no blend marker.
 - Fix (engine/src/dynamic.js): module flag blendMarked, set only when a rewritten rule emits BLEND_MARK; isBlendCandidate returns false without any style read until then. Budget untouched.
 - Ran: npm run check -> 19 file(s) OK; npm test -> tests 339, pass 339, fail 0. Not run: npm run perf (WebKit cannot launch here). Needed: 3 consecutive runner perf runs with nodesBatchMedian <= 8. Not claimed: any perf result.
+- 05:35Z owner: everything good so far; popup opens with the status line cut off (Safari restores focus to the Engine select, the scroll container jumps). Fix in popup.js openAtTop(): blur non-keyboard focus and reset scrollTop on open, plus guard the 300 ms re-render. npm test 339/339; ui + t033 e2e 8/8.
