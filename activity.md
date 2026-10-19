@@ -740,3 +740,9 @@
 ## T033 - runner e2e result (2026-10-19, Builder). BLOCKED (B40, owner check only)
 - Evidence: `ralph/evidence/e2e-latest.log` (HEAD 27480d3): both "popup 360x560 ... wheel scrolls on every step through the 300 ms re-render" cases pass (normal and restricted pages). `ralph/evidence/t033-e2e.json`: cls 0, docHeight/bodyHeight 560 constant, scrollTop changes on every step. The two reds in that run (T013 perf, amazon-home) belong to other tasks.
 - Remaining: owner confirms smooth scrolling in real Safari (B40). Not claimed: any real-Safari result. No code changed this iteration.
+
+## T035 - real root cause of #h-slide-solid (2026-10-19, Builder). NEEDS-RUNNER-BUILD
+- Runner e2e at cd7d999 (ralph/evidence/e2e-latest.log): 109/110; only t031 `#h-slide-solid` red (164 vs white) even with LARGE_TEXT_CONTRAST=2, so the contrast floor was never the cause.
+- Cause (probe via a temporary engine test, since deleted): `isSaturatedCard` tests the backdrop WE drew. Authored #d9822b (OKLCH C 0.144) is drawn rgb(71 36 0) (L 0.302, C 0.0706: chroma tempered by 0.8 and gamut-clipped), under SATURATED_C 0.09, so the keep path was never entered and the transformed gray stood.
+- Fix (engine/src/dynamic.js): SATURATED_C 0.09 -> 0.05, commented as measured on the drawn color. White on that backdrop is 13.8:1, so authored white stands.
+- Ran: `npm run check` -> 19 file(s) OK; `npm test` -> tests 339, pass 339, fail 0. Not run: `npm run e2e` (WebKit cannot launch here), so nothing is claimed about WebKit. Row set to needs-runner-build; B44 owner check stands.

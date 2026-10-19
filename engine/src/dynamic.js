@@ -99,8 +99,10 @@ const BLEND_FIX_RE = /^(?:multiply|darken|color-burn|luminosity)$/i;
 const MEDIA_TAGS = 'img,picture,video,canvas,svg,iframe,embed,object';
 const MEDIA_TAG_SET = new Set(MEDIA_TAGS.split(','));
 const PHOTO_MIN_W = 120, PHOTO_MIN_H = 80;
-// A promo card's solid backdrop: strong chroma, neither dark nor light (OKLCH).
-const SATURATED_C = 0.09, SATURATED_L_MIN = 0.15,SATURATED_L_MAX = 0.85;
+// A promo card's solid backdrop as WE drew it: clearly tinted, neither dark nor
+// light (OKLCH). Measured on the dark-mode color, whose chroma is tempered and
+// gamut-clipped (authored #d9822b orange is drawn rgb(71 36 0), C 0.07).
+const SATURATED_C = 0.05, SATURATED_L_MIN = 0.15, SATURATED_L_MAX = 0.85;
 // Authored text on a saturated card we leave as drawn stands unless it is nearly
 // illegible against the backdrop we drew (white on mid orange is ~3:1 and is
 // what pages ship, so the floor sits at 2:1).
