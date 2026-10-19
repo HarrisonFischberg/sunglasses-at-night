@@ -1,6 +1,6 @@
 # Sunglasses for Safari — PRD
 
-Status: **APPROVED v1** by Harold, 2026-10-18 (plan, permissions, Playwright dev dependency, 10-iteration cap with stop after 2 without progress).
+Status: **WRAPPED UP 2026-10-19 (owner: personal use)**, see WRAP-UP.md. Was: **APPROVED v1** by Harold, 2026-10-18 (plan, permissions, Playwright dev dependency, 10-iteration cap with stop after 2 without progress).
 
 ## Purpose
 
