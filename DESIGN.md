@@ -1,19 +1,19 @@
 ---
 name: Sunglasses for Safari (Dusk)
-description: A calm, warm-gray, coral-accented control surface for a dark-mode Safari extension, used one-handed in a dim room.
+description: A calm, blue-black, mirror-teal control surface for a dark-mode Safari extension, used one-handed in a dim room.
 colors:
-  bg: "#181415"
-  group: "#241f21"
-  raised: "#302a2c"
-  line: "#463b3e"
-  edge: "#8a7a76"
-  fg: "#f7ede9"
-  muted: "#c3b2ae"
-  accent: "#ff9a76"
-  on-accent: "#2a1208"
+  bg: "#0a1014"
+  group: "#111b21"
+  raised: "#18262e"
+  line: "#2b3f49"
+  edge: "#6d8b95"
+  fg: "#e7f2f3"
+  muted: "#9fb6bc"
+  accent: "#5fd7c9"
+  on-accent: "#04201d"
   warning: "#f2c36b"
-  danger: "#ffa79a"
-  focus: "#f7ede9"
+  danger: "#ffa192"
+  focus: "#e7f2f3"
 typography:
   title:
     fontFamily: "ui-rounded, SF Pro Rounded, -apple-system, Helvetica Neue, sans-serif"
@@ -93,36 +93,38 @@ components:
 ## Overview
 
 **Creative north star: "The lamp left on in the next room."** The surface is a
-warm, low-light gray with one coral glow that says "on". Someone in bed or a
+blue-black surface with one mirror-teal glint that says "on". Someone in bed or a
 dim room opens the popup mid-browsing, one-handed, to answer "is it on, and for
 this site?" and sometimes to make an exception. Nothing on screen is brighter
 than it needs to be. Layout is B's (big switch on top, tiles, segmented
-control, compact slider rows); the look is C's (rounded system type, warm
-grays, soft radii). Approved by the owner 2026-10-18 (`docs/design/comparison.md`).
+control, compact slider rows); the colors are B's original palette (blue-black
+surfaces, mirror-teal accent, monospace readouts), restored at the owner's
+request 2026-10-19 (T034) after the 2026-10-18 coral "Dusk" look. The rounded
+type and soft radii of the approved look stay (`docs/design/comparison.md`).
 
 Dark only. The popup stays dusk even when Safari is in light appearance,
 because the product exists for dim rooms and a bright popup would defeat it.
-No moon, no purple (REA R15). No large bright block: "on" is the coral switch
+No moon, no purple (REA R15). No large bright block: "on" is the teal switch
 fill plus the sunglasses mark, never a full-bleed fill. Wit lives only in the
 status line; controls, consent and errors stay plain.
 
 ## Colors
 
-Warm-gray surfaces in three steps and one coral accent used for state, never
-for decoration.
+Blue-black surfaces in three steps and one teal accent used for state, never
+for decoration. Teal marks every selected or on state (coral is gone).
 
-- **bg** `#181415`: page. **group** `#241f21`: grouped panel. **raised** `#302a2c`: tiles, inputs, buttons. **line** `#463b3e`: row dividers and pressed fill.
-- **edge** `#8a7a76`: control outlines (switch track, checkbox, off mark). At least 3:1 on bg and group.
-- **fg** `#f7ede9`: text. **muted** `#c3b2ae`: secondary text.
-- **accent** `#ff9a76` with **on-accent** `#2a1208`: selected, on, primary action.
-- **warning** `#f2c36b`: notices ("looks dark already"). **danger** `#ffa79a`: Reset and invalid input.
-- **focus** `#f7ede9`: 3 px ring, 2 px offset, always visible.
+- **bg** `#0a1014`: page. **group** `#111b21`: grouped panel. **raised** `#18262e`: tiles, inputs, buttons. **line** `#2b3f49`: row dividers and pressed fill.
+- **edge** `#6d8b95`: control outlines (switch track, checkbox, off mark). At least 3:1 on bg and group.
+- **fg** `#e7f2f3`: text. **muted** `#9fb6bc`: secondary text.
+- **accent** `#5fd7c9` with **on-accent** `#04201d`: selected, on, primary action. The status block may be teal, as in concept B (owner's choice, 2026-10-19).
+- **warning** `#f2c36b`: notices ("looks dark already"). **danger** `#ffa192`: Reset and invalid input.
+- **focus** `#e7f2f3`: 3 px ring, 2 px offset, always visible.
 
 All text pairs (fg, muted, accent, warning, danger on bg, group, raised; on-accent on accent) are at least 4.5:1, asserted by `engine/test/ui.test.js`.
 
 ## Typography
 
-One family: the platform rounded system face (`ui-rounded`, SF Pro Rounded), sized from the platform body text style so Dynamic Type and larger-text settings apply. Four steps: title (Settings page), heading (switch label, dialogs), body, label (group titles, segment labels, hints). Weights 400 / 600 / 800. No monospace: numbers use tabular figures.
+One family: the platform rounded system face (`ui-rounded`, SF Pro Rounded), sized from the platform body text style so Dynamic Type and larger-text settings apply. Four steps: title (Settings page), heading (switch label, dialogs), body, label (group titles, segment labels, hints). Weights 400 / 600 / 800. Readouts (slider values, hostnames, schedule times) use `--mono` (`ui-monospace`, SF Mono) with tabular figures; everything else stays in the rounded face.
 
 ## Layout
 
@@ -142,8 +144,8 @@ Switch, mode tiles, segmented control, slider row, preset preview, grouped list 
 
 ## Do's and Don'ts
 
-- Do keep one selected style (coral) everywhere. Don't mix white-tile and teal selection.
-- Do show "on" with the coral switch and the filled lenses. Don't fill a large area with coral.
+- Do keep one selected style (teal) everywhere. Don't mix white-tile and teal selection.
+- Do show "on" with the teal switch and the filled lenses. Don't fill a large area with teal.
 - Do use tokens from `ui.css :root`. Don't write a color, size, radius or duration literal below it.
 - Do give every control at least 44 px. Don't shrink targets to fit more in the popup.
 - Don't use side-stripe borders, gradient text, glows, or a moon.

@@ -10,22 +10,23 @@
   color-scheme: dark;
 
   /* color roles */
-  --bg: #181415;
-  --group: #241f21;
-  --raised: #302a2c;
-  --line: #463b3e;
-  --edge: #8a7a76;
-  --fg: #f7ede9;
-  --muted: #c3b2ae;
-  --accent: #ff9a76;
-  --on-accent: #2a1208;
+  --bg: #0a1014;
+  --group: #111b21;
+  --raised: #18262e;
+  --line: #2b3f49;
+  --edge: #6d8b95;
+  --fg: #e7f2f3;
+  --muted: #9fb6bc;
+  --accent: #5fd7c9;
+  --on-accent: #04201d;
   --warning: #f2c36b;
-  --danger: #ffa79a;
-  --focus: #f7ede9;
-  --scrim: rgb(10 8 8 / 0.6);
+  --danger: #ffa192;
+  --focus: #e7f2f3;
+  --scrim: rgb(2 6 8 / 0.6);
 
   /* type */
   --font: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
   --text-sm: 0.9375rem;
   --text-base: 1rem;
   --text-lg: 1.25rem;
@@ -170,7 +171,7 @@ input[type="checkbox"]:not(.switch-input):disabled { opacity: 0.5; cursor: not-a
 .slider { padding: var(--s-1) 0; }
 .slider .field { min-height: var(--target); border-top: 0; }
 .slider input[type="range"] { width: 100%; min-height: var(--target); margin: 0; }
-output { color: var(--muted); font-variant-numeric: tabular-nums; }
+output { color: var(--muted); font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
 /* ---------------------------------------------- select, time, buttons */
 
@@ -179,6 +180,8 @@ select, input[type="time"], button {
   color: inherit;
   min-height: var(--target);
 }
+
+input[type="time"] { font-family: var(--mono); }
 
 select, input[type="time"] {
   appearance: none;
@@ -417,7 +420,7 @@ body.popup {
 .hero-text { display: flex; align-items: center; gap: var(--s-4); }
 #status { min-width: 0; overflow-wrap: anywhere; font-size: var(--text-base); line-height: 1.3; text-wrap: balance; }
 
-.host { font-weight: var(--weight-bold); margin-bottom: var(--s-2); overflow-wrap: anywhere; }
+.host { font-family: var(--mono); font-weight: var(--weight-bold); margin-bottom: var(--s-2); overflow-wrap: anywhere; }
 
 /* ------------------------------------------------------------ options */
 

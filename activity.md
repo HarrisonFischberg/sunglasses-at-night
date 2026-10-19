@@ -669,3 +669,9 @@
 - T033 follow-up (2026-10-18): recorded B40 in docs/launch-blockers.md for the owner Safari scroll check. Row remains needs-runner-build (runner e2e pending); not marked done.
 
 - T033 (2026-10-18, Builder): row set to blocked (B40). The acceptance line "owner confirms smooth scrolling in Safari" needs a person; the runner e2e (e2e/t033.test.js) is also not yet run. Not claimed: any WebKit result or Safari check.
+
+## T034 — Color scheme back to B's palette (2026-10-18, Builder). NEEDS-RUNNER-BUILD
+- Built: ui.css `:root` tokens swapped to B's palette (bg #0a1014, group #111b21, raised #18262e, line #2b3f49, fg #e7f2f3, muted #9fb6bc, accent #5fd7c9, on-accent #04201d, danger #ffa192, focus #e7f2f3, scrim; warning #f2c36b kept; edge #6d8b95 new because B had no outline token). Added `--mono` token used by `output`, `.host`, `input[type=time]`. Layout, radii, rounded type unchanged. DESIGN.md (front matter + prose), docs/design/system.md (tokens + T034 section), replica/README.md (teal status-block owner override) updated; pair list in docs/design/tokens-t034.json.
+- Verification: `npm test` -> tests 333, pass 333, fail 0 (includes the token contrast test: text roles ≥ 4.5:1 on bg/group/raised, on-accent/accent ≥ 4.5:1, edge/focus ≥ 3:1).
+- Not run: Replica `contrast.py` (python3 and node -e were refused for approval in this session, so there is no contrast.py log; docs/design/system.md says so); `npm run e2e` and the real-*.png screenshots (runner only); /impeccable polish/audit at 390/1440 (not run). Not changed: the app icon (design/icons/generate.js) still uses coral; T034 names only UI tokens, so the owner should say if the icon should go teal too.
+- Next: runner e2e must pass popup/options/ui suites and rewrite design/screenshots/real-*.png. The only red test in the last runner e2e was T013 perf (60 s budget), which belongs to another task. Row stays needs-runner-build, not done.

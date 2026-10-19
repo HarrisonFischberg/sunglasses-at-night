@@ -1,0 +1,18 @@
+{
+  "colors": {
+    "bg": "#0a1014", "group": "#111b21", "raised": "#18262e", "line": "#2b3f49",
+    "edge": "#6d8b95", "fg": "#e7f2f3", "muted": "#9fb6bc", "accent": "#5fd7c9",
+    "on-accent": "#04201d", "warning": "#f2c36b", "danger": "#ffa192", "focus": "#e7f2f3"
+  },
+  "pairs": [
+    ["fg","bg"],["fg","group"],["fg","raised"],
+    ["muted","bg"],["muted","group"],["muted","raised"],
+    ["accent","bg"],["accent","group"],["accent","raised"],
+    ["warning","bg"],["warning","group"],["warning","raised"],
+    ["danger","bg"],["danger","group"],["danger","raised"],
+    ["on-accent","accent"],
+    ["edge","bg","ui"],["edge","group","ui"],
+    ["focus","bg","ui"],["focus","group","ui"],
+    ["accent","bg","ui"]
+  ]
+}

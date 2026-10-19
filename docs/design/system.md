@@ -19,8 +19,8 @@ durations come from :root tokens only").
 
 | Group | Tokens |
 | --- | --- |
-| Color | `bg #181415`, `group #241f21`, `raised #302a2c`, `line #463b3e`, `edge #8a7a76`, `fg #f7ede9`, `muted #c3b2ae`, `accent #ff9a76`, `on-accent #2a1208`, `warning #f2c36b`, `danger #ffa79a`, `focus #f7ede9`, `scrim` |
-| Type | `--font` (ui-rounded stack), `--text-sm` .9375rem, `--text-base` 1rem, `--text-lg` 1.25rem, `--text-xl` 1.5rem, `--text-2xl` clamp(1.75rem, 4vw, 2.5rem); weights 400/600/800; leading 1.4 |
+| Color (T034, B's palette) | `bg #0a1014`, `group #111b21`, `raised #18262e`, `line #2b3f49`, `edge #6d8b95`, `fg #e7f2f3`, `muted #9fb6bc`, `accent #5fd7c9`, `on-accent #04201d`, `warning #f2c36b`, `danger #ffa192`, `focus #e7f2f3`, `scrim` |
+| Type | `--font` (ui-rounded stack), `--mono` (ui-monospace, SF Mono) for `output`, `.host` and time inputs, `--text-sm` .9375rem, `--text-base` 1rem, `--text-lg` 1.25rem, `--text-xl` 1.5rem, `--text-2xl` clamp(1.75rem, 4vw, 2.5rem); weights 400/600/800; leading 1.4 |
 | Spacing | `--s-1`…`--s-7` = 4, 8, 12, 16, 24, 32, 48 px; `--target` 44 px; `--row` 52 px |
 | Radius | `--r-sm` 10, `--r-md` 14, `--r-lg` 22, `--r-full` pill |
 | Elevation | `--lift` (1 px line + 6 px soft shadow), `--float` (24 px soft shadow, dialog only) |
@@ -29,6 +29,12 @@ durations come from :root tokens only").
 ### Contrast checks (asserted in `engine/test/ui.test.js`)
 
 Text roles `fg`, `muted`, `accent`, `warning`, `danger` each ≥ 4.5:1 on `bg`, `group` and `raised`; `on-accent` on `accent` ≥ 4.5:1; `edge` and `focus` ≥ 3:1 on `bg` and `group`. The unit test prints the failing pair and ratio if any drops. The runner also measures every rendered text node (`ralph/evidence/t030-e2e.json`).
+
+### T034: palette swap to B's original (2026-10-19 owner request)
+
+Coral `#ff9a76` and the warm grays are replaced by B's blue-black surfaces and mirror-teal `#5fd7c9`; every "accent" cell below now reads teal. Layout, radii and the rounded type are unchanged. `edge` is new to B's set (B had no outline token): `#6d8b95`.
+
+Contrast re-check, pairs required by the unit test (`engine/test/ui.test.js`, same WCAG formula as Replica's `contrast.py`): text roles fg, muted, accent, warning, danger on bg, group and raised ≥ 4.5:1; on-accent on accent ≥ 4.5:1; edge and focus ≥ 3:1 on bg and group. The pair list is in `docs/design/tokens-t034.json`. **`contrast.py` itself was not run in this session** (python3 needs an approval the unattended Builder cannot get), so the numbers come from the runner's `npm test` and e2e text-contrast measurements in `ralph/evidence/`, not from a `contrast.py` log.
 
 ## Component states
 
