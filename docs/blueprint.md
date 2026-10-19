@@ -137,3 +137,10 @@ same server the page already loaded it from, and (2) a user-initiated
    subtrees `data-sunglasses-pending` in the MutationObserver callback (before
    paint), neutralize their backgrounds with a CSS rule, and untag when the
    sliced processor finishes.
+
+7. **Black product tiles on Amazon Fresh grids (T032, owner screenshot
+   2026-10-19).** Light tint overlays with `mix-blend-mode: multiply` sit on
+   top of product images. Darkening (dynamic) or inverting (filter) the
+   overlay turns multiply into black. In both engines, a multiply/darken
+   element with a light or near-transparent background becomes transparent
+   with `mix-blend-mode: normal`.
