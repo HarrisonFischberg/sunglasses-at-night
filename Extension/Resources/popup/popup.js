@@ -1904,6 +1904,26 @@ async function main() {
     if (tab?.id === undefined) report = await fetchReport();
   }
   render();
+  openAtTop();
+}
+
+// Safari may move focus into the popover when it opens (it restores focus to
+// the last control used, e.g. the Engine menu at the bottom), and the scroll
+// container then jumps to show it, hiding the status line under the header.
+// A popup always opens at the top; keyboard users start from the first control.
+function openAtTop() {
+  const scroller = document.querySelector('.popup-scroll');
+  const reset = () => {
+    const a = document.activeElement;
+    if (a && a !== document.body && !a.matches(':focus-visible')) a.blur();
+    if (scroller) scroller.scrollTop = 0;
+  };
+  reset();
+  requestAnimationFrame(reset);
+  // The deferred report re-render (commit → 300 ms) must not move it either.
+  const until = performance.now() + 800;
+  const onFocus = () => { if (performance.now() < until) reset(); };
+  document.addEventListener('focusin', onFocus, { once: true });
 }
 
 main().catch(() => {
