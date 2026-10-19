@@ -1,0 +1,83 @@
+{
+  "when": "2026-10-19T05:50:50.002Z",
+  "runs": 3,
+  "verdict": {
+    "nodesInitialMedian": {
+      "value": 32,
+      "max": 50,
+      "values": [
+        33,
+        32,
+        32
+      ],
+      "advisory": false,
+      "pass": true
+    },
+    "nodesBatchMedian": {
+      "value": 7.5,
+      "max": 8,
+      "values": [
+        6.5,
+        7.5,
+        7.5
+      ],
+      "advisory": false,
+      "pass": true
+    },
+    "gridLongestEngineTaskAfterFirstPaint": {
+      "value": 19,
+      "max": 50,
+      "values": [
+        19,
+        19,
+        20
+      ],
+      "advisory": false,
+      "pass": true
+    },
+    "gridStormEngineShare": {
+      "value": 0.028149999999999998,
+      "max": 0.1,
+      "values": [
+        0.02696,
+        0.028149999999999998,
+        0.02837
+      ],
+      "advisory": false,
+      "pass": true
+    },
+    "gridInsertRecalc": {
+      "value": 0,
+      "max": 2,
+      "values": [
+        0,
+        0,
+        0
+      ],
+      "advisory": false,
+      "pass": true
+    },
+    "gridGeneratedRules": {
+      "value": 635,
+      "max": 2357,
+      "values": [
+        635,
+        635,
+        635
+      ],
+      "advisory": false,
+      "pass": true
+    },
+    "gridStormRafGapMax": {
+      "value": 38,
+      "max": 28,
+      "values": [
+        35,
+        38,
+        58
+      ],
+      "advisory": true,
+      "pass": false
+    }
+  }
+}
