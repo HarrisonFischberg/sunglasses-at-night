@@ -721,3 +721,7 @@
 - Ran: `npm run check` -> 19 files OK; `npm test` -> tests 339, pass 339, fail 0 (dynamic.test.js blend expectations now include the marker). Not run: `npm run e2e` (WebKit cannot launch here).
 - Next: runner e2e must show the 4 fresh-grid cases green; owner re-check on Amazon Fresh is B43. Row stays needs-runner-build.
 - T032 (2026-10-19, Builder): row set to blocked (B43) on the owner re-check. Not claimed: any WebKit result for 2fab08e.
+
+## T035 — solid promo card fallback (2026-10-19, Builder). NEEDS-RUNNER-BUILD
+- Runner e2e at 229dbda (ralph/evidence/e2e-latest.log): 108/110. T035 image-layer cases pass; `#h-slide-solid` red (authored rgb(255,255,255) became rgb(164,164,164)). Cause: authored white on the saturated #d9822b card is ~3:1, under `LARGE_TEXT_CONTRAST = 3`, so `authoredColors` applied the contrast fallback. Fix: `LARGE_TEXT_CONTRAST = 2` in engine/src/dynamic.js (only illegible authored text on a saturated card is replaced). The other red, T013 perf nodesBatchMedian 9 > 8, belongs to another task.
+- Ran: `npm run check` -> 19 files OK; `npm test` -> tests 339, pass 339, fail 0. Not run: `npm run e2e` (WebKit cannot launch here), so nothing is claimed about WebKit. Row stays needs-runner-build; B44 (owner check on real amazon.com) still stands.

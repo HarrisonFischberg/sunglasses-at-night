@@ -2332,6 +2332,7 @@ const MARK = 'data-sunglasses-at-night';
 const INLINE_ATTR = 'data-san-inline';
 const FIX_ATTR = 'data-san-fix';
 const VAR_PREFIX = '--san-';
+const BLEND_MARK = '--san-blend';
 // Set on the root of a subtree the page inserted after load, in the mutation
 // callback (before paint), until its sheets and contrast are processed (T031).
 const PENDING_ATTR = 'data-sunglasses-pending';
@@ -2391,7 +2392,9 @@ const MEDIA_TAG_SET = new Set(MEDIA_TAGS.split(','));
 const PHOTO_MIN_W = 120, PHOTO_MIN_H = 80;
 // A promo card's solid backdrop: strong chroma, neither dark nor light (OKLCH).
 const SATURATED_C = 0.09, SATURATED_L_MIN = 0.15,SATURATED_L_MAX = 0.85;
-const LARGE_TEXT_CONTRAST = 3;
+// Authored text on a saturated card we leave as drawn stands unless it is nearly
+// illegible there (white on mid orange is ~3:1 and is what pages ship).
+const LARGE_TEXT_CONTRAST = 2;
 const URL_IMAGE_RE =/(?:^|[^\w-])(?:url|image-set|-webkit-image-set)\(/i;
 
 // ------------------------------------------------------------ value rewrite
@@ -2607,7 +2610,9 @@ function rewriteDeclarations(style, look, opts = {}) {
     if (prop === 'mix-blend-mode') {
       // Product shots drawn with multiply over a light tile: once the tile is
       // dark, multiply makes the photo black. Normal shows the photo as is.
-      if (BLEND_FIX_RE.test(value.trim())) out.push(`mix-blend-mode:normal${bangFor(prop)}`);
+      // The marker lets the blend-overlay pass (T032) find the element after
+      // this rule has already made its computed blend mode normal.
+      if (BLEND_FIX_RE.test(value.trim())) out.push(`mix-blend-mode:normal${bangFor(prop)}`, `${BLEND_MARK}:1${bangFor(prop)}`);
       continue;
     }
     if (prop === 'color-scheme') {
@@ -3458,7 +3463,7 @@ function startDynamic({
     while (p.i < items.length) {
       const el = items[p.i++];
       if (el.isConnected) {
-        if (!isOurs(el) && BLEND_FIX_RE.test(getCS(el).mixBlendMode)) blends.push(el);
+        if (!isOurs(el) && isBlendCandidate(el)) blends.push(el);
         const fix = contrastFix(el, cache);
         if (fix?.keep) keeps.push(fix);
         else if (fix) fixes.push(fix);
@@ -3468,6 +3473,15 @@ function startDynamic({
     if (keeps.length) fixes.push(...authoredColors(keeps));
     for (const fix of fixes) applyFix(fix);
     if (blends.length) fixBlendOverlays(blends);
+  }
+
+  // Our rewrite already turned the page's multiply/darken into normal and left
+  // BLEND_MARK on the element it matched. The mark inherits, so only an element
+  // whose parent lacks it was matched itself.
+  function isBlendCandidate(el) {
+    if (!getCS(el).getPropertyValue(BLEND_MARK)) return false;
+    const parent = el.parentElement;
+    return !parent || !getCS(parent).getPropertyValue(BLEND_MARK);
   }
 
   // Our sheets switched off for one synchronous read (no paint in between),
@@ -3752,7 +3766,7 @@ function startDynamic({
 
   return { stop, refresh, settle };
 }
-return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, PENDING_ATTR, PROP_ROLES, rewriteTriplet, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, pendingCss, SLICE_MS, CONTRAST_DELAY_MS, READY_CAP_MS, startDynamic };
+return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, BLEND_MARK, PENDING_ATTR, PROP_ROLES, rewriteTriplet, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, pendingCss, SLICE_MS, CONTRAST_DELAY_MS, READY_CAP_MS, startDynamic };
 })();
 
 // ---- engine/src/messages.js

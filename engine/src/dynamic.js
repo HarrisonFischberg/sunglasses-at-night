@@ -101,7 +101,9 @@ const MEDIA_TAG_SET = new Set(MEDIA_TAGS.split(','));
 const PHOTO_MIN_W = 120, PHOTO_MIN_H = 80;
 // A promo card's solid backdrop: strong chroma, neither dark nor light (OKLCH).
 const SATURATED_C = 0.09, SATURATED_L_MIN = 0.15,SATURATED_L_MAX = 0.85;
-const LARGE_TEXT_CONTRAST = 3;
+// Authored text on a saturated card we leave as drawn stands unless it is nearly
+// illegible there (white on mid orange is ~3:1 and is what pages ship).
+const LARGE_TEXT_CONTRAST = 2;
 const URL_IMAGE_RE =/(?:^|[^\w-])(?:url|image-set|-webkit-image-set)\(/i;
 
 // ------------------------------------------------------------ value rewrite
