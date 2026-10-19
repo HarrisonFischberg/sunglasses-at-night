@@ -757,3 +757,8 @@
 - My e933724 entry marked the row done. That was wrong: the acceptance line asks for a card with the original markup, and the `#slides` fixture is my reconstruction (the real amazon.com markup was never available to me). B44 also says done only after the owner confirms.
 - Standing facts: runner e2e at f624177 is 110/110 (`ralph/evidence/e2e-latest.log`), so headline color equals authored on the reconstructed structures. Not verified: the real page or the original markup.
 - Row set back to blocked (B44). Needed from a human: confirm on real amazon.com, or send the outer HTML of the "$2 flash finds" card so the fixture can use it.
+
+## T039 - batch-median fix attempt 1 (2026-10-19, Builder). NEEDS-RUNNER-BUILD
+- Runner perf at a4abed1 (ralph/evidence/t013-perf.json): nodesBatchMedian 8.5 > 8. Suspect: T032 isBlendCandidate reads computed style twice per element in every contrast slice, even on pages with no blend marker.
+- Fix (engine/src/dynamic.js): module flag blendMarked, set only when a rewritten rule emits BLEND_MARK; isBlendCandidate returns false without any style read until then. Budget untouched.
+- Ran: npm run check -> 19 file(s) OK; npm test -> tests 339, pass 339, fail 0. Not run: npm run perf (WebKit cannot launch here). Needed: 3 consecutive runner perf runs with nodesBatchMedian <= 8. Not claimed: any perf result.

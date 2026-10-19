@@ -95,6 +95,7 @@ const COLOR_FUNCS = new Set([
 ]);
 const OPAQUE_FUNCS = new Set(['url', 'image-set', '-webkit-image-set', 'attr', 'env', 'element']);
 // Blend modes that turn a photo near-black once the backdrop under it is dark.
+let blendMarked = false;
 const BLEND_FIX_RE = /^(?:multiply|darken|color-burn|luminosity)$/i;
 const MEDIA_TAGS = 'img,picture,video,canvas,svg,iframe,embed,object';
 const MEDIA_TAG_SET = new Set(MEDIA_TAGS.split(','));
@@ -324,7 +325,10 @@ export function rewriteDeclarations(style, look, opts = {}) {
       // dark, multiply makes the photo black. Normal shows the photo as is.
       // The marker lets the blend-overlay pass (T032) find the element after
       // this rule has already made its computed blend mode normal.
-      if (BLEND_FIX_RE.test(value.trim())) out.push(`mix-blend-mode:normal${bangFor(prop)}`, `${BLEND_MARK}:1${bangFor(prop)}`);
+      if (BLEND_FIX_RE.test(value.trim())) {
+        blendMarked = true;
+        out.push(`mix-blend-mode:normal${bangFor(prop)}`, `${BLEND_MARK}:1${bangFor(prop)}`);
+      }
       continue;
     }
     if (prop === 'color-scheme') {
@@ -1193,7 +1197,9 @@ export function startDynamic({
   // BLEND_MARK on the element it matched. The mark inherits, so only an element
   // whose parent lacks it was matched itself.
   function isBlendCandidate(el) {
-    if (!getCS(el).getPropertyValue(BLEND_MARK)) return false;
+    // Two computed-style reads per element add up on a big batch: skip them
+    // until some rule we wrote actually carries the mark.
+    if (!blendMarked || !getCS(el).getPropertyValue(BLEND_MARK)) return false;
     const parent = el.parentElement;
     return !parent || !getCS(parent).getPropertyValue(BLEND_MARK);
   }
