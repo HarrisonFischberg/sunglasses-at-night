@@ -151,3 +151,9 @@ same server the page already loaded it from, and (2) a user-initiated
    backgrounds paint before our re-fetched rewrite arrives (~0.75 s in
    Safari). The interim rule must follow completeness: re-armed while any
    known sheet is unrewritten, lifted in the same task the rewrite lands.
+
+9. **Shopify / Dawn channel-list variables (T038, owner 2026-10-19).** Themes
+   store colors as `--color-background: 255,255,255` and paint with
+   `rgb(var(--color-background))`. Detect triplet custom properties, infer a
+   role from their uses, and redefine them in scope with transformed triplets
+   (or rewrite the using declaration when one variable serves both roles).
