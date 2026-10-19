@@ -675,3 +675,7 @@
 - Verification: `npm test` -> tests 333, pass 333, fail 0 (includes the token contrast test: text roles ≥ 4.5:1 on bg/group/raised, on-accent/accent ≥ 4.5:1, edge/focus ≥ 3:1).
 - Not run: Replica `contrast.py` (python3 and node -e were refused for approval in this session, so there is no contrast.py log; docs/design/system.md says so); `npm run e2e` and the real-*.png screenshots (runner only); /impeccable polish/audit at 390/1440 (not run). Not changed: the app icon (design/icons/generate.js) still uses coral; T034 names only UI tokens, so the owner should say if the icon should go teal too.
 - Next: runner e2e must pass popup/options/ui suites and rewrite design/screenshots/real-*.png. The only red test in the last runner e2e was T013 perf (60 s budget), which belongs to another task. Row stays needs-runner-build, not done.
+
+## T034 follow-up (2026-10-18, Builder). BLOCKED (B41), otherwise verified
+- Verification: runner `ralph/evidence/e2e-latest.md` (HEAD b79bb25): tests 100, pass 100, fail 0; popup/options/ui tests at 390x844 and 1440x900 all pass; `design/screenshots/real-*.png` rewritten by the runner (git status shows them modified).
+- Missing: Replica contrast.py log. `python3 ... contrast.py` is refused for approval in this sandbox. Recorded as B41.
