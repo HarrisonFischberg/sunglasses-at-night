@@ -62,6 +62,7 @@ const probe = (page) => page.evaluate(() => {
     }),
     headBg: headline('h-bg'),
     headImg: headline('h-img'),
+    slides: Object.fromEntries(['h-slide-layers', 'h-slide-sibling', 'h-slide-solid'].map((id) => [id, headline(id)])),
     blend: getComputedStyle(document.getElementById('prod-1')).mixBlendMode,
   };
 });
@@ -79,6 +80,7 @@ test('amazon-home: the unmodified page is the reference (blend multiply, white h
   assert.equal(info.blend, 'multiply');
   assert.equal(info.headBg, 'rgb(255, 255, 255)');
   assert.equal(info.headImg, 'rgb(255, 255, 255)');
+  for (const color of Object.values(info.slides)) assert.equal(color, 'rgb(255, 255, 255)');
   const shape = authored.pixels.find((p) => p.id === 'prod-1' && p.kind === 'shape').px;
   assert.ok(deltaE(shape, [232, 163, 23]) <= MAX_DE, `reference photo pixel ${shape}`);
 });
@@ -115,6 +117,10 @@ test('amazon-home: photos, headlines and the late carousel (system dark, mode al
   for (const p of photos) assert.ok(p.dE <= MAX_DE, `${p.id} ${p.kind}: ΔE ${p.dE} (authored ${p.authored}, now ${p.now})`);
   assert.equal(info.headBg, authored.info.headBg, 'headline over a url() background changed color');
   assert.equal(info.headImg, authored.info.headImg, 'headline over an <img> changed color');
+  // T035: promo-card headlines (layered url() sibling, image sibling, saturated solid) keep their color.
+  for (const [id, color] of Object.entries(authored.info.slides)) {
+    assert.equal(info.slides[id], color, `promo headline #${id} changed color`);
+  }
   assert.ok(final.ready, 'engine never became ready');
   assert.ok(after.length > 0, 'no frame after the insert: the sampler covered nothing');
   for (const f of ext.frames) {

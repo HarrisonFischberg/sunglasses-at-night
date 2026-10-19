@@ -31,7 +31,7 @@
 // adopted sheets are overridden with `!important` copies because adopted
 // sheets cascade after every <style> we could add.
 
-import { parseColor, formatRgb, composite, contrastRatio } from './color.js';
+import { parseColor, formatRgb, composite, contrastRatio, srgbToOklch } from './color.js';
 import { createSelectorIndex } from './selector-index.js';
 import { transformColor, ensureContrast, quantize, normalizeLook, MIN_CONTRAST } from './transform.js';
 import { dynamicImageCss } from './filter.js';
@@ -98,6 +98,9 @@ const BLEND_FIX_RE = /^(?:multiply|darken|color-burn|luminosity)$/i;
 const MEDIA_TAGS = 'img,picture,video,canvas,svg,iframe,embed,object';
 const MEDIA_TAG_SET = new Set(MEDIA_TAGS.split(','));
 const PHOTO_MIN_W = 120, PHOTO_MIN_H = 80;
+// A promo card's solid backdrop: strong chroma, neither dark nor light (OKLCH).
+const SATURATED_C = 0.09, SATURATED_L_MIN = 0.15,SATURATED_L_MAX = 0.85;
+const LARGE_TEXT_CONTRAST = 3;
 const URL_IMAGE_RE =/(?:^|[^\w-])(?:url|image-set|-webkit-image-set)\(/i;
 
 // ------------------------------------------------------------ value rewrite
@@ -867,20 +870,31 @@ export function startDynamic({
     }
     for (const e of chain) cache.urls.set(e, result);
     if (result) return true;
-    // Positioned media in a near ancestor, under this text's box.
+    // A photo layer in a near ancestor (a media element or a url() background on
+    // a child or grandchild, positioned or not, in any stacking order) that
+    // covers this text's center: carousel slides layer the picture and the copy
+    // as siblings, so the text's own chain never meets the picture (T035).
     let rect = null;
-    for (let e = paintParent(el), hops = 0; e && hops < 4; e = paintParent(e), hops++) {
+    for (let e = paintParent(el), hops = 0; e && hops < 6; e = paintParent(e), hops++) {
       let covers = cache.covers.get(e);
       if (covers === undefined) {
         covers = [];
-        if (getCS(e).position !== 'static') {
-          for (const kid of e.children) {
-            if (!MEDIA_TAG_SET.has(kid.localName) || isOurs(kid)) continue;
-            const kcs = getCS(kid);
-            if (kcs.position !== 'absolute' && kcs.position !== 'fixed') continue;
+        const layers = (parent) => {
+          for (const kid of parent.children) {
+            if (isOurs(kid)) continue;
+            if (MEDIA_TAG_SET.has(kid.localName)) {
+              const kcs = getCS(kid);
+              if (kcs.display === 'none' || kcs.visibility !== 'visible') continue;
+            } else if (!URL_IMAGE_RE.test(getCS(kid).backgroundImage)) {
+              continue;
+            }
             const r = kid.getBoundingClientRect();
             if (r.width >= PHOTO_MIN_W && r.height >= PHOTO_MIN_H) covers.push({ kid, r });
           }
+        };
+        if (e.children.length <= 40) {
+          layers(e);
+          for (const child of e.children) if (child.children.length <= 40 && !isOurs(child)) layers(child);
         }
         cache.covers.set(e, covers);
       }
@@ -895,6 +909,17 @@ export function startDynamic({
       if (c && c.alpha >= 1) break;
     }
     return false;
+  }
+
+  // WCAG large text: 24 px, or 18.66 px and bold.
+  function isLargeText(cs) {
+    const px = parseFloat(cs.fontSize), weight = parseInt(cs.fontWeight, 10) || 400;
+    return px >= 24 || (px >= 18.66 && weight >= 700);
+  }
+
+  function isSaturatedCard(bg) {
+    const o = srgbToOklch(bg);
+    return o.c >= SATURATED_C && o.l >= SATURATED_L_MIN && o.l <= SATURATED_L_MAX;
   }
 
   function hasOwnText(el) {
@@ -919,6 +944,13 @@ export function startDynamic({
     if (contrastRatio(fg, bg) >= MIN_CONTRAST) return null;
     const fixed = ensureContrast(fg, bg);
     if (!fixed) return null;
+    // A saturated mid-tone card (a promo tile): grayed text there is worse than
+    // the page's own color, so read the authored color first. It stands unless
+    // it misses large-text contrast on this card; then `fixed` applies (T035).
+    if (isLargeText(cs) && isSaturatedCard(bg)) {
+      if (keptColor.get(el) === cs.color) return null;
+      return { el, keep: true, current: cs.color, backdrop: bg, fallback: formatRgb(fixed) };
+    }
     const important = el.style?.getPropertyPriority('color') === 'important';
     const fill = important ? null : cs.webkitTextFillColor;
     const fillColor = fill ? parseColor(fill) : null;
@@ -1175,7 +1207,15 @@ export function startDynamic({
     const out = [];
     keeps.forEach((k, i) => {
       const important = k.el.style?.getPropertyPriority('color') === 'important';
-      const authored = important ? pageInlineValue(k.el, 'color') || read[i].color : read[i].color;
+      let authored = important ? pageInlineValue(k.el, 'color') || read[i].color : read[i].color;
+      if (k.fallback) {
+        const a = parseColor(authored);
+        if (!a || contrastRatio(a, k.backdrop) < LARGE_TEXT_CONTRAST) {
+          keptColor.set(k.el, k.fallback);
+          out.push({ el: k.el, color: k.fallback, important, fill: false });
+          return;
+        }
+      }
       keptColor.set(k.el, authored);
       if (authored === k.current) return;
       const { color, fill } = read[i];

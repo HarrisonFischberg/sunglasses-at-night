@@ -21,6 +21,17 @@
   #card-bg { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Crect width='300' height='160' fill='%23c0392b'/%3E%3C/svg%3E"); }
   #card-img > img { position: absolute; inset: 0; width: 300px; height: 160px; }
   #hero { min-height: 220px; }
+  /* T035: carousel-slide promo cards. The copy and the picture are siblings in
+     separate layers, so the headline's own ancestor chain never meets the picture. */
+  .slide { position: relative; width: 300px; height: 160px; overflow: hidden; background: #f3e8ff; }
+  .slide-art { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Crect width='300' height='160' fill='%237b3fe4'/%3E%3C/svg%3E"); }
+  .slide-link { display: block; }
+  .slide-link img { display: block; width: 300px; height: 160px; }
+  .slide-copy { position: relative; padding: 16px; }
+  .slide-copy-over { margin-top: -160px; }
+  .slide h3 { margin: 0; color: #ffffff; font-size: 26px; font-weight: 700; }
+  .slide p { margin: 8px 0 0; color: #ffffff; font-size: 14px; }
+  .slide-solid { background: #d9822b; }
 </style>
 </head>
 <body>
@@ -33,6 +44,11 @@
     <section class="row">
       <div class="photo-card" id="card-bg"><h2 id="h-bg">Shop gifts for outdoor athletes</h2></div>
       <div class="photo-card" id="card-img"><img alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Crect width='300' height='160' fill='%232e5aa8'/%3E%3C/svg%3E"><h2 id="h-img">Back to school deals</h2></div>
+    </section>
+    <section class="row slides" id="slides" aria-label="Promotions">
+      <div class="slide" id="slide-layers"><div class="slide-art" aria-hidden="true"></div><div class="slide-copy"><h3 id="h-slide-layers">$2 flash finds</h3><p>Ends tonight</p></div></div>
+      <div class="slide" id="slide-sibling"><a href="#s" class="slide-link"><img alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Crect width='300' height='160' fill='%232e7d32'/%3E%3C/svg%3E"></a><div class="slide-copy slide-copy-over"><h3 id="h-slide-sibling">Complete your Halloween deals</h3></div></div>
+      <div class="slide slide-solid" id="slide-solid"><div class="slide-copy"><h3 id="h-slide-solid">Fresh picks for you</h3></div></div>
     </section>
     <section id="hero" aria-label="Featured"></section>
   </main>
