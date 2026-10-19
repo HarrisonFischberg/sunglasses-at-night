@@ -79,8 +79,8 @@ let authored;
 
 test('fresh-grid: the unmodified page is the reference (12 tiles, both tints multiply)', { timeout: 90000 }, async () => {
   const plain = await openPage(browser, servers, PATH, { extension: false });
-  const blends = await plain.page.evaluate(() => [...document.querySelectorAll('.tint')].length);
   authored = await sampleGrid(plain.page, 'authored');
+  const blends = await plain.page.evaluate(() => [...document.querySelectorAll('.tint')].length);
   const tints = await plain.page.evaluate(() => [...document.querySelectorAll('.tint')].map((t) => getComputedStyle(t).mixBlendMode));
   await plain.context.close();
   summary.authored = authored;

@@ -715,3 +715,8 @@
 - Ran: `node design/icons/generate.js` (icons regenerated); `npm test` -> tests 339, pass 339, fail 0.
 - Open: the runner Swift builds (macOS + iOS) must run on this change; row is needs-runner-build, not done. Evidence will be ralph/evidence/swift-build-latest.md.
 - 03:16Z supervisor: e2e 104/110 at 18bff6a. T036 late-sheets ✔ and T038 shopify-dawn ✔ → owner check (real quiettown header now dark in WebKit). T032 fresh-grid 4/4 fail (reference case too, so the fixture is broken) and T035 amazon-home fail → needs-runner-build. Perf nodesBatchMedian 9 > 8 (watch: possible regression from T036/T038).
+
+## T032 — runner e2e fixes (2026-10-19, Builder). NEEDS-RUNNER-BUILD
+- Runner e2e at 03b03a0: filter x3 green; reference case and dynamic x3 red. Causes: (1) the reference test counted `.tint` before the lazy rows scrolled in (4 != 12), a test-ordering bug, now counted after `sampleGrid`; (2) dynamic: the T031 rule rewrite already set `mix-blend-mode:normal` on the overlay, so `contrastSlice` (which looked for a multiply computed blend) never collected it, and its darkened opaque background covered the photo (22,22,22). Fix: the rewrite also emits a `--san-blend:1` marker (`BLEND_MARK`); `isBlendCandidate` picks elements that have it while their parent doesn't (it inherits), and `fixBlendOverlays` then reads the authored background with sheets off and applies the inline transparent/normal override.
+- Ran: `npm run check` -> 19 files OK; `npm test` -> tests 339, pass 339, fail 0 (dynamic.test.js blend expectations now include the marker). Not run: `npm run e2e` (WebKit cannot launch here).
+- Next: runner e2e must show the 4 fresh-grid cases green; owner re-check on Amazon Fresh is B43. Row stays needs-runner-build.

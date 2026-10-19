@@ -174,10 +174,10 @@ test('baseCss: dark canvas, readable default text and link colors, zero specific
 
 test('rewriteDeclarations: multiply / darken / color-burn / luminosity blends become normal (T031)', () => {
   for (const mode of ['multiply', 'darken', 'color-burn', 'luminosity']) {
-    assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': [mode] })), ['mix-blend-mode:normal'], mode);
+    assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': [mode] })), ['mix-blend-mode:normal', '--san-blend:1'], mode);
   }
-  assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': ['multiply', true] })), ['mix-blend-mode:normal !important']);
-  assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': ['multiply'] }), undefined, { important: true }), ['mix-blend-mode:normal !important']);
+  assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': ['multiply', true] })), ['mix-blend-mode:normal !important', '--san-blend:1 !important']);
+  assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': ['multiply'] }), undefined, { important: true }), ['mix-blend-mode:normal !important', '--san-blend:1 !important']);
   for (const mode of ['normal', 'screen', 'overlay', 'lighten', '']) {
     assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': [mode] })), [], mode);
   }
