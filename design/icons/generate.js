@@ -159,7 +159,7 @@ function macIcon(gx, gy) {
   return inside ? [...mix(BG_TOP, BG_BOTTOM, (gy - (50 - half)) / (2 * half)), 1] : [0, 0, 0, 0];
 }
 
-const ink = (rgb) => (gx, gy) => (toolbarMark(gx, gy) ? [...rgb, 1] : [0, 0, 0, 0]);
+const ink = (rgb, alpha = 1) => (gx, gy) => (toolbarMark(gx, gy) ? [...rgb, alpha] : [0, 0, 0, 0]);
 const write = (path, buf) => {
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, buf);
@@ -188,6 +188,9 @@ const toolbarSizes = [16, 19, 32, 38, 48, 64, 96, 128, 256, 512];
 for (const s of toolbarSizes) {
   write(join(imgDir, `toolbar-dark-${s}.png`), png(s, render(s, ink([28, 28, 30]), { pad: 0.02 })));
   write(join(imgDir, `toolbar-light-${s}.png`), png(s, render(s, ink([245, 245, 247]), { pad: 0.02 })));
+  // Off state: the same glyph, dimmed, so the button reads as inactive.
+  write(join(imgDir, `toolbar-dark-off-${s}.png`), png(s, render(s, ink([28, 28, 30], 0.38), { pad: 0.02 })));
+  write(join(imgDir, `toolbar-light-off-${s}.png`), png(s, render(s, ink([245, 245, 247], 0.38), { pad: 0.02 })));
 }
 // Extension list / store listing icon: the coloured app icon.
 for (const s of [48, 96, 128, 256, 512]) {

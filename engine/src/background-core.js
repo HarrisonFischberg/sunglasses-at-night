@@ -84,7 +84,10 @@ export function createBackground({ api, fetch }) {
 
   function paint(tabId) {
     if (!action) return;
-    const { title, badge } = toolbarState(tabStates.get(tabId));
+    const { state, title, badge } = toolbarState(tabStates.get(tabId));
+    const kind = state === 'on' ? 'toolbar-dark' : 'toolbar-dark-off';
+    const path = Object.fromEntries([16, 19, 32, 38, 48, 96].map((n) => [n, `images/${kind}-${n}.png`]));
+    Promise.resolve(action.setIcon?.({ tabId, path })).catch(ignore);
     Promise.resolve(action.setTitle?.({ tabId, title })).catch(ignore);
     Promise.resolve(action.setBadgeText?.({ tabId, text: badge })).catch(ignore);
   }

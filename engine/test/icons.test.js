@@ -9,6 +9,16 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const read = (p) => readFileSync(join(root, p));
 
+test('toolbar off-state glyphs exist for every toolbar size and are dimmer than on', () => {
+  for (const s of [16, 19, 32, 38, 48, 96]) {
+    for (const v of ['dark', 'light']) {
+      assert.ok(existsSync(join(root, `Extension/Resources/images/toolbar-${v}-off-${s}.png`)), `${v} off ${s}`);
+    }
+  }
+  const maxAlpha = (f) => { const { px } = decode(read(f)); let m = 0; for (let i = 3; i < px.length; i += 4) m = Math.max(m, px[i]); return m; };
+  assert.ok(maxAlpha('Extension/Resources/images/toolbar-dark-off-32.png') < maxAlpha('Extension/Resources/images/toolbar-dark-32.png'));
+});
+
 test('popup header mark and popup/options favicons use the generated icon', () => {
   for (const page of ['Extension/Resources/popup/popup.html', 'Extension/Resources/options/options.html']) {
     assert.match(read(page).toString(), /<link rel="icon"[^>]*href="\.\.\/images\/icon-48\.png"/, `${page} favicon`);

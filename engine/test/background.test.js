@@ -21,7 +21,7 @@ function fakeApi({ tabs = 3, initial = {} } = {}) {
   local.onChanged.addListener((changes, area) => onChanged.fire(changes, area));
   const received = new Map();
   const tabList = Array.from({ length: tabs }, (_, i) => ({ id: i + 1 }));
-  const titles = new Map(), badges = new Map();
+  const titles = new Map(), badges = new Map(), icons = new Map();
   const api = {
     runtime: { id: 'ext', onMessage: event() },
     storage: { local, onChanged },
@@ -40,10 +40,11 @@ function fakeApi({ tabs = 3, initial = {} } = {}) {
     action: {
       setTitle: async ({ tabId, title }) => { titles.set(tabId, title); },
       setBadgeText: async ({ tabId, text }) => { badges.set(tabId, text); },
+      setIcon: async ({ tabId, path }) => { icons.set(tabId, path); },
     },
     commands: { onCommand: event() },
   };
-  return { api, local, received, tabList, titles, badges };
+  return { api, local, received, tabList, titles, badges, icons };
 }
 
 const noFetch = async () => { throw new Error('no network in tests'); };
@@ -148,6 +149,16 @@ test('toolbar: top-frame report sets that tab\'s title and badge', async () => {
   assert.equal(badges.get(2), 'off');
   assert.equal(titles.get(3), 'Sunglasses for Safari: on');
   assert.equal(badges.get(3), '');
+});
+
+test('toolbar: icon is the full glyph when on and the dimmed glyph when off', async () => {
+  const { api, icons } = fakeApi();
+  createBackground({ api, fetch: noFetch });
+  send(api, { type: TAB_STATE, on: false, reason: 'already-dark' }, { id: 'ext', tab: { id: 2 }, frameId: 0 });
+  send(api, { type: TAB_STATE, on: true, reason: 'mode-always' }, { id: 'ext', tab: { id: 3 }, frameId: 0 });
+  await settle();
+  assert.equal(icons.get(2)[32], 'images/toolbar-dark-off-32.png');
+  assert.equal(icons.get(3)[32], 'images/toolbar-dark-32.png');
 });
 
 test('toolbar: subframe and foreign-sender reports are ignored', async () => {
