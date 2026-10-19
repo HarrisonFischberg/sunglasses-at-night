@@ -746,3 +746,4 @@
 - Cause (probe via a temporary engine test, since deleted): `isSaturatedCard` tests the backdrop WE drew. Authored #d9822b (OKLCH C 0.144) is drawn rgb(71 36 0) (L 0.302, C 0.0706: chroma tempered by 0.8 and gamut-clipped), under SATURATED_C 0.09, so the keep path was never entered and the transformed gray stood.
 - Fix (engine/src/dynamic.js): SATURATED_C 0.09 -> 0.05, commented as measured on the drawn color. White on that backdrop is 13.8:1, so authored white stands.
 - Ran: `npm run check` -> 19 file(s) OK; `npm test` -> tests 339, pass 339, fail 0. Not run: `npm run e2e` (WebKit cannot launch here), so nothing is claimed about WebKit. Row set to needs-runner-build; B44 owner check stands.
+- T035 (2026-10-19, Builder): row set to blocked (B44): the owner check on real amazon.com needs a person. Not claimed: any WebKit result for 48e5926; the runner should re-run e2e and reopen the row if #h-slide-solid is still red.
