@@ -654,3 +654,8 @@
 - Remaining for done: runner Swift build of both schemes at the new HEAD and the T030 popup layout e2e (header img added). Not claimed: Safari rendering of the dimmed glyph, which needs the owner.
 - 00:30Z owner recording 1 analyzed: header/page dark at 3.00 s, main block white 3.25–3.75 s, dark at 4.00 s → T036 (interim rule must re-arm while late stylesheets are unrewritten), queued first.
 - 00:35Z owner recording 2 analyzed: Fresh grid tiles show photos ~0.5–1 s after scrolling in, then go black once the engine processes them → confirms T032 (multiply overlay), incl. mutation path and lazy-load fixture.
+
+## T017 — Icons everywhere (2026-10-18, Builder). DONE (on runner evidence)
+- Runner Swift build at 9abdbe5 (the T017 on/off-icon commit; ralph/evidence/swift-build-latest.md): macOS and iOS BUILD SUCCEEDED, Swift tests 19/19, launch smoke PASS. Runner e2e at bf5bd27 (ralph/evidence/e2e-latest.md): 98/98, including popup layout tests with the header mark. Commits 9abdbe5..bf5bd27 touch only docs/prd/.gitignore, so both runs cover the final T017 code.
+- Local: `npm test` -> tests 333, pass 333, fail 0; `npm run check` -> 18 file(s) OK. Asset rows are in docs/asset-licenses.md.
+- Not claimed: Safari rendering of toolbar glyph (light/dark, dimmed off state) and 1024 icon in App Store Connect; owner check.
