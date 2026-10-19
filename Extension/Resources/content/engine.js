@@ -2061,6 +2061,53 @@ function createSelectorIndex(onRevive = () => {}) {
 return { requiredTokens, createSelectorIndex };
 })();
 
+// ---- engine/src/blend-fix.js
+const __m_engine_src_blend_fix_js = (() => {
+// Sunglasses for Safari: light overlays that blend (T032).
+// A storefront lays a light tint (#f7f7f7, rgba(0,0,0,.03)) over a product
+// photo with mix-blend-mode: multiply. On a white page that tint is invisible.
+// Once a dark engine darkens it, or inverts it, multiply with near-black blacks
+// out the photo and the buttons under it. A tint meant for a white page has no
+// job on a dark one, so such an element gets a transparent background and
+// normal blending. Both engines use this decision; each applies it its own way.
+
+const { parseColor, relativeLuminance } = __m_engine_src_color_js;
+
+// Blend modes that turn what is under them near-black once the backdrop is dark.
+const BLEND_FIX_RE = /^(?:multiply|darken|color-burn|luminosity)$/i;
+// Media are handled by their own rules (the engines reset their blend/filter).
+const MEDIA = new Set(['img', 'picture', 'video', 'canvas', 'svg', 'iframe', 'embed', 'object']);
+const HTML_NS = 'http://www.w3.org/1999/xhtml';
+const OVERLAY_LIGHT = 0.85;
+const OVERLAY_CLEAR_ALPHA = 0.1;
+
+/** True for a background that is light (L >= 0.85) or near-transparent. */
+function lightOrClear(color) {
+  const c = parseColor(color);
+  if (!c) return true;
+  return c.alpha < OVERLAY_CLEAR_ALPHA || relativeLuminance(c) >= OVERLAY_LIGHT;
+}
+
+/**
+ * Is `el` a light overlay that should stop blending? `blend` is its computed
+ * mix-blend-mode; `bgColor` and `bgImage` are its AUTHORED background (an
+ * engine that already rewrote colors reads them with its sheets off).
+ */
+function isBlendOverlay(el, blend, bgColor, bgImage) {
+  if (el.namespaceURI !== HTML_NS || MEDIA.has(el.localName)) return false;
+  if (!blend || !BLEND_FIX_RE.test(blend.trim())) return false;
+  // An element that is itself a picture (url()/gradient layer) is media-like.
+  if (bgImage && bgImage !== 'none') return false;
+  return lightOrClear(bgColor);
+}
+
+const OVERLAY_DECLS = Object.freeze([
+  ['background-color', 'transparent'],
+  ['mix-blend-mode', 'normal'],
+]);
+return { BLEND_FIX_RE, OVERLAY_LIGHT, OVERLAY_CLEAR_ALPHA, lightOrClear, isBlendOverlay, OVERLAY_DECLS };
+})();
+
 // ---- engine/src/filter.js
 const __m_engine_src_filter_js = (() => {
 // Sunglasses for Safari: filter fallback engine (T008, F10) and image modes (F5).
@@ -2081,6 +2128,7 @@ const __m_engine_src_filter_js = (() => {
 // doesn't create a containing block for fixed-position descendants.
 
 const { normalizeLook } = __m_engine_src_transform_js;
+const { isBlendOverlay, OVERLAY_DECLS, BLEND_FIX_RE } = __m_engine_src_blend_fix_js;
 
 const FILTER_ROLE = 'filter';
 
@@ -2153,10 +2201,87 @@ function startFilter({ document, look, images, hideBackgroundImages, mark = 'dat
     if (root && root.lastChild !== el) root.appendChild(el);
   };
   place();
+  const overlays = watchBlendOverlays(document);
   return {
-    stop: () => el.remove(),
+    stop: () => {
+      overlays.stop();
+      el.remove();
+    },
     refresh: place,
     settle: async () => place(),
+  };
+}
+
+/**
+ * T032: a light tint that multiplies over a photo (mix-blend-mode multiply,
+ * darken, color-burn, luminosity) is inverted to dark by the page filter and
+ * blacks out the photo under it. Such an element gets a transparent background
+ * and normal blending, as inline `!important` (restored on stop). The filter
+ * engine doesn't touch colors, so the computed background is the authored one.
+ * Elements the page adds are checked in the mutation task, before paint.
+ * A document without a window (the unit tests' fake) is skipped.
+ */
+function watchBlendOverlays(document) {
+  const win = document.defaultView;
+  const root = document.documentElement;
+  if (!win || typeof win.MutationObserver !== 'function' || !root?.querySelectorAll) {
+    return { stop() {} };
+  }
+  const touched = new Map(); // element → [[prop, original value, original priority]]
+  let timer = null;
+
+  const check = (el) => {
+    if (el.nodeType !== 1 || touched.has(el) || el.hasAttribute('data-sunglasses-at-night')) return;
+    const cs = win.getComputedStyle(el);
+    if (!BLEND_FIX_RE.test(cs.mixBlendMode)) return;
+    if (!isBlendOverlay(el, cs.mixBlendMode, cs.backgroundColor, cs.backgroundImage)) return;
+    const saved = [];
+    for (const [prop, value] of OVERLAY_DECLS) {
+      saved.push([prop, el.style.getPropertyValue(prop), el.style.getPropertyPriority(prop)]);
+      el.style.setProperty(prop, value, 'important');
+    }
+    touched.set(el, saved);
+  };
+  const checkTree = (node) => {
+    if (node.nodeType !== 1) return;
+    check(node);
+    for (const el of node.querySelectorAll('*')) check(el);
+  };
+  const scanAll = () => {
+    timer = null;
+    checkTree(root);
+  };
+  const later = () => {
+    if (timer === null) timer = win.setTimeout(scanAll, 100);
+  };
+
+  const observer = new win.MutationObserver((records) => {
+    for (const r of records) {
+      if (r.type === 'childList') for (const n of r.addedNodes) checkTree(n);
+      else check(r.target);
+    }
+  });
+  observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+  // A sheet that arrives after the markup restyles it without a mutation.
+  const onLoad = (e) => {
+    if (e.target?.localName === 'link') later();
+  };
+  document.addEventListener('load', onLoad, true);
+  checkTree(root);
+
+  return {
+    stop() {
+      observer.disconnect();
+      document.removeEventListener('load', onLoad, true);
+      if (timer !== null) win.clearTimeout(timer);
+      for (const [el, saved] of touched) {
+        for (const [prop, value, priority] of saved) {
+          if (value) el.style.setProperty(prop, value, priority);
+          else el.style.removeProperty(prop);
+        }
+      }
+      touched.clear();
+    },
   };
 }
 return { FILTER_ROLE, DIM, pageFilter, filterCss, dynamicImageCss, startFilter };
@@ -2201,6 +2326,7 @@ const { parseColor, formatRgb, composite, contrastRatio } = __m_engine_src_color
 const { createSelectorIndex } = __m_engine_src_selector_index_js;
 const { transformColor, ensureContrast, quantize, normalizeLook, MIN_CONTRAST } = __m_engine_src_transform_js;
 const { dynamicImageCss } = __m_engine_src_filter_js;
+const { isBlendOverlay, OVERLAY_DECLS } = __m_engine_src_blend_fix_js;
 
 const MARK = 'data-sunglasses-at-night';
 const INLINE_ATTR = 'data-san-inline';
@@ -2587,13 +2713,17 @@ const YIELD = Symbol('yield');
  * page sheet (cross-origin re-fetches applied, <link> sheets loaded), or after
  * READY_CAP_MS. Until then contrast checks wait, because the caller's interim
  * rule is still changing what they would read.
+ * opts.onBusy(), called when the page adds a stylesheet after onReady that the
+ * override sheet doesn't cover yet (in the mutation task, before paint), so the
+ * caller can re-arm its interim rule; onReady() is called again, in the task
+ * the rewrite lands (or after READY_CAP_MS).
  * Returns { stop(), refresh(), settle() }; settle() resolves once every
  * cross-origin fetch started so far has been applied and all deferred work
  * is done.
  */
 function startDynamic({
   document, window = document.defaultView, look, fetchSheet = async () => null,
-  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null, prune = true,
+  images = 'leave', hideBackgroundImages = false, monitor = null, onReady = null, onBusy = null, prune = true,
 }) {
   // Classes, ids and tags the page has had (document and open shadow roots).
   // A rule whose selector needs one that never appeared is left out of the
@@ -2642,21 +2772,37 @@ function startDynamic({
   let syncWanted = false; // sheets changed (link load, remote sheet arrived)
   let timerId = null, timerAt = Infinity;
   let readyDone = !onReady, readyTimer = null;
+  let announced = !onReady; // the caller was last told 'ready' (not 'busy')
   const pendingTags = new Map(); // element tagged PENDING_ATTR → when
   const keptColor = new Map(); // text over a photo → the authored color we restored
 
-  function checkReady(force = false) {
-    if (readyDone || stopped) return;
-    if (!force) {
-      if (pending.size || syncWanted) return;
-      for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
-        if (!link.sheet && !link.disabled) return;
-      }
+  function sheetsSettled() {
+    if (pending.size || syncWanted) return false;
+    for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
+      if (!link.sheet && !link.disabled) return false;
     }
-    readyDone = true;
+    return true;
+  }
+
+  function checkReady(force = false) {
+    if (announced || stopped) return;
+    if (!force && !sheetsSettled()) return;
+    announced = true;
     win.clearTimeout(readyTimer);
+    const first = !readyDone;
+    readyDone = true;
     onReady();
-    wantContrastAll();
+    if (first) wantContrastAll();
+  }
+
+  // A sheet the override doesn't cover yet: the caller's interim rule comes
+  // back until the rewrite lands, so the page's own colors never paint.
+  function markBusy() {
+    if (!announced || !onBusy || stopped || sheetsSettled()) return;
+    announced = false;
+    onBusy();
+    win.clearTimeout(readyTimer);
+    readyTimer = win.setTimeout(() => checkReady(true), READY_CAP_MS);
   }
 
   const isOurs = (node) => node?.nodeType === 1 && node.hasAttribute(MARK);
@@ -3247,10 +3393,11 @@ function startDynamic({
       p.released = true;
       releasePending();
     }
-    const fixes = [], keeps = [], cache = { bg: new Map(), urls: new Map(), covers: new Map() }, { items } = p;
+    const fixes = [], keeps = [], blends = [], cache = { bg: new Map(), urls: new Map(), covers: new Map() }, { items } = p;
     while (p.i < items.length) {
       const el = items[p.i++];
       if (el.isConnected) {
+        if (!isOurs(el) && BLEND_FIX_RE.test(getCS(el).mixBlendMode)) blends.push(el);
         const fix = contrastFix(el, cache);
         if (fix?.keep) keeps.push(fix);
         else if (fix) fixes.push(fix);
@@ -3259,6 +3406,40 @@ function startDynamic({
     }
     if (keeps.length) fixes.push(...authoredColors(keeps));
     for (const fix of fixes) applyFix(fix);
+    if (blends.length) fixBlendOverlays(blends);
+  }
+
+  // Our sheets switched off for one synchronous read (no paint in between),
+  // then back on: `read()` sees what the page authored.
+  function readAuthored(read) {
+    const sheets = [];
+    for (const scope of scopes.values()) sheets.push(scope.baseEl, scope.overrideEl, scope.dynEl);
+    const live = sheets.filter(Boolean);
+    const prior = live.map((st) => st.media);
+    for (const st of live) st.media = 'not all';
+    try {
+      return read();
+    } finally {
+      live.forEach((st, i) => {
+        if (prior[i]) st.media = prior[i];
+        else st.removeAttribute('media');
+      });
+    }
+  }
+
+  // A light or clear tint that blends over a photo (T032): darkened, it would
+  // black out what is under it, so it becomes transparent and blends normally.
+  // Decided on the page's authored background, not our dark one.
+  function fixBlendOverlays(els) {
+    const authored = readAuthored(() => els.map((el) => {
+      const cs = getCS(el);
+      return { blend: cs.mixBlendMode, bg: cs.backgroundColor, img: cs.backgroundImage };
+    }));
+    els.forEach((el, i) => {
+      const a = authored[i];
+      if (!isBlendOverlay(el, a.blend, a.bg, a.img)) return;
+      for (const [prop, value] of OVERLAY_DECLS) setInlineImportant(el, prop, value);
+    });
   }
 
   // Text over a photo keeps the color the page gave it. Our sheets are switched
@@ -3369,6 +3550,7 @@ function startDynamic({
           if (n.nodeType !== 1 || isOurs(n)) continue;
           if (isSheetNode(n) || n.querySelector?.('style,link')) sheetsChanged = true;
           if (n.localName === 'link') n.addEventListener('load', onSheetLoad, { once: true });
+          prefetchLinks(n);
           added.add(n);
         }
         for (const n of r.removedNodes) {
@@ -3391,6 +3573,7 @@ function startDynamic({
     if (readyDone) for (const n of topmost(added)) tagPending(n);
     // New page sheets are rewritten now, so their content never shows light.
     if (sheetsChanged && syncSheets(scope)) wantContrastAll();
+    if (sheetsChanged) markBusy();
     for (const n of topmost(added)) {
       scanTree(n);
       wantContrast(n);
@@ -3398,6 +3581,18 @@ function startDynamic({
   }
 
   const onSheetLoad = timed('sheet-load', () => requestSync());
+
+  // Start the re-fetch of a cross-origin sheet the moment its <link> is seen,
+  // not when it has loaded: the text is usually here by the time it applies.
+  function prefetchLinks(node) {
+    const links = node.localName === 'link' ? [node] : [...(node.querySelectorAll?.('link') ?? [])];
+    for (const link of links) {
+      if (!/\bstylesheet\b/i.test(link.rel) || !link.href || link.disabled) continue;
+      try {
+        if (new URL(link.href).origin !== document.location?.origin) remoteCss(link.href, undefined, 0);
+      } catch { /* not a URL */ }
+    }
+  }
 
   // ---- lifecycle
   function refresh(forceContrast = false) {
@@ -3529,7 +3724,7 @@ const __m_engine_src_content_js = (() => {
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 const { createSettingsStore, resolveSite, migrate } = __m_engine_src_settings_js;
-const { startEarly, whenParsed, whenRoot, READY_ATTRIBUTE } = __m_engine_src_early_js;
+const { startEarly, whenParsed, whenRoot, interimCss, READY_ATTRIBUTE } = __m_engine_src_early_js;
 const { startDynamic } = __m_engine_src_dynamic_js;
 const { startFilter } = __m_engine_src_filter_js;
 const { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } = __m_engine_src_messages_js;
@@ -3617,6 +3812,20 @@ function run(settings) {
   const ready = () => {
     document.documentElement.setAttribute(READY_ATTRIBUTE, '');
     ctl.style?.remove();
+    rearmed?.remove();
+  };
+  // The page added a sheet the override doesn't cover yet: bring the interim
+  // rule back (flat dark, media untouched) until the engine says ready again.
+  // Marked as ours so the engine never reads it as a page sheet.
+  let rearmed = null;
+  const busy = (look) => () => {
+    document.documentElement.removeAttribute(READY_ATTRIBUTE);
+    if (!rearmed) {
+      rearmed = document.createElement('style');
+      rearmed.setAttribute('data-sunglasses-at-night', 'interim');
+      rearmed.textContent = interimCss(look);
+    }
+    if (!rearmed.isConnected) (document.head ?? document.documentElement).appendChild(rearmed);
   };
   const stopPrefetch = ctl.activation.on && window.MutationObserver ? prefetchSheets(document, window.MutationObserver) : () => {};
   let engine = null, cancelled = false;
@@ -3632,7 +3841,7 @@ function run(settings) {
       engine = startFilter({ document, look: site.look, ...media });
       ready();
     } else {
-      engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, ...media });
+      engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, onBusy: busy(site.look), ...media });
     }
   });
   return () => {
@@ -3640,6 +3849,7 @@ function run(settings) {
     stopPrefetch();
     engine?.stop();
     ctl.style?.remove();
+    rearmed?.remove();
   };
 }
 

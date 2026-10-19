@@ -35,6 +35,7 @@ import { parseColor, formatRgb, composite, contrastRatio } from './color.js';
 import { createSelectorIndex } from './selector-index.js';
 import { transformColor, ensureContrast, quantize, normalizeLook, MIN_CONTRAST } from './transform.js';
 import { dynamicImageCss } from './filter.js';
+import { isBlendOverlay, OVERLAY_DECLS } from './blend-fix.js';
 
 export const MARK = 'data-sunglasses-at-night';
 export const INLINE_ATTR = 'data-san-inline';
@@ -1101,10 +1102,11 @@ export function startDynamic({
       p.released = true;
       releasePending();
     }
-    const fixes = [], keeps = [], cache = { bg: new Map(), urls: new Map(), covers: new Map() }, { items } = p;
+    const fixes = [], keeps = [], blends = [], cache = { bg: new Map(), urls: new Map(), covers: new Map() }, { items } = p;
     while (p.i < items.length) {
       const el = items[p.i++];
       if (el.isConnected) {
+        if (!isOurs(el) && BLEND_FIX_RE.test(getCS(el).mixBlendMode)) blends.push(el);
         const fix = contrastFix(el, cache);
         if (fix?.keep) keeps.push(fix);
         else if (fix) fixes.push(fix);
@@ -1113,6 +1115,40 @@ export function startDynamic({
     }
     if (keeps.length) fixes.push(...authoredColors(keeps));
     for (const fix of fixes) applyFix(fix);
+    if (blends.length) fixBlendOverlays(blends);
+  }
+
+  // Our sheets switched off for one synchronous read (no paint in between),
+  // then back on: `read()` sees what the page authored.
+  function readAuthored(read) {
+    const sheets = [];
+    for (const scope of scopes.values()) sheets.push(scope.baseEl, scope.overrideEl, scope.dynEl);
+    const live = sheets.filter(Boolean);
+    const prior = live.map((st) => st.media);
+    for (const st of live) st.media = 'not all';
+    try {
+      return read();
+    } finally {
+      live.forEach((st, i) => {
+        if (prior[i]) st.media = prior[i];
+        else st.removeAttribute('media');
+      });
+    }
+  }
+
+  // A light or clear tint that blends over a photo (T032): darkened, it would
+  // black out what is under it, so it becomes transparent and blends normally.
+  // Decided on the page's authored background, not our dark one.
+  function fixBlendOverlays(els) {
+    const authored = readAuthored(() => els.map((el) => {
+      const cs = getCS(el);
+      return { blend: cs.mixBlendMode, bg: cs.backgroundColor, img: cs.backgroundImage };
+    }));
+    els.forEach((el, i) => {
+      const a = authored[i];
+      if (!isBlendOverlay(el, a.blend, a.bg, a.img)) return;
+      for (const [prop, value] of OVERLAY_DECLS) setInlineImportant(el, prop, value);
+    });
   }
 
   // Text over a photo keeps the color the page gave it. Our sheets are switched

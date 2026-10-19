@@ -16,6 +16,7 @@
 // doesn't create a containing block for fixed-position descendants.
 
 import { normalizeLook } from './transform.js';
+import { isBlendOverlay, OVERLAY_DECLS, BLEND_FIX_RE } from './blend-fix.js';
 
 export const FILTER_ROLE = 'filter';
 
@@ -88,9 +89,86 @@ export function startFilter({ document, look, images, hideBackgroundImages, mark
     if (root && root.lastChild !== el) root.appendChild(el);
   };
   place();
+  const overlays = watchBlendOverlays(document);
   return {
-    stop: () => el.remove(),
+    stop: () => {
+      overlays.stop();
+      el.remove();
+    },
     refresh: place,
     settle: async () => place(),
+  };
+}
+
+/**
+ * T032: a light tint that multiplies over a photo (mix-blend-mode multiply,
+ * darken, color-burn, luminosity) is inverted to dark by the page filter and
+ * blacks out the photo under it. Such an element gets a transparent background
+ * and normal blending, as inline `!important` (restored on stop). The filter
+ * engine doesn't touch colors, so the computed background is the authored one.
+ * Elements the page adds are checked in the mutation task, before paint.
+ * A document without a window (the unit tests' fake) is skipped.
+ */
+function watchBlendOverlays(document) {
+  const win = document.defaultView;
+  const root = document.documentElement;
+  if (!win || typeof win.MutationObserver !== 'function' || !root?.querySelectorAll) {
+    return { stop() {} };
+  }
+  const touched = new Map(); // element → [[prop, original value, original priority]]
+  let timer = null;
+
+  const check = (el) => {
+    if (el.nodeType !== 1 || touched.has(el) || el.hasAttribute('data-sunglasses-at-night')) return;
+    const cs = win.getComputedStyle(el);
+    if (!BLEND_FIX_RE.test(cs.mixBlendMode)) return;
+    if (!isBlendOverlay(el, cs.mixBlendMode, cs.backgroundColor, cs.backgroundImage)) return;
+    const saved = [];
+    for (const [prop, value] of OVERLAY_DECLS) {
+      saved.push([prop, el.style.getPropertyValue(prop), el.style.getPropertyPriority(prop)]);
+      el.style.setProperty(prop, value, 'important');
+    }
+    touched.set(el, saved);
+  };
+  const checkTree = (node) => {
+    if (node.nodeType !== 1) return;
+    check(node);
+    for (const el of node.querySelectorAll('*')) check(el);
+  };
+  const scanAll = () => {
+    timer = null;
+    checkTree(root);
+  };
+  const later = () => {
+    if (timer === null) timer = win.setTimeout(scanAll, 100);
+  };
+
+  const observer = new win.MutationObserver((records) => {
+    for (const r of records) {
+      if (r.type === 'childList') for (const n of r.addedNodes) checkTree(n);
+      else check(r.target);
+    }
+  });
+  observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+  // A sheet that arrives after the markup restyles it without a mutation.
+  const onLoad = (e) => {
+    if (e.target?.localName === 'link') later();
+  };
+  document.addEventListener('load', onLoad, true);
+  checkTree(root);
+
+  return {
+    stop() {
+      observer.disconnect();
+      document.removeEventListener('load', onLoad, true);
+      if (timer !== null) win.clearTimeout(timer);
+      for (const [el, saved] of touched) {
+        for (const [prop, value, priority] of saved) {
+          if (value) el.style.setProperty(prop, value, priority);
+          else el.style.removeProperty(prop);
+        }
+      }
+      touched.clear();
+    },
   };
 }
