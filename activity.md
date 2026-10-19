@@ -707,3 +707,4 @@
 - Tests: engine/test/dynamic.test.js (2 new); fixture e2e/fixtures/shopify-dawn.html (original markup: triplet vars on :root, .color-scheme-1/2/3 and an inline scope, rgba(var()) text, buttons using var for bg and fg) added to e2e/dynamic.test.js (root luminance < 0.1, every text >= 4.5:1, header/body/section backgrounds dark, buttons clickable).
 - Ran: npm run check -> 19 file(s) OK; npm test -> tests 339, pass 339, fail 0 (first run had 1 failure: alpha > 1 accepted as a color; fixed). Not run: npm run e2e (WebKit cannot launch here).
 - Open: runner e2e must pass; supervisor re-checks quiettownhome.com in WebKit; owner re-checks in Safari. Row is needs-runner-build, not done.
+- T038 (2026-10-18, Builder): row set to blocked (B45), following T032/T033/T035. The acceptance lines for the supervisor WebKit re-check of quiettownhome.com and the owner Safari re-check need a person, and the runner e2e has not run on 0e407b8. Not claimed: any WebKit or Safari result.
