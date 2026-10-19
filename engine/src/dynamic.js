@@ -102,8 +102,8 @@ const PHOTO_MIN_W = 120, PHOTO_MIN_H = 80;
 // A promo card's solid backdrop: strong chroma, neither dark nor light (OKLCH).
 const SATURATED_C = 0.09, SATURATED_L_MIN = 0.15,SATURATED_L_MAX = 0.85;
 // Authored text on a saturated card we leave as drawn stands unless it is nearly
-// illegible there (white on mid orange is ~3:1 and is what pages ship).
-const LARGE_TEXT_CONTRAST = 2;
+// illegible against the backdrop we drew.
+const LARGE_TEXT_CONTRAST = 3;
 const URL_IMAGE_RE =/(?:^|[^\w-])(?:url|image-set|-webkit-image-set)\(/i;
 
 // ------------------------------------------------------------ value rewrite
@@ -975,16 +975,18 @@ export function startDynamic({
       return keptColor.get(el) === cs.color ? null : { el, keep: true, current: cs.color };
     }
     const bg = effectiveBackground(el, cache.bg);
+    // A saturated mid-tone card (a promo tile): our own text color there reads
+    // as gray even when it passes contrast, so the authored color is read first.
+    // It stands unless it misses large-text contrast on the backdrop we drew;
+    // then the ensureContrast result (or our current color) applies (T035).
+    if (isLargeText(cs) && isSaturatedCard(bg)) {
+      if (keptColor.get(el) === cs.color) return null;
+      const fixedLarge = contrastRatio(fg, bg) >= MIN_CONTRAST ? null : ensureContrast(fg, bg);
+      return { el, keep: true, current: cs.color, backdrop: bg, fallback: fixedLarge ? formatRgb(fixedLarge) : cs.color };
+    }
     if (contrastRatio(fg, bg) >= MIN_CONTRAST) return null;
     const fixed = ensureContrast(fg, bg);
     if (!fixed) return null;
-    // A saturated mid-tone card (a promo tile): grayed text there is worse than
-    // the page's own color, so read the authored color first. It stands unless
-    // it misses large-text contrast on this card; then `fixed` applies (T035).
-    if (isLargeText(cs) && isSaturatedCard(bg)) {
-      if (keptColor.get(el) === cs.color) return null;
-      return { el, keep: true, current: cs.color, backdrop: bg, fallback: formatRgb(fixed) };
-    }
     const important = el.style?.getPropertyPriority('color') === 'important';
     const fill = important ? null : cs.webkitTextFillColor;
     const fillColor = fill ? parseColor(fill) : null;
