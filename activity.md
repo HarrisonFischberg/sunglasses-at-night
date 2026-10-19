@@ -653,3 +653,4 @@
 - Verification: npm test -> tests 333, pass 333, fail 0 (new: background setIcon test, off-glyph test, popup/options icon wiring test); npm run check -> 18 file(s) OK.
 - Remaining for done: runner Swift build of both schemes at the new HEAD and the T030 popup layout e2e (header img added). Not claimed: Safari rendering of the dimmed glyph, which needs the owner.
 - 00:30Z owner recording 1 analyzed: header/page dark at 3.00 s, main block white 3.25–3.75 s, dark at 4.00 s → T036 (interim rule must re-arm while late stylesheets are unrewritten), queued first.
+- 00:35Z owner recording 2 analyzed: Fresh grid tiles show photos ~0.5–1 s after scrolling in, then go black once the engine processes them → confirms T032 (multiply overlay), incl. mutation path and lazy-load fixture.
