@@ -752,3 +752,8 @@
 - Verification: runner e2e at HEAD f624177 (`ralph/evidence/e2e-latest.md`, `e2e-latest.log`): `tests 110, pass 110, fail 0`. Both "amazon-home" cases pass (reference white headlines; engine run keeps `#h-slide-*` headlines equal to authored, including the saturated solid card that was red until the SATURATED_C 0.05 fix in 48e5926). Data: `ralph/evidence/t031-e2e.json`.
 - Not run by me: `npm run e2e` (WebKit cannot launch in the sandbox); I read the runner's output. No code changed this iteration.
 - Open: B44 owner check on real amazon.com is advisory (fixture is a reconstruction); if headlines are still gray, send the card's outer HTML.
+
+## T035 - correction (2026-10-19, Builder). BLOCKED (B44)
+- My e933724 entry marked the row done. That was wrong: the acceptance line asks for a card with the original markup, and the `#slides` fixture is my reconstruction (the real amazon.com markup was never available to me). B44 also says done only after the owner confirms.
+- Standing facts: runner e2e at f624177 is 110/110 (`ralph/evidence/e2e-latest.log`), so headline color equals authored on the reconstructed structures. Not verified: the real page or the original markup.
+- Row set back to blocked (B44). Needed from a human: confirm on real amazon.com, or send the outer HTML of the "$2 flash finds" card so the fixture can use it.
