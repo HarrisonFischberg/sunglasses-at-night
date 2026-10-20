@@ -77,14 +77,14 @@ function record(dev, file) {
 function buildAll(dev) {
   console.log('building app (iOS Simulator) and QA runner…');
   sh('node', ['engine/scripts/bundle.js'], { cwd: ROOT });
-  sh('xcodebuild', ['-scheme', 'Sunglasses for Safari (iOS)', '-destination', `platform=iOS Simulator,id=${dev.udid}`,
+  sh('xcodebuild', ['-scheme', 'Sunglasses at Night (iOS)', '-destination', `platform=iOS Simulator,id=${dev.udid}`,
     '-derivedDataPath', join(ROOT, 'build/QA-iOS'), 'CODE_SIGN_IDENTITY=-', 'CODE_SIGNING_REQUIRED=NO', 'build', '-quiet'], { cwd: ROOT, maxBuffer: 1 << 26 });
   sh('xcodebuild', ['build-for-testing', '-project', PROJECT, '-scheme', 'SafariQAUITests',
     '-destination', `platform=iOS Simulator,id=${dev.udid}`, '-derivedDataPath', DD, '-quiet'], { cwd: ROOT, maxBuffer: 1 << 26 });
-  const app = join(ROOT, 'build/QA-iOS/Build/Products/Debug-iphonesimulator/Sunglasses for Safari.app');
+  const app = join(ROOT, 'build/QA-iOS/Build/Products/Debug-iphonesimulator/Sunglasses at Night.app');
   sh('xcrun', ['simctl', 'install', dev.udid, app]);
-  const info = JSON.parse(sh('plutil', ['-convert', 'json', '-o', '-', join(app, 'PlugIns/Sunglasses for Safari Extension.appex/Info.plist')]));
-  const bundleHash = sh('shasum', ['-a', '256', join(app, 'PlugIns/Sunglasses for Safari Extension.appex/content/engine.js')]).split(' ')[0];
+  const info = JSON.parse(sh('plutil', ['-convert', 'json', '-o', '-', join(app, 'PlugIns/Sunglasses at Night Extension.appex/Info.plist')]));
+  const bundleHash = sh('shasum', ['-a', '256', join(app, 'PlugIns/Sunglasses at Night Extension.appex/content/engine.js')]).split(' ')[0];
   return { appVersion: info.CFBundleShortVersionString, build: info.CFBundleVersion, engineSha256: bundleHash,
     gitHead: sh('git', ['rev-parse', '--short', 'HEAD'], { cwd: ROOT }).trim(),
     gitDirty: sh('git', ['status', '--porcelain', 'engine', 'Extension'], { cwd: ROOT }).trim().length > 0 };
@@ -96,7 +96,7 @@ function environment(dev) {
   let installed = null;
   try {
     const app = sh('xcrun', ['simctl', 'get_app_container', dev.udid, 'app.rarecreatures.sunglassesatnight', 'app']).trim();
-    installed = sh('shasum', ['-a', '256', join(app, 'PlugIns/Sunglasses for Safari Extension.appex/content/engine.js')]).split(' ')[0];
+    installed = sh('shasum', ['-a', '256', join(app, 'PlugIns/Sunglasses at Night Extension.appex/content/engine.js')]).split(' ')[0];
   } catch {}
   return { platform: 'ios-simulator', installedEngineSha256: installed, device: dev.name, udid: dev.udid, deviceType: dev.deviceTypeIdentifier,
     runtime: rt ? `${rt.name} (${rt.buildversion})` : dev.runtime,

@@ -1,4 +1,4 @@
-// Generates every Sunglasses for Safari icon from one geometry. No third-party art.
+// Generates every Sunglasses at Night icon from one geometry. No third-party art.
 // Run: node design/icons/generate.js
 // Output: App/Assets.xcassets/AppIcon.appiconset, Extension/Resources/images/*.png
 import { deflateSync } from 'node:zlib';

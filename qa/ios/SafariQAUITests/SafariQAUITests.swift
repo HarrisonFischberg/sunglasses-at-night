@@ -1,4 +1,4 @@
-// Sunglasses for Safari: installed-extension QA in Mobile Safari (iOS Simulator).
+// Sunglasses at Night: installed-extension QA in Mobile Safari (iOS Simulator).
 // Tests read their job from QA_JOB (a JSON file the host runner writes) and
 // write evidence to QA_OUT. Run through qa/run-ios.mjs, not directly.
 import XCTest
@@ -7,7 +7,7 @@ final class SafariQAUITests: XCTestCase {
     let d = SafariDriver()
     override func setUp() { continueAfterFailure = true; _ = QuiescenceOff.install }
 
-    /// Settings ▸ Apps ▸ Safari ▸ Extensions ▸ Sunglasses for Safari: on, and
+    /// Settings ▸ Apps ▸ Safari ▸ Extensions ▸ Sunglasses at Night: on, and
     /// allowed on all websites. Idempotent. Records the final state.
     func testEnableExtension() throws {
         let s = d.settings

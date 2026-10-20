@@ -1,6 +1,6 @@
 # Design direction (ui-ux-pro-max)
 
-Command: `python3 ~/.claude/skills/ui-ux-pro-max/scripts/search.py "utility browser extension dark mode privacy minimal night" --design-system -p "Sunglasses for Safari" --density 4 --motion 3`, plus `--stack swiftui`.
+Command: `python3 ~/.claude/skills/ui-ux-pro-max/scripts/search.py "utility browser extension dark mode privacy minimal night" --design-system -p "Sunglasses at Night" --density 4 --motion 3`, plus `--stack swiftui`.
 
 No reference visual design was studied (public text only), so this direction comes from ui-ux-pro-max, not from any reference.
 

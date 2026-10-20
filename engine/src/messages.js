@@ -1,4 +1,4 @@
-// Sunglasses for Safari: runtime message types shared by the content and
+// Sunglasses at Night: runtime message types shared by the content and
 // background scripts. Kept separate so the content bundle never includes
 // background-only code.
 

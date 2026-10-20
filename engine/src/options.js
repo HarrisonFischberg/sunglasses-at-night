@@ -1,4 +1,4 @@
-// Sunglasses for Safari: options page (S06) entry, bundled to
+// Sunglasses at Night: options page (S06) entry, bundled to
 // Extension/Resources/options/options.js. The app's Settings and Sites
 // screens (S02/S03) for people who stay in Safari: activation and schedule,
 // look, images, engine, the per-site rule list, and Reset all. No network.

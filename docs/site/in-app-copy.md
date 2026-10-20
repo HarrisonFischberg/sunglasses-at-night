@@ -4,7 +4,7 @@ For T015 (SwiftUI S04) to use verbatim. Full policy lives at the public URL pend
 
 **Privacy at a glance**
 
-Sunglasses for Safari doesn't collect your data. No account, no analytics, no ads. Your settings and per-site choices stay on this device.
+Sunglasses at Night doesn't collect your data. No account, no analytics, no ads. Your settings and per-site choices stay on this device.
 
 **Why it asks for access to all websites**
 
@@ -18,6 +18,6 @@ Opens a draft email in your Mail app with the site's hostname, app version, syst
 
 Erases your settings and per-site choices from this device.
 
-**Contact:** hello@rarecreatures.app
+**Support:** support@rarecreatures.app
 
 *Draft for legal review.*

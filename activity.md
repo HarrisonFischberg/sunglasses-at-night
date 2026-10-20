@@ -772,3 +772,8 @@
 - Ran: npm run check -> 19 file(s) OK; npm test -> tests 339, pass 339, fail 0. Not run: npm run perf (WebKit cannot launch here). Needed: 3 consecutive runner perf runs with nodesBatchMedian <= 8. Not claimed: any perf result.
 - 06:00Z supervisor (Opus escalation, T039): perf failures were load noise. e2e/perf.test.js now takes the median of 3 runs per gating budget; all pass (batch 7.5/8, thin headroom). T039 done.
 - 18:20Z owner: "Wrap up" (personal use). Loop + autopush stopped. Provisioned signing impossible (Xcode has no Apple ID account; signing in needs the owner). Added scripts/build-mac.sh (bundle → build → sign with Apple Development cert → register → open), verified. Wrote WRAP-UP.md.
+
+## 2026-10-20 - rename to Sunglasses at Night, support address
+- Owner (2026-10-20 14:27Z): product name is **Sunglasses at Night** (replaces the 2026-10-18 "Sunglasses for Safari" choice, B27); support help goes to support@rarecreatures.app.
+- Renamed every user-visible string, the Xcode targets, schemes, product names and scripts. Bundle IDs (`app.rarecreatures.sunglassesatnight*`) and the App Group are unchanged, so existing settings carry over. History files (activity.md, launch-blockers.md, ralph/evidence) keep the old name.
+- Report a problem and the app's support link now use support@rarecreatures.app; hello@ stays the privacy contact.

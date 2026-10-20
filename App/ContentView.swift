@@ -114,7 +114,7 @@ struct WelcomeView: View {
                 Image(systemName: "sunglasses.fill")
                     .font(.largeTitle)
                     .accessibilityHidden(true)
-                Text("Sunglasses for Safari")
+                Text("Sunglasses at Night")
                     .font(.largeTitle.bold())
                     .accessibilityAddTraits(.isHeader)
                 #if os(macOS)
@@ -147,13 +147,13 @@ struct WelcomeView: View {
         #if os(macOS)
         VStack(alignment: .leading, spacing: 12) {
             Text("1. Open Safari Settings, then Extensions.")
-            Text("2. Tick Sunglasses for Safari.")
+            Text("2. Tick Sunglasses at Night.")
             Text("3. Allow it on the websites you want, so it can make pages dark on this Mac.")
         }
         #else
         VStack(alignment: .leading, spacing: 12) {
             Text("1. Open the Settings app, then Safari, then Extensions.")
-            Text("2. Turn on Sunglasses for Safari.")
+            Text("2. Turn on Sunglasses at Night.")
             Text("3. Allow it on the websites you want, so it can make pages dark on this device.")
         }
         #endif
@@ -189,12 +189,12 @@ struct SettingsSummaryView: View {
                 } else {
                     Section {
                         Text(mirror.storageAvailable
-                             ? "No settings yet. Open the Sunglasses for Safari button in Safari's toolbar on any page to choose a look."
+                             ? "No settings yet. Open the Sunglasses at Night button in Safari's toolbar on any page to choose a look."
                              : "Settings sharing isn't available in this build.")
                     }
                 }
                 Section {
-                    Text("Change these from the Sunglasses for Safari button in Safari's toolbar. This screen shows what Safari is using.")
+                    Text("Change these from the Sunglasses at Night button in Safari's toolbar. This screen shows what Safari is using.")
                         .foregroundStyle(.secondary)
                 }
             }
@@ -245,7 +245,7 @@ struct AboutView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     section("Privacy at a glance",
-                            "Sunglasses for Safari doesn't collect your data. No account, no analytics, no ads. Your settings and per-site choices stay on this device.")
+                            "Sunglasses at Night doesn't collect your data. No account, no analytics, no ads. Your settings and per-site choices stay on this device.")
                     section("Why it asks for access to all websites",
                             "To make pages dark, the extension has to run on the pages you visit. It does this on your device. Page content and addresses aren't stored or sent anywhere.")
                     section("Report a problem",
@@ -256,8 +256,8 @@ struct AboutView: View {
                     if let message = mirror.resetMessage {
                         Text(message).foregroundStyle(.secondary)
                     }
-                    if let contact = URL(string: "mailto:hello@rarecreatures.app") {
-                        Link("Contact: hello@rarecreatures.app", destination: contact)
+                    if let contact = URL(string: "mailto:support@rarecreatures.app") {
+                        Link("Support: support@rarecreatures.app", destination: contact)
                     }
                     Text("Draft for legal review.")
                         .font(.footnote)

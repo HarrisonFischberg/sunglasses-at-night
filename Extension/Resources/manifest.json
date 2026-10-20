@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Sunglasses for Safari",
+  "name": "Sunglasses at Night",
   "description": "Dark mode for websites.",
   "version": "0.1.0",
   "permissions": ["storage", "nativeMessaging", "scripting"],
@@ -24,7 +24,7 @@
       "48": "images/toolbar-dark-48.png",
       "96": "images/toolbar-dark-96.png"
     },
-    "default_title": "Sunglasses for Safari",
+    "default_title": "Sunglasses at Night",
     "default_popup": "popup/popup.html"
   },
   "options_ui": {

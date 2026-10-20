@@ -1,5 +1,5 @@
 ---
-name: Sunglasses for Safari (Dusk)
+name: Sunglasses at Night (Dusk)
 description: A calm, blue-black, mirror-teal control surface for a dark-mode Safari extension, used one-handed in a dim room.
 colors:
   bg: "#0a1014"
@@ -88,7 +88,7 @@ components:
     textColor: "{colors.on-accent}"
 ---
 
-# Design System: Sunglasses for Safari (Dusk)
+# Design System: Sunglasses at Night (Dusk)
 
 ## Overview
 

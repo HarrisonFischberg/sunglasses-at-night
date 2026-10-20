@@ -1,4 +1,4 @@
-// Sunglasses for Safari: view logic shared by the toolbar popup (S05) and the
+// Sunglasses at Night: view logic shared by the toolbar popup (S05) and the
 // options page (S06). Pure functions: no
 // DOM, no network, no extension API. popup.js / options.js do the wiring.
 
@@ -136,7 +136,7 @@ export function popupView({ settings, url, report, focusedUrl }) {
       customLook: false,
       look: { ...settings.look },
       preset: matchPreset(settings.look),
-      status: 'Sunglasses for Safari can’t change this page. Browser pages, blank tabs and local files are left as they are.',
+      status: 'Sunglasses at Night can’t change this page. Browser pages, blank tabs and local files are left as they are.',
     };
   }
   const entry = siteEntry(settings, host);
@@ -158,7 +158,7 @@ export function popupView({ settings, url, report, focusedUrl }) {
 }
 
 function statusText(report) {
-  if (!report) return 'Not running on this page yet. Reload the page, or allow Sunglasses for Safari on this website in Safari.';
+  if (!report) return 'Not running on this page yet. Reload the page, or allow Sunglasses at Night on this website in Safari.';
   if (report.on) return 'Dark mode is on for this page.';
   const why = OFF_TEXT[report.reason];
   return why ? `Dark mode is off: ${why}.` : 'Dark mode is off.';

@@ -1,12 +1,12 @@
-// Sunglasses for Safari: "Report a problem" (T011). Builds a mailto: URL for a
+// Sunglasses at Night: "Report a problem" (T011). Builds a mailto: URL for a
 // draft in the user's own Mail app. The extension sends nothing: the popup
 // shows a plain link and the user presses Send in Mail, after reading and
 // editing the draft. Fields: site hostname, extension version, system
 // (user agent string) and settings. Only the current site's rule is included,
 // never the other sites the user has set rules for. Pure; no network.
 
-export const REPORT_ADDRESS = 'hello@rarecreatures.app';
-export const REPORT_SUBJECT = 'Sunglasses for Safari: problem report';
+export const REPORT_ADDRESS = 'support@rarecreatures.app';
+export const REPORT_SUBJECT = 'Sunglasses at Night: problem report';
 
 export function reportSettings(settings, host) {
   const { sites = {}, ...rest } = settings ?? {};

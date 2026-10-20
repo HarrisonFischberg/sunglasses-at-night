@@ -1,4 +1,4 @@
-// Sunglasses for Safari: dynamic engine (T007).
+// Sunglasses at Night: dynamic engine (T007).
 // Rewrites the colors a page declares, instead of filtering pixels:
 //   - CSSOM: every style rule in every readable sheet (incl. @import,
 //     @media/@supports/@layer/@container blocks and nested rules) gets an

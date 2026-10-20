@@ -1,4 +1,4 @@
-// Sunglasses for Safari: dead-selector index (T024).
+// Sunglasses at Night: dead-selector index (T024).
 // An override rule whose selector can't match anything on the page still costs
 // the browser a rule-set entry on every style recalc. The page's own sheets
 // are full of such rules (a store ships thousands of selectors for pages it
