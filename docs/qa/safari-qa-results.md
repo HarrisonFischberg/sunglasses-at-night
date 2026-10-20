@@ -75,6 +75,26 @@ title was black on dark); not re-verified.
 
 ## Resume from here
 
+**Cool-down mode (recommended, overnight, Mac plugged in):**
+
+```bash
+node qa/cooldown.mjs
+```
+
+It finishes the pending Mac rows first (2 at the time of writing), then the
+iPhone rows (104), one site at a time with a 20 s pause, never both platforms
+at once. Before each site it checks the Mac's thermal state and load and waits
+until they are back to normal. It keeps the display awake; leave the Safari
+test window uncovered. Ctrl-C stops it; the same command continues from the
+checkpoints. `--dry-run` lists what would run, `--platform mac|ios` limits it,
+`--pause 60` slows it further. Log: `build/qa/cooldown.log`.
+
+The iPhone rows continue in the same run folder on whichever build is
+installed in the QA simulator (now the popup build, commit `b1bd8b2`; earlier
+rows used `34e7fb11`). Each batch's `env.json` records the installed engine hash.
+
+Manual commands, if needed:
+
 Run state is in `build/qa/runs/` (git-ignored): `fixed/ios-Sunglasses-QA-iPhone` (iOS, checkpoint at 126 done), `final/macos-safari` (Mac, 229 done), baselines in `baseline*`.
 
 ```bash
