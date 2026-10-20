@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA media preservation</title>
+<script src="/probe.js"></script>
+<style>
+body{margin:0;font:16px/1.45 -apple-system,system-ui,sans-serif;background:#fff;color:#111}
+main{padding:14px} h2{margin:22px 0 8px;font-size:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.hero{height:160px;background:url(/img/photo.png) center/cover;display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:700;font-size:22px}
+.grad{height:60px;background:linear-gradient(90deg,#e8443a,#f5b52e,#3bb36a,#2f7fe0)}
+.tile{background:#f3f3f3;padding:10px;width:150px}
+.tile .tint{position:relative}.tile .tint::after{content:"";position:absolute;inset:0;background:#f7f7f7;mix-blend-mode:multiply}
+.tile img{width:130px;display:block}
+.wrap-filter{filter:brightness(1) saturate(1)} .fade{opacity:.999}
+svg.ic{width:36px;height:36px;color:#1a73e8}
+.lazy{margin-top:900px}
+</style></head>
+<body><main>
+<h1 data-qa-text="h1">Media</h1>
+<div class="hero" data-qa-media="css-bg" role="img" aria-label="hero photo"><span data-qa-text="over-photo">Text over a photo</span></div>
+<h2>Photos and products</h2>
+<figure style="position:relative;z-index:-1;margin:0 0 10px"><img data-qa-media="neg-z-photo" src="/img/photo.png" alt="photo in a z-index -1 figure" width="200"></figure>
+<div class="row">
+  <img data-qa-media="photo" src="/img/photo.png" alt="sunset" width="160">
+  <img data-qa-media="product-white" src="/img/product-white.png" alt="bottle on white" width="120">
+  <div class="tile"><div class="tint"><img data-qa-media="multiply-tile" src="/img/product-white.png" alt="tinted product"></div><span data-qa-text="tile-label">Multiply tint tile</span></div>
+</div>
+<h2>Logos and icons</h2>
+<div class="row">
+  <img data-qa-media="logo-dark" src="/img/logo-dark-transparent.png" alt="dark transparent logo" width="160">
+  <svg data-qa-media="svg-logo-black" fill="#000" viewBox="0 0 120 30" width="160" height="40" role="img" aria-label="inline black wordmark"><rect x="2" y="5" width="20" height="20"/><rect x="28" y="5" width="20" height="20"/><rect x="54" y="5" width="20" height="20"/><circle cx="96" cy="15" r="10" fill="#d93025"/></svg>
+  <img data-qa-media="icon-color" src="/img/icon-color-transparent.png" alt="red icon" width="48">
+  <svg class="ic" data-qa-media="svg-icon" viewBox="0 0 24 24" role="img" aria-label="svg icon"><path fill="currentColor" d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
+</div>
+<h2>Gradient, chart, video</h2>
+<div class="grad" data-qa-media="gradient" role="img" aria-label="gradient"></div>
+<canvas id="chart" data-qa-media="canvas" width="300" height="120" aria-label="chart"></canvas>
+<svg data-qa-media="svg-chart" width="300" height="80" viewBox="0 0 300 80" role="img" aria-label="svg chart">
+  <rect x="10" y="30" width="50" height="50" fill="#2e9d4f"/><rect x="80" y="10" width="50" height="70" fill="#d93025"/><rect x="150" y="45" width="50" height="35" fill="#f9ab00"/><rect x="220" y="20" width="50" height="60" fill="#1a73e8"/>
+</svg>
+<video data-qa-media="video-poster" poster="/img/photo.png" width="240" height="160" controls preload="none" aria-label="video"></video>
+<h2>Inside page effects</h2>
+<div class="wrap-filter fade"><img data-qa-media="photo-in-filter" src="/img/photo.png" alt="photo inside filtered wrapper" width="160"></div>
+<p class="lazy" data-qa-text="lazy-intro">Lazy images below:</p>
+<img data-qa-media="lazy-photo" loading="lazy" src="/img/photo.png?lazy=1" alt="lazy photo" width="200">
+<img data-qa-media="lazy-product" loading="lazy" src="/img/product-white.png?lazy=1" alt="lazy product" width="140">
+</main>
+<script>
+const c = document.getElementById('chart').getContext('2d');
+c.fillStyle = '#ffffff'; c.fillRect(0, 0, 300, 120);
+c.strokeStyle = '#2e9d4f'; c.lineWidth = 3; c.beginPath(); c.moveTo(0, 100); c.lineTo(100, 40); c.lineTo(200, 70); c.lineTo(300, 10); c.stroke();
+c.strokeStyle = '#d93025'; c.beginPath(); c.moveTo(0, 20); c.lineTo(150, 90); c.lineTo(300, 60); c.stroke();
+</script>
+</body></html>

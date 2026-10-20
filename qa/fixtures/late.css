@@ -1,0 +1,7 @@
+/* Served with ?delay= and from the other origin (127.0.0.1 vs localhost):
+   a late cross-origin sheet, like a Shopify section stylesheet, that
+   redefines the channel-list variables and paints the page surfaces white. */
+:root { --color-background: 255,255,255; --color-foreground: 18,18,18; }
+html, body { background: #fff; }
+.panel, main, .grid { background: #fff; color: #222; }
+.late-card { background: rgb(var(--color-background)); color: rgb(var(--color-foreground)); border: 1px solid #ddd; }
