@@ -54,6 +54,10 @@ drives Safari in it. An iPad run: create "Sunglasses QA iPad" and pass
 The Mac run brings Safari to the front for each shortcut press: don't use
 the Mac while it runs.
 
+## Cool-down mode
+
+`node qa/cooldown.mjs` finishes the saved runs one site at a time, one platform at a time, pausing whenever the Mac is hot or busy (see `docs/qa/safari-qa-results.md`).
+
 ## Commands
 
 | What | iOS Simulator | macOS Safari |

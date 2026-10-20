@@ -3,6 +3,7 @@
 // windows cover it). Needs Screen Recording permission for the calling app.
 // Build: swiftc -O qa/tools/qa-mac.swift -o build/qa-mac
 //
+//   qa-mac thermal                      thermal state 0-3
 //   qa-mac windows                      JSON list of Safari windows
 //   qa-mac shot   <windowID> <out.png>  one frame of that window
 //   qa-mac record <windowID> <out.mov> <seconds>   60 fps H.264, prints {"startWall": …}
@@ -69,6 +70,9 @@ let a = CommandLine.arguments
 let sema = DispatchSemaphore(value: 0)
 Task {
     switch a.count > 1 ? a[1] : "" {
+    case "thermal":
+        // 0 nominal, 1 fair, 2 serious, 3 critical (ProcessInfo.thermalState)
+        out(["thermalState": ProcessInfo.processInfo.thermalState.rawValue])
     case "windows":
         let ws = await content().windows.filter { $0.owningApplication?.bundleIdentifier == "com.apple.Safari" && $0.frame.width > 300 && $0.windowLayer == 0 }
         out(ws.map { ["id": $0.windowID, "title": $0.title ?? "", "frame": [$0.frame.minX, $0.frame.minY, $0.frame.width, $0.frame.height], "onScreen": $0.isOnScreen] })
