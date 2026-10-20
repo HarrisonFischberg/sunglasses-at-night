@@ -90,7 +90,7 @@ checkpoints. `--dry-run` lists what would run, `--platform mac|ios` limits it,
 `--pause 60` slows it further. Log: `build/qa/cooldown.log`.
 
 The iPhone rows continue in the same run folder on whichever build is
-installed in the QA simulator (now the popup build, commit `b1bd8b2`; earlier
+installed in the QA simulator (now the renamed Sunglasses at Night build from `377b25a`, smoke-tested with the runner; earlier
 rows used `34e7fb11`). Each batch's `env.json` records the installed engine hash.
 
 Manual commands, if needed:
