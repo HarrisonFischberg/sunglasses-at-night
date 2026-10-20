@@ -154,4 +154,21 @@ final class SafariQAUITests: XCTestCase {
             }
         }
     }
+
+    /// Screenshots of the popup with "More settings" open (UI review).
+    func testPopupMoreSettings() throws {
+        let a = d.safari
+        a.activate()
+        Thread.sleep(forTimeInterval: 3)
+        guard d.openPopup() else { XCTFail("popup did not open"); return }
+        QA.png("popup/0-top.png", XCUIScreen.main.screenshot())
+        let more = a.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS 'More settings'")).firstMatch
+        for _ in 0..<6 where !(more.exists && more.isHittable) { a.swipeUp(velocity: .slow); Thread.sleep(forTimeInterval: 0.8) }
+        more.forceTap()
+        Thread.sleep(forTimeInterval: 1)
+        for i in 1...5 {
+            QA.png("popup/\(i).png", XCUIScreen.main.screenshot())
+            a.swipeUp(velocity: .slow); Thread.sleep(forTimeInterval: 0.8)
+        }
+    }
 }

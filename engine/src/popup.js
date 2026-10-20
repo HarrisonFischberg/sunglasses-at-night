@@ -1,12 +1,14 @@
 // Sunglasses for Safari: toolbar popup (S05) entry, bundled to
-// Extension/Resources/popup/popup.js. Mode, this site's rule, the
-// already-dark override and the look, saved as they change. On pages the
+// Extension/Resources/popup/popup.js. Mode and schedule hours, this site's
+// rule, the already-dark override, the look, and under "More settings"
+// everything the options page has (images, engine, the site list, Reset all),
+// so iOS never needs the separate settings window. Saved as they change. On pages the
 // extension can't run on (restricted), only the global controls show.
 // No network.
 
-import { createSettingsStore, LOOK_RANGES } from './settings.js';
-import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, presetLook } from './ui-core.js';
-import { GET_TAB_STATE } from './messages.js';
+import { createSettingsStore, LOOK_RANGES, isValidTime } from './settings.js';
+import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, presetLook, siteRows, scheduleHint } from './ui-core.js';
+import { GET_TAB_STATE, RESET_ALL } from './messages.js';
 import { buildReportUrl } from './report.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
@@ -60,6 +62,17 @@ function render() {
     system: globalThis.navigator?.userAgent,
     settings,
   });
+  $('schedule').hidden = settings.mode !== 'schedule';
+  for (const k of ['start', 'end']) {
+    if (document.activeElement !== $(k)) $(k).value = settings.schedule[k];
+    $(k).removeAttribute('aria-invalid');
+  }
+  $('schedule-hint').textContent = scheduleHint(settings.schedule);
+  $('images').value = settings.images;
+  $('hide-bg').checked = settings.hideBackgroundImages;
+  $('detect-dark').checked = settings.detectDark;
+  $('engine').value = settings.engine;
+  renderSites();
   for (const r of document.querySelectorAll('input[name="preset"]')) r.checked = r.value === view.preset;
   for (const k of Object.keys(LOOK_RANGES)) {
     $(k).value = String(view.look[k]);
@@ -112,9 +125,69 @@ for (const k of Object.keys(LOOK_RANGES)) {
   $(k).addEventListener('change', (e) => saveLook({ ...view.look, [k]: Number(e.target.value) }));
 }
 
-$('more').addEventListener('click', () => {
-  Promise.resolve(api.runtime.openOptionsPage()).catch(() => {});
-  globalThis.close?.();
+// ---- More settings (same controls and rules as the options page)
+function renderSites() {
+  const rows = siteRows(settings);
+  const list = $('sites');
+  const hadFocus = list.contains(document.activeElement);
+  list.replaceChildren();
+  for (const { host, summary } of rows) {
+    const li = $('site-row').content.firstElementChild.cloneNode(true);
+    li.querySelector('.host').textContent = host;
+    li.querySelector('.summary').textContent = summary;
+    const btn = li.querySelector('.remove');
+    btn.setAttribute('aria-label', `Remove rule for ${host}`);
+    btn.title = `Remove rule for ${host}`;
+    btn.dataset.host = host;
+    list.append(li);
+  }
+  $('sites-empty').hidden = rows.length > 0;
+  if (hadFocus) (list.querySelector('.remove') ?? $('more-settings').querySelector('summary')).focus?.();
+}
+
+for (const k of ['start', 'end']) {
+  $(k).addEventListener('change', (e) => {
+    if (!isValidTime(e.target.value)) {
+      e.target.setAttribute('aria-invalid', 'true');
+      $('schedule-hint').textContent = 'Enter a time, like 20:00.';
+      return;
+    }
+    commit(store.update({ schedule: { [k]: e.target.value } }));
+  });
+}
+$('images').addEventListener('change', (e) => commit(store.update({ images: e.target.value })));
+$('hide-bg').addEventListener('change', (e) => commit(store.update({ hideBackgroundImages: e.target.checked })));
+$('detect-dark').addEventListener('change', (e) => commit(store.update({ detectDark: e.target.checked })));
+$('engine').addEventListener('change', (e) => commit(store.update({ engine: e.target.value })));
+$('sites').addEventListener('click', (e) => {
+  const btn = e.target.closest?.('button.remove');
+  if (btn?.dataset.host) commit(store.setSite(btn.dataset.host, null));
+});
+
+// Reset all: an inline confirmation (a modal dialog is cramped in a popover).
+$('reset').addEventListener('click', () => {
+  $('reset-confirm').hidden = false;
+  $('reset').hidden = true;
+  $('reset-cancel').focus();
+});
+$('reset-cancel').addEventListener('click', () => {
+  $('reset-confirm').hidden = true;
+  $('reset').hidden = false;
+  $('reset').focus();
+});
+$('reset-go').addEventListener('click', async () => {
+  let ok = false;
+  try {
+    ok = (await api.runtime.sendMessage({ type: RESET_ALL }))?.ok === true;
+  } catch {
+    ok = false;
+  }
+  ({ settings } = await store.load());
+  $('reset-confirm').hidden = true;
+  $('reset').hidden = false;
+  render();
+  $('reset-done').textContent = ok ? 'All settings were reset.' : 'Reset didn’t finish. Try again.';
+  $('reset').focus();
 });
 
 async function main() {

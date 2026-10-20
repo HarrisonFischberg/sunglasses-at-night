@@ -74,7 +74,7 @@ async function tabOrder(p, max = 40, key = 'Tab') {
   return seen;
 }
 
-const NATIVE = new Set(['button', 'input', 'select', 'a', 'textarea']);
+const NATIVE = new Set(['button', 'input', 'select', 'a', 'textarea', 'summary']);
 
 test('popup on a normal page: site controls, keyboard pass, rule saved from the keyboard', async () => {
   for (const scheme of ['light', 'dark']) {
@@ -88,7 +88,7 @@ test('popup on a normal page: site controls, keyboard pass, rule saved from the 
       assert.ok(NATIVE.has(el.tag), `non-native focus stop ${JSON.stringify(el)}`);
       assert.ok(el.name, `unnamed focus stop ${JSON.stringify(el)}`);
     }
-    assert.ok(allOrder.some((e) => e.id === 'more' && e.name === 'More settings'), `icon button reachable and named ${JSON.stringify(allOrder)}`);
+    assert.ok(allOrder.some((e) => e.tag === 'summary' && /More settings/.test(e.name)), `More settings reachable and named ${JSON.stringify(allOrder)}`);
     assert.ok(allOrder.some((e) => e.type === 'radio' && e.name), 'site rule reachable from the keyboard');
     await p.focus('input[name="rule"][value="never"]');
     await p.keyboard.press('Space');

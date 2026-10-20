@@ -491,3 +491,29 @@ dialog .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap
   color: var(--muted);
   font-size: var(--text-sm);
 }
+
+/* Popup: schedule hours and "More settings" (everything the options page has,
+   so iOS never needs the separate settings window). */
+.popup #schedule { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); margin-top: var(--s-3); }
+.popup #schedule[hidden] { display: none; }
+.popup #schedule .hint { grid-column: 1 / -1; margin: 0; }
+.popup details.more { margin-top: var(--s-3); }
+.popup details.more > summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--target);
+  padding: 0 var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--group);
+  color: var(--fg);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.popup details.more > summary::-webkit-details-marker { display: none; }
+.popup details.more > summary::after { content: "›"; margin-left: auto; color: var(--muted); transition: transform var(--dur); }
+.popup details.more[open] > summary::after { transform: rotate(90deg); }
+.popup details.more > fieldset { margin-top: var(--s-3); }
+.popup #reset-confirm { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--s-2); margin-top: var(--s-2); }
+.popup #reset-confirm[hidden] { display: none; }
+.popup #reset-confirm p { flex: 1 0 100%; margin: 0; }

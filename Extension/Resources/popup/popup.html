@@ -12,12 +12,6 @@
   <header class="top">
     <img class="app-mark" src="../images/icon-48.png" alt="" width="28" height="28">
     <h1>Sunglasses for Safari</h1>
-    <button id="more" type="button" class="icon-button" aria-label="More settings" title="More settings">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/>
-        <circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>
-      </svg>
-    </button>
   </header>
 
   <main class="popup-scroll" id="scroll">
@@ -43,6 +37,17 @@
       <label class="tile"><input type="radio" name="mode" value="system"><span>Match system</span></label>
       <label class="tile"><input type="radio" name="mode" value="always"><span>Always</span></label>
       <label class="tile"><input type="radio" name="mode" value="schedule"><span>On a schedule</span></label>
+    </div>
+    <div id="schedule" hidden>
+      <div class="field">
+        <label for="start">From</label>
+        <input type="time" id="start" required aria-describedby="schedule-hint">
+      </div>
+      <div class="field">
+        <label for="end">Until</label>
+        <input type="time" id="end" required aria-describedby="schedule-hint">
+      </div>
+      <p id="schedule-hint" class="hint" aria-live="polite"></p>
     </div>
   </fieldset>
 
@@ -93,6 +98,56 @@
       <input type="range" id="grayscale" min="0" max="100" step="1">
     </div>
   </fieldset>
+
+  <details id="more-settings" class="more">
+    <summary>More settings</summary>
+    <fieldset>
+      <legend>Every site</legend>
+      <div class="field">
+        <label for="images">Images</label>
+        <select id="images">
+          <option value="leave">Leave as they are</option>
+          <option value="dim">Dim</option>
+          <option value="no-invert">Never invert</option>
+        </select>
+      </div>
+      <label class="check"><input type="checkbox" id="hide-bg"> Hide background images</label>
+      <label class="check"><input type="checkbox" id="detect-dark"> Leave pages that are already dark alone</label>
+      <div class="field">
+        <label for="engine">Engine</label>
+        <select id="engine">
+          <option value="dynamic">Dynamic</option>
+          <option value="filter">Filter</option>
+        </select>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Sites</legend>
+      <p id="sites-empty" class="hint">No site rules yet. Set one in “This site” above.</p>
+      <ul id="sites" class="sites"></ul>
+      <template id="site-row">
+        <li>
+          <span><span class="host"></span><br><span class="summary hint"></span></span>
+          <button type="button" class="icon-button remove">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/>
+            </svg>
+          </button>
+        </li>
+      </template>
+    </fieldset>
+    <fieldset>
+      <legend>Reset</legend>
+      <p class="hint">Puts every option back to its default and removes all site rules, here and in the Sunglasses for Safari app.</p>
+      <button type="button" id="reset" class="danger">Reset all settings…</button>
+      <div id="reset-confirm" class="actions" hidden>
+        <p id="reset-question">Reset everything? This can’t be undone.</p>
+        <button type="button" id="reset-cancel">Cancel</button>
+        <button type="button" id="reset-go" class="danger">Reset all</button>
+      </div>
+      <p id="reset-done" role="status" class="hint"></p>
+    </fieldset>
+  </details>
 
   <p class="report"><a id="report" href="#">Report a problem</a></p>
 
