@@ -2668,6 +2668,17 @@ function rewriteDeclarations(style, look, opts = {}) {
 
 // ------------------------------------------------------------ rule rewrite
 
+function propertyRuleDeclarations(rule, look) {
+  const value = (rule.initialValue ?? '').trim();
+  if (!value || rule.name.startsWith(VAR_PREFIX)) return [];
+  const out = [];
+  for (const role of ROLES) {
+    const v = rewriteTriplet(value, role, look) ?? rewriteValue(value, role, look);
+    if (v !== null) out.push(`${roleVar(role, rule.name)}:${v}`);
+  }
+  return out;
+}
+
 const STYLE_RULE = 1, IMPORT_RULE = 3, PAGE_RULE = 6, KEYFRAMES_RULE = 7, KEYFRAME_RULE = 8;
 
 /**
@@ -2689,6 +2700,16 @@ function rewriteRules(rules, look, onImport = () => '', opts = {}) {
       continue;
     }
     if (type === PAGE_RULE || type === KEYFRAMES_RULE || type === KEYFRAME_RULE) continue;
+    if (typeof rule.name === 'string' && rule.name.startsWith('--') && 'initialValue' in rule) {
+      // @property --x { initial-value: #000 }: a palette can live only in
+      // registered initial values, with no rule declaring --x at all (Epic
+      // MyChart, 2026-10-20: input text stayed black on our dark fields).
+      // The variants go on the root at zero specificity, so any real
+      // declaration of --x, and its own override, still wins.
+      const decls = propertyRuleDeclarations(rule, look);
+      if (decls.length) css += `:where(:root){${decls.join(';')}}`;
+      continue;
+    }
     const nested = rule.cssRules ? rewriteRules(rule.cssRules, look, onImport, opts) : '';
     if (type === STYLE_RULE) {
       // A selector that can't match yet adds a rule the browser must index on

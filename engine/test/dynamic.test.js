@@ -142,6 +142,19 @@ test('rewriteRules: style, grouping, nested, import, keyframes and page rules', 
     '@media print{.i{color:x}}');
 });
 
+test('rewriteRules: @property initial colors get root variants (QA: MyChart login text black on dark)', () => {
+  const rules = [
+    { type: 0, name: '--wpcolor_black', syntax: '<color>', inherits: true, initialValue: '#000000' },
+    { type: 0, name: '--gap', syntax: '<length>', inherits: false, initialValue: '8px' },
+    { type: 0, name: '--none', syntax: '*', inherits: true, initialValue: null },
+    { type: 1, selectorText: 'input', style: decl({ color: ['var(--wpcolor_black)'] }) },
+  ];
+  const css = rewriteRules(rules, undefined, () => '');
+  assert.equal(css,
+    `:where(:root){--san-bg--wpcolor_black:${mapped('#000000', 'bg')};--san-fg--wpcolor_black:${mapped('#000000', 'fg')};--san-border--wpcolor_black:${mapped('#000000', 'border')}}` +
+    'input{color:var(--san-fg--wpcolor_black, var(--wpcolor_black))}');
+});
+
 test('rewriteRules: isDead leaves out style rules that cannot match, keeps nested parents', () => {
   const dead = new Set(['.gone', '.parent']);
   const rules = [
