@@ -48,13 +48,13 @@ Reset all. The Mac keyboard shortcut (Option+Shift+N) toggles it on and off.
 - Activation modes: follow system appearance (default), always, schedule (fixed times, may cross midnight), off.
 - Per-site rule: default, always dark, never dark, with optional per-site look and engine (dynamic or filter fallback).
 - Image handling: leave, dim, don't invert. Option to hide background images. Leaves already-dark sites alone.
-- Report a problem: a user-sent `mailto:` draft to hello@rarecreatures.app with the hostname only. Never automatic.
+- Report a problem: a user-sent `mailto:` draft to support@rarecreatures.app with the hostname only. Never automatic.
 - No network code beyond re-fetching stylesheets a page already loaded. No new permissions without review.
 - Undecided: publishing legal entity (B1), policy hosting (B5), App Store age rating confirmation (planned 4+, B3).
 
 ## Brand Commitments
 
-- Name: **Sunglasses for Safari**. Never "Dark Eyes" or any reference app's name or look.
+- Name: **Sunglasses at Night**. Never "Dark Eyes" or any reference app's name or look.
 - Voice: **witty.** The joke is the name itself: you put on sunglasses at night because the web keeps throwing white pages at you. Wit lives in small moments (empty states, first run, the popup's status line), never in controls, consent, privacy, or error copy, which stay plain.
 - Avoid the reference apps' moon-on-purple look (REA R15).
 

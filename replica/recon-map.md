@@ -1,7 +1,7 @@
 # Recon map: Safari dark-mode extensions (iOS, iPadOS, macOS)
 
 Scope: Safari dark-mode Web Extension + container app, from public listings only
-For: Sunglasses for Safari (free, no data collection)
+For: Sunglasses at Night (free, no data collection)
 Date: 2026-10-18
 Evidence detail: `docs/rea-findings.md` (R1–R13). Feature matrix: `replica/features.csv`.
 

@@ -1,4 +1,4 @@
-# Sunglasses for Safari: wrap-up (2026-10-19)
+# Sunglasses at Night: wrap-up (2026-10-19)
 
 Owner decision 2026-10-19: **personal use, wrap up.** The build loop is
 stopped. Nothing was published, submitted or deployed. The only outward-facing
@@ -14,7 +14,7 @@ A Safari Web Extension that darkens every website, with a small container app.
 - Images: leave, dim, or don't invert; option to hide background images; already-dark sites left alone.
 - Handles the hard cases found while testing: no white flash while a site's late style files load (Amazon), multiply-blended product photos and tints (Amazon grids), text over photos, Shopify "number triplet" colors (Quiet Town), content inserted after load.
 - Popup and options page in concept B's layout and blue-black / teal colors; teal sunglasses icon everywhere.
-- Report a problem: opens a Mail draft to hello@rarecreatures.app with the site name. Never sent automatically.
+- Report a problem: opens a Mail draft to support@rarecreatures.app with the site name. Never sent automatically.
 - No network code, analytics, account or tracking (`npm run privacy-check`: 17/17, 0 vulnerabilities).
 
 ## State of the checks (last runs)
@@ -32,7 +32,7 @@ A Safari Web Extension that darkens every website, with a small container app.
 scripts/build-mac.sh
 ```
 
-Then Safari ▸ Settings ▸ Extensions → untick and re-tick "Sunglasses for Safari".
+Then Safari ▸ Settings ▸ Extensions → untick and re-tick "Sunglasses at Night".
 The build is signed with your Apple Development certificate but has no
 provisioning profile (Xcode on this Mac isn't signed in to an Apple ID). If
 Safari drops the extension after a restart, turn on Develop ▸ "Allow unsigned

@@ -1,6 +1,6 @@
 # Safari QA suite
 
-Installed-extension testing for Sunglasses for Safari in **real macOS Safari**
+Installed-extension testing for Sunglasses at Night in **real macOS Safari**
 and **Mobile Safari in the Xcode iOS Simulator**, plus deterministic fixtures
 and a shared 230-domain live-site manifest. Nothing here injects the
 extension's CSS or calls engine functions: every run goes through the
@@ -46,7 +46,7 @@ drives Safari in it. An iPad run: create "Sunglasses QA iPad" and pass
 
 **macOS Safari** (manual, once):
 
-1. `scripts/build-mac.sh`, then Safari ▸ Settings ▸ Extensions: untick and re-tick Sunglasses for Safari.
+1. `scripts/build-mac.sh`, then Safari ▸ Settings ▸ Extensions: untick and re-tick Sunglasses at Night.
 2. Safari ▸ Settings ▸ Developer: tick **Allow JavaScript from Apple Events**.
 3. System Settings ▸ Privacy & Security ▸ **Screen & System Audio Recording**: allow the app that runs the command (Terminal, or Claude).
 4. System Settings ▸ Privacy & Security ▸ **Accessibility**: allow the same app (it presses Option+Shift+N).

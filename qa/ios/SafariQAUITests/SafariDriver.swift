@@ -230,7 +230,7 @@ struct SafariDriver {
         let menu = safari.buttons["MoreMenuButton"]
         guard menu.waitForExistence(timeout: 5) else { QA.dump(safari, "no-menu"); return false }
         menu.tap()
-        let item = safari.descendants(matching: .any).matching(NSPredicate(format: "label == 'Sunglasses for Safari'")).firstMatch
+        let item = safari.descendants(matching: .any).matching(NSPredicate(format: "label == 'Sunglasses at Night'")).firstMatch
         if !item.waitForExistence(timeout: 4) {
             // iOS may group extensions under "Extensions" / "Manage Extensions".
             if find(safari, "Extensions").exists { find(safari, "Extensions").tap() }

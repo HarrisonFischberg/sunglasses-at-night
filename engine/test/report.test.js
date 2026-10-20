@@ -19,7 +19,7 @@ function parse(url) {
 test('report URL is a mailto: to the support address', () => {
   const u = parse(buildReportUrl(info));
   assert.equal(u.to, REPORT_ADDRESS);
-  assert.match(u.subject, /Sunglasses for Safari/);
+  assert.match(u.subject, /Sunglasses at Night/);
 });
 
 test('report body has exactly the fields: site, version, system, settings', () => {

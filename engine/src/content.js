@@ -1,4 +1,4 @@
-// Sunglasses for Safari: content script entry (bundled to
+// Sunglasses at Night: content script entry (bundled to
 // Extension/Resources/content/engine.js, run at document_start in every frame).
 // Loads settings, paints the anti-flash sheet, and once the DOM is parsed
 // either backs off (already-dark page, site rule, mode) or hands over to the

@@ -2,7 +2,7 @@
   "name": "sunglasses-at-night",
   "private": true,
   "version": "0.0.0",
-  "description": "Sunglasses for Safari: Safari Web Extension engine, tests and tooling",
+  "description": "Sunglasses at Night: Safari Web Extension engine, tests and tooling",
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {

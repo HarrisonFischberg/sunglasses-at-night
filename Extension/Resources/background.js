@@ -3,7 +3,7 @@
 'use strict';
 // ---- engine/src/settings.js
 const __m_engine_src_settings_js = (() => {
-// Sunglasses for Safari: settings model.
+// Sunglasses at Night: settings model.
 // Defaults, schema validation (reject or clamp), migration from the
 // unversioned v0 layout to v1, and a thin wrapper over a WebExtension
 // storage area. No DOM, no network. The storage area is injected so the
@@ -386,7 +386,7 @@ return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, L
 
 // ---- engine/src/messages.js
 const __m_engine_src_messages_js = (() => {
-// Sunglasses for Safari: runtime message types shared by the content and
+// Sunglasses at Night: runtime message types shared by the content and
 // background scripts. Kept separate so the content bundle never includes
 // background-only code.
 
@@ -414,7 +414,7 @@ return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF
 
 // ---- engine/src/sheet-fetch.js
 const __m_engine_src_sheet_fetch_js = (() => {
-// Sunglasses for Safari: cross-origin stylesheet re-fetch (background side, T007).
+// Sunglasses at Night: cross-origin stylesheet re-fetch (background side, T007).
 // A content script can't read the rules of a stylesheet served from another
 // origin, so it asks the background script for the sheet's text. The request
 // goes only to the URL the page itself already loaded the sheet from: no
@@ -509,7 +509,7 @@ return { MAX_SHEET_BYTES, rejectSheetUrl, isTrustedSender, createSheetFetcher, c
 
 // ---- engine/src/activation.js
 const __m_engine_src_activation_js = (() => {
-// Sunglasses for Safari: activation decision.
+// Sunglasses at Night: activation decision.
 // Global mode × per-site rule × system color scheme × schedule → on/off.
 // Pure: the caller passes the clock, the time zone and the system scheme,
 // so the same code runs in background.js, early.js and node:test.
@@ -598,7 +598,7 @@ return { localMinutes, inWindow, isInSchedule, decide, isActive };
 
 // ---- engine/src/first-paint.js
 const __m_engine_src_first_paint_js = (() => {
-// Sunglasses for Safari: dark first paint when dark mode doesn't depend on
+// Sunglasses at Night: dark first paint when dark mode doesn't depend on
 // the system appearance (QA 2026-10-19, white first frame).
 //
 // The manifest's content/base.css paints the page dark before its first
@@ -662,7 +662,7 @@ return { FIRST_PAINT_ID, FIRST_PAINT_CSS, hostPatterns, firstPaintPlan, minutesT
 
 // ---- engine/src/background-core.js
 const __m_engine_src_background_core_js = (() => {
-// Sunglasses for Safari: background logic (T009). The WebExtension API is
+// Sunglasses at Night: background logic (T009). The WebExtension API is
 // injected so node:test can drive it; background.js passes the real one.
 //
 //   Settings broadcast  every write to the settings key is pushed to every
@@ -693,7 +693,7 @@ const RESET_GENERATION_KEY = 'nativeResetGeneration';
 // Safari ignores the application id and routes to the containing app's handler.
 const NATIVE_APP_ID = 'app.rarecreatures.sunglassesatnight';
 
-const NAME = 'Sunglasses for Safari';
+const NAME = 'Sunglasses at Night';
 
 /**
  * The shortcut's effect. On (any mode but 'off') → 'off', remembering the
@@ -896,7 +896,7 @@ return { TOGGLE_COMMAND, RESTORE_KEY, RESET_GENERATION_KEY, NATIVE_APP_ID, toggl
 
 // ---- engine/src/background.js
 const __m_engine_src_background_js = (() => {
-// Sunglasses for Safari: background script entry (bundled to
+// Sunglasses at Night: background script entry (bundled to
 // Extension/Resources/background.js). Wires the real WebExtension API into
 // background-core.js: settings broadcast, toolbar state, the Mac keyboard
 // shortcut, and the cross-origin stylesheet re-fetch (T007).

@@ -1,4 +1,4 @@
-// Sunglasses for Safari: light overlays that blend (T032).
+// Sunglasses at Night: light overlays that blend (T032).
 // A storefront lays a light tint (#f7f7f7, rgba(0,0,0,.03)) over a product
 // photo with mix-blend-mode: multiply. On a white page that tint is invisible.
 // Once a dark engine darkens it, or inverts it, multiply with near-black blacks
