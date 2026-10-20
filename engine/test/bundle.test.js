@@ -48,8 +48,9 @@ test('manifest declares the toolbar action and the toggle shortcut the backgroun
   const { TOGGLE_COMMAND } = await import('../src/background-core.js');
   assert.ok(manifest.action, 'manifest.action missing');
   assert.ok(manifest.commands?.[TOGGLE_COMMAND]?.suggested_key?.mac, 'Mac shortcut missing');
-  // Exactly the prd.md architecture set: storage, plus nativeMessaging for the T014 App Group bridge.
-  assert.deepEqual(manifest.permissions, ['storage', 'nativeMessaging'], 'only the PRD-approved permissions');
+  // Exactly the prd.md architecture set: storage, plus nativeMessaging for the T014 App Group bridge,
+  // plus scripting for the first-paint registration (QA 2026-10-19, owner-approved 2026-10-20).
+  assert.deepEqual(manifest.permissions, ['storage', 'nativeMessaging', 'scripting'], 'only the PRD-approved permissions');
 });
 
 test('network APIs appear only in the background sheet fetcher', () => {

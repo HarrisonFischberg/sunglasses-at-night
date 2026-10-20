@@ -126,6 +126,7 @@ Project `.claude/settings.json`, adapted from the Ralph quickstart but narrower:
 - `defaultMode: acceptEdits`
 
 Other approvals requested:
+0. **QA 2026-10-19 (approved by Harold 2026-10-20):** add the `scripting` permission so the background can register the dark first-paint CSS (`engine/src/first-paint.js`). Without it, "Always", a schedule that is on, or "Always dark" sites paint white for a frame in light appearance (reproduced in the iOS Simulator; see `docs/qa/safari-qa-results.md`). No page data is read through it; no network path is added.
 1. **B12:** add `playwright` as a dev-only dependency (WebKit engine, Apache-2.0) for T012. If you say no, T012 falls back to manual Safari checks with screenshots, which is weaker evidence for the contrast claim.
 2. **B10 (optional):** install Chromium so REA can capture public reference pages.
 3. **B11 (optional):** install the Caveman skill.

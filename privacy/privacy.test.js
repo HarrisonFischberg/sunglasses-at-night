@@ -122,9 +122,11 @@ test('extension pages load nothing from the network', () => {
 
 const manifest = () => JSON.parse(read('Extension/Resources/manifest.json'));
 
-test('manifest: permission allowlist is exactly storage + nativeMessaging', () => {
+test('manifest: permission allowlist is exactly storage + nativeMessaging + scripting', () => {
+  // scripting: registers the extension's own dark first-paint CSS (first-paint.js,
+  // QA 2026-10-19). No page data is read through it and it adds no network path.
   const m = manifest();
-  assert.deepEqual([...m.permissions].sort(), ['nativeMessaging', 'storage']);
+  assert.deepEqual([...m.permissions].sort(), ['nativeMessaging', 'scripting', 'storage']);
 });
 
 test('manifest: host permissions are only <all_urls> (needed to darken every site)', () => {

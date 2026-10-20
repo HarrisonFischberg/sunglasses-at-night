@@ -407,6 +407,7 @@ const OFF_TEXT = Object.freeze({
   'system-light': 'system appearance is light',
   'schedule-out': 'outside the schedule',
   'already-dark': 'page is already dark',
+  'csp-blocked': "this site's security policy blocks it",
 });
 return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT };
 })();
@@ -506,6 +507,159 @@ function createSheetMessageHandler({ fetch, extensionId }) {
 return { MAX_SHEET_BYTES, rejectSheetUrl, isTrustedSender, createSheetFetcher, createSheetMessageHandler };
 })();
 
+// ---- engine/src/activation.js
+const __m_engine_src_activation_js = (() => {
+// Sunglasses for Safari: activation decision.
+// Global mode × per-site rule × system color scheme × schedule → on/off.
+// Pure: the caller passes the clock, the time zone and the system scheme,
+// so the same code runs in background.js, early.js and node:test.
+//
+// Precedence, highest first:
+//   1. mode 'off'           → off. Off is the master switch (and what the Mac
+//                              shortcut toggles), so no site rule overrides it.
+//   2. site rule 'never'    → off.
+//   3. site rule 'always'   → on, whatever the system scheme or schedule says.
+//   4. mode 'always'        → on.
+//   5. mode 'system'        → on iff the system scheme is dark.
+//   6. mode 'schedule'      → on iff the local wall-clock time is in the window.
+//
+// Schedule window: start inclusive, end exclusive, in local wall-clock
+// minutes. start > end crosses midnight. start === end is an empty window
+// (never on); "all day" is mode 'always'. Wall-clock comparison means DST
+// needs no special case: on a spring-forward day a skipped start (02:30)
+// takes effect at the first minute after it (03:00); on a fall-back day a
+// repeated hour is evaluated by its wall-clock reading both times.
+
+const { resolveSite, timeToMinutes } = __m_engine_src_settings_js;
+
+const MINUTES_PER_DAY = 24 * 60;
+
+// Local wall-clock minutes since midnight for `date`. With `timeZone`
+// (an IANA name) the result doesn't depend on the host's zone; without it
+// the runtime's local zone is used.
+function localMinutes(date, timeZone) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return null;
+  if (timeZone === undefined) return date.getHours() * 60 + date.getMinutes();
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date);
+  const get = (type) => Number(parts.find((p) => p.type === type).value);
+  return (get('hour') % 24) * 60 + get('minute');
+}
+
+// Whether minute-of-day `m` falls in [start, end).
+function inWindow(m, startMin, endMin) {
+  if (startMin === endMin) return false;
+  if (startMin < endMin) return m >= startMin && m < endMin;
+  return m >= startMin || m < endMin;
+}
+
+function isInSchedule(schedule, now, timeZone) {
+  const start = timeToMinutes(schedule?.start);
+  const end = timeToMinutes(schedule?.end);
+  const m = localMinutes(now, timeZone);
+  if (start === null || end === null || m === null) return false;
+  return inWindow(m % MINUTES_PER_DAY, start, end);
+}
+
+// `settings` must already be validated (see settings.js). `systemDark` is
+// the result of matchMedia('(prefers-color-scheme: dark)'); anything other
+// than `true` counts as light. Returns { on, reason } so the popup can say
+// why a page is or isn't dark.
+function decide({ settings, hostname, systemDark = false, now = new Date(), timeZone } = {}) {
+  if (settings.mode === 'off') return { on: false, reason: 'mode-off' };
+  const { rule } = resolveSite(settings, hostname);
+  if (rule === 'never') return { on: false, reason: 'site-never' };
+  if (rule === 'always') return { on: true, reason: 'site-always' };
+  switch (settings.mode) {
+    case 'always':
+      return { on: true, reason: 'mode-always' };
+    case 'system':
+      return systemDark === true
+        ? { on: true, reason: 'system-dark' }
+        : { on: false, reason: 'system-light' };
+    case 'schedule':
+      return isInSchedule(settings.schedule, now, timeZone)
+        ? { on: true, reason: 'schedule-in' }
+        : { on: false, reason: 'schedule-out' };
+    default:
+      return { on: false, reason: 'mode-unknown' };
+  }
+}
+
+function isActive(args) {
+  return decide(args).on;
+}
+return { localMinutes, inWindow, isInSchedule, decide, isActive };
+})();
+
+// ---- engine/src/first-paint.js
+const __m_engine_src_first_paint_js = (() => {
+// Sunglasses for Safari: dark first paint when dark mode doesn't depend on
+// the system appearance (QA 2026-10-19, white first frame).
+//
+// The manifest's content/base.css paints the page dark before its first
+// frame, but only under (prefers-color-scheme: dark): it can't know the
+// settings. With "Always", a schedule that is on, or a site set to "Always
+// dark" while the system is light, nothing dark is in place until the
+// content script's async settings read lands, and Safari can paint the
+// page's own white for a frame or two (seen on every fixture in the iOS
+// Simulator, and on amazon.com in a new tab on the Mac).
+//
+// So the background registers the same anti-flash CSS, without the media
+// gate, as a document_start content script (scripting.registerContentScripts)
+// whenever the settings say "on regardless of the system": for every site
+// (minus "never" sites) or only for the "Always dark" sites. Like base.css it
+// is gated on :root:not([data-sunglasses-off]), so it steps aside the moment
+// the content script has the real decision (off, never, already dark).
+// Pure planning here; background-core.js applies the plan.
+
+const { isInSchedule } = __m_engine_src_activation_js;
+
+const FIRST_PAINT_ID = 'sunglasses-first-paint';
+const FIRST_PAINT_CSS = 'content/base-on.css';
+
+// Match patterns for a normalized hostname and its subdomains (resolveSite
+// treats a rule for example.com as covering www.example.com).
+function hostPatterns(host) {
+  return [`*://${host}/*`, `*://*.${host}/*`];
+}
+
+/**
+ * What to register for `settings` at time `now`: null (nothing), or
+ * { matches, excludeMatches }. `timeZone` as in activation.js.
+ */
+function firstPaintPlan(settings, now = new Date(), timeZone) {
+  if (!settings || settings.mode === 'off') return null;
+  const sites = Object.entries(settings.sites ?? {});
+  const never = sites.filter(([, s]) => s.rule === 'never').map(([h]) => h);
+  const always = sites.filter(([, s]) => s.rule === 'always').map(([h]) => h);
+  const allOn = settings.mode === 'always' || (settings.mode === 'schedule' && isInSchedule(settings.schedule, now, timeZone));
+  if (allOn) return { matches: ['<all_urls>'], excludeMatches: never.flatMap(hostPatterns) };
+  if (always.length) return { matches: always.flatMap(hostPatterns), excludeMatches: [] };
+  return null;
+}
+
+/** Minutes until the schedule next changes state (for re-planning), or null. */
+function minutesToNextChange(settings, now = new Date()) {
+  if (settings?.mode !== 'schedule') return null;
+  const [sh, sm] = String(settings.schedule?.start ?? '').split(':').map(Number);
+  const [eh, em] = String(settings.schedule?.end ?? '').split(':').map(Number);
+  if ([sh, sm, eh, em].some((n) => !Number.isFinite(n))) return null;
+  const m = now.getHours() * 60 + now.getMinutes();
+  const until = (t) => ((t - m + 1440) % 1440) || 1440;
+  return Math.min(until(sh * 60 + sm), until(eh * 60 + em));
+}
+
+function samePlan(a, b) {
+  return JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+}
+return { FIRST_PAINT_ID, FIRST_PAINT_CSS, hostPatterns, firstPaintPlan, minutesToNextChange, samePlan };
+})();
+
 // ---- engine/src/background-core.js
 const __m_engine_src_background_core_js = (() => {
 // Sunglasses for Safari: background logic (T009). The WebExtension API is
@@ -521,12 +675,15 @@ const __m_engine_src_background_core_js = (() => {
 //                       for that tab. Icons per state come with T017.
 //   Keyboard shortcut   the manifest `commands` entry (Mac) toggles the master
 //                       switch: mode 'off' ↔ the mode it replaced.
+//   First paint         registers content/base-on.css at document_start while
+//                       dark mode is on regardless of the system (first-paint.js).
 //
 // No network here: the only request is the sheet re-fetch in sheet-fetch.js.
 
 const { createSettingsStore, migrate, STORAGE_KEY, MODES } = __m_engine_src_settings_js;
 const { createSheetMessageHandler } = __m_engine_src_sheet_fetch_js;
 const { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT } = __m_engine_src_messages_js;
+const { firstPaintPlan, minutesToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } = __m_engine_src_first_paint_js;
 
 const TOGGLE_COMMAND = 'toggle-dark-mode';
 // Separate storage key, so the settings schema stays unchanged.
@@ -651,10 +808,44 @@ function createBackground({ api, fetch }) {
     return clearLocal(generation);
   }
 
+  // ---- first paint (QA 2026-10-19): keep the registered dark base in step
+  // with the settings. Re-planned on every settings change, on every
+  // navigation (cheap; a schedule may have crossed its boundary while this
+  // background was asleep) and at the next schedule boundary while awake.
+  let registered; // undefined until the first sync reads what Safari has
+  let planTimer = null;
+  async function syncFirstPaint(settings) {
+    const scripting = api.scripting;
+    if (!scripting?.registerContentScripts) return null;
+    if (!settings) settings = (await store.load()).settings;
+    const plan = firstPaintPlan(settings, new Date());
+    if (registered === undefined) {
+      const got = await Promise.resolve(scripting.getRegisteredContentScripts?.({ ids: [FIRST_PAINT_ID] })).catch(() => []);
+      registered = got?.[0] ? { matches: got[0].matches, excludeMatches: got[0].excludeMatches ?? [] } : null;
+    }
+    clearTimeout(planTimer);
+    const next = minutesToNextChange(settings, new Date());
+    if (next !== null) planTimer = setTimeout(() => syncFirstPaint().catch(ignore), next * 60000 + 1000);
+    if (samePlan(plan, registered)) return plan;
+    if (registered) await Promise.resolve(scripting.unregisterContentScripts({ ids: [FIRST_PAINT_ID] })).catch(ignore);
+    registered = null;
+    if (plan) {
+      await scripting.registerContentScripts([{
+        id: FIRST_PAINT_ID, css: [FIRST_PAINT_CSS], matches: plan.matches,
+        ...(plan.excludeMatches.length ? { excludeMatches: plan.excludeMatches } : {}),
+        runAt: 'document_start', allFrames: true, persistAcrossSessions: true,
+      }]);
+      registered = plan;
+    }
+    return plan;
+  }
+
   api.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local' || !changes || !Object.prototype.hasOwnProperty.call(changes, STORAGE_KEY)) return;
-    broadcast(migrate(changes[STORAGE_KEY].newValue).settings).catch(ignore);
+    const next = migrate(changes[STORAGE_KEY].newValue).settings;
+    broadcast(next).catch(ignore);
     syncNative().catch(ignore);
+    syncFirstPaint(next).catch(ignore);
   });
 
   const sheetHandler = createSheetMessageHandler({ fetch, extensionId: api.runtime.id });
@@ -688,6 +879,7 @@ function createBackground({ api, fetch }) {
     // A navigation: the old page's state no longer applies.
     tabStates.delete(tabId);
     paint(tabId);
+    if (registered !== undefined) syncFirstPaint().catch(ignore);
   });
 
   api.commands?.onCommand.addListener((command) => {
@@ -695,9 +887,9 @@ function createBackground({ api, fetch }) {
   });
 
   // Each background start picks up a Reset all done in the app meanwhile.
-  const ready = syncNative().catch(ignore);
+  const ready = Promise.all([syncNative().catch(ignore), syncFirstPaint().catch(ignore)]);
 
-  return { broadcast, toggle, tabStates, store, syncNative, resetAll, ready };
+  return { broadcast, toggle, tabStates, store, syncNative, resetAll, syncFirstPaint, ready };
 }
 return { TOGGLE_COMMAND, RESTORE_KEY, RESET_GENERATION_KEY, NATIVE_APP_ID, toggleMode, toolbarState, createBackground };
 })();

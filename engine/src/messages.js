@@ -19,4 +19,5 @@ export const OFF_TEXT = Object.freeze({
   'system-light': 'system appearance is light',
   'schedule-out': 'outside the schedule',
   'already-dark': 'page is already dark',
+  'csp-blocked': "this site's security policy blocks it",
 });

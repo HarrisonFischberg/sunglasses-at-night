@@ -3,7 +3,7 @@
   "name": "Sunglasses for Safari",
   "description": "Dark mode for websites.",
   "version": "0.1.0",
-  "permissions": ["storage", "nativeMessaging"],
+  "permissions": ["storage", "nativeMessaging", "scripting"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"

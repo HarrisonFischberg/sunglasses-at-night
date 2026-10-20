@@ -59,6 +59,7 @@ test('popupView: status text for on, each off reason, and no report', () => {
   assert.equal(at({ on: true, reason: 'system-dark' }), 'Dark mode is on for this page.');
   assert.equal(at({ on: false, reason: 'site-never' }), 'Dark mode is off: never dark on this site.');
   assert.equal(at({ on: false, reason: 'system-light' }), 'Dark mode is off: system appearance is light.');
+  assert.equal(at({ on: false, reason: 'csp-blocked' }), "Dark mode is off: this site's security policy blocks it.");
   assert.equal(at({ on: false, reason: 'weird' }), 'Dark mode is off.');
   assert.match(at(null), /Not running on this page yet/);
 });

@@ -172,6 +172,24 @@ test('baseCss: dark canvas, readable default text and link colors, zero specific
   assert.ok(!/pointer-events|position|z-index|display/.test(css));
 });
 
+test('rewriteDeclarations: a light tint that blends in the same rule turns transparent (QA: ::after tint over product photos)', () => {
+  // .tile .tint::after { background:#f7f7f7; mix-blend-mode:multiply }: darkened and
+  // made normal, the opaque tint hid the photo under it (black tile).
+  const out = rewriteDeclarations(decl({ 'background-color': ['#f7f7f7'], 'mix-blend-mode': ['multiply'] }));
+  assert.ok(out.includes('background-color:transparent'), out.join(';'));
+  assert.ok(out.includes('mix-blend-mode:normal'));
+  assert.ok(rewriteDeclarations(decl({ 'background-color': ['rgba(0, 0, 0, 0.03)'], 'mix-blend-mode': ['darken'] })).includes('background-color:transparent'));
+  // A dark or saturated blending fill is a real color, not a tint: rewritten as before.
+  for (const bg of ['#202020', '#c0392b']) {
+    const o = rewriteDeclarations(decl({ 'background-color': [bg], 'mix-blend-mode': ['multiply'] }));
+    assert.ok(!o.includes('background-color:transparent'), `${bg}: ${o.join(';')}`);
+  }
+  // No blend: a light background is darkened as usual.
+  assert.ok(!rewriteDeclarations(decl({ 'background-color': ['#f7f7f7'] })).includes('background-color:transparent'));
+  // A blending picture (url layer) is media-like: left to the image rules.
+  assert.ok(!rewriteDeclarations(decl({ 'background-color': ['#fff'], 'background-image': ['url(x.png)'], 'mix-blend-mode': ['multiply'] })).includes('background-color:transparent'));
+});
+
 test('rewriteDeclarations: multiply / darken / color-burn / luminosity blends become normal (T031)', () => {
   for (const mode of ['multiply', 'darken', 'color-burn', 'luminosity']) {
     assert.deepEqual(rewriteDeclarations(decl({ 'mix-blend-mode': [mode] })), ['mix-blend-mode:normal', '--san-blend:1'], mode);

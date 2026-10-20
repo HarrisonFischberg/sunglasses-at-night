@@ -1539,6 +1539,7 @@ const OFF_TEXT = Object.freeze({
   'system-light': 'system appearance is light',
   'schedule-out': 'outside the schedule',
   'already-dark': 'page is already dark',
+  'csp-blocked': "this site's security policy blocks it",
 });
 return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT };
 })();

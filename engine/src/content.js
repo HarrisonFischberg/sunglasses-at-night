@@ -7,7 +7,7 @@
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 import { createSettingsStore, resolveSite, migrate } from './settings.js';
-import { startEarly, whenParsed, whenRoot, interimCss, READY_ATTRIBUTE } from './early.js';
+import { startEarly, whenParsed, whenRoot, interimCss, antiFlashCss, READY_ATTRIBUTE } from './early.js';
 import { startDynamic } from './dynamic.js';
 import { startFilter } from './filter.js';
 import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
@@ -99,6 +99,10 @@ function run(settings) {
   };
   // The page added a sheet the override doesn't cover yet: bring the interim
   // rule back (flat dark, media untouched) until the engine says ready again.
+  // The dark root/body base comes back with it: the early sheet is gone by
+  // now, and a late sheet that paints html/body white (Shopify section
+  // styles) would otherwise show a white page under the interim's light text
+  // (QA 2026-10-19, quiettownhome.com in the iOS Simulator).
   // Marked as ours so the engine never reads it as a page sheet.
   let rearmed = null;
   const busy = (look) => () => {
@@ -106,7 +110,7 @@ function run(settings) {
     if (!rearmed) {
       rearmed = document.createElement('style');
       rearmed.setAttribute('data-sunglasses-at-night', 'interim');
-      rearmed.textContent = interimCss(look);
+      rearmed.textContent = antiFlashCss(look) + interimCss(look);
     }
     if (!rearmed.isConnected) (document.head ?? document.documentElement).appendChild(rearmed);
   };
@@ -115,7 +119,15 @@ function run(settings) {
   whenParsed(document, () => {
     stopPrefetch();
     if (cancelled) return;
-    const result = ctl.finish();
+    let result = ctl.finish();
+    // A Content-Security-Policy without 'unsafe-inline' for styles (gov.uk,
+    // mozilla.org, pypi.org) blocks every <style> we add: the sheet never
+    // exists. Say so honestly instead of reporting "on" over a white page
+    // (QA 2026-10-19). The real fix is constructable stylesheets.
+    if (result.apply && ctl.style && !ctl.style.sheet) {
+      ctl.style.remove();
+      result = { ...result, apply: false, reason: 'csp-blocked' };
+    }
     reportState(result);
     if (!result.apply) return;
     const site = resolveSite(settings, hostname);

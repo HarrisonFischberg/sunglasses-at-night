@@ -75,8 +75,8 @@ test('background: TAB_STATE stores the host per tab and GET_TAB_STATE returns it
   assert.equal(reply.host, 'example.com');
 });
 
-test('manifest: permissions are unchanged (storage, nativeMessaging; no tabs/activeTab)', () => {
+test('manifest: permissions are unchanged (storage, nativeMessaging, scripting; no tabs/activeTab)', () => {
   const manifest = JSON.parse(readFileSync(fileURLToPath(new URL('../../Extension/Resources/manifest.json', import.meta.url)), 'utf8'));
-  assert.deepEqual(manifest.permissions, ['storage', 'nativeMessaging']);
+  assert.deepEqual(manifest.permissions, ['storage', 'nativeMessaging', 'scripting']);
   assert.deepEqual(manifest.host_permissions, ['<all_urls>']);
 });

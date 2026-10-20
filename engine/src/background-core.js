@@ -11,12 +11,15 @@
 //                       for that tab. Icons per state come with T017.
 //   Keyboard shortcut   the manifest `commands` entry (Mac) toggles the master
 //                       switch: mode 'off' ↔ the mode it replaced.
+//   First paint         registers content/base-on.css at document_start while
+//                       dark mode is on regardless of the system (first-paint.js).
 //
 // No network here: the only request is the sheet re-fetch in sheet-fetch.js.
 
 import { createSettingsStore, migrate, STORAGE_KEY, MODES } from './settings.js';
 import { createSheetMessageHandler } from './sheet-fetch.js';
 import { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT } from './messages.js';
+import { firstPaintPlan, minutesToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } from './first-paint.js';
 
 export const TOGGLE_COMMAND = 'toggle-dark-mode';
 // Separate storage key, so the settings schema stays unchanged.
@@ -141,10 +144,44 @@ export function createBackground({ api, fetch }) {
     return clearLocal(generation);
   }
 
+  // ---- first paint (QA 2026-10-19): keep the registered dark base in step
+  // with the settings. Re-planned on every settings change, on every
+  // navigation (cheap; a schedule may have crossed its boundary while this
+  // background was asleep) and at the next schedule boundary while awake.
+  let registered; // undefined until the first sync reads what Safari has
+  let planTimer = null;
+  async function syncFirstPaint(settings) {
+    const scripting = api.scripting;
+    if (!scripting?.registerContentScripts) return null;
+    if (!settings) settings = (await store.load()).settings;
+    const plan = firstPaintPlan(settings, new Date());
+    if (registered === undefined) {
+      const got = await Promise.resolve(scripting.getRegisteredContentScripts?.({ ids: [FIRST_PAINT_ID] })).catch(() => []);
+      registered = got?.[0] ? { matches: got[0].matches, excludeMatches: got[0].excludeMatches ?? [] } : null;
+    }
+    clearTimeout(planTimer);
+    const next = minutesToNextChange(settings, new Date());
+    if (next !== null) planTimer = setTimeout(() => syncFirstPaint().catch(ignore), next * 60000 + 1000);
+    if (samePlan(plan, registered)) return plan;
+    if (registered) await Promise.resolve(scripting.unregisterContentScripts({ ids: [FIRST_PAINT_ID] })).catch(ignore);
+    registered = null;
+    if (plan) {
+      await scripting.registerContentScripts([{
+        id: FIRST_PAINT_ID, css: [FIRST_PAINT_CSS], matches: plan.matches,
+        ...(plan.excludeMatches.length ? { excludeMatches: plan.excludeMatches } : {}),
+        runAt: 'document_start', allFrames: true, persistAcrossSessions: true,
+      }]);
+      registered = plan;
+    }
+    return plan;
+  }
+
   api.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local' || !changes || !Object.prototype.hasOwnProperty.call(changes, STORAGE_KEY)) return;
-    broadcast(migrate(changes[STORAGE_KEY].newValue).settings).catch(ignore);
+    const next = migrate(changes[STORAGE_KEY].newValue).settings;
+    broadcast(next).catch(ignore);
     syncNative().catch(ignore);
+    syncFirstPaint(next).catch(ignore);
   });
 
   const sheetHandler = createSheetMessageHandler({ fetch, extensionId: api.runtime.id });
@@ -178,6 +215,7 @@ export function createBackground({ api, fetch }) {
     // A navigation: the old page's state no longer applies.
     tabStates.delete(tabId);
     paint(tabId);
+    if (registered !== undefined) syncFirstPaint().catch(ignore);
   });
 
   api.commands?.onCommand.addListener((command) => {
@@ -185,7 +223,7 @@ export function createBackground({ api, fetch }) {
   });
 
   // Each background start picks up a Reset all done in the app meanwhile.
-  const ready = syncNative().catch(ignore);
+  const ready = Promise.all([syncNative().catch(ignore), syncFirstPaint().catch(ignore)]);
 
-  return { broadcast, toggle, tabStates, store, syncNative, resetAll, ready };
+  return { broadcast, toggle, tabStates, store, syncNative, resetAll, syncFirstPaint, ready };
 }

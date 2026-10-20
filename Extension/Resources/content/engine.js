@@ -2322,11 +2322,11 @@ const __m_engine_src_dynamic_js = (() => {
 // adopted sheets are overridden with `!important` copies because adopted
 // sheets cascade after every <style> we could add.
 
-const { parseColor, formatRgb, composite, contrastRatio, srgbToOklch } = __m_engine_src_color_js;
+const { parseColor, formatRgb, composite, contrastRatio, srgbToOklch, relativeLuminance } = __m_engine_src_color_js;
 const { createSelectorIndex } = __m_engine_src_selector_index_js;
 const { transformColor, ensureContrast, quantize, normalizeLook, MIN_CONTRAST } = __m_engine_src_transform_js;
 const { dynamicImageCss } = __m_engine_src_filter_js;
-const { isBlendOverlay, OVERLAY_DECLS } = __m_engine_src_blend_fix_js;
+const { isBlendOverlay, OVERLAY_DECLS, lightOrClear } = __m_engine_src_blend_fix_js;
 
 const MARK = 'data-sunglasses-at-night';
 const INLINE_ATTR = 'data-san-inline';
@@ -2598,11 +2598,23 @@ function rewriteDeclarations(style, look, opts = {}) {
   // Serializing every shorthand of every rule is costly, so only look when
   // such an empty longhand showed up.
   let pendingVar = false;
+  // A light tint that blends (multiply/darken) over a photo, declared in this
+  // very rule: give it a transparent background here, in the sheet. The
+  // element pass (fixBlendOverlays) can't reach ::before/::after tints, and a
+  // darkened opaque tint with normal blending hides the photo (Amazon Fresh).
+  const blendTint = len > 0 && BLEND_FIX_RE.test((style.getPropertyValue('mix-blend-mode') || '').trim()) &&
+    !/url\(|gradient\(/i.test(style.getPropertyValue('background-image') || '') &&
+    !/var\(/i.test(style.getPropertyValue('background-color') || '') &&
+    lightOrClear(style.getPropertyValue('background-color') || 'transparent');
   for (let i = 0; i < len; i++) {
     const prop = style.item ? style.item(i) : style[i];
     if (!prop || seen.has(prop)) continue;
     seen.add(prop);
     const value = style.getPropertyValue(prop);
+    if (blendTint && prop === 'background-color') {
+      out.push(`background-color:transparent${bangFor(prop)}`);
+      continue;
+    }
     if (!value && PROP_ROLES[prop]) pendingVar = true;
     if (!urlImagesSeen && (prop === 'background-image' || prop === 'background') && URL_IMAGE_RE.test(value)) urlImagesSeen = true;
     if (prop.startsWith('--')) {
@@ -2731,6 +2743,7 @@ function pendingCss(look) {
 // ------------------------------------------------------------- the engine
 
 const HTML_NS = 'http://www.w3.org/1999/xhtml';
+const SVG_NS = 'http://www.w3.org/2000/svg';
 const POLL_MS = 1000;
 const MAX_IMPORT_DEPTH = 4;
 const ATTR_FILTER = ['style', 'bgcolor', 'background', 'color', 'text', 'class', 'id', 'media', 'disabled', 'rel', 'href'];
@@ -2746,6 +2759,8 @@ const SLICE_MS = 6;
 const CONTRAST_DELAY_MS = 100;
 // Longest the engine waits for page sheets to load before calling itself ready.
 const READY_CAP_MS = 2500;
+// How long after start pending shadow hosts are checked every frame (watchHosts).
+const HOST_WATCH_MS = 10000;
 const YIELD = Symbol('yield');
 
 /**
@@ -3330,7 +3345,10 @@ function startDynamic({
   function adoptShadow(host) {
     const sr = host.shadowRoot;
     if (!sr) {
-      if (host.localName.includes('-')) pendingHosts.add(host);
+      if (host.localName.includes('-')) {
+        pendingHosts.add(host);
+        watchHosts();
+      }
       return;
     }
     pendingHosts.delete(host);
@@ -3339,6 +3357,29 @@ function startDynamic({
     syncSheets(ensureScope(sr));
     scanTree(sr);
     wantContrast(host);
+  }
+
+  // A custom element usually gets its shadow root when its definition loads,
+  // which no MutationObserver reports. Until then its shadow content would
+  // paint with the page's own (light) colors under our light interim text
+  // (QA 2026-10-19: reddit.com cards white for ~1 s in the iOS Simulator).
+  // While hosts are pending, check them every animation frame, before paint,
+  // for the first HOST_WATCH_MS; the regular sync keeps covering later ones.
+  let hostFrame = null;
+  const watchStart = now();
+  function watchHosts() {
+    if (hostFrame !== null || stopped || !win.requestAnimationFrame || now() - watchStart > HOST_WATCH_MS) return;
+    hostFrame = win.requestAnimationFrame(() => {
+      hostFrame = null;
+      if (stopped) return;
+      let adopted = false;
+      for (const host of [...pendingHosts]) {
+        if (host.shadowRoot) { adoptShadow(host); adopted = true; }
+        else if (!host.isConnected) pendingHosts.delete(host);
+      }
+      if (adopted) wantContrastAll();
+      if (pendingHosts.size) watchHosts();
+    });
   }
 
   // about:blank and srcdoc frames get no content script (the manifest has no
@@ -3372,9 +3413,39 @@ function startDynamic({
     start();
   }
 
+  // SVG presentation attributes (fill="#000", stroke="#222") are not CSS, so
+  // the sheet rewrite never sees them: a black inline logo or icon stayed
+  // black on the dark page (QA 2026-10-19: the nytimes.com wordmark vanished).
+  // A dark neutral attribute value gets a zero-specificity rule with its
+  // foreground mapping: it beats the presentation attribute, and any page
+  // CSS that sets fill/stroke still wins (and is rewritten as usual).
+  // Colored fills (charts, brand marks) are left as authored.
+  const svgPaintSeen = new Map(); // scope → Set of attr=value
+  function noteSvgPaint(el) {
+    for (const attr of ['fill', 'stroke']) {
+      const v = el.getAttribute(attr)?.trim();
+      if (!v) continue;
+      const c = parseColor(v);
+      if (!c || c.alpha === 0) continue;
+      const { c: chroma } = srgbToOklch(c);
+      if (relativeLuminance(c) > 0.06 || chroma > 0.04) continue;
+      const scope = ensureScope(el.getRootNode?.() ?? document);
+      let seen = svgPaintSeen.get(scope);
+      if (!seen) svgPaintSeen.set(scope, (seen = new Set()));
+      const key = `${attr}=${v.toLowerCase()}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const mapped = rewriteValue(v, 'fg', look);
+      if (!mapped) continue;
+      const q = v.replace(/["\\]/g, '\\$&');
+      addRule(scope, `:where(svg[${attr}="${q}" i],svg [${attr}="${q}" i]){${attr}:${mapped}}`);
+    }
+  }
+
   function scanTree(root) {
     for (const el of elementsIn(root)) {
       if (isOurs(el)) continue;
+      if (el.namespaceURI === SVG_NS && (el.hasAttribute('fill') || el.hasAttribute('stroke'))) noteSvgPaint(el);
       if (el.hasAttribute('style') || el.hasAttribute('bgcolor') || el.localName === 'font' || el.localName === 'body' ||
         (hideBackgroundImages && el.hasAttribute('background'))) {
         processInline(el);
@@ -3597,11 +3668,49 @@ function startDynamic({
     return changed;
   }
 
+  // Canvas propagation (QA 2026-10-19, nytimes.com: lead photos vanished).
+  // When the page gives <html> no background and <body> one, CSS paints the
+  // body's background on the canvas and the body box itself stays clear, so
+  // `z-index:-1` content (NYT figures) shows above it. Our base rule gives
+  // <html> a dark background, which stops that propagation: the body then
+  // paints its own (now dark) box over the negative-z content. So when the
+  // page relies on propagation, the root's background is left to the body.
+  let canvasEl = null;
+  function syncCanvas() {
+    const root = document.documentElement, body = document.body;
+    if (!root || !body) return;
+    // Every sheet of ours off for one synchronous read (the early and interim
+    // sheets paint html/body too), then back on: no paint in between.
+    const ours = [...document.querySelectorAll(`style[${MARK}]`)];
+    const prior = ours.map((st) => st.media);
+    for (const st of ours) st.media = 'not all';
+    let authored;
+    try {
+      const r = getCS(root), b = getCS(body);
+      authored = { rootBg: r.backgroundColor, rootImg: r.backgroundImage, bodyBg: b.backgroundColor, bodyImg: b.backgroundImage };
+    } finally {
+      ours.forEach((st, i) => { if (prior[i]) st.media = prior[i]; else st.removeAttribute('media'); });
+    }
+    const clear = (c) => { const p = parseColor(c); return !p || p.alpha === 0; };
+    const propagates = clear(authored.rootBg) && (!authored.rootImg || authored.rootImg === 'none') &&
+      (!clear(authored.bodyBg) || (authored.bodyImg && authored.bodyImg !== 'none'));
+    if (propagates && !canvasEl) {
+      canvasEl = makeStyle('canvas');
+      canvasEl.textContent = ':root{background-color:transparent!important}';
+      const scope = scopes.get(document);
+      (scope?.overrideEl?.parentNode ?? root).insertBefore(canvasEl, scope?.overrideEl ?? null);
+    } else if (!propagates && canvasEl) {
+      canvasEl.remove();
+      canvasEl = null;
+    }
+  }
+
   // Run deferred work until `deadline`; false when some is left.
   function work(deadline) {
     if (syncWanted) {
       if (syncAll(deadline) === YIELD) return false;
       syncWanted = false;
+      syncCanvas();
       checkReady();
     }
     for (;;) {
@@ -3720,6 +3829,7 @@ function startDynamic({
         pendingHosts.delete(host);
       }
     }
+    if (changed === true) syncCanvas();
     if (changed === true || forceContrast || adopted) wantContrastAll();
   }
 
@@ -3727,6 +3837,7 @@ function startDynamic({
     ensureScope(document);
     indexTree(document.documentElement);
     syncSheets(scopes.get(document));
+    syncCanvas();
     scanTree(document.documentElement);
     for (const link of document.querySelectorAll('link[rel~="stylesheet" i]')) {
       if (!link.sheet) link.addEventListener('load', onSheetLoad, { once: true });
@@ -3743,6 +3854,10 @@ function startDynamic({
 
   function stop() {
     stopped = true;
+    if (hostFrame !== null) win.cancelAnimationFrame?.(hostFrame);
+    hostFrame = null;
+    canvasEl?.remove();
+    canvasEl = null;
     win.clearInterval(timer);
     win.clearTimeout(readyTimer);
     if (timerId !== null) win.clearTimeout(timerId);
@@ -3788,7 +3903,7 @@ function startDynamic({
 
   return { stop, refresh, settle };
 }
-return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, BLEND_MARK, PENDING_ATTR, PROP_ROLES, rewriteTriplet, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, pendingCss, SLICE_MS, CONTRAST_DELAY_MS, READY_CAP_MS, startDynamic };
+return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, BLEND_MARK, PENDING_ATTR, PROP_ROLES, rewriteTriplet, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, pendingCss, SLICE_MS, CONTRAST_DELAY_MS, READY_CAP_MS, HOST_WATCH_MS, startDynamic };
 })();
 
 // ---- engine/src/messages.js
@@ -3814,6 +3929,7 @@ const OFF_TEXT = Object.freeze({
   'system-light': 'system appearance is light',
   'schedule-out': 'outside the schedule',
   'already-dark': 'page is already dark',
+  'csp-blocked': "this site's security policy blocks it",
 });
 return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT };
 })();
@@ -3829,7 +3945,7 @@ const __m_engine_src_content_js = (() => {
 // request is the cross-origin sheet re-fetch, which the background script does.
 
 const { createSettingsStore, resolveSite, migrate } = __m_engine_src_settings_js;
-const { startEarly, whenParsed, whenRoot, interimCss, READY_ATTRIBUTE } = __m_engine_src_early_js;
+const { startEarly, whenParsed, whenRoot, interimCss, antiFlashCss, READY_ATTRIBUTE } = __m_engine_src_early_js;
 const { startDynamic } = __m_engine_src_dynamic_js;
 const { startFilter } = __m_engine_src_filter_js;
 const { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } = __m_engine_src_messages_js;
@@ -3921,6 +4037,10 @@ function run(settings) {
   };
   // The page added a sheet the override doesn't cover yet: bring the interim
   // rule back (flat dark, media untouched) until the engine says ready again.
+  // The dark root/body base comes back with it: the early sheet is gone by
+  // now, and a late sheet that paints html/body white (Shopify section
+  // styles) would otherwise show a white page under the interim's light text
+  // (QA 2026-10-19, quiettownhome.com in the iOS Simulator).
   // Marked as ours so the engine never reads it as a page sheet.
   let rearmed = null;
   const busy = (look) => () => {
@@ -3928,7 +4048,7 @@ function run(settings) {
     if (!rearmed) {
       rearmed = document.createElement('style');
       rearmed.setAttribute('data-sunglasses-at-night', 'interim');
-      rearmed.textContent = interimCss(look);
+      rearmed.textContent = antiFlashCss(look) + interimCss(look);
     }
     if (!rearmed.isConnected) (document.head ?? document.documentElement).appendChild(rearmed);
   };
@@ -3937,7 +4057,15 @@ function run(settings) {
   whenParsed(document, () => {
     stopPrefetch();
     if (cancelled) return;
-    const result = ctl.finish();
+    let result = ctl.finish();
+    // A Content-Security-Policy without 'unsafe-inline' for styles (gov.uk,
+    // mozilla.org, pypi.org) blocks every <style> we add: the sheet never
+    // exists. Say so honestly instead of reporting "on" over a white page
+    // (QA 2026-10-19). The real fix is constructable stylesheets.
+    if (result.apply && ctl.style && !ctl.style.sheet) {
+      ctl.style.remove();
+      result = { ...result, apply: false, reason: 'csp-blocked' };
+    }
     reportState(result);
     if (!result.apply) return;
     const site = resolveSite(settings, hostname);
