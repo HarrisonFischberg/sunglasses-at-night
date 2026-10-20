@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/screenshots/icon.png" width="128" height="128" alt="Sunglasses for Safari app icon">
+  <img src="docs/screenshots/icon.png" width="128" height="128" alt="Sunglasses at Night app icon">
 </p>
 
-<h1 align="center">Sunglasses for Safari</h1>
+<h1 align="center">Sunglasses at Night</h1>
 
 <p align="center">A free, private dark mode for every website in Safari on Mac, iPhone and iPad.</p>
 
@@ -25,11 +25,11 @@ The toolbar popup and the settings page, shown with made-up demo sites.
 - **Two engines:** dynamic rewrites the site's own colors and keeps text at 4.5:1 contrast or better. Filter inverts the page and flips photos back, as a fallback.
 - **Images:** leave them, dim them, or don't invert them, with an option to hide background images.
 - **Leaves already-dark sites alone,** and avoids the white flash while a page is still loading.
-- **Report a problem:** opens a Mail draft to hello@rarecreatures.app with just the site name. You choose whether to send it.
+- **Report a problem:** opens a Mail draft to support@rarecreatures.app with the site name, version and settings. You choose whether to send it.
 
 ## Install
 
-Sunglasses for Safari isn't on the App Store yet, so for now you build it yourself. The app code lives on the `build/v1` branch.
+Sunglasses at Night isn't on the App Store yet, so for now you build it yourself. The app code lives on the `build/v1` branch.
 
 You need a Mac with Xcode (macOS 13 or later for the Mac app, iOS or iPadOS 16 or later for iPhone and iPad) and Node.js 22 for the build scripts.
 
@@ -48,13 +48,13 @@ The quickest route is the rebuild script, which needs an "Apple Development" sig
 scripts/build-mac.sh
 ```
 
-It builds the Mac app, signs it and opens it. Then open Safari, go to Settings, then Extensions, and turn on "Sunglasses for Safari". If Safari drops the extension after a restart, turn on "Allow unsigned extensions" in Safari's Develop menu, or sign Xcode into your Apple ID and build with your team.
+It builds the Mac app, signs it and opens it. Then open Safari, go to Settings, then Extensions, and turn on "Sunglasses at Night". If Safari drops the extension after a restart, turn on "Allow unsigned extensions" in Safari's Develop menu, or sign Xcode into your Apple ID and build with your team.
 
-You can also open `SunglassesAtNight.xcodeproj` in Xcode and run the **Sunglasses for Safari (macOS)** scheme.
+You can also open `SunglassesAtNight.xcodeproj` in Xcode and run the **Sunglasses at Night (macOS)** scheme.
 
 ### iPhone and iPad
 
-Open `SunglassesAtNight.xcodeproj` in Xcode, pick the **Sunglasses for Safari (iOS)** scheme, choose your device or a simulator, set your team under Signing and Capabilities, and run. Then go to Settings, Apps, Safari, Extensions and turn on Sunglasses for Safari, and allow it on all websites.
+Open `SunglassesAtNight.xcodeproj` in Xcode, pick the **Sunglasses at Night (iOS)** scheme, choose your device or a simulator, set your team under Signing and Capabilities, and run. Then go to Settings, Apps, Safari, Extensions and turn on Sunglasses at Night, and allow it on all websites.
 
 ## Dark mode
 
@@ -87,4 +87,4 @@ The `main` branch holds the launch-readiness plan: `prd.md`, `docs/` (data inven
 
 ## Contact
 
-Made by Rare Creatures LLC. Questions or a site that looks wrong: hello@rarecreatures.app. Website: https://rarecreatures.app
+Made by Rare Creatures LLC. Help or a site that looks wrong: support@rarecreatures.app. Privacy questions: hello@rarecreatures.app. Website: https://rarecreatures.app
