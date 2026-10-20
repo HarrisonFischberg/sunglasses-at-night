@@ -1,4 +1,4 @@
-// Sunglasses for Safari: dark first paint when dark mode doesn't depend on
+// Sunglasses at Night: dark first paint when dark mode doesn't depend on
 // the system appearance (QA 2026-10-19, white first frame).
 //
 // The manifest's content/base.css paints the page dark before its first

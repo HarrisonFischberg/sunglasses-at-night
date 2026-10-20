@@ -1,4 +1,4 @@
-// Sunglasses for Safari: toolbar popup (S05) entry, bundled to
+// Sunglasses at Night: toolbar popup (S05) entry, bundled to
 // Extension/Resources/popup/popup.js. Mode and schedule hours, this site's
 // rule, the already-dark override, the look, and under "More settings"
 // everything the options page has (images, engine, the site list, Reset all),
@@ -223,5 +223,5 @@ function openAtTop() {
 }
 
 main().catch(() => {
-  $('status').textContent = 'Sunglasses for Safari couldn’t load its settings. Close this and try again.';
+  $('status').textContent = 'Sunglasses at Night couldn’t load its settings. Close this and try again.';
 });

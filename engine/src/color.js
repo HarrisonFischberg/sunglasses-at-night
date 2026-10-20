@@ -1,4 +1,4 @@
-// Sunglasses for Safari: color engine.
+// Sunglasses at Night: color engine.
 // Parses CSS color syntaxes (CSS Color 4/5), converts between color spaces,
 // gamut-maps into sRGB, and measures WCAG 2.x contrast.
 // Pure functions only: no DOM, no storage, no network.

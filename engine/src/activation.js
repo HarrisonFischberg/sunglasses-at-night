@@ -1,4 +1,4 @@
-// Sunglasses for Safari: activation decision.
+// Sunglasses at Night: activation decision.
 // Global mode × per-site rule × system color scheme × schedule → on/off.
 // Pure: the caller passes the clock, the time zone and the system scheme,
 // so the same code runs in background.js, early.js and node:test.

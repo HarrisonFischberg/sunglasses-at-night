@@ -3,7 +3,7 @@
 'use strict';
 // ---- engine/src/settings.js
 const __m_engine_src_settings_js = (() => {
-// Sunglasses for Safari: settings model.
+// Sunglasses at Night: settings model.
 // Defaults, schema validation (reject or clamp), migration from the
 // unversioned v0 layout to v1, and a thin wrapper over a WebExtension
 // storage area. No DOM, no network. The storage area is injected so the
@@ -386,7 +386,7 @@ return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, L
 
 // ---- engine/src/activation.js
 const __m_engine_src_activation_js = (() => {
-// Sunglasses for Safari: activation decision.
+// Sunglasses at Night: activation decision.
 // Global mode × per-site rule × system color scheme × schedule → on/off.
 // Pure: the caller passes the clock, the time zone and the system scheme,
 // so the same code runs in background.js, early.js and node:test.
@@ -475,7 +475,7 @@ return { localMinutes, inWindow, isInSchedule, decide, isActive };
 
 // ---- engine/src/color.js
 const __m_engine_src_color_js = (() => {
-// Sunglasses for Safari: color engine.
+// Sunglasses at Night: color engine.
 // Parses CSS color syntaxes (CSS Color 4/5), converts between color spaces,
 // gamut-maps into sRGB, and measures WCAG 2.x contrast.
 // Pure functions only: no DOM, no storage, no network.
@@ -1358,7 +1358,7 @@ return { SPACES, convert, NAMED_COLORS, mixRaw, parseRaw, inSrgbGamut, deltaEOK,
 
 // ---- engine/src/transform.js
 const __m_engine_src_transform_js = (() => {
-// Sunglasses for Safari: color transform.
+// Sunglasses at Night: color transform.
 // Maps a light page's background, text and border colors to dark equivalents
 // in OKLCH (lightness remapped, hue kept, chroma tempered), applies the look
 // sliders, and guarantees text-on-background contrast of at least 4.5:1
@@ -1607,7 +1607,7 @@ return { MIN_CONTRAST, ROLES, DEFAULT_LOOK, PRESETS, normalizeLook, isIdentityLo
 
 // ---- engine/src/detect.js
 const __m_engine_src_detect_js = (() => {
-// Sunglasses for Safari: already-dark detection.
+// Sunglasses at Night: already-dark detection.
 // Decides whether a page is dark on its own, so we leave it alone (F6).
 // Pure: the caller reads computed styles and the color-scheme meta tag and
 // passes them in as strings, so the same code runs in early.js and node:test.
@@ -1715,7 +1715,7 @@ return { DARK_LUMINANCE, parseColorScheme, usedColorScheme, detectAlreadyDark, f
 
 // ---- engine/src/early.js
 const __m_engine_src_early_js = (() => {
-// Sunglasses for Safari: document_start anti-flash (F7).
+// Sunglasses at Night: document_start anti-flash (F7).
 // At document_start, if activation says on, inject a small sheet that paints
 // the root dark before the page's first paint. Once the page's own styles are
 // in (DOMContentLoaded), measure the page with our sheet switched off and
@@ -1883,7 +1883,7 @@ return { SHEET_ID, OFF_ATTRIBUTE, READY_ATTRIBUTE, antiFlashCss, interimCss, ear
 
 // ---- engine/src/selector-index.js
 const __m_engine_src_selector_index_js = (() => {
-// Sunglasses for Safari: dead-selector index (T024).
+// Sunglasses at Night: dead-selector index (T024).
 // An override rule whose selector can't match anything on the page still costs
 // the browser a rule-set entry on every style recalc. The page's own sheets
 // are full of such rules (a store ships thousands of selectors for pages it
@@ -2063,7 +2063,7 @@ return { requiredTokens, createSelectorIndex };
 
 // ---- engine/src/blend-fix.js
 const __m_engine_src_blend_fix_js = (() => {
-// Sunglasses for Safari: light overlays that blend (T032).
+// Sunglasses at Night: light overlays that blend (T032).
 // A storefront lays a light tint (#f7f7f7, rgba(0,0,0,.03)) over a product
 // photo with mix-blend-mode: multiply. On a white page that tint is invisible.
 // Once a dark engine darkens it, or inverts it, multiply with near-black blacks
@@ -2110,7 +2110,7 @@ return { BLEND_FIX_RE, OVERLAY_LIGHT, OVERLAY_CLEAR_ALPHA, lightOrClear, isBlend
 
 // ---- engine/src/filter.js
 const __m_engine_src_filter_js = (() => {
-// Sunglasses for Safari: filter fallback engine (T008, F10) and image modes (F5).
+// Sunglasses at Night: filter fallback engine (T008, F10) and image modes (F5).
 // For pages the dynamic engine breaks: one sheet inverts the whole page with
 // a CSS filter on the root (invert, then hue-rotate so hues stay put) and
 // counter-inverts media so photos, video and frames show as authored.
@@ -2289,7 +2289,7 @@ return { FILTER_ROLE, DIM, pageFilter, filterCss, dynamicImageCss, startFilter }
 
 // ---- engine/src/dynamic.js
 const __m_engine_src_dynamic_js = (() => {
-// Sunglasses for Safari: dynamic engine (T007).
+// Sunglasses at Night: dynamic engine (T007).
 // Rewrites the colors a page declares, instead of filtering pixels:
 //   - CSSOM: every style rule in every readable sheet (incl. @import,
 //     @media/@supports/@layer/@container blocks and nested rules) gets an
@@ -3908,7 +3908,7 @@ return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, BLEND_MARK, PENDING_ATTR, PROP
 
 // ---- engine/src/messages.js
 const __m_engine_src_messages_js = (() => {
-// Sunglasses for Safari: runtime message types shared by the content and
+// Sunglasses at Night: runtime message types shared by the content and
 // background scripts. Kept separate so the content bundle never includes
 // background-only code.
 
@@ -3936,7 +3936,7 @@ return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF
 
 // ---- engine/src/content.js
 const __m_engine_src_content_js = (() => {
-// Sunglasses for Safari: content script entry (bundled to
+// Sunglasses at Night: content script entry (bundled to
 // Extension/Resources/content/engine.js, run at document_start in every frame).
 // Loads settings, paints the anti-flash sheet, and once the DOM is parsed
 // either backs off (already-dark page, site rule, mode) or hands over to the

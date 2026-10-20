@@ -76,7 +76,7 @@ article{border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px
 figcaption{font-size:11px;color:var(--mut);text-align:center}.spark{vertical-align:middle;background:#000;border-radius:4px}.spark .b{fill:none;stroke:#ddd;stroke-width:1.5}.spark .u{fill:none;stroke:#ff4d4d;stroke-width:2}
 .st td:last-child{max-width:760px}
 </style></head><body>
-<h1>Sunglasses for Safari: Safari QA report (${esc(run)})</h1>
+<h1>Sunglasses at Night: Safari QA report (${esc(run)})</h1>
 <p>Generated ${new Date().toISOString()} by <code>node qa/report.mjs ${esc(run)}</code>. Statuses are automated unless marked ✓ (visually reviewed). Thresholds are listed in results.json and qa/lib/judge.js. Supplementary engines are not included here.</p>
 <pre>${esc(JSON.stringify(summary, null, 1))}</pre>
 ${body}</body></html>`;

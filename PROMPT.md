@@ -6,7 +6,7 @@
 > other tasks don't block it and never justify flipping a done task back; note them and move on.
 > Never run `npm run e2e`/`npm run perf` inside your session. They can't launch WebKit there.
 
-# Per-iteration instructions (Sunglasses for Safari)
+# Per-iteration instructions (Sunglasses at Night)
 
 Each fresh session:
 
@@ -61,5 +61,5 @@ claim Impeccable ran unless its output is in this session.
 - Never edit `.claude/settings.json`, never push, never add a dependency `prd.md` doesn't list as
   approved (approved: `playwright@1.64.1` dev-only; nothing else).
 - Never weaken or delete a test to make it pass. Never mark a blocked task done.
-- Product name: **Sunglasses for Safari** (renamed 2026-10-18 by T027). Never use reference apps' names, copy, or visuals.
+- Product name: **Sunglasses at Night** (renamed 2026-10-18 by T027). Never use reference apps' names, copy, or visuals.
 - No network code in the shipped extension or app except what prd.md T007 allows.

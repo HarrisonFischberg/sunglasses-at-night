@@ -3,7 +3,7 @@
 'use strict';
 // ---- engine/src/settings.js
 const __m_engine_src_settings_js = (() => {
-// Sunglasses for Safari: settings model.
+// Sunglasses at Night: settings model.
 // Defaults, schema validation (reject or clamp), migration from the
 // unversioned v0 layout to v1, and a thin wrapper over a WebExtension
 // storage area. No DOM, no network. The storage area is injected so the
@@ -386,7 +386,7 @@ return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, L
 
 // ---- engine/src/color.js
 const __m_engine_src_color_js = (() => {
-// Sunglasses for Safari: color engine.
+// Sunglasses at Night: color engine.
 // Parses CSS color syntaxes (CSS Color 4/5), converts between color spaces,
 // gamut-maps into sRGB, and measures WCAG 2.x contrast.
 // Pure functions only: no DOM, no storage, no network.
@@ -1269,7 +1269,7 @@ return { SPACES, convert, NAMED_COLORS, mixRaw, parseRaw, inSrgbGamut, deltaEOK,
 
 // ---- engine/src/transform.js
 const __m_engine_src_transform_js = (() => {
-// Sunglasses for Safari: color transform.
+// Sunglasses at Night: color transform.
 // Maps a light page's background, text and border colors to dark equivalents
 // in OKLCH (lightness remapped, hue kept, chroma tempered), applies the look
 // sliders, and guarantees text-on-background contrast of at least 4.5:1
@@ -1518,7 +1518,7 @@ return { MIN_CONTRAST, ROLES, DEFAULT_LOOK, PRESETS, normalizeLook, isIdentityLo
 
 // ---- engine/src/messages.js
 const __m_engine_src_messages_js = (() => {
-// Sunglasses for Safari: runtime message types shared by the content and
+// Sunglasses at Night: runtime message types shared by the content and
 // background scripts. Kept separate so the content bundle never includes
 // background-only code.
 
@@ -1546,7 +1546,7 @@ return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF
 
 // ---- engine/src/ui-core.js
 const __m_engine_src_ui_core_js = (() => {
-// Sunglasses for Safari: view logic shared by the toolbar popup (S05) and the
+// Sunglasses at Night: view logic shared by the toolbar popup (S05) and the
 // options page (S06). Pure functions: no
 // DOM, no network, no extension API. popup.js / options.js do the wiring.
 
@@ -1684,7 +1684,7 @@ function popupView({ settings, url, report, focusedUrl }) {
       customLook: false,
       look: { ...settings.look },
       preset: matchPreset(settings.look),
-      status: 'Sunglasses for Safari can’t change this page. Browser pages, blank tabs and local files are left as they are.',
+      status: 'Sunglasses at Night can’t change this page. Browser pages, blank tabs and local files are left as they are.',
     };
   }
   const entry = siteEntry(settings, host);
@@ -1706,7 +1706,7 @@ function popupView({ settings, url, report, focusedUrl }) {
 }
 
 function statusText(report) {
-  if (!report) return 'Not running on this page yet. Reload the page, or allow Sunglasses for Safari on this website in Safari.';
+  if (!report) return 'Not running on this page yet. Reload the page, or allow Sunglasses at Night on this website in Safari.';
   if (report.on) return 'Dark mode is on for this page.';
   const why = OFF_TEXT[report.reason];
   return why ? `Dark mode is off: ${why}.` : 'Dark mode is off.';
@@ -1736,7 +1736,7 @@ return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENG
 
 // ---- engine/src/options.js
 const __m_engine_src_options_js = (() => {
-// Sunglasses for Safari: options page (S06) entry, bundled to
+// Sunglasses at Night: options page (S06) entry, bundled to
 // Extension/Resources/options/options.js. The app's Settings and Sites
 // screens (S02/S03) for people who stay in Safari: activation and schedule,
 // look, images, engine, the per-site rule list, and Reset all. No network.
