@@ -67,7 +67,7 @@ async function waitCool() {
 function otherRunsActive() {
   try {
     const ps = execFileSync('ps', ['-Ao', 'pid,command'], { encoding: 'utf8' });
-    return ps.split('\n').filter((l) => /qa\/run-(mac|ios)\.mjs/.test(l) && !l.includes(String(process.pid)));
+    return ps.split('\n').filter((l) => /^\s*\d+\s+node\s+(\S*\/)?qa\/(run-(mac|ios)|cooldown)\.mjs\b/.test(l) && !l.trim().startsWith(String(process.pid)));
   } catch { return []; }
 }
 
