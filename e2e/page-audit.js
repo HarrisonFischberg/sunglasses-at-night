@@ -132,7 +132,10 @@ export function snapshot() {
 
 /** Darkness and contrast of every visible text-bearing element. */
 export function audit({ minContrast = 4.5, maxTextBgLuminance = 0.2 } = {}) {
-  const rootBg = effectiveBackground(document.documentElement);
+  // The painted canvas: a transparent root shows the body's background
+  // (CSS background propagation), which the engine relies on for pages that
+  // put content behind the body (QA B5, z-index:-1).
+  const rootLuminance = canvasColor().luminance;
   const failures = [];
   let checked = 0, minRatio = Infinity, maxLum = 0;
   for (const el of walk(document)) {
@@ -155,7 +158,7 @@ export function audit({ minContrast = 4.5, maxTextBgLuminance = 0.2 } = {}) {
     }
   }
   return {
-    rootLuminance: +relativeLuminance(rootBg).toFixed(3),
+    rootLuminance,
     checked, minRatio: +minRatio.toFixed(2), maxTextBgLuminance: +maxLum.toFixed(3), failures,
   };
 }

@@ -2989,7 +2989,7 @@ const YIELD = Symbol('yield');
  * override sheet doesn't cover yet (in the mutation task, before paint), so the
  * caller can re-arm its interim rule; onReady() is called again, in the task
  * the rewrite lands (or after READY_CAP_MS).
- * Returns { stop(), refresh(), settle(), setSiteCss(css) }; settle() resolves
+ * Returns { stop(), refresh(), settle(), setSiteCss(css), cssSnapshot() }; settle() resolves
  * once every cross-origin fetch started so far has been applied and all
  * deferred work is done; setSiteCss() keeps a per-site fix sheet after the
  * override sheet ('' removes it).
@@ -4131,7 +4131,13 @@ function startDynamic({
     })();
   }
 
-  return { stop, refresh, settle, setSiteCss };
+  // The document's override CSS as it stands (style-cache.js stores it).
+  function cssSnapshot() {
+    const scope = scopes.get(document);
+    return scope ? `${scope.css}\n${scope.dynRules.join('\n')}` : '';
+  }
+
+  return { stop, refresh, settle, setSiteCss, cssSnapshot };
 }
 return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, BLEND_MARK, PENDING_ATTR, PROP_ROLES, rewriteTriplet, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, pendingCss, SLICE_MS, CONTRAST_DELAY_MS, READY_CAP_MS, HOST_WATCH_MS, startDynamic };
 })();
@@ -4284,6 +4290,74 @@ function startAdoptedMirror(document, win = document.defaultView) {
 return { cspBlocked, cspBlocksStyles, startAdoptedMirror };
 })();
 
+// ---- engine/src/style-cache.js
+const __m_engine_src_style_cache_js = (() => {
+// Sunglasses at Night: per-tab cache of a page's finished dark styles.
+// Rewriting a page's sheets takes a moment after Safari starts the content
+// script; until then the interim rule shows a flat dark page. On a reload or
+// a back/forward visit in the same tab, the override CSS the engine produced
+// last time is applied at once (as an adopted sheet, which cascades after
+// every page sheet, as the override does), so the page appears in its final
+// dark colors immediately. The engine's own sheet replaces it when ready.
+//
+// Stored in the page origin's sessionStorage: it lives only as long as the
+// tab, holds nothing but CSS derived from the page's own sheets and our
+// colors, and is capped. Any storage error (private mode, quota, a page that
+// blocks it) just means no cache.
+
+const PREFIX = 'sunglasses-at-night:css:';
+const INDEX = 'sunglasses-at-night:css-index';
+const MAX_ENTRIES = 6;
+const MAX_CSS = 1_500_000; // characters per entry
+
+// Same page = same origin storage + path + query (no hash); the look is part
+// of the key, so changing it never shows stale colors.
+function cacheKey(url, lookKey) {
+  let u;
+  try { u = new URL(url); } catch { return null; }
+  return `${PREFIX}${lookKey}|${u.pathname}${u.search}`;
+}
+
+function readCached(storage, key) {
+  if (!storage || !key) return null;
+  try { return storage.getItem(key); } catch { return null; }
+}
+
+/** Store `css` under `key`, keeping at most MAX_ENTRIES per origin (oldest out). */
+function writeCached(storage, key, css) {
+  if (!storage || !key || !css || css.length > MAX_CSS) return false;
+  try {
+    let index = [];
+    try { index = JSON.parse(storage.getItem(INDEX) ?? '[]'); } catch { index = []; }
+    if (!Array.isArray(index)) index = [];
+    index = index.filter((k) => k !== key && typeof k === 'string' && k.startsWith(PREFIX));
+    index.push(key);
+    while (index.length > MAX_ENTRIES) storage.removeItem(index.shift());
+    storage.setItem(key, css);
+    storage.setItem(INDEX, JSON.stringify(index));
+    return true;
+  } catch {
+    return false; // quota or blocked storage
+  }
+}
+
+/**
+ * Adopt `css` on `document` as a constructable sheet. Returns remove(), or
+ * null when the browser can't (then the caller simply doesn't use the cache).
+ */
+function adoptCss(document, win, css) {
+  const Sheet = win?.CSSStyleSheet;
+  if (typeof Sheet !== 'function' || !Array.isArray(document.adoptedStyleSheets)) return null;
+  let sheet;
+  try { sheet = new Sheet(); sheet.replaceSync(css); } catch { return null; }
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+  return () => {
+    document.adoptedStyleSheets = document.adoptedStyleSheets.filter((s) => s !== sheet);
+  };
+}
+return { cacheKey, readCached, writeCached, adoptCss };
+})();
+
 // ---- engine/src/content.js
 const __m_engine_src_content_js = (() => {
 // Sunglasses at Night: content script entry (bundled to
@@ -4302,6 +4376,10 @@ const { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } = __m_engine_src_messages_js;
 const { fixesFor, fixCss } = __m_engine_src_site_fixes_js;
 const { siteFixes } = __m_engine_src_generated_site_fixes_data_js;
 const { cspBlocked, cspBlocksStyles, startAdoptedMirror } = __m_engine_src_adopted_js;
+const { cacheKey, readCached, writeCached, adoptCss } = __m_engine_src_style_cache_js;
+
+// Bumped when the engine's output changes, so old cached CSS is never reused.
+const CACHE_VERSION = 1;
 
 const api = globalThis.browser ?? globalThis.chrome;
 
@@ -4381,13 +4459,32 @@ function run(settings) {
     document, getComputedStyle: (el) => getComputedStyle(el), settings, hostname, url: location.href, systemDark,
   });
   document.documentElement.removeAttribute(READY_ATTRIBUTE);
+  // Reload / back-forward in this tab: last visit's finished override CSS
+  // paints the final dark look at once (style-cache.js), instead of the flat
+  // interim rule, until the engine's own sheet is ready.
+  const early = resolveSite(settings, hostname);
+  const isTop = globalThis.top === globalThis;
+  const storage = isTop ? (() => { try { return globalThis.sessionStorage; } catch { return null; } })() : null;
+  const key = storage && ctl.style && early.engine !== 'filter'
+    ? cacheKey(location.href, `${CACHE_VERSION}:${JSON.stringify(early.look ?? null)}`) : null;
+  const cachedCss = readCached(storage, key);
+  let dropCached = cachedCss ? adoptCss(document, window, cachedCss) : null;
+  if (dropCached) ctl.style.textContent = antiFlashCss(early.look);
   // The interim rule (in ctl.style, and in base.css for system dark) lifts when
   // the engine is ready: its override sheet then covers every page sheet.
   const ready = () => {
     document.documentElement.setAttribute(READY_ATTRIBUTE, '');
     ctl.style?.remove();
     rearmed?.remove();
+    dropCached?.();
+    dropCached = null;
+    saveCache();
   };
+  const saveCache = () => {
+    const css = key && !cancelled ? engine?.cssSnapshot?.() : '';
+    if (css) writeCached(storage, key, css);
+  };
+  if (key) globalThis.addEventListener?.('pagehide', saveCache);
   // The page added a sheet the override doesn't cover yet: bring the interim
   // rule back (flat dark, media untouched) until the engine says ready again.
   // The dark root/body base comes back with it: the early sheet is gone by
@@ -4414,8 +4511,11 @@ function run(settings) {
     if (cancelled) return;
     // Already-dark detection reads the page's own colors: without our sheets.
     mirror?.pause();
+    const cached = dropCached ? cachedCss : null;
+    dropCached?.();
     let result = ctl.finish();
     mirror?.resume();
+    dropCached = cached && result.apply ? adoptCss(document, window, cached) : null;
     // A Content-Security-Policy without 'unsafe-inline' for styles (gov.uk,
     // mozilla.org, pypi.org) blocks every <style> we add: the sheet never
     // exists. Mirror ours into constructable sheets, which CSP allows; where
@@ -4437,6 +4537,8 @@ function run(settings) {
       ready();
     } else {
       engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, onBusy: busy(site.look), ...media });
+      // Ready can come inside startDynamic, before `engine` was set.
+      if (document.documentElement.hasAttribute(READY_ATTRIBUTE)) saveCache();
     }
     // Per-site fixes (third_party/darkreader) are bundled here, so they apply
     // in the same task without waking the background script; the engine keeps
@@ -4460,6 +4562,8 @@ function run(settings) {
     rearmed?.remove();
     fixStyle?.remove();
     mirror?.stop();
+    dropCached?.();
+    if (key) globalThis.removeEventListener?.('pagehide', saveCache);
   };
 }
 

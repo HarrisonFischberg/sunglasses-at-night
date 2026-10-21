@@ -148,7 +148,8 @@ test('per-site engine switches dynamic → filter → dynamic without a reload',
   }, sites);
   const timings = {};
 
-  assert.deepEqual(await roles(), ['base', 'dynamic', 'override']);
+  // 'canvas': the page relies on body-to-canvas background propagation (QA B5).
+  assert.deepEqual(await roles(), ['base', 'canvas', 'dynamic', 'override']);
 
   const t1 = await setSites({ '127.0.0.1': { rule: 'default', engine: 'filter' } });
   await page.waitForFunction(() => document.querySelector('style[data-sunglasses-at-night="filter"]')
@@ -164,7 +165,7 @@ test('per-site engine switches dynamic → filter → dynamic without a reload',
   await page.waitForFunction(() => document.querySelector('style[data-sunglasses-at-night="override"]')
     && !document.querySelector('style[data-sunglasses-at-night="filter"]'));
   timings.toDynamicMs = +(await page.evaluate((t) => performance.now() - t, t2)).toFixed(1);
-  assert.deepEqual(await roles(), ['base', 'dynamic', 'override']);
+  assert.deepEqual(await roles(), ['base', 'canvas', 'dynamic', 'override']);
   const dynPx = await sample(page, evidencePath('t008-toggle-dynamic.png'));
   assertDarkPage(dynPx, 'toggled back to dynamic');
   assertMedia(dynPx, 'toggled back to dynamic');
