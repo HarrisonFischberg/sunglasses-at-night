@@ -87,10 +87,14 @@ function preparePattern(pattern) {
  * path length; `/regex/` is a regular expression on the whole URL.
  */
 export function matchUrl(url, pattern) {
+  return matchPrepared(url, prepareUrl(url), pattern);
+}
+
+function matchPrepared(url, u, pattern) {
   if (pattern.length > 2 && pattern.startsWith('/') && pattern.endsWith('/')) {
     try { return new RegExp(pattern.slice(1, -1)).test(url); } catch { return false; }
   }
-  const u = prepareUrl(url), p = preparePattern(pattern);
+  const p = preparePattern(pattern);
   if (!u || !p) return false;
   if (p.hostParts.length > u.hostParts.length) return false;
   if (p.exactStart && p.hostParts.length !== u.hostParts.length) return false;
@@ -121,7 +125,9 @@ export function urlInList(url, patterns) {
  * matches (the `*` block alone is not worth a sheet).
  */
 export function fixesFor(url, fixes) {
-  const matched = fixes.filter((f) => f.url[0] !== '*' && f.url.some((p) => matchUrl(url, p)));
+  const u = prepareUrl(url);
+  if (!u) return null;
+  const matched = fixes.filter((f) => f.url[0] !== '*' && f.url.some((p) => matchPrepared(url, u, p)));
   if (!matched.length) return null;
   const common = fixes.find((f) => f.url[0] === '*');
   const merged = { invert: [], css: '', ignoreInlineStyle: [] };

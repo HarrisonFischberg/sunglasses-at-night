@@ -10,8 +10,9 @@ import { createSettingsStore, resolveSite, migrate } from './settings.js';
 import { startEarly, whenParsed, whenRoot, interimCss, antiFlashCss, READY_ATTRIBUTE } from './early.js';
 import { startDynamic } from './dynamic.js';
 import { startFilter } from './filter.js';
-import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_SITE_FIX } from './messages.js';
-import { fixCss } from './site-fixes.js';
+import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
+import { fixesFor, fixCss } from './site-fixes.js';
+import { siteFixes } from './generated/site-fixes-data.js';
 import { cspBlocked, cspBlocksStyles, startAdoptedMirror } from './adopted.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
@@ -149,20 +150,19 @@ function run(settings) {
     } else {
       engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, onBusy: busy(site.look), ...media });
     }
-    // Per-site fixes (third_party/darkreader) come from the background,
-    // which holds the list; they only add rules, so they land whenever the
-    // answer arrives, after the override sheet so they win.
-    Promise.resolve(api.runtime.sendMessage?.({ type: GET_SITE_FIX, url: location.href }))
-      .then((fix) => {
-        const css = fixCss(fix, site.look);
-        if (cancelled || !css) return;
-        if (engine?.setSiteCss) { engine.setSiteCss(css); return; }
-        fixStyle = document.createElement('style');
-        fixStyle.setAttribute('data-sunglasses-at-night', 'site-fix');
-        fixStyle.textContent = css;
-        document.documentElement.appendChild(fixStyle);
-      })
-      .catch(() => {});
+    // Per-site fixes (third_party/darkreader) are bundled here, so they apply
+    // in the same task without waking the background script; the engine keeps
+    // them after its override sheet so they win.
+    let css = '';
+    try { css = fixCss(fixesFor(location.href, siteFixes()), site.look); } catch { /* no fix */ }
+    if (css && engine?.setSiteCss) {
+      engine.setSiteCss(css);
+    } else if (css) {
+      fixStyle = document.createElement('style');
+      fixStyle.setAttribute('data-sunglasses-at-night', 'site-fix');
+      fixStyle.textContent = css;
+      document.documentElement.appendChild(fixStyle);
+    }
   });
   return () => {
     cancelled = true;

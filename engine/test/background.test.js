@@ -5,7 +5,7 @@ import {
   createBackground, toggleMode, toolbarState, TOGGLE_COMMAND, RESTORE_KEY, RESET_GENERATION_KEY, NATIVE_APP_ID,
 } from '../src/background-core.js';
 import { createMemoryArea, createSettingsStore, defaultSettings, STORAGE_KEY } from '../src/settings.js';
-import { SETTINGS_CHANGED, TAB_STATE, FETCH_SHEET, GET_SITE_FIX } from '../src/messages.js';
+import { SETTINGS_CHANGED, TAB_STATE, FETCH_SHEET } from '../src/messages.js';
 
 const event = () => {
   const ls = new Set();
@@ -349,13 +349,3 @@ test('native: a malformed reply does not reset anything', async () => {
   assert.deepEqual(local._raw()[STORAGE_KEY], customized());
 });
 
-test('GET_SITE_FIX: answers a tab with the merged fix for its URL; ignores other senders', () => {
-  const { api } = fakeApi();
-  createBackground({ api, fetch: noFetch, siteFixes: [{ url: ['*'], css: 'g{}' }, { url: ['a.com'], invert: ['.x'] }] });
-  const answers = [];
-  const ask = (msg, sender) => api.runtime.onMessage.fire(msg, sender, (r) => answers.push(r));
-  ask({ type: GET_SITE_FIX, url: 'https://a.com/' }, { id: 'ext', tab: { id: 1 } });
-  ask({ type: GET_SITE_FIX, url: 'https://b.com/' }, { id: 'ext', tab: { id: 1 } });
-  ask({ type: GET_SITE_FIX, url: 'https://a.com/' }, { id: 'other', tab: { id: 1 } });
-  assert.deepEqual(answers, [{ invert: ['.x'], css: 'g{}', ignoreInlineStyle: [] }, null]);
-});

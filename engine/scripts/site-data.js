@@ -1,7 +1,7 @@
 // Generate the site-list modules from third_party/darkreader (MIT, see
 // third_party/darkreader/README.md):
 //   engine/src/generated/dark-sites.js      DARK_SITES (content script)
-//   engine/src/generated/site-fixes-data.js SITE_FIXES (background script)
+//   engine/src/generated/site-fixes-data.js siteFixes() (content script)
 // Parsed at build time, so neither script parses config text at runtime.
 // CLI: node engine/scripts/site-data.js (run by the test and build scripts).
 
@@ -31,7 +31,10 @@ export function generate() {
     .filter((f) => f.invert?.length || f.css || f.ignoreInlineStyle?.length);
   mkdirSync(OUT, { recursive: true });
   writeFileSync(`${OUT}dark-sites.js`, `${HEADER}export const DARK_SITES = ${JSON.stringify(darkSites)};\n`);
-  writeFileSync(`${OUT}site-fixes-data.js`, `${HEADER}export const SITE_FIXES = JSON.parse(${JSON.stringify(JSON.stringify(fixes))});\n`);
+  // Parsed on first use only: the content script runs in every frame, and
+  // most frames (dark mode off, already-dark sites) never need the list.
+  writeFileSync(`${OUT}site-fixes-data.js`, `${HEADER}const SITE_FIXES_JSON = ${JSON.stringify(JSON.stringify(fixes))};\n` +
+    'let parsed = null;\nexport function siteFixes() { return (parsed ??= JSON.parse(SITE_FIXES_JSON)); }\n');
   return { darkSites: darkSites.length, fixes: fixes.length };
 }
 

@@ -18,9 +18,7 @@
 
 import { createSettingsStore, migrate, STORAGE_KEY, MODES } from './settings.js';
 import { createSheetMessageHandler } from './sheet-fetch.js';
-import { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, GET_SITE_FIX, OFF_TEXT } from './messages.js';
-import { fixesFor } from './site-fixes.js';
-import { SITE_FIXES } from './generated/site-fixes-data.js';
+import { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT } from './messages.js';
 import { firstPaintPlan, minutesToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } from './first-paint.js';
 
 export const TOGGLE_COMMAND = 'toggle-dark-mode';
@@ -74,7 +72,7 @@ const ignore = () => {};
  *   toggle()            → Promise<new settings>
  *   tabStates           Map tabId → last report
  */
-export function createBackground({ api, fetch, siteFixes = SITE_FIXES }) {
+export function createBackground({ api, fetch }) {
   const store = createSettingsStore(localArea(api));
   const action = api.action ?? api.browserAction;
   const tabStates = new Map();
@@ -198,11 +196,6 @@ export function createBackground({ api, fetch, siteFixes = SITE_FIXES }) {
       }
       resetAll().then(() => sendResponse({ ok: true }), () => sendResponse({ ok: false }));
       return true;
-    }
-    if (message?.type === GET_SITE_FIX) {
-      if (!fromUs || !sender?.tab || typeof message.url !== 'string') return false;
-      sendResponse(fixesFor(message.url, siteFixes));
-      return false;
     }
     if (message?.type === TAB_STATE) {
       const tabId = sender?.tab?.id;

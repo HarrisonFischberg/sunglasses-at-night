@@ -10,9 +10,6 @@ import { fileURLToPath } from 'node:url';
 import { bundle } from '../engine/scripts/bundle.js';
 import { createSheetMessageHandler } from '../engine/src/sheet-fetch.js';
 import { defaultSettings } from '../engine/src/settings.js';
-import { fixesFor } from '../engine/src/site-fixes.js';
-import { SITE_FIXES } from '../engine/src/generated/site-fixes-data.js';
-import { GET_SITE_FIX } from '../engine/src/messages.js';
 import { readFileSync } from 'node:fs';
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const [url, sel] = process.argv.slice(2);
@@ -23,7 +20,7 @@ const ctx = await browser.newContext(process.argv.includes('--mobile') ? { ...de
 const page = await ctx.newPage();
 if (!off) {
   const handler = createSheetMessageHandler({ fetch: (u, i) => fetch(u, { ...i, cache: undefined }), extensionId: 'e2e' });
-  await page.exposeFunction('__sanBackground', (msg) => new Promise((r) => { if (msg?.type === GET_SITE_FIX) return r(fixesFor(msg.url, SITE_FIXES)); if (handler(msg, { tab: { id: 1 }, id: 'e2e' }, r) === false) r(undefined); }));
+  await page.exposeFunction('__sanBackground', (msg) => new Promise((r) => { if (handler(msg, { tab: { id: 1 }, id: 'e2e' }, r) === false) r(undefined); }));
   const css = readFileSync(resolve(ROOT, 'Extension/Resources/content/base-on.css'), 'utf8');
   await page.addInitScript({ content: `(() => { const put = () => { const r = document.documentElement; if (!r) return false; const s = document.createElement('style'); s.setAttribute('data-sunglasses-at-night','manifest-base'); s.textContent = ${JSON.stringify(css)}; r.appendChild(s); return true; }; if (!put()) new MutationObserver((_, o) => { if (put()) o.disconnect(); }).observe(document, { childList: true }); })();` });
   await page.addInitScript({ content: `(() => { const data = { settings: ${JSON.stringify({ ...defaultSettings(), mode: 'always' })} }; globalThis.browser = { storage: { local: { get: async (k) => (k in data ? { [k]: data[k] } : {}), set: async () => {}, remove: async () => {} }, onChanged: { addListener() {}, removeListener() {} } }, runtime: { id: 'e2e', sendMessage: (m) => globalThis.__sanBackground(m) } }; })();` });
