@@ -14,6 +14,10 @@ import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
 import { fixesFor, fixCss } from './site-fixes.js';
 import { siteFixes } from './generated/site-fixes-data.js';
 import { cspBlocked, cspBlocksStyles, startAdoptedMirror } from './adopted.js';
+import { cacheKey, readCached, writeCached, adoptCss } from './style-cache.js';
+
+// Bumped when the engine's output changes, so old cached CSS is never reused.
+const CACHE_VERSION = 1;
 
 const api = globalThis.browser ?? globalThis.chrome;
 
@@ -93,13 +97,32 @@ function run(settings) {
     document, getComputedStyle: (el) => getComputedStyle(el), settings, hostname, url: location.href, systemDark,
   });
   document.documentElement.removeAttribute(READY_ATTRIBUTE);
+  // Reload / back-forward in this tab: last visit's finished override CSS
+  // paints the final dark look at once (style-cache.js), instead of the flat
+  // interim rule, until the engine's own sheet is ready.
+  const early = resolveSite(settings, hostname);
+  const isTop = globalThis.top === globalThis;
+  const storage = isTop ? (() => { try { return globalThis.sessionStorage; } catch { return null; } })() : null;
+  const key = storage && ctl.style && early.engine !== 'filter'
+    ? cacheKey(location.href, `${CACHE_VERSION}:${JSON.stringify(early.look ?? null)}`) : null;
+  const cachedCss = readCached(storage, key);
+  let dropCached = cachedCss ? adoptCss(document, window, cachedCss) : null;
+  if (dropCached) ctl.style.textContent = antiFlashCss(early.look);
   // The interim rule (in ctl.style, and in base.css for system dark) lifts when
   // the engine is ready: its override sheet then covers every page sheet.
   const ready = () => {
     document.documentElement.setAttribute(READY_ATTRIBUTE, '');
     ctl.style?.remove();
     rearmed?.remove();
+    dropCached?.();
+    dropCached = null;
+    saveCache();
   };
+  const saveCache = () => {
+    const css = key && !cancelled ? engine?.cssSnapshot?.() : '';
+    if (css) writeCached(storage, key, css);
+  };
+  if (key) globalThis.addEventListener?.('pagehide', saveCache);
   // The page added a sheet the override doesn't cover yet: bring the interim
   // rule back (flat dark, media untouched) until the engine says ready again.
   // The dark root/body base comes back with it: the early sheet is gone by
@@ -126,8 +149,11 @@ function run(settings) {
     if (cancelled) return;
     // Already-dark detection reads the page's own colors: without our sheets.
     mirror?.pause();
+    const cached = dropCached ? cachedCss : null;
+    dropCached?.();
     let result = ctl.finish();
     mirror?.resume();
+    dropCached = cached && result.apply ? adoptCss(document, window, cached) : null;
     // A Content-Security-Policy without 'unsafe-inline' for styles (gov.uk,
     // mozilla.org, pypi.org) blocks every <style> we add: the sheet never
     // exists. Mirror ours into constructable sheets, which CSP allows; where
@@ -149,6 +175,8 @@ function run(settings) {
       ready();
     } else {
       engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, onBusy: busy(site.look), ...media });
+      // Ready can come inside startDynamic, before `engine` was set.
+      if (document.documentElement.hasAttribute(READY_ATTRIBUTE)) saveCache();
     }
     // Per-site fixes (third_party/darkreader) are bundled here, so they apply
     // in the same task without waking the background script; the engine keeps
@@ -172,6 +200,8 @@ function run(settings) {
     rearmed?.remove();
     fixStyle?.remove();
     mirror?.stop();
+    dropCached?.();
+    if (key) globalThis.removeEventListener?.('pagehide', saveCache);
   };
 }
 

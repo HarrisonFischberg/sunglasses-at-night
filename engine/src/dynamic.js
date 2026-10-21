@@ -511,7 +511,7 @@ const YIELD = Symbol('yield');
  * override sheet doesn't cover yet (in the mutation task, before paint), so the
  * caller can re-arm its interim rule; onReady() is called again, in the task
  * the rewrite lands (or after READY_CAP_MS).
- * Returns { stop(), refresh(), settle(), setSiteCss(css) }; settle() resolves
+ * Returns { stop(), refresh(), settle(), setSiteCss(css), cssSnapshot() }; settle() resolves
  * once every cross-origin fetch started so far has been applied and all
  * deferred work is done; setSiteCss() keeps a per-site fix sheet after the
  * override sheet ('' removes it).
@@ -1653,5 +1653,11 @@ export function startDynamic({
     })();
   }
 
-  return { stop, refresh, settle, setSiteCss };
+  // The document's override CSS as it stands (style-cache.js stores it).
+  function cssSnapshot() {
+    const scope = scopes.get(document);
+    return scope ? `${scope.css}\n${scope.dynRules.join('\n')}` : '';
+  }
+
+  return { stop, refresh, settle, setSiteCss, cssSnapshot };
 }
