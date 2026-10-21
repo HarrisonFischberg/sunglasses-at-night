@@ -9,6 +9,8 @@ export const SETTINGS_CHANGED = 'sunglasses-at-night/settings-changed';
 export const TAB_STATE = 'sunglasses-at-night/tab-state';
 // popup → background: { type, tabId } → the tab's last TAB_STATE report, or null.
 export const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
+// content (any frame) → background: { type, url } → that URL's merged site fix, or null.
+export const GET_SITE_FIX = 'sunglasses-at-night/get-site-fix';
 // options page → background: { type } → Reset all (extension store + App Group).
 export const RESET_ALL = 'sunglasses-at-night/reset-all';
 

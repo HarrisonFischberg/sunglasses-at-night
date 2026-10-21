@@ -10,7 +10,8 @@ import { createSettingsStore, resolveSite, migrate } from './settings.js';
 import { startEarly, whenParsed, whenRoot, interimCss, antiFlashCss, READY_ATTRIBUTE } from './early.js';
 import { startDynamic } from './dynamic.js';
 import { startFilter } from './filter.js';
-import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
+import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_SITE_FIX } from './messages.js';
+import { fixCss } from './site-fixes.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 
@@ -87,7 +88,7 @@ function run(settings) {
   const hostname = location.hostname;
   const systemDark = globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
   const ctl = startEarly({
-    document, getComputedStyle: (el) => getComputedStyle(el), settings, hostname, systemDark,
+    document, getComputedStyle: (el) => getComputedStyle(el), settings, hostname, url: location.href, systemDark,
   });
   document.documentElement.removeAttribute(READY_ATTRIBUTE);
   // The interim rule (in ctl.style, and in base.css for system dark) lifts when
@@ -115,7 +116,7 @@ function run(settings) {
     if (!rearmed.isConnected) (document.head ?? document.documentElement).appendChild(rearmed);
   };
   const stopPrefetch = ctl.activation.on && window.MutationObserver ? prefetchSheets(document, window.MutationObserver) : () => {};
-  let engine = null, cancelled = false;
+  let engine = null, cancelled = false, fixStyle = null;
   whenParsed(document, () => {
     stopPrefetch();
     if (cancelled) return;
@@ -138,6 +139,20 @@ function run(settings) {
     } else {
       engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, onBusy: busy(site.look), ...media });
     }
+    // Per-site fixes (third_party/darkreader) come from the background,
+    // which holds the list; they only add rules, so they land whenever the
+    // answer arrives, after the override sheet so they win.
+    Promise.resolve(api.runtime.sendMessage?.({ type: GET_SITE_FIX, url: location.href }))
+      .then((fix) => {
+        const css = fixCss(fix, site.look);
+        if (cancelled || !css) return;
+        if (engine?.setSiteCss) { engine.setSiteCss(css); return; }
+        fixStyle = document.createElement('style');
+        fixStyle.setAttribute('data-sunglasses-at-night', 'site-fix');
+        fixStyle.textContent = css;
+        document.documentElement.appendChild(fixStyle);
+      })
+      .catch(() => {});
   });
   return () => {
     cancelled = true;
@@ -145,6 +160,7 @@ function run(settings) {
     engine?.stop();
     ctl.style?.remove();
     rearmed?.remove();
+    fixStyle?.remove();
   };
 }
 

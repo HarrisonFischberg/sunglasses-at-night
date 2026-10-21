@@ -37,6 +37,9 @@ Exact scheme names are fixed by task T002; update this table if they change.
 Product name everywhere: **Sunglasses at Night**. Slug: `sunglasses-at-night`.
 Never use the working name "Dark Eyes" or any reference app's name or branding
 (Noir, Dark Reader, Midnight) in code, assets, copy, or metadata.
+Exception (owner-approved 2026-10-21): Dark Reader (MIT) is credited by name
+where its license requires it: the Licenses screens, `third_party/darkreader/`,
+and source headers of code adapted from it.
 
 ## Artifacts
 

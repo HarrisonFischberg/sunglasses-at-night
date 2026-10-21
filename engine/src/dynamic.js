@@ -511,9 +511,10 @@ const YIELD = Symbol('yield');
  * override sheet doesn't cover yet (in the mutation task, before paint), so the
  * caller can re-arm its interim rule; onReady() is called again, in the task
  * the rewrite lands (or after READY_CAP_MS).
- * Returns { stop(), refresh(), settle() }; settle() resolves once every
- * cross-origin fetch started so far has been applied and all deferred work
- * is done.
+ * Returns { stop(), refresh(), settle(), setSiteCss(css) }; settle() resolves
+ * once every cross-origin fetch started so far has been applied and all
+ * deferred work is done; setSiteCss() keeps a per-site fix sheet after the
+ * override sheet ('' removes it).
  */
 export function startDynamic({
   document, window = document.defaultView, look, fetchSheet = async () => null,
@@ -558,6 +559,7 @@ export function startDynamic({
   const frames = new Map(); // about:blank / srcdoc <iframe> → { doc, engine, start }
   const canvas = quantize(transformColor('#ffffff', 'bg', look));
   let stopped = false;
+  let siteEl = null; // per-site fix sheet, see setSiteCss
   let incomplete = false; // set while a needed remote sheet is still loading
   // Deferred work: see SLICE_MS.
   const contrastRoots = new Set(); // nodes whose subtree needs a contrast check
@@ -630,17 +632,32 @@ export function startDynamic({
     return scope;
   }
 
-  // Keep [override, dynamic] as the last two children of the scope, after
-  // every page sheet. Moving a <style> re-creates its sheet from text, so
-  // rules added with insertRule are restored from scope.dynRules.
+  // Keep [override, dynamic] (then the document's site-fix sheet, when
+  // there is one) as the last children of the scope, after every page sheet.
+  // Moving a <style> re-creates its sheet from text, so rules added with
+  // insertRule are restored from scope.dynRules.
   function placeLast(scope) {
     const parent = scope.root.nodeType === 9 ? scope.root.documentElement : scope.root;
     if (!parent) return;
     const { overrideEl: o, dynEl: d } = scope;
-    if (parent.lastChild === d && d.previousSibling === o) return;
+    const f = scope.root.nodeType === 9 ? siteEl : null;
+    const last = f ?? d;
+    if (parent.lastChild === last && (!f || f.previousSibling === d) && d.previousSibling === o) return;
     parent.appendChild(o);
     parent.appendChild(d);
     d.textContent = scope.dynRules.join('\n');
+    if (f) parent.appendChild(f);
+  }
+
+  // Per-site fix CSS (site-fixes.js): kept after the override sheet so its
+  // rules win over the rewrite of the same selectors. '' removes it.
+  function setSiteCss(css) {
+    if (stopped) return;
+    if (!css) { siteEl?.remove(); siteEl = null; return; }
+    siteEl ??= makeStyle('site-fix');
+    siteEl.textContent = css;
+    const scope = scopes.get(document);
+    if (scope) placeLast(scope);
   }
 
   function addRule(scope, rule) {
@@ -1601,6 +1618,8 @@ export function startDynamic({
       scope.overrideEl.remove();
       scope.dynEl.remove();
     }
+    siteEl?.remove();
+    siteEl = null;
     for (const el of touched) {
       el.removeAttribute(INLINE_ATTR);
       el.removeAttribute(FIX_ATTR);
@@ -1631,5 +1650,5 @@ export function startDynamic({
     })();
   }
 
-  return { stop, refresh, settle };
+  return { stop, refresh, settle, setSiteCss };
 }

@@ -13,6 +13,8 @@ import { resolveSite } from './settings.js';
 import { formatRgb } from './color.js';
 import { transformColor, ensureContrast, quantize } from './transform.js';
 import { detectAlreadyDark, finalDecision } from './detect.js';
+import { urlInList } from './site-fixes.js';
+import { DARK_SITES } from './generated/dark-sites.js';
 
 export const SHEET_ID = 'sunglasses-at-night-early';
 
@@ -98,17 +100,21 @@ export function readPageColors(document, getComputedStyle, style) {
  *               Returns finalDecision()'s { apply, reason } plus `detection`.
  */
 export function startEarly({
-  document, getComputedStyle, settings, hostname, systemDark = false, now = new Date(), timeZone,
+  document, getComputedStyle, settings, hostname, url, systemDark = false, now = new Date(), timeZone,
+  darkSites = DARK_SITES,
 }) {
   const activation = decide({ settings, hostname, systemDark, now, timeZone });
   const site = resolveSite(settings, hostname);
+  // Sites listed as dark by design (third_party/darkreader) are left alone
+  // from the first frame when "Detect dark sites" is on: no sheet at all.
+  const listedDark = activation.on && site.detectDark && url !== undefined && urlInList(url, darkSites);
   // Settings are known: the manifest base sheet has done its job. When on,
   // the sheet below takes over in the same task; otherwise the page goes
   // back to its authored colors. Already-dark pages are measured with the
   // base off, too (see readPageColors).
   document.documentElement?.setAttribute?.(OFF_ATTRIBUTE, '');
   let style = null;
-  if (activation.on) {
+  if (activation.on && !listedDark) {
     style = document.createElement('style');
     style.id = SHEET_ID;
     // Marked as ours so the dynamic engine never reads it as a page sheet; it
@@ -122,7 +128,9 @@ export function startEarly({
   function finish() {
     if (result) return result;
     let detection = null;
-    if (activation.on && site.detectDark) {
+    if (listedDark) {
+      detection = { dark: true, reason: 'listed-dark', scheme: null, luminance: null };
+    } else if (activation.on && site.detectDark) {
       detection = detectAlreadyDark({ ...readPageColors(document, getComputedStyle, style), systemDark });
     }
     result = { ...finalDecision({ activation, detectDark: site.detectDark, detection }), detection };
