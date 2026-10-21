@@ -28,8 +28,8 @@ const EXPORT_DECL_RE = /^export\s+(?:async\s+)?(function\*?|const|let|class)\s+(
 
 const ident = (file) => '__m_' + relative(ROOT, file).replace(/[^A-Za-z0-9]/g, '_');
 
-function parseModule(file) {
-  let src = readFileSync(file, 'utf8');
+function parseModule(file, substitute = {}) {
+  let src = substitute[file] ?? readFileSync(file, 'utf8');
   const imports = [];
   src = src.replace(IMPORT_RE, (_, names, spec) => {
     const dep = resolve(dirname(file), spec);
@@ -56,6 +56,8 @@ function parseModule(file) {
  * Bundle `entry` (absolute path) and its relative imports into one IIFE.
  * opts.globalName: also assign the entry's exports to globalThis[globalName]
  * (used only for test helpers; extension bundles expose nothing).
+ * opts.substitute: { absolutePath: source } replaces a module's text (tests
+ * swap in their own data modules).
  */
 export function bundle(entry, opts = {}) {
   const order = [], seen = new Set(), visiting = new Set();
@@ -63,7 +65,7 @@ export function bundle(entry, opts = {}) {
     if (seen.has(file)) return;
     if (visiting.has(file)) throw new Error(`import cycle at ${file}`);
     visiting.add(file);
-    const mod = parseModule(file);
+    const mod = parseModule(file, opts.substitute);
     mod.imports.forEach(visit);
     visiting.delete(file);
     seen.add(file);

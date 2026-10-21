@@ -35,7 +35,7 @@ function stripComments(src) {
 // The generated site lists (engine/scripts/site-data.js) hold URL patterns
 // and selectors that name URLs, never requests: the data line is exempt from
 // the URL-literal check only, and the test below proves the data loads nothing.
-const SITE_DATA_LINE = /^\s*(?:export\s+)?const (?:DARK_SITES|SITE_FIXES) = /;
+const SITE_DATA_LINE = /^\s*(?:export\s+)?const (?:DARK_SITES|SITE_FIXES_JSON) = /;
 
 function scan(files, patterns, allow = {}) {
   const hits = [];
@@ -96,8 +96,8 @@ test('shipped JS: no network API except the T007 same-origin stylesheet re-fetch
 });
 
 test('site lists: the fix CSS loads nothing (no url(), image-set or @import)', async () => {
-  const { SITE_FIXES } = await import('../engine/src/generated/site-fixes-data.js');
-  const loads = SITE_FIXES.filter((f) => /\b(?:url|image-set|-webkit-image-set)\(|@import/i.test(f.css ?? ''));
+  const { siteFixes } = await import('../engine/src/generated/site-fixes-data.js');
+  const loads = siteFixes().filter((f) => /\b(?:url|image-set|-webkit-image-set)\(|@import/i.test(f.css ?? ''));
   assert.deepEqual(loads.map((f) => f.url[0]), []);
 });
 

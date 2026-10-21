@@ -1529,8 +1529,6 @@ const SETTINGS_CHANGED = 'sunglasses-at-night/settings-changed';
 const TAB_STATE = 'sunglasses-at-night/tab-state';
 // popup → background: { type, tabId } → the tab's last TAB_STATE report, or null.
 const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
-// content (any frame) → background: { type, url } → that URL's merged site fix, or null.
-const GET_SITE_FIX = 'sunglasses-at-night/get-site-fix';
 // options page → background: { type } → Reset all (extension store + App Group).
 const RESET_ALL = 'sunglasses-at-night/reset-all';
 
@@ -1543,7 +1541,7 @@ const OFF_TEXT = Object.freeze({
   'already-dark': 'page is already dark',
   'csp-blocked': "this site's security policy blocks it",
 });
-return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, GET_SITE_FIX, RESET_ALL, OFF_TEXT };
+return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT };
 })();
 
 // ---- engine/src/ui-core.js

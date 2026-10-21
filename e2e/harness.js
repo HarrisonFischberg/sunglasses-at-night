@@ -9,8 +9,6 @@
 // here the script runs in the page's world. The DOM and CSSOM it sees, and
 // the cross-origin restriction, are the same.
 
-import { fixesFor } from '../engine/src/site-fixes.js';
-import { GET_SITE_FIX } from '../engine/src/messages.js';
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
@@ -83,8 +81,13 @@ export async function startServers() {
 // script in about:blank / about:srcdoc frames. Playwright's init scripts run
 // in every frame, so skip those here; the parent frame's engine has to cover
 // them (dynamic.js adoptFrame).
-const contentBundle = () =>
-  `if (location.protocol !== 'about:') {\n${bundle(resolve(ROOT, 'engine/src/content.js'))}\n}`;
+// `siteFixes` replaces the bundled per-site fix list (site-fixes-data.js).
+const contentBundle = (siteFixes) => {
+  const substitute = siteFixes
+    ? { [resolve(ROOT, 'engine/src/generated/site-fixes-data.js')]: `export function siteFixes() { return ${JSON.stringify(siteFixes)}; }\n` }
+    : {};
+  return `if (location.protocol !== 'about:') {\n${bundle(resolve(ROOT, 'engine/src/content.js'), { substitute })}\n}`;
+};
 export const auditBundle = () => bundle(resolve(ROOT, 'e2e/page-audit.js'), { globalName: '__sanAudit' });
 
 // Stand-in for the manifest `css` entry: Safari injects content/base.css
@@ -147,7 +150,7 @@ export async function launch() {
  * of the engine sheet to wait for ('override' for dynamic, 'filter'), or
  * null when the engine is expected to back off (already-dark pages).
  */
-export async function openPage(browser, servers, path, { extension = false, settings, ready = 'override', siteFixes = [] } = {}) {
+export async function openPage(browser, servers, path, { extension = false, settings, ready = 'override', siteFixes } = {}) {
   const { page, context, fetchLog } = await preparePage(browser, servers, { extension, settings, siteFixes });
   await page.goto(servers.SITE + path, { waitUntil: 'load' });
   if (extension && ready) {
@@ -186,8 +189,8 @@ export async function openFirstPaint(browser, servers, path, { extension = false
 
 // `fetchDelayMs` holds every background sheet re-fetch back, like Safari's
 // worker wake-up plus message round trip.
-// `siteFixes` stands in for the background's per-site fix list (site-fixes.js).
-async function preparePage(browser, servers, { extension, settings, colorScheme = 'light', settingsDelayMs = 0, fetchDelayMs = 0, siteFixes = [] }) {
+// `siteFixes` replaces the bundled per-site fix list (see contentBundle).
+async function preparePage(browser, servers, { extension, settings, colorScheme = 'light', settingsDelayMs = 0, fetchDelayMs = 0, siteFixes }) {
   const context = await browser.newContext({ colorScheme, viewport: { width: 1024, height: 900 } });
   const page = await context.newPage();
   await page.addInitScript({ content: auditBundle() });
@@ -200,13 +203,12 @@ async function preparePage(browser, servers, { extension, settings, colorScheme 
     };
     const handler = createSheetMessageHandler({ fetch: nodeFetch, extensionId: 'e2e' });
     await page.exposeFunction('__sanBackground', (msg) => new Promise((resolveMsg) => {
-      if (msg?.type === GET_SITE_FIX) return resolveMsg(fixesFor(msg.url, siteFixes));
       const respond = fetchDelayMs > 0 ? (res) => setTimeout(() => resolveMsg(res), fetchDelayMs) : resolveMsg;
       if (handler(msg, { tab: { id: 1 }, id: 'e2e' }, respond) === false) resolveMsg(undefined);
     }));
     await page.addInitScript({ content: baseCssShim(baseCssText()) });
     await page.addInitScript({ content: apiShim(settings ?? { ...defaultSettings(), mode: 'always' }, settingsDelayMs) });
-    await page.addInitScript({ content: contentBundle() });
+    await page.addInitScript({ content: contentBundle(siteFixes) });
   }
   return { page, context, fetchLog };
 }

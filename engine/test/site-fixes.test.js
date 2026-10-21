@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parseList, parseFixes, matchUrl, urlInList, fixesFor, fixCss } from '../src/site-fixes.js';
 import { DARK_SITES } from '../src/generated/dark-sites.js';
-import { SITE_FIXES } from '../src/generated/site-fixes-data.js';
+import { siteFixes } from '../src/generated/site-fixes-data.js';
+const SITE_FIXES = siteFixes();
 
 test('matchUrl: host, www, subdomain wildcard, TLD wildcard, path prefix, regex', () => {
   assert.ok(matchUrl('https://example.com/a', 'example.com'));
