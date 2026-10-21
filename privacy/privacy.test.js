@@ -32,12 +32,18 @@ function stripComments(src) {
     .replace(/(^|[^:'"`\\])\/\/[^\n]*/g, '$1');
 }
 
+// The generated site lists (engine/scripts/site-data.js) hold URL patterns
+// and selectors that name URLs, never requests: the data line is exempt from
+// the URL-literal check only, and the test below proves the data loads nothing.
+const SITE_DATA_LINE = /^\s*(?:export\s+)?const (?:DARK_SITES|SITE_FIXES) = /;
+
 function scan(files, patterns, allow = {}) {
   const hits = [];
   for (const file of files) {
     const lines = stripComments(read(file)).split('\n');
     lines.forEach((line, i) => {
       for (const [name, re] of Object.entries(patterns)) {
+        if (name === 'http(s) literal URL' && SITE_DATA_LINE.test(line)) continue;
         if (re.test(line) && !(allow[file] ?? []).includes(name)) {
           hits.push(`${file}:${i + 1} ${name}: ${line.trim()}`);
         }
@@ -87,6 +93,12 @@ const SHIPPED_JS_SOURCES = [
 test('shipped JS: no network API except the T007 same-origin stylesheet re-fetch', () => {
   const hits = scan(SHIPPED_JS_SOURCES, JS_NETWORK, JS_ALLOW);
   assert.deepEqual(hits, [], `new network API in shipped JS:\n${hits.join('\n')}`);
+});
+
+test('site lists: the fix CSS loads nothing (no url(), image-set or @import)', async () => {
+  const { SITE_FIXES } = await import('../engine/src/generated/site-fixes-data.js');
+  const loads = SITE_FIXES.filter((f) => /\b(?:url|image-set|-webkit-image-set)\(|@import/i.test(f.css ?? ''));
+  assert.deepEqual(loads.map((f) => f.url[0]), []);
 });
 
 test('shipped JS: the allowed fetch is the one in sheet-fetch.js with no credentials, no referrer', () => {

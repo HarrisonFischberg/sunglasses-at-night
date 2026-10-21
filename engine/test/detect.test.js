@@ -310,3 +310,16 @@ test('whenParsed: runs now after parsing, else on DOMContentLoaded', () => {
   loading.document.fire('DOMContentLoaded');
   assert.equal(n, 2);
 });
+
+test('startEarly: a listed dark site gets no sheet and decides already-dark, unless detection is off', () => {
+  const dom = fakeDom();
+  const ctl = startEarly({ ...dom, settings: settings(), hostname: 'dark.example', url: 'https://www.dark.example/x', darkSites: ['dark.example'] });
+  assert.equal(ctl.style, null);
+  dom.document.fire('DOMContentLoaded');
+  const r = ctl.finish();
+  assert.equal(r.apply, false);
+  assert.equal(r.reason, 'already-dark');
+  assert.equal(dom.reads(), 0, 'no measuring needed');
+  const off = startEarly({ ...fakeDom(), settings: settings({ detectDark: false }), hostname: 'dark.example', url: 'https://dark.example/', darkSites: ['dark.example'] });
+  assert.ok(off.style, 'detection off: listed sites are darkened like any other');
+});

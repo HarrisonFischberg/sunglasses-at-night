@@ -1713,6 +1713,179 @@ function finalDecision({ activation, detectDark = true, detection = null } = {})
 return { DARK_LUMINANCE, parseColorScheme, usedColorScheme, detectAlreadyDark, finalDecision };
 })();
 
+// ---- engine/src/site-fixes.js
+const __m_engine_src_site_fixes_js = (() => {
+// Sunglasses at Night: third-party site lists (already-dark sites and
+// per-site fixes) and the URL patterns they are keyed by.
+//
+// The lists, the config parser and the URL pattern matcher are adapted from
+// Dark Reader (MIT, Copyright (c) Dark Reader Ltd.), src/generators/utils/
+// parse.ts and src/utils/url.ts at commit fda0590. See third_party/darkreader/.
+//
+// Config format: blocks separated by a line of `=`; each block is a list of
+// URL patterns, then commands (an upper-case line) each followed by its value:
+//   INVERT               selectors drawn inverted (filter)
+//   CSS                  extra CSS; `${color}` is a color to darken by role
+//   IGNORE INLINE STYLE  selectors whose inline styles are left alone
+// Unknown commands are kept out. The `*` block applies to every site.
+
+const { parseColor, formatRgb, relativeLuminance } = __m_engine_src_color_js;
+const { transformColor, quantize } = __m_engine_src_transform_js;
+
+const COMMANDS = {
+  'INVERT': 'invert',
+  'CSS': 'css',
+  'IGNORE INLINE STYLE': 'ignoreInlineStyle',
+};
+const COMMAND_RE = /^[A-Z]+(\s[A-Z]+){0,2}$/;
+const DELIMITER_RE = /^\s*={2,}\s*$/m;
+
+// One entry per non-empty line, comments (`#`) and blank lines dropped.
+function parseList(text) {
+  return String(text ?? '').replace(/\r/g, '').split('\n')
+    .map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
+}
+
+/** Parse a fixes config into [{ url: [...], invert?, css?, ignoreInlineStyle? }]. */
+function parseFixes(text) {
+  const fixes = [];
+  for (const block of String(text ?? '').replace(/\r/g, '').split(DELIMITER_RE)) {
+    const lines = block.split('\n');
+    const at = [];
+    lines.forEach((l, i) => { if (COMMAND_RE.test(l)) at.push(i); });
+    if (!at.length) continue;
+    const fix = { url: parseList(lines.slice(0, at[0]).join('\n')) };
+    at.forEach((start, i) => {
+      const prop = COMMANDS[lines[start].trim()];
+      if (!prop) return;
+      const value = lines.slice(start + 1, i === at.length - 1 ? lines.length : at[i + 1]).join('\n');
+      fix[prop] = prop === 'css' ? value.trim() : parseList(value);
+    });
+    if (fix.url.length) fixes.push(fix);
+  }
+  return fixes;
+}
+
+function prepareUrl(url) {
+  let u;
+  try { u = new URL(url); } catch { return null; }
+  const pathParts = u.pathname.split('/').slice(1);
+  if (!pathParts.at(-1)) pathParts.pop();
+  return { hostParts: u.hostname.split('.').reverse(), pathParts, port: u.port, protocol: u.protocol };
+}
+
+const patternCache = new Map();
+function preparePattern(pattern) {
+  let p = patternCache.get(pattern);
+  if (p !== undefined) return p;
+  let rest = pattern;
+  const exactStart = rest.startsWith('^'), exactEnd = rest.endsWith('$');
+  if (exactStart) rest = rest.slice(1);
+  if (exactEnd) rest = rest.slice(0, -1);
+  let protocol = '';
+  const pi = rest.indexOf('://');
+  if (pi > 0) { protocol = rest.slice(0, pi + 1); rest = rest.slice(pi + 3); }
+  const slash = rest.indexOf('/');
+  const host = slash < 0 ? rest : rest.slice(0, slash);
+  let hostName = host, port = '*';
+  const colon = host.lastIndexOf(':');
+  if (colon >= 0 && !host.startsWith('[')) { hostName = host.slice(0, colon); port = host.slice(colon + 1); }
+  const pathParts = slash < 0 ? [] : rest.slice(slash + 1).split('/');
+  if (pathParts.length && !pathParts.at(-1)) pathParts.pop();
+  p = { hostParts: hostName.split('.').reverse(), pathParts, port, protocol, exactStart, exactEnd };
+  patternCache.set(pattern, p);
+  return p;
+}
+
+/**
+ * Does `url` match `pattern`? `example.com` matches the site and its www
+ * host; `*.example.com` any subdomain; `google.*` any top-level domain;
+ * `host/path` a path prefix (`*` per segment); `^`/`$` anchor the host /
+ * path length; `/regex/` is a regular expression on the whole URL.
+ */
+function matchUrl(url, pattern) {
+  if (pattern.length > 2 && pattern.startsWith('/') && pattern.endsWith('/')) {
+    try { return new RegExp(pattern.slice(1, -1)).test(url); } catch { return false; }
+  }
+  const u = prepareUrl(url), p = preparePattern(pattern);
+  if (!u || !p) return false;
+  if (p.hostParts.length > u.hostParts.length) return false;
+  if (p.exactStart && p.hostParts.length !== u.hostParts.length) return false;
+  if (p.exactEnd && p.pathParts.length !== u.pathParts.length) return false;
+  if (p.port !== '*' && p.port !== u.port) return false;
+  if (p.protocol && p.protocol !== u.protocol) return false;
+  for (let i = 0; i < p.hostParts.length; i++) {
+    if (p.hostParts[i] !== '*' && p.hostParts[i] !== u.hostParts[i]) return false;
+  }
+  if (p.hostParts.length >= 2 && p.hostParts.at(-1) !== '*' && (
+    p.hostParts.length < u.hostParts.length - 1 ||
+    (p.hostParts.length === u.hostParts.length - 1 && u.hostParts.at(-1) !== 'www'))) return false;
+  if (p.pathParts.length > u.pathParts.length) return false;
+  for (let i = 0; i < p.pathParts.length; i++) {
+    if (p.pathParts[i] !== '*' && p.pathParts[i] !== u.pathParts[i]) return false;
+  }
+  return true;
+}
+
+function urlInList(url, patterns) {
+  for (const p of patterns ?? []) if (matchUrl(url, p)) return true;
+  return false;
+}
+
+/**
+ * The fixes for `url`, merged: the `*` block first, then every site block
+ * that matches, in file order. Returns null when nothing site-specific
+ * matches (the `*` block alone is not worth a sheet).
+ */
+function fixesFor(url, fixes) {
+  const matched = fixes.filter((f) => f.url[0] !== '*' && f.url.some((p) => matchUrl(url, p)));
+  if (!matched.length) return null;
+  const common = fixes.find((f) => f.url[0] === '*');
+  const merged = { invert: [], css: '', ignoreInlineStyle: [] };
+  for (const f of common ? [common, ...matched] : matched) {
+    if (f.invert) merged.invert.push(...f.invert);
+    if (f.css) merged.css += (merged.css ? '\n' : '') + f.css;
+    if (f.ignoreInlineStyle) merged.ignoreInlineStyle.push(...f.ignoreInlineStyle);
+  }
+  return merged;
+}
+
+/**
+ * CSS for a merged fix under `look`. Fix CSS reads four variables
+ * (--darkreader-neutral-background/-text, --darkreader-selection-*), so
+ * they're defined on the root; `${color}` becomes the color darkened as a
+ * background when light, as text when dark.
+ */
+function fixCss(fix, look) {
+  if (!fix) return '';
+  const bg = formatRgb(quantize(transformColor('#ffffff', 'bg', look)));
+  const fg = formatRgb(quantize(transformColor('#000000', 'fg', look)));
+  let css = `:root{--darkreader-neutral-background:${bg};--darkreader-neutral-text:${fg};` +
+    '--darkreader-selection-background:initial;--darkreader-selection-text:initial}';
+  if (fix.invert?.length) {
+    css += `${fix.invert.join(',')}{filter:invert(100%) hue-rotate(180deg) contrast(90%)!important}`;
+  }
+  if (fix.css) {
+    css += fix.css.replace(/\$\{(.+?)\}/g, (all, value) => {
+      const c = parseColor(value.trim());
+      if (!c) return value;
+      const role = relativeLuminance(c) > 0.18 ? 'bg' : 'fg';
+      return formatRgb(quantize(transformColor(c, role, look)));
+    });
+  }
+  return css;
+}
+return { parseList, parseFixes, matchUrl, urlInList, fixesFor, fixCss };
+})();
+
+// ---- engine/src/generated/dark-sites.js
+const __m_engine_src_generated_dark_sites_js = (() => {
+// Generated by engine/scripts/site-data.js from third_party/darkreader
+// (MIT, Copyright (c) Dark Reader Ltd.). Do not edit.
+const DARK_SITES = ["*.cases.gg","*.clash.gg","*.cncnet.org","*.comfig.app","*.draftbot.fr","*.draftbot.gg","*.furaffinity.net","*.hadesblack.com","*.iaas.store","*.iaasdev.ru","*.koya.gg","*.mastercomfig.com","*.newgrounds.com","*.ostra.gg","*.paydaythegame.com","*.rustclash.com","*.sapph.xyz","*.starbreeze.com","*.suyu.dev","*.taylorswift.com","*.tickettool.xyz","*.tracker.gg","*.tracker.network","0bin.net","0x00sec.org","12bytes.org","13willow.com","1lighty.github.io/BetterDiscordStuff","1maginary.online","1nf.me","23.social","2600.com","3072.vercel.app","314n.org","5cs.fail","5stardata.info","988lifeline.org","a-maze.jothin.tech","aagaming.me","abc.com","abhiyan.me","absolucy.moe","academy.hackthebox.com","account.bhvr.com","account.hackthebox.com","account.ncased.com","accursedfarms.com","aceship.github.io","acespace.love","addictinggames.com","adridoesthings.com","adventofcode.com","agent-stats.com","ageofempires.com","agfy.co","agorawr.artconomy.com","airconsole.com","ajay.app","akkoma.dev","albony.xyz","alfawal.dev","aliciasykes.com","allskillopti.com","ambr.top","ameliorated.info","ameliorated.io","amog-os.github.io","amp-what.com","an3x.org","andrewleguay.com","androiddev.social","anikuro.ru","animixplay.to","animk.info","anishde.dev","anitrack.co","annaaurora.eu","annapurnainteractive.com","answeroverflow.com","antalbiztonsag.com","aonprd.com","apbdb.com","api.unii.dev","app.destinyitemmanager.com","app.hackthebox.com","app.keeweb.info","app.minehut.com","app.mobalytics.gg","app.pianorhythm.io","app.plex.tv","app.pluralsight.com","app.revolt.chat","app.spacebar.chat","app.sqldbm.com","applesilicongames.com","application.security","aqtiongame.com","archive.ragtag.moe","archon.gg","ard.social","ardov.me","ari.lt","armaforces.com","artconomy.com","artixlinux.org","artlist.io","arweave.app","asciimation.co.nz","ashcam.xyz","ashishpanigrahi.com","asoftmurmur.com","assassins-creed.de","astronvim.github.io","atelier.net/virtual-economy","atelier801.com","athome.fandango.com","atlasos.net","atresplayer.com","attackontitan.fandom.com","audiomass.co","audioquest.com","audioz.download","augmentedsteam.com","auth.tedomum.net","av9.dev","avengedsevenfold.com","azeria-labs.com","badboybill.com","badlion.net","baldursgate3.game","banfeed.com","baobun.dev","based.cooking","battle.net","battlefieldtracker.com","battlelog.battlefield.com/bf4","bbc.co.uk/bbcfour","bbc.co.uk/bbcone","bbc.co.uk/bbctwo","bbc.co.uk/iplayer","bbc.co.uk/sounds","bbc.co.uk/tv/bbcalba","bbc.co.uk/tv/bbcnews","bbc.co.uk/tv/bbcparliament","bbc.co.uk/tv/bbcscotland","bbc.co.uk/tv/bbcthree","bbc.co.uk/tv/cbbc","bbc.co.uk/tv/cbeebies","bbc.co.uk/tv/radio1","bbc.co.uk/tv/s4c","bdeditor.dev","beastskills.com","beatleader.xyz","beatsaver.com","bedrocklinux.org","beepbox.co","bequiet.com","bereal.com","bestblackhatforum.com","beta.destinyitemmanager.com","betterdiscord.app","betterttv.com","bg3.wiki","bherila.net","bidet.gg","bildung.social","bin.disroot.org","bin.veracry.pt","birdflop.com","birdie0.github.io","bitcoinity.org/markets","bithatch.co.uk","blackarch.org","blackhat.com","blackhatsem.com","blackhatworld.com","blackle.com","blackmod.net","blast.tv","blastpremier.com","blgn.dev","blink.sh","blizzard.com","blocks.pandadev.net","blog.aractus.com","blog.counter-strike.net","blog.pixelexperience.org","blog.velocifyer.com","blox.link","blueagle.top","bluefirestudios.com","bobjoerules.github.io","bocchilorenzo.github.io","bogleech.com","bondoer.fr","bonfirenetworks.org","bonn.social","bootstrap.academy","botboy.snaz.in","bouncingdvdlogo.com","brew.sh","bri.io","brianlovin.com","brianpmaher.com","briantakita.me","broadcasthe.net","brodierobertson.xyz","brunotome.dev","bsodium.fr","bugmenot.com","bungie.net","bytebin.lucko.me","c-saccoccio.fr","cadence.moe","canalplus.com","caniuse.com","canyoublockit.com","capcut.com","caracal.club","carbon.now.sh","carl.gg","carrd.co","casaos.io","cascadr.co","catvibers.me","cc.com","ccugame.app","cdn.minlor.net","cdnnow.pro","changelog.pandadev.net","chaos.social","chat-gpt.org","chat.openai.com","chat.ryzom.com","chat.unii.dev","chat.vote","cheat.sh","checkout.steampowered.com","checkra.in","chess.com","chess.wintrcat.uk","chesstempo.com","chitownhousemusic.com","chromatic-tuner.com","cider.sh","cjratliff.com","cl00e9ment.gitlab.io/kingdom-blazon-generator/","clashofstats.com","cleo.li","cloud.minlor.net","club.steam250.com","cnc-comm.com","cncnet.org","co.wukko.me","cobalt.tools","codeium.com","codepen.io","coder.com","codesandbox.io","codestackr.com","codewars.com","colean.cc","colordesigner.io","comfig.app","community.eveonline.com","conexo.ws","console.firebase.google.com","cookieplmonster.github.io","coolmathgames.com","coriolis.io","counter-strike.net","countermail.com","cp.minetro.com","craiyon.com","crazygames.com","create.roblox.com/docs","crontab.guru","crunchyroll.com","cs.rin.ru","csfail.link","cssbattle.dev","ctf.hackthebox.com","ctt.cx","cuibonobo.com","curia.social-network.europa.eu","curiositystream.com","curseforge.com","cursorlag.velocifyer.com","cxsecurity.com","cybercodeonline.com","cybercrime-tracker.net","cyberpunk.net","cybersole.io","cytu.be","d2checkpoint.com","daddyanity.com","daily-fire.com","daksh.eu.org","damnvulnerabledefi.xyz","dan-cases.com","danidev.net","daringfireball.net","dark.diatr.us","darkmode.com","darkmodelist.com","darkmodesites.com","darkreader.org","dartpad.dev","dash.baobun.dev","dashy.to","datomatic.no-intro.org","davros.netlify.app","dblstatistics.com","dbzer0.com","dd-wrt.com","ddpe.androz2091.fr","deadbydaylight.com","deadbydaylight.fandom.com","decrypt.day","deepswap.ai","deepweblinks.net","defcon.org","deidetected.com","deltarune.com","demo.photoprism.app","demonforums.net","denims.tv","denshi.org","desktop.github.com","desoroxxx.github.io/Portfolio/","destiny.gg","destinytracker.com","det.social","devanbuggay.com","developer.valvesoftware.com","developerinsider.co","developers.cloudflare.com","di.fm","diablogame.de","dicebear.com","diep.io","digi77.com","digikam.org","digki.dignityofwar.com","disasm.pro","disboard.org","discadia.com","discohook.org","discord-date.shyked.fr","discord.bots.gg","discord.com/app","discord.com/developers","discord.com/login","discord.com/register","discord.id","discordbotlist.com","discordpackage.com","discords.com","discordservers.com","discordtimestamp.com","discourse.automationgame.com","discourse.cataclysmdda.org","discuss.logseq.com","disneyplus.com","distro.tube","distrobox.it","djflame.tech","dlive.tv","docs.adonisjs.com","docs.baobun.dev","docs.gofiber.io","docs.quad9.net","docs.rs","dodi-repacks.site","doesitarm.com","doge.gov","dominion.games","donk.link","donklink.com","doodstream.com","dota2.com","dota2.ru","dotabuff.com","dotapicker.com","draculatheme.com","dragonage-game.de","drakewars.com","drewj.la","droidify.eu.org","drunkenslug.com","dsa-drakensang.de","dsc.gg","dualshockers.com","duckychannel.com.tw","dumpert.nl","dumpus.app","dungeon-lords.de","dustinbrett.com","dyinglight.fandom.com","dyinglight.wiki.gg","dyno.gg","e-z.bio","e-z.host","eagle.cool","echoarchives.net","eclipse.menu","ecys.xyz","edi.social","edit-csv.net","editor.method.ac","elderscrolls.fandom.com","elitedangerous.com","ellie-app.com","elybeatmaker.com","emeraldchat.com/app","emkc.org","emoji.supply/kitchen/","emuparadise.me","energiewende.social","enesgenc.dev","enig.ma.tum.de","enigame.de","enlightenment.org","enlisted.net","enterprise.hackthebox.com","epicgames.com","epilogue.team","erai-raws.info","eren.si","escapefromtarkov.com","escapefromtarkov.fandom.com","esplay.com","esportal.com","etke.cc","etlegacy.com","eveonline.com","evewho.com","evowars.io","excel-dna.net","extrememusic.com","f.vision","f3bpodcast.com","f95zone.to","faceit-enhancer.com","faceit.com","factorio.com","factoriobin.com","fakeupdate.net/apple","fakeupdate.net/steam","fakeupdate.net/vista","fakeupdate.net/win10","fakeupdate.net/win10ue","fakeupdate.net/win7","fakeupdate.net/win8","fakeupdate.net/wnc","fakeupdate.net/xp","fallout-area.de","fandango.com","fantasy.works","fastro.dev","fedidb.org","fetlife.com","fetlifestatus.com","filegarden.com","filmmakermode.com","filterblade.xyz","filterlists.com","finder.usmans.me","findmcserver.com","fireship.io","firu.dev","fishshell.com","flavibot.xyz","fleepy.tv","flightlessmango.com","florr.io","floss.social","fluxpoint.dev","forge.coop","forgejo.org","forsen.horse","fortnite.com","fortnite.gg","fortnitetracker.com","forum.lastos.org","forum.tribler.org","forum.xda-developers.com","forumplayer.dev","forums.bhvr.com/dead-by-daylight/","forums.eveonline.com","forums.launchbox-app.com","fosstodon.org","fox.com","fragment.com","framp.me","frankerfacez.com/$","freecodecamp.org/$","freecodecamp.org/learn/","freeipa.org","frozensand.com","fulu.org","funnyjunk.com","furry.engineer","fusengine.github.io/apaxy-v2","fv.pro","gaijin.net","game.chronodivide.com","gamebanana.com","gamedle.wtf","gamejolt.com","gamersnexus.net","gaming.amazon.com","garudalinux.org","gastonle.rs","gastonle.ru","geektyper.com","genshin-impact.fandom.com","genshin.gg","geocities.restorativland.org","getaether.net","getdweb.net","gethalfmoon.com","gethomepage.dev","getsharex.com","getwacup.com","gfl.matsuda.tips","gflcorner.com","gfverse.info","ggapp.io","ghidra-sre.org","gi.yatta.moe","giantbomb.com","gibber.cc","gibbu.github.io/ThemePreview/","gifrun.com","gifyourgame.com","gikken.co","giphy.com","git.gnous.eu","github1s.com","gitkraken.com","gitmoji.kaki87.net","globoplay.globo.com","glow.phoesion.com","glowing-bear.org","glslsandbox.com","glyphtones.is-a.dev","go4liftoff.com","gog.com/forum","gogalaxy.com","goodfirstissue.dev","goosegame.io","gopiratesoftware.com","grafana.social","graydon2.dreamwidth.org","grayjay.app","grc.arikado.ru","greatview.video","greynoise.io","grim.ac","groovy.bot","gtaforums.com","guessr.tv","gundamcocks.riflesniper.art","gunshipmusic.com","gusted.xyz","hachyderm.io","hack.chat","hackaday.com","hackaday.io","hackertyper.com","hackforums.net","hackthebox.com","hackthebox.eu","hackthissite.org","hacktoberfest-projects.vercel.app","hadesblack.com","halotracker.com","halowaypoint.com","handbook.artconomy.com","hang.fm","hardcoregamer.com","hardforum.com","hardstuck.gg","hardwaretimes.com","hawkbot1cs.org","hbomax.com","hctiwt.tv","hdencode.com","heavybit.com","heckerbot.dev","hedgewars.org","heliotrope.dk","help.steampowered.com","herodamage.com","hexiro.me","hidive.com","hiserod.github.io","hitnmix.com","hiveon.net","hkamran.com","homicide.igarape.org.br","hostedtalk.net","hotstar.com","howlongtobeat.com","hpdevone.com","hqapps.org","hrmspms.sicorax.mu","hub.warframestat.us","hulu.com","humblebundle.com/$","humblebundle.com/accessibility","humblebundle.com/charities","humblebundle.com/refer","humblegames.com","hyper.is","i3wm.org","iaas.store","iaasdev.ru","idlesteam.com","igg-games.com","iipython.dev","imageglass.org","imgbox.com","imgur.com","impb.in","imperialb.in","imxnoobx.com","indieweb.social","indiexpo.net","infinitezoom.net","infocon.org","infosec.exchange","inker.app","inker.co","intactphone.com","intothetrenches.1917.movie","iskdeusingqt6.org","isthereanydeal.com","isxander.dev","itrade.gg","jakeroman.com","jakobneumann.com","jakopavouk.cz","jakubkaczor.com","jaxcore.app","jbzd.com.pl","jekyllrb.com","jellymar.io","jetify.com","jeusto.com","jhey.dev","jigsawpuzzles.io","joeydrewstudios.com","join-lemmy.org","jonahsnider.com","josephchataignon.github.io","jothin.tech","jqbx.fm","jsben.ch","jsitor.com","json-diff.com","justfive.news","justwatch.com","kadantiscam.netlify.app","kaioken.dev","kalence2.github.io","kanoa.de","kaoskrew.org","kazimagazine.com","kbh.games","kbhgames.com","keenwrite.com","keezersquest.nl","kernel.fish","kestra.io","kfocus.org","khor.store","khuwawa.com","kika.de/$","kika.de/kika-live/*","kika.de/kummerkasten/*","kika.de/live/*","kika.de/selbermachen/*","kika.de/spiele/*","kika.de/suche/*","kika.de/ueber-kika/*","kika.de/videos/*","kilonova.ro","kimbatt.github.io/js-Z","kina.party","kingdom-leaks.com","kittybot.de","knockout.chat","kocowa.com","kodenames.io","korino.dev","koya.gg","krisoneil.com/home","kristal.cc","krunker.io","ksenon.net","ksp.mff.cuni.cz","kulbachny.com","kwejk.pl","kyleggiero.me","kyun.host","lagom.nl/lcd-test","lainchan.org","landchad.net","larbs.xyz","lemm.ee","lemmi.no","lemmy.world","lemmyverse.net","letroso.com","letterboxd.com","lichess.org","lightweightpdf.com","linear.app","lingva.ml","linkstack.org","linku.la","linux.org.ru","liquidplus.com","lishogi.org","listen.moe","littlealchemy2.com","livesplit.org","liveweave.com","loaded.com","loadout.tf","login.eveonline.com","logseq.com","loldle.net","lolesports.com","lollilol.xyz","looskie.com","lospec.com","lucasmellof.com","luckyone-dev.com","luckyone.dev","lukesmith.xyz","lumina-desktop.org","lutris.net","m.daum.net","m2v.ru","macbb.org","mango.pdf.zone","mapstodon.space","marte.dev","marvil.co","maskbox.app","masseffect.fandom.com","mastercomfig.com","mastofeed.com","matrova.com","max.com","maximepinot.com","mazes.jothin.tech","md.quad.codes","means.tv","mechapower.eu","mednafen.github.io","megathread.pages.dev","melody.ml","melonds.kuribo64.net","memory-alpha.fandom.com","mempool.space","merged.games","metronom.us","mewho.com/starfield47","migueldemoura.com","mikemaximus.github.io/gbm-web","minecraft.net","minehut.com","minlor.net","miru.watch","misode.github.io","mit.gg","mixxx.org","mizik.eu","mm-dev.rocks","mmorpg.com","mnsr.win","mo1.app","modworkshop.net","monaspace.githubnext.com","monitoror.com","monkeytype.com","morethantech.it","morrowshore.com","motion-canvas.github.io","motioncanvas.io","motz.xyz","mouse-sensitivity.com","mrms.cz","mrquantumoff.dev","mrrp.dev","mrtipson.github.io/otz-builds/","ms-paint-i.de","mstdn.social","mtv.com","musedash.moe","music.amazon.com","music.com","music.youtube.com","muttwizard.com","mutualaiddisasterrelief.org","mwittrien.github.io","mwomercs.com","mynoise.net","mypodficacademia.com","n-o-d-e.net","n7hq.masseffect.com","nameslol.com","nanobun.tv","nationsglory.com","nationsglory.es","nationsglory.fr","ncased.com","neal.fun/size-of-space","nee.lv","nemanjadragun.com","nerimity.com","netflix.com","netzhack.de","neundex.com","neurocore.xyz","newgrounds.com","nextron.pandadev.net","nextts.org","nextui.org","nexusmods.com","nfs.fandom.com","nfsmods.xyz","nfspolska.pl","ngplus.net","nh-server.github.io/switch-guide/","nheko-reborn.github.io","nicholasjohnson.ch","nickgen.netlify.app","niebezpiecznik.pl","nightlight.gg","nightly.smithed.net","nikse.dk","nitter.kavin.rocks","nitter.nixnet.services","nixos-and-flakes.thiscute.world","nomanssky.com","norden.social","nostr.com","nostv.pt","notesnook.com","nowplayi.ng","nulledbb.com","nvstly.com","obsidian.md","obsproject.com","obtainium.imranr.dev","odysee.com","offshorecorptalk.com","okayeg.com","oldfag.org","on.quad9.net","onionplay.asia","onlyformats.netlify.app","onlyfors.com","open.spotify.com","opendota.com","openemu.org","openrazer.github.io","openrgb.org","orama-interactive.itch.io/pixelorama","orbstack.dev","orteil.dashnet.org/cookieclicker","ostra.gg","osu.ppy.sh","osumatrix.me","otz-addon-tierlist.pages.dev","otz-opinions.pages.dev","otzdarva.com","ovagames.com","overdodactyl.github.io/ShadowFox","ovosimpatico.com","oxide.computer","pages.gay","paimon.moe","pally.gg","pandadev.net","paniash.netlify.app","paper-io.com","parahumans.wordpress.com","parrotsec.org","partner.steamgames.com/doc/","partner.steamgames.com/pccafe","partner.steamgames.com/vrlicensing","passthepopcorn.me","pastes.dev","pathofexile.com","pathofexile.fandom.com","payday.fandom.com","paydaythegame.com","pcgamesn.com","pcgamestorrents.com","pedrorok.com","perf.link","peterlindbergh.obys.agency","petersalomonsen.com/webassemblymusic/livecodev2","phind.com","photomosh.com","photopea.com","physgun.com","pic.cleoold.com","ping.pe","pinia.vuejs.org","piped.kavin.rocks","piped.mha.fi","piped.tokhmi.xyz","piracybank.org","piskelapp.com","pitokmm.it","pixlr.com","planetneverwinter.de","plasticuproject.com","platinumgod.co.uk","play.chessclub.com","play.geforcenow.com","play.hbomax.com","playclassic.games","pluto.tv","poal.co","poe-racing.com","poe.ninja","poe2.ninja","poeapp.com","poelab.com","poliigon.com","poll.chat.vote","polsatboxgo.pl","polsatgo.pl","polychromatic.app","polyhaven.com","pony.tube","pool.pm","poweroutage.com","poweroutage.us","ppluss.de","ppy.sh","pr0gramm.com","premid.app","privacytools.io","prizafal.com","progettosnaps.net","projectdiscovery.io","protondb.com","proxx.app","ps2alerts.com","pvplegacy.net","pxseu.com","pylon.bot","q1dian.github.io","qalculator.xyz","quad9.net","queue.tf","raceday.watch","raidbots.com","raider.io","raidplan.io","rakowiecki.pl","rakuten.tv","rate.house","raunaksitoula.com","ravenation.club","rawgiving.com","ray.so","raycast.com","razeenf.ca","razer.com","razorsecure.com","reactbits.dev","redeclipse.net","reelgood.com","reflektclothing.co.uk","relay.firefox.com/faq","renderlab.net","reniguide.carrd.co","reniguide.info","replit.com","replugged.dev","reposilite.com","restream4me.com","retri.space","retromusic.app","returnyoutubedislike.com","revanced.app","reveddit.com","review.lineageos.org","rhwiki.net","richup.io","riflesniper.art","rimasmusic.com","ripped.guide","ritsuka.moe","rl6mans.com","rokoko.com","roleypoly.com","roosterteeth.fandom.com","router.vuejs.org","rtbyte.xyz","rtech.support","ruben-p.com","ruffle.rs","runechanger.stirante.com","runevm.io","runicgames.com","rusherhack.org","rust.facepunch.com","rust.nolt.io","rythm.fm","sa.jothin.tech","sacred-legends.de","sadistic.pl","safereddit.com","saintsrow.com","saliven.com","sammcheese.net","samseeman.com","sandervanderburg.blogspot.com","sapph.xyz","satisfactory-factories.app","sauce420.gitlab.io","save.tf","sb.ltn.fi","schildi.chat","science-news.co","scriptkit.com","seaofthieves.fandom.com","search.biboumail.fr","search.nebulacentre.net","secrethitler.io","secure.eveonline.com","senkognito.com","senkuro.com","septatrix.github.io/prefers-color-scheme-test/","serebii.net","settings.gg","seximal.net","seyi.dev","sharetextures.com","sharkiller.ddns.net","shatteredpixel.com","sheet.host","shellshock.io","shockbs.is-a.dev","shockbs.pro","shop.x-raypad.com","shpposter.club","shubhamprasad.dev","shubhamprasad.vercel.app","siddharthray.com","siderite.dev","simkl.com","sive.rs","skeld.net","skeptikon.fr","skidrowreloaded.com","skiftos.org","skinport.com","skinsmonkey.com","skylabmusic.com","skynetsimulator.com","slay.one","sleeplessbeastie.eu","slider.kz","slippi.gg","slither.com","slither.io","smallformfactor.net","smithed.dev","smithed.net","snazzah.com","snoozing.com","snowsta.mp","social.bund.de","social.cologne","social.saarland","social.tchncs.de","somafm.com","spacestationgaming.com","spacex.com","spark.lucko.me","speedrun.com","speedtest.net","splatoon.nintendo.com","splatoon3.ink","sponsor.ajay.app","spotfy.one","spoticord.com","spyware.neocities.org","srrdb.com","stage.artconomy.com","star-made.org","starbreeze.com","starlink.com","starmadedock.net","statbot.net","stateofjs.com","status.codeberg.eu","status.kyun.host","steam.design","steam250.com","steambase.io","steamcharts.com","steamcommunity.com","steamdb.info","steamdeckhq.com","steamhunters.com","steamstat.us","steamtimeidler.com","stillu.cc","store.epicgames.com","store.gaijin.net","store.steampowered.com","storyfire.com","stray.game","studiomaertens.com","stylus-lang.com","sunxdcc.com","supinic.com","support.deadbydaylight.com","supremacy1914.com","surrealdb.com","surviv.io","suyu.dev","svtplay.se","sylviefox.ca","sync-tube.de","szmarczak.com","t3.chat","tabby.sh","tacoanon.github.io","talentbrick.com","tarkov-market.com","tautulli.com","tboi.com","teamfortress.com","teamliquid.com","teamsds.net","telescope.org","teleseer.com","televizeseznam.cz","term.ooo","terminal.sexy","terminalroot.com","tetr.io","textfiles.com","texture.ninja","texturebox.com","texturemax.com","textures.com","tf2mart.net","thecolonialtheatre.com","thegrimoire.deadbydaylight.com","thehomelab.wiki","thelastofus.fandom.com","thelinuxcast.org","theme-park.dev","themes.vscode.one","themetphilly.com","thermal-grizzly.com","thesigmaarts.com","thespacedevs.com","thetatoken.org","thetrackernetwork.com","thispersondoesnotexist.com","tickettool.xyz","tilde.club","tilde.team","tilde.town","tildeverse.org","timharek.no","tio.run","title-case-converter.vercel.app","tommytran.io","toneden.io","toolbrew.org","toolscord.com","top.gg","tostories.app","totems.me","tov.monster","tracker.gg","trblwlf.net","trigger.dev","trilon.io","tripleaughtdesign.com","trojansource.codes","trovo.live","truckersmp.com","truffle.vip","tsssaver.1conan.com","tube.kdy.ch","tukui.org","tvnz.co.nz","tvplus.com.tr","twiukraine.com","twnft.vercel.app","tycrek.com","tylerpalko.github.io","tynker.com/ide","tyrannytracker.org","tyt.com","ufplanets.com","ultrajs.dev","undergroundcellar.com","underlords.com","undertale.com","unii.dev","universe.eveonline.com","universeodon.com","unrealengine.com","urbanlinker.com","us.shop.battle.net","userdiag.com","v3.wttr.in","vanillatweaks.net","vcjhwebdev.github.io/useless-translator/","venturebanners.co.uk","viddit.red","villains.fandom.com","vimm.net","vinesauce.com","vivek9patel.github.io","vixeny.dev","vleer.app","vogons.org","volta.net","vortez.net","vrv.co","vscode.dev","vudu.com","vuecinemas.nl","w0rp.com","w41k3r.com","wago.io","wallhaven.cc","warcraftlogs.com","warezforums.com","warsow.net","warthunder.com","wasm.continuation-labs.com/d3demo/","weavesilk.com","web-check.xyz","weichong.dev","wickeditor.com/editor/","widgetbot.io","wiki.dignityofwar.com","wiki.eveuniversity.org","wiki.fireundubh.com","wiki.pixelexperience.org","wiki.the-elite.net","wiktrek.xyz","winboat.app","windowsterminalthemes.dev","winget.run","wiocha.pl","wisehosting.com","worldofcyberpunk.de","worldofgothic.de","worldofplayers.de","worldofrisen.de","worldoftanks.asia","worldoftanks.com","worldoftanks.eu","wormate.io","wormhole.app","wowaudit.com","wowhead.com","wowinterface.com","wtfast.com","wttr.in","wuemeli.com","x1337x.*/$","x64dbg.com","xbins.org","xbox.com/play","xdaforums.com","xela.codes","xela.dev","xerolinux.xyz","xmission.com","xn--rpa.cc","xonotic.org","yande.re","yarmo.eu","yashsingh.us","yildizskylab.com","ynoproject.net","you.dj","your.gg","yts.*","zaufanatrzeciastrona.pl","zbhavyai.github.io","zee5.com","zeon.dev","zerodayinitiative.com","zkillboard.com","zombsroyale.io","zt64.github.io","ztdp.ca","zunivers.zerator.com","zyrenth.dev"];
+return { DARK_SITES };
+})();
+
 // ---- engine/src/early.js
 const __m_engine_src_early_js = (() => {
 // Sunglasses at Night: document_start anti-flash (F7).
@@ -1730,6 +1903,8 @@ const { resolveSite } = __m_engine_src_settings_js;
 const { formatRgb } = __m_engine_src_color_js;
 const { transformColor, ensureContrast, quantize } = __m_engine_src_transform_js;
 const { detectAlreadyDark, finalDecision } = __m_engine_src_detect_js;
+const { urlInList } = __m_engine_src_site_fixes_js;
+const { DARK_SITES } = __m_engine_src_generated_dark_sites_js;
 
 const SHEET_ID = 'sunglasses-at-night-early';
 
@@ -1815,17 +1990,21 @@ function readPageColors(document, getComputedStyle, style) {
  *               Returns finalDecision()'s { apply, reason } plus `detection`.
  */
 function startEarly({
-  document, getComputedStyle, settings, hostname, systemDark = false, now = new Date(), timeZone,
+  document, getComputedStyle, settings, hostname, url, systemDark = false, now = new Date(), timeZone,
+  darkSites = DARK_SITES,
 }) {
   const activation = decide({ settings, hostname, systemDark, now, timeZone });
   const site = resolveSite(settings, hostname);
+  // Sites listed as dark by design (third_party/darkreader) are left alone
+  // from the first frame when "Detect dark sites" is on: no sheet at all.
+  const listedDark = activation.on && site.detectDark && url !== undefined && urlInList(url, darkSites);
   // Settings are known: the manifest base sheet has done its job. When on,
   // the sheet below takes over in the same task; otherwise the page goes
   // back to its authored colors. Already-dark pages are measured with the
   // base off, too (see readPageColors).
   document.documentElement?.setAttribute?.(OFF_ATTRIBUTE, '');
   let style = null;
-  if (activation.on) {
+  if (activation.on && !listedDark) {
     style = document.createElement('style');
     style.id = SHEET_ID;
     // Marked as ours so the dynamic engine never reads it as a page sheet; it
@@ -1839,7 +2018,9 @@ function startEarly({
   function finish() {
     if (result) return result;
     let detection = null;
-    if (activation.on && site.detectDark) {
+    if (listedDark) {
+      detection = { dark: true, reason: 'listed-dark', scheme: null, luminance: null };
+    } else if (activation.on && site.detectDark) {
       detection = detectAlreadyDark({ ...readPageColors(document, getComputedStyle, style), systemDark });
     }
     result = { ...finalDecision({ activation, detectDark: site.detectDark, detection }), detection };
@@ -2802,9 +2983,10 @@ const YIELD = Symbol('yield');
  * override sheet doesn't cover yet (in the mutation task, before paint), so the
  * caller can re-arm its interim rule; onReady() is called again, in the task
  * the rewrite lands (or after READY_CAP_MS).
- * Returns { stop(), refresh(), settle() }; settle() resolves once every
- * cross-origin fetch started so far has been applied and all deferred work
- * is done.
+ * Returns { stop(), refresh(), settle(), setSiteCss(css) }; settle() resolves
+ * once every cross-origin fetch started so far has been applied and all
+ * deferred work is done; setSiteCss() keeps a per-site fix sheet after the
+ * override sheet ('' removes it).
  */
 function startDynamic({
   document, window = document.defaultView, look, fetchSheet = async () => null,
@@ -2849,6 +3031,7 @@ function startDynamic({
   const frames = new Map(); // about:blank / srcdoc <iframe> → { doc, engine, start }
   const canvas = quantize(transformColor('#ffffff', 'bg', look));
   let stopped = false;
+  let siteEl = null; // per-site fix sheet, see setSiteCss
   let incomplete = false; // set while a needed remote sheet is still loading
   // Deferred work: see SLICE_MS.
   const contrastRoots = new Set(); // nodes whose subtree needs a contrast check
@@ -2921,17 +3104,32 @@ function startDynamic({
     return scope;
   }
 
-  // Keep [override, dynamic] as the last two children of the scope, after
-  // every page sheet. Moving a <style> re-creates its sheet from text, so
-  // rules added with insertRule are restored from scope.dynRules.
+  // Keep [override, dynamic] (then the document's site-fix sheet, when
+  // there is one) as the last children of the scope, after every page sheet.
+  // Moving a <style> re-creates its sheet from text, so rules added with
+  // insertRule are restored from scope.dynRules.
   function placeLast(scope) {
     const parent = scope.root.nodeType === 9 ? scope.root.documentElement : scope.root;
     if (!parent) return;
     const { overrideEl: o, dynEl: d } = scope;
-    if (parent.lastChild === d && d.previousSibling === o) return;
+    const f = scope.root.nodeType === 9 ? siteEl : null;
+    const last = f ?? d;
+    if (parent.lastChild === last && (!f || f.previousSibling === d) && d.previousSibling === o) return;
     parent.appendChild(o);
     parent.appendChild(d);
     d.textContent = scope.dynRules.join('\n');
+    if (f) parent.appendChild(f);
+  }
+
+  // Per-site fix CSS (site-fixes.js): kept after the override sheet so its
+  // rules win over the rewrite of the same selectors. '' removes it.
+  function setSiteCss(css) {
+    if (stopped) return;
+    if (!css) { siteEl?.remove(); siteEl = null; return; }
+    siteEl ??= makeStyle('site-fix');
+    siteEl.textContent = css;
+    const scope = scopes.get(document);
+    if (scope) placeLast(scope);
   }
 
   function addRule(scope, rule) {
@@ -3892,6 +4090,8 @@ function startDynamic({
       scope.overrideEl.remove();
       scope.dynEl.remove();
     }
+    siteEl?.remove();
+    siteEl = null;
     for (const el of touched) {
       el.removeAttribute(INLINE_ATTR);
       el.removeAttribute(FIX_ATTR);
@@ -3922,7 +4122,7 @@ function startDynamic({
     })();
   }
 
-  return { stop, refresh, settle };
+  return { stop, refresh, settle, setSiteCss };
 }
 return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, BLEND_MARK, PENDING_ATTR, PROP_ROLES, rewriteTriplet, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, pendingCss, SLICE_MS, CONTRAST_DELAY_MS, READY_CAP_MS, HOST_WATCH_MS, startDynamic };
 })();
@@ -3940,6 +4140,8 @@ const SETTINGS_CHANGED = 'sunglasses-at-night/settings-changed';
 const TAB_STATE = 'sunglasses-at-night/tab-state';
 // popup → background: { type, tabId } → the tab's last TAB_STATE report, or null.
 const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
+// content (any frame) → background: { type, url } → that URL's merged site fix, or null.
+const GET_SITE_FIX = 'sunglasses-at-night/get-site-fix';
 // options page → background: { type } → Reset all (extension store + App Group).
 const RESET_ALL = 'sunglasses-at-night/reset-all';
 
@@ -3952,7 +4154,7 @@ const OFF_TEXT = Object.freeze({
   'already-dark': 'page is already dark',
   'csp-blocked': "this site's security policy blocks it",
 });
-return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT };
+return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, GET_SITE_FIX, RESET_ALL, OFF_TEXT };
 })();
 
 // ---- engine/src/content.js
@@ -3969,7 +4171,8 @@ const { createSettingsStore, resolveSite, migrate } = __m_engine_src_settings_js
 const { startEarly, whenParsed, whenRoot, interimCss, antiFlashCss, READY_ATTRIBUTE } = __m_engine_src_early_js;
 const { startDynamic } = __m_engine_src_dynamic_js;
 const { startFilter } = __m_engine_src_filter_js;
-const { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } = __m_engine_src_messages_js;
+const { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_SITE_FIX } = __m_engine_src_messages_js;
+const { fixCss } = __m_engine_src_site_fixes_js;
 
 const api = globalThis.browser ?? globalThis.chrome;
 
@@ -4046,7 +4249,7 @@ function run(settings) {
   const hostname = location.hostname;
   const systemDark = globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
   const ctl = startEarly({
-    document, getComputedStyle: (el) => getComputedStyle(el), settings, hostname, systemDark,
+    document, getComputedStyle: (el) => getComputedStyle(el), settings, hostname, url: location.href, systemDark,
   });
   document.documentElement.removeAttribute(READY_ATTRIBUTE);
   // The interim rule (in ctl.style, and in base.css for system dark) lifts when
@@ -4074,7 +4277,7 @@ function run(settings) {
     if (!rearmed.isConnected) (document.head ?? document.documentElement).appendChild(rearmed);
   };
   const stopPrefetch = ctl.activation.on && window.MutationObserver ? prefetchSheets(document, window.MutationObserver) : () => {};
-  let engine = null, cancelled = false;
+  let engine = null, cancelled = false, fixStyle = null;
   whenParsed(document, () => {
     stopPrefetch();
     if (cancelled) return;
@@ -4097,6 +4300,20 @@ function run(settings) {
     } else {
       engine = startDynamic({ document, window, look: site.look, fetchSheet, onReady: ready, onBusy: busy(site.look), ...media });
     }
+    // Per-site fixes (third_party/darkreader) come from the background,
+    // which holds the list; they only add rules, so they land whenever the
+    // answer arrives, after the override sheet so they win.
+    Promise.resolve(api.runtime.sendMessage?.({ type: GET_SITE_FIX, url: location.href }))
+      .then((fix) => {
+        const css = fixCss(fix, site.look);
+        if (cancelled || !css) return;
+        if (engine?.setSiteCss) { engine.setSiteCss(css); return; }
+        fixStyle = document.createElement('style');
+        fixStyle.setAttribute('data-sunglasses-at-night', 'site-fix');
+        fixStyle.textContent = css;
+        document.documentElement.appendChild(fixStyle);
+      })
+      .catch(() => {});
   });
   return () => {
     cancelled = true;
@@ -4104,6 +4321,7 @@ function run(settings) {
     engine?.stop();
     ctl.style?.remove();
     rearmed?.remove();
+    fixStyle?.remove();
   };
 }
 

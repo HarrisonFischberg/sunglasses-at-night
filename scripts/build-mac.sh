@@ -18,6 +18,7 @@ cat > "$ENT" <<'PLIST'
 <plist version="1.0"><dict><key>com.apple.security.app-sandbox</key><true/></dict></plist>
 PLIST
 LSR=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+node engine/scripts/site-data.js
 node engine/scripts/bundle.js
 pkill -f "$D/Build/Products/Debug/Sunglasses at Night.app" || true
 xcodebuild -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS,arch=arm64' \

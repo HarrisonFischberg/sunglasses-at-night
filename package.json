@@ -8,9 +8,9 @@
   "scripts": {
     "check": "node engine/scripts/check.js",
     "icons": "node design/icons/generate.js",
-    "pretest": "node engine/scripts/bundle.js && node engine/scripts/base-css.js && node design/icons/generate.js",
+    "pretest": "node engine/scripts/site-data.js && node engine/scripts/bundle.js && node engine/scripts/base-css.js && node design/icons/generate.js",
     "test": "node --test 'engine/test/**/*.test.js'",
-    "pree2e": "node engine/scripts/bundle.js && node engine/scripts/base-css.js && node design/icons/generate.js",
+    "pree2e": "node engine/scripts/site-data.js && node engine/scripts/bundle.js && node engine/scripts/base-css.js && node design/icons/generate.js",
     "e2e": "node --test --test-concurrency=1 'e2e/**/*.test.js'",
     "perf": "node engine/scripts/perf.js",
     "privacy-check": "node --test 'privacy/**/*.test.js'"
