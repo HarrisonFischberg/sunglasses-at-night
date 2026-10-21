@@ -663,6 +663,9 @@ export function startDynamic({
   function addRule(scope, rule) {
     scope.dynRules.push(rule);
     const sheet = scope.dynEl.sheet;
+    // No sheet: the page's CSP refused it, and the adopted-sheet mirror
+    // (adopted.js) follows the element's text instead.
+    if (!sheet && scope.dynEl.isConnected) { scope.dynEl.textContent = scope.dynRules.join('\n'); return; }
     try {
       if (sheet) sheet.insertRule(rule, sheet.cssRules.length);
     } catch {

@@ -12,6 +12,7 @@ import { startDynamic } from './dynamic.js';
 import { startFilter } from './filter.js';
 import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_SITE_FIX } from './messages.js';
 import { fixCss } from './site-fixes.js';
+import { cspBlocked, cspBlocksStyles, startAdoptedMirror } from './adopted.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 
@@ -116,21 +117,30 @@ function run(settings) {
     if (!rearmed.isConnected) (document.head ?? document.documentElement).appendChild(rearmed);
   };
   const stopPrefetch = ctl.activation.on && window.MutationObserver ? prefetchSheets(document, window.MutationObserver) : () => {};
-  let engine = null, cancelled = false, fixStyle = null;
+  let engine = null, cancelled = false, fixStyle = null, mirror = null;
+  // The early sheet was refused already (CSP from the response header).
+  if (cspBlocked(ctl.style)) mirror = startAdoptedMirror(document, window);
   whenParsed(document, () => {
     stopPrefetch();
     if (cancelled) return;
+    // Already-dark detection reads the page's own colors: without our sheets.
+    mirror?.pause();
     let result = ctl.finish();
+    mirror?.resume();
     // A Content-Security-Policy without 'unsafe-inline' for styles (gov.uk,
     // mozilla.org, pypi.org) blocks every <style> we add: the sheet never
-    // exists. Say so honestly instead of reporting "on" over a white page
-    // (QA 2026-10-19). The real fix is constructable stylesheets.
-    if (result.apply && ctl.style && !ctl.style.sheet) {
-      ctl.style.remove();
-      result = { ...result, apply: false, reason: 'csp-blocked' };
+    // exists. Mirror ours into constructable sheets, which CSP allows; where
+    // even that's impossible, say so instead of reporting "on" over a white
+    // page (QA 2026-10-19).
+    if (result.apply && (cspBlocked(ctl.style) || cspBlocksStyles(document))) {
+      mirror ??= startAdoptedMirror(document, window);
+      if (!mirror) {
+        ctl.style?.remove();
+        result = { ...result, apply: false, reason: 'csp-blocked' };
+      }
     }
     reportState(result);
-    if (!result.apply) return;
+    if (!result.apply) { mirror?.stop(); mirror = null; return; }
     const site = resolveSite(settings, hostname);
     const media = { images: settings.images, hideBackgroundImages: settings.hideBackgroundImages };
     if (site.engine === 'filter') {
@@ -161,6 +171,7 @@ function run(settings) {
     ctl.style?.remove();
     rearmed?.remove();
     fixStyle?.remove();
+    mirror?.stop();
   };
 }
 
