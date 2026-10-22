@@ -11,7 +11,7 @@ import { startEarly, whenParsed, whenRoot, interimCss, antiFlashCss, READY_ATTRI
 import { startDynamic } from './dynamic.js';
 import { startFilter } from './filter.js';
 import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
-import { fixesFor, fixCss } from './site-fixes.js';
+import { fixesFor, fixCss, userFixCss } from './site-fixes.js';
 import { siteFixes } from './generated/site-fixes-data.js';
 import { cspBlocked, cspBlocksStyles, startAdoptedMirror } from './adopted.js';
 import { cacheKey, readCached, writeCached, adoptCss } from './style-cache.js';
@@ -180,9 +180,14 @@ function run(settings) {
     }
     // Per-site fixes (third_party/darkreader) are bundled here, so they apply
     // in the same task without waking the background script; the engine keeps
-    // them after its override sheet so they win.
+    // them after its override sheet so they win. Your own fixes (picked with
+    // "Fix something on this page") come last, so they win over both.
     let css = '';
     try { css = fixCss(fixesFor(location.href, siteFixes()), site.look); } catch { /* no fix */ }
+    try {
+      const own = userFixCss(site.fixes, site.look, site.engine);
+      if (own) css += (css ? '\n' : '') + own;
+    } catch { /* no fix */ }
     if (css && engine?.setSiteCss) {
       engine.setSiteCss(css);
     } else if (css) {

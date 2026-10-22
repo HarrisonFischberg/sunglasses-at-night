@@ -70,6 +70,21 @@
       </select>
     </div>
     <p id="site-engine-hint" class="hint">Try Filter if this site looks broken. It switches without reloading.</p>
+    <div id="fix-block" class="fix-block">
+      <button type="button" id="pick" aria-describedby="pick-hint">Fix something on this page…</button>
+      <p id="pick-hint" class="hint">Point at the part that looks wrong, then pick a fix. It stays fixed on this site.</p>
+      <ul id="fixes" class="fixes" aria-label="Your fixes on this site"></ul>
+      <template id="fix-row">
+        <li>
+          <span><span class="what"></span><br><span class="summary hint"></span></span>
+          <button type="button" class="icon-button remove">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/>
+            </svg>
+          </button>
+        </li>
+      </template>
+    </div>
   </fieldset>
 
   <fieldset id="look">

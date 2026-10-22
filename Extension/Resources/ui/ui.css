@@ -447,8 +447,11 @@ body.options { padding: var(--s-4); }
   .rail { display: grid; align-content: start; position: sticky; top: var(--s-5); }
 }
 
-#sites { list-style: none; margin: 0; padding: 0; }
-#sites li {
+#sites, #fixes { list-style: none; margin: 0; padding: 0; }
+.fix-block { display: grid; gap: var(--s-2); margin-top: var(--s-3); }
+.fix-block #pick { width: 100%; }
+.fix-block .what { overflow-wrap: anywhere; }
+#sites li, #fixes li {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -457,9 +460,9 @@ body.options { padding: var(--s-4); }
   padding: var(--s-1) 0;
   border-top: 1px solid var(--line);
 }
-#sites li:first-child { border-top: 0; }
+#sites li:first-child, #fixes li:first-child { border-top: 0; }
 #sites .host { margin: 0; }
-#sites .summary { font-size: var(--text-sm); }
+#sites .summary, #fixes .summary { font-size: var(--text-sm); }
 
 dialog {
   background: var(--group);
