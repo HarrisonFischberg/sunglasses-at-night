@@ -3,8 +3,9 @@
 # Usage: scripts/build-ios.sh
 # Regenerates the extension bundles from engine/src, builds the iOS app with
 # Xcode automatic signing and your "Apple Development" certificate (the
-# project's default identity is ad-hoc "-", which a device build can't use) (-allowProvisioningUpdates fetches or renews the
-# development profile) and installs it. Does not launch the app.
+# project's default identity is ad-hoc "-", which a device build can't use;
+# -allowProvisioningUpdates fetches or renews the development profile) and
+# installs it. Does not launch the app.
 # Like scripts/build-mac.sh, this build leaves out the App Group entitlement:
 # the development profiles don't carry it, so App Group sync with the app is
 # off in this build. Settings still work; they live in Safari's extension store.
