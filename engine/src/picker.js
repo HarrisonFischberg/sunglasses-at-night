@@ -224,7 +224,18 @@ export function startPicker({ document: doc, window: win, store, hostname, touch
     e.preventDefault();
     e.stopPropagation();
   }
+  // Arrow keys move around the 2×2 grid of fixes: Safari's Tab skips
+  // buttons unless "Press Tab to highlight each item" is on.
+  const STEP = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 2, ArrowUp: -2 };
   function onKey(e) {
+    const at = fixButtons.indexOf(root.activeElement);
+    if (picked && at >= 0 && e.key in STEP) {
+      const next = fixButtons[at + STEP[e.key]];
+      e.preventDefault();
+      e.stopPropagation();
+      next?.focus({ preventScroll: true });
+      return;
+    }
     if (e.key !== 'Escape') return;
     e.preventDefault();
     e.stopPropagation();
