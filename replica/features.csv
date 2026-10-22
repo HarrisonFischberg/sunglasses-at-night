@@ -1,0 +1,28 @@
+feature,area,priority,original,clone,notes
+Darken every site automatically via Safari Web Extension,engine,must,yes,no,R1 all three
+Universal app iPhone iPad Mac one install,platform,must,partial,no,R1; ours is free everywhere
+Activation mode: follow system appearance,activation,must,yes,no,R2
+Activation mode: always on,activation,must,yes,no,R2
+Activation mode: off / manual toggle,activation,must,yes,no,R2
+Activation mode: schedule with fixed times,activation,should,partial,no,R4 Dark Reader users ask; Noir has evening default. No location / sunset (privacy)
+Per-site rule from toolbar popup (default / always / never),sites,must,yes,no,R3
+Brightness contrast sepia grayscale sliders,look,must,yes,no,R5
+Per-site slider overrides,look,should,no,no,R4 differentiation
+Theme presets (small original set),look,should,yes,no,R5; original names and colors
+Custom background and text colors,look,could,yes,no,R5
+Image handling: leave / dim / invert-off,look,must,yes,no,R5
+Hide background images toggle,look,could,yes,no,R5
+Detect already-dark sites and skip with override,engine,must,yes,no,R6
+No white flash at load (document_start sheet),engine,must,yes,no,R7
+Minimum text contrast enforced on rewritten colors (WCAG AA 4.5:1),engine,should,unknown,no,our differentiation; claim needs T012 evidence
+Filter fallback mode per site,engine,should,yes,no,R10 inferred
+Keyboard shortcut toggle (Mac),activation,should,yes,no,Dark Reader version history
+Report a broken site (user-initiated mailto draft domain only),support,should,yes,no,R9 Noir auto/ask/never; ours never automatic
+Container app onboarding: how to enable the extension in Safari Settings,app,must,yes,no,needed on all platforms
+Container app settings mirror popup settings,app,should,yes,no,Midnight syncs app <-> extension
+Reset all settings,app,must,unknown,no,safeguard 20
+Privacy policy + acknowledgements in app,app,must,unknown,no,safeguards 1 19
+iCloud sync of settings,sync,could,yes,no,Noir; deferred v2: adds data flow
+Shortcuts Control Center Focus Filters Widgets,system,could,yes,no,R11 deferred v2
+visionOS,platform,could,yes,no,deferred
+20+ themes,look,could,yes,no,Noir; we ship a small curated set instead

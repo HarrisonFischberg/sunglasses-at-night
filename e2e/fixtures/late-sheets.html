@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture: late sheets after ready</title>
+<!-- T036: the page is ready, then 400 ms later adds three cross-origin stylesheets
+     that paint #main white. The browser applies them as soon as they load; the
+     extension's re-fetch of their text is slow (the harness delays it 800 ms).
+     Until it lands the interim rule must be back, so no frame shows white. -->
+<style>
+  body { margin: 0; background: #ffffff; color: #111111; font: 16px/1.4 system-ui, sans-serif; }
+  header { padding: 12px 16px; border-bottom: 1px solid #dddddd; }
+</style>
+</head>
+<body>
+  <header><strong>Storefront</strong></header>
+  <div id="main"><p>Main content block</p><p>More content</p></div>
+  <script>
+    globalThis.__fixtureDone = false;
+    const root = document.documentElement;
+    const whenReady = () => root.hasAttribute('data-sunglasses-ready')
+      ? setTimeout(insert, 400)
+      : setTimeout(whenReady, 20);
+    function insert() {
+      globalThis.__sanInsertedAt = Math.round(performance.now());
+      let loaded = 0;
+      for (let i = 1; i <= 3; i++) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '{{CDN}}/late-sheet.css?n=' + i;
+        link.onload = () => {
+          if (++loaded === 3) {
+            globalThis.__sanLastSheetAt = Math.round(performance.now());
+            globalThis.__fixtureDone = true;
+          }
+        };
+        document.head.appendChild(link);
+      }
+    }
+    addEventListener('load', whenReady);
+  </script>
+</body>
+</html>

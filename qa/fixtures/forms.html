@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA text and controls</title>
+<script src="/probe.js"></script>
+<style>
+body{margin:0;font:16px/1.45 -apple-system,system-ui,sans-serif;background:#fff;color:#1d1d1f}
+main{padding:14px} label{display:block;margin-top:10px;color:#555}
+input,select,textarea{font:inherit;padding:8px;border:1px solid #c7c7cc;border-radius:6px;background:#fff;color:#111;width:90%}
+button{font:inherit;padding:9px 14px;border-radius:8px;border:0;background:#0a66c2;color:#fff}
+button:disabled{background:#e5e5ea;color:#8e8e93}
+.err{color:#c5221f}.ok{color:#137333}.warn{color:#8a5a00;background:#fff4ce;padding:4px}
+.muted{color:#8e8e93} a{color:#0b57d0} a:visited{color:#681da8}
+table{border-collapse:collapse;margin-top:10px}td,th{border:1px solid #ddd;padding:6px}th{background:#f2f2f7}
+tr:nth-child(even) td{background:#fafafa}
+code,pre{background:#f6f8fa;color:#24292f;padding:2px 4px;border-radius:4px}
+.card{background:#f9f9fb;border:1px solid #e5e5ea;border-radius:10px;padding:12px;margin-top:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tag{background:#e8f0fe;color:#174ea6;padding:2px 8px;border-radius:12px}
+</style></head>
+<body><main>
+<h1 data-qa-text="h1">Text and controls</h1>
+<p data-qa-text="body">Body text with <a href="/forms.html?v=1" data-qa-text="link">a link</a> and <a href="/activation.html" data-qa-text="visited">a visited link</a>. <span class="muted" data-qa-text="muted">Muted helper text.</span></p>
+<label for="name" data-qa-text="label">Name</label><input id="name" placeholder="Placeholder text" data-qa-text="input">
+<label for="sel">Choice</label><select id="sel" data-qa-text="select"><option>Option one</option><option>Option two</option></select>
+<label for="ta">Notes</label><textarea id="ta" rows="2" data-qa-text="textarea">Textarea content</textarea>
+<p><button data-qa-click="primary" data-qa-text="button">QA tap target</button> <button disabled data-qa-text="disabled">Disabled</button></p>
+<p class="err" data-qa-text="error">Error: this field is required.</p>
+<p class="ok" data-qa-text="success">Saved successfully.</p>
+<p class="warn" data-qa-text="warning">Warning: unsaved changes.</p>
+<div class="card"><strong data-qa-text="card-title">Card title</strong><p data-qa-text="card-body">Card body text. <span class="tag" data-qa-text="tag">Tag</span></p></div>
+<table><tr><th data-qa-text="th">Item</th><th>Qty</th></tr><tr><td data-qa-text="td">Apples</td><td>3</td></tr><tr><td>Pears</td><td>5</td></tr></table>
+<p>Inline <code data-qa-text="code">const x = 1;</code></p>
+<details><summary data-qa-text="summary">More</summary><p>Expanded content.</p></details>
+<div contenteditable="true" class="card" data-qa-text="editable">Editable text</div>
+<dialog open class="card" data-qa-text="dialog">An open dialog.</dialog>
+</main></body></html>

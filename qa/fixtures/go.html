@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>QA launcher</title>
+<style>body{margin:0;background:#fff;color:#111;font:20px -apple-system,system-ui,sans-serif;padding:24px}</style></head>
+<body><p>Opening the test page…</p>
+<script>
+// Startup launcher: the runner opens this page (dark mode already on), and
+// after a fixed pause it navigates to ?to=. The wall-clock time of that
+// navigation is beaconed, so the flash window starts here, after Safari's
+// own address-bar UI is long gone. Same-tab, link-style navigation.
+const q = new URLSearchParams(location.search);
+setTimeout(() => {
+  const body = JSON.stringify({ run: q.get('run') || 'default', page: '/go.html', phase: 'redirect', id: q.get('id'), to: q.get('to'), redirectWall: Date.now() / 1000 });
+  try { navigator.sendBeacon(`/beacon?run=${encodeURIComponent(q.get('run') || 'default')}`, body); } catch {}
+  location.href = q.get('to');
+}, Number(q.get('wait') || 1500));
+</script></body></html>

@@ -1,0 +1,4 @@
+.car { display: flex; gap: 16px; }
+.car-card { width: 300px; min-height: 200px; padding: 16px; background: #ffffff; color: #111111; border: 1px solid #dddddd; }
+.car-card p { background: #ffffff; margin: 8px 0 0; font-size: 18px; }
+.car-ph { display: block; background: #ffffff; width: 120px; height: 80px; }

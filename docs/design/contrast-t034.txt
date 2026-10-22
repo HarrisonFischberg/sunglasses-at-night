@@ -1,0 +1,23 @@
+  AAA   16.76:1  fg                       on bg                   
+  AAA   15.29:1  fg                       on group                
+  AAA   13.57:1  fg                       on raised               
+  AAA    9.02:1  muted                    on bg                   
+  AAA    8.23:1  muted                    on group                
+  AAA    7.30:1  muted                    on raised               
+  AAA   10.98:1  accent                   on bg                   
+  AAA   10.02:1  accent                   on group                
+  AAA    8.89:1  accent                   on raised               
+  AAA   11.66:1  warning                  on bg                   
+  AAA   10.64:1  warning                  on group                
+  AAA    9.44:1  warning                  on raised               
+  AAA    9.81:1  danger                   on bg                   
+  AAA    8.95:1  danger                   on group                
+  AAA    7.94:1  danger                   on raised               
+  AAA    9.80:1  on-accent                on accent               
+  PASS   5.27:1  edge                     on bg                   ui
+  PASS   4.80:1  edge                     on group                ui
+  PASS  16.76:1  focus                    on bg                   ui
+  PASS  15.29:1  focus                    on group                ui
+  PASS  10.98:1  accent                   on bg                   ui
+
+  21 pairs, 0 failing AA

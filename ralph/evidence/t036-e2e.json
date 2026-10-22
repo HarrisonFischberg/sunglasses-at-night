@@ -1,0 +1,40 @@
+{
+  "dark": {
+    "insertedAt": 424,
+    "lastSheetAt": 435,
+    "frames": 196,
+    "peakLight": 0,
+    "toggles": [
+      true,
+      false,
+      true
+    ],
+    "final": {
+      "ready": true,
+      "mainBg": "rgb(20, 20, 20)",
+      "mainColor": "rgb(222, 222, 222)",
+      "interim": 0
+    }
+  },
+  "light": {
+    "insertedAt": 422,
+    "lastSheetAt": 428,
+    "frames": 205,
+    "peakLight": 0,
+    "toggles": [
+      true,
+      false,
+      true
+    ],
+    "final": {
+      "ready": true,
+      "mainBg": "rgb(20, 20, 20)",
+      "mainColor": "rgb(222, 222, 222)",
+      "interim": 0
+    }
+  },
+  "_meta": {
+    "engine": "webkit (Playwright 1.64.1)",
+    "date": "2026-10-19T05:45:29.245Z"
+  }
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Images fixture</title>
+<!-- T008: media must show as authored under both engines (never inverted,
+     never double-inverted), dim when asked, and url() backgrounds hide when
+     asked. Every image is a solid color so a screenshot pixel can be checked:
+     light #e6c896, dark #28283c. -->
+<style>
+  body { margin: 0; background: #ffffff; color: #222222; font: 16px/1.5 system-ui, sans-serif; }
+  main { padding: 16px; }
+  .tile { display: inline-block; width: 120px; height: 120px; margin: 8px; vertical-align: top; }
+  figure { display: inline-block; margin: 8px; }
+  #bg { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23e6c896'/%3E%3C/svg%3E"); }
+  #grad { background-image: linear-gradient(#f0f0f0, #f0f0f0); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Images</h1>
+  <p id="para">Photos, a picture element, a linked image, a figure, a canvas, and a background image.</p>
+  <img id="plain" class="tile" alt="Light photo" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23e6c896'/%3E%3C/svg%3E">
+  <img id="dark" class="tile" alt="Dark photo" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%2328283c'/%3E%3C/svg%3E">
+  <picture><source srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23e6c896'/%3E%3C/svg%3E"><img id="pic" class="tile" alt="Picture element" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23e6c896'/%3E%3C/svg%3E"></picture>
+  <a id="link" href="#para"><img id="linked" class="tile" alt="Linked photo" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23e6c896'/%3E%3C/svg%3E"></a>
+  <img id="nofilter" class="tile" style="filter: none" alt="Photo with filter none" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23e6c896'/%3E%3C/svg%3E">
+  <img id="reverted" style="all: revert; width: 120px; height: 120px; margin: 8px" alt="Photo with all revert" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23e6c896'/%3E%3C/svg%3E">
+  <canvas id="cv" class="tile" width="120" height="120"></canvas>
+  <div id="bg" class="tile"></div>
+  <div id="grad" class="tile"></div>
+  <figure><img id="fig" class="tile" style="margin: 0" alt="Figure photo" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23e6c896'/%3E%3C/svg%3E"><figcaption>A figure caption</figcaption></figure>
+</main>
+<script>
+  const g = document.getElementById('cv').getContext('2d');
+  g.fillStyle = '#e6c896';
+  g.fillRect(0, 0, 120, 120);
+</script>
+</body>
+</html>

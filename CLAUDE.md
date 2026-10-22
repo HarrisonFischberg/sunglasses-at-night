@@ -1,4 +1,4 @@
-# sunglasses-at-night
+# Sunglasses at Night
 
 Sunglasses at Night: a free, privacy-first dark mode Safari Web Extension for macOS, iOS and iPadOS.
 
@@ -6,7 +6,7 @@ Sunglasses at Night: a free, privacy-first dark mode Safari Web Extension for ma
 
 Built under `~/.claude/skills/new-app/SKILL.md`; read it before non-trivial
 work. Mandatory tools: Replica, REA, bounded `/goal`, Ralph fresh-context
-loop, Caveman. Verify each before claiming use: `docs/tool-environment.md`.
+loop. Verify each before claiming use: `docs/tool-environment.md`.
 
 ## Safety boundaries
 
@@ -22,11 +22,24 @@ loop, Caveman. Verify each before claiming use: `docs/tool-environment.md`.
 
 | Check | Command |
 | --- | --- |
-| tests | TODO |
-| types | TODO |
-| lint | TODO |
-| build | TODO |
-| e2e | TODO |
+| engine unit tests | `npm test` |
+| engine lint (syntax) | `node --check` on every `engine/src/*.js` via `npm run check` |
+| Swift build (macOS) | `xcodebuild -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build` |
+| Swift build (iOS) | `xcodebuild -scheme "Sunglasses at Night (iOS)" -destination 'generic/platform=iOS Simulator' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build` |
+| Swift tests | `xcodebuild test -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO` |
+| Swift (inside Ralph) | run by the runner: `ralph/verify-swift.sh` → `ralph/evidence/swift-build-latest.md` |
+| e2e (WebKit fixtures) | `npm run e2e` (Playwright 1.64.1, approved) |
+
+Exact scheme names are fixed by task T002; update this table if they change.
+
+## Naming
+
+Product name everywhere: **Sunglasses at Night**. Slug: `sunglasses-at-night`.
+Never use the working name "Dark Eyes" or any reference app's name or branding
+(Noir, Dark Reader, Midnight) in code, assets, copy, or metadata.
+Exception (owner-approved 2026-10-21): Dark Reader (MIT) is credited by name
+where its license requires it: the Licenses screens, `third_party/darkreader/`,
+and source headers of code adapted from it.
 
 ## Artifacts
 

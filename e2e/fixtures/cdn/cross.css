@@ -1,0 +1,10 @@
+@import "imported.css";
+
+:root { --surface: #ffffff; --ink: #222222; --edge: #d5d5d5; }
+body { background: #ffffff; color: #1a1a1a; font: 15px/1.4 system-ui, sans-serif; margin: 16px; }
+.title { color: #102a43; }
+.xo-card { background: #f2f2f2; color: #333333; border: 1px solid #cccccc; padding: 8px; margin: 8px 0; }
+.vars { background: var(--surface); color: var(--ink); border: 1px solid var(--edge); padding: 8px; }
+@media (min-width: 1px) {
+  .xo-card { border-color: #bbbbbb; }
+}
