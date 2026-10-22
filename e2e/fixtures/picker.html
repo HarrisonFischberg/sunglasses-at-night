@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Picker</title>
+<style>
+  body { background: #fff; color: #202124; font: 16px/1.4 -apple-system, sans-serif; margin: 0; }
+  #top { display: flex; align-items: center; gap: 12px; padding: 16px 24px; border-bottom: 1px solid #dadce0; }
+  .x7f3a9 { font-size: 22px; }
+  .card { padding: 12px; margin: 24px; background: #f1f3f4; }
+</style></head>
+<body>
+  <header id="top">
+    <img class="wordmark" src="/wordmark.svg" width="190" height="28" alt="">
+    <svg class="mark" width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><text x="2" y="21" font-size="20" fill="#202124">W</text></svg>
+    <span class="x7f3a9 ZFr60d">Developer Dashboard</span>
+  </header>
+  <main>
+    <div class="card">First card</div>
+    <div class="card">Second card</div>
+    <p><a id="away" href="/light.html">A link the picker must not follow</a></p>
+    <button id="buy" type="button">A button the picker must not press</button>
+  </main>
+  <script>document.getElementById('buy').addEventListener('click', () => { window.__pressed = true; });</script>
+</body></html>

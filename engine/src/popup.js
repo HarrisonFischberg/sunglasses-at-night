@@ -2,12 +2,13 @@
 // Extension/Resources/popup/popup.js. Mode and schedule hours, this site's
 // rule, the already-dark override, the look, and under "More settings"
 // everything the options page has (images, engine, the site list, Reset all),
+// plus "Fix something on this page" (picker.js) and this site's own fixes,
 // so iOS never needs the separate settings window. Saved as they change. On pages the
 // extension can't run on (restricted), only the global controls show.
 // No network.
 
 import { createSettingsStore, LOOK_RANGES, isValidTime } from './settings.js';
-import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, presetLook, siteRows, scheduleHint } from './ui-core.js';
+import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } from './ui-core.js';
 import { GET_TAB_STATE, RESET_ALL } from './messages.js';
 import { buildReportUrl } from './report.js';
 
@@ -55,6 +56,7 @@ function render() {
     $('force-dark').checked = view.forcedDark;
     $('site-engine').value = view.engine;
     $('custom-look').checked = view.customLook;
+    renderFixes();
   }
   $('report').href = buildReportUrl({
     host: view.restricted ? null : view.host,
@@ -124,6 +126,44 @@ for (const k of Object.keys(LOOK_RANGES)) {
   $(k).addEventListener('input', (e) => { $(`${k}-value`).textContent = `${e.target.value}%`; });
   $(k).addEventListener('change', (e) => saveLook({ ...view.look, [k]: Number(e.target.value) }));
 }
+
+// ---- Your fixes: pick an element on the page (picker.js), list, remove
+// The hint text stays put while the popup re-renders (no layout shift, T033);
+// fixes saved while the page is light apply once it goes dark.
+function renderFixes() {
+  const list = $('fixes');
+  const hadFocus = list.contains(document.activeElement);
+  list.replaceChildren();
+  for (const { selector, title, action } of view.fixes) {
+    const li = $('fix-row').content.firstElementChild.cloneNode(true);
+    li.querySelector('.what').textContent = title;
+    li.querySelector('.summary').textContent = action;
+    const btn = li.querySelector('.remove');
+    btn.setAttribute('aria-label', `Remove fix: ${action}, ${title}`);
+    btn.title = 'Remove this fix';
+    btn.dataset.selector = selector;
+    list.append(li);
+  }
+  list.hidden = view.fixes.length === 0;
+  if (hadFocus) (list.querySelector('.remove') ?? $('pick')).focus?.();
+}
+
+$('pick').addEventListener('click', async () => {
+  const tabId = tab?.id ?? focused?.id;
+  try {
+    await api.scripting.executeScript({ target: { tabId }, files: ['content/picker.js'] });
+    // Out of the way, so the page is there to point at (on iPhone the popup
+    // covers it).
+    window.close();
+  } catch {
+    $('pick-hint').textContent = 'Sunglasses at Night can’t reach this page. Reload it and try again.';
+  }
+});
+
+$('fixes').addEventListener('click', (e) => {
+  const btn = e.target.closest?.('button.remove');
+  if (btn?.dataset.selector) editSite((s) => withoutFix(s, btn.dataset.selector));
+});
 
 // ---- More settings (same controls and rules as the options page)
 function renderSites() {

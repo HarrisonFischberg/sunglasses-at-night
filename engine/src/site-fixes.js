@@ -164,3 +164,38 @@ export function fixCss(fix, look) {
   }
   return css;
 }
+
+// Media a "Lighter text" fix leaves alone: recoloring them does nothing
+// useful and `fill` would flood outline icons.
+const NOT_MEDIA = ':not(img):not(picture):not(video):not(canvas):not(iframe)';
+
+/**
+ * CSS for your own fixes (fix-rules.js) under `look`, one rule per fix so a
+ * selector the browser can't parse drops only its own rule. Under the filter
+ * engine the whole page is inverted afterwards, so the colors are the ones
+ * that come out light text / dark background after the inversion.
+ *   lighter  the element's text (and filled SVG shapes) in light text color
+ *   darker   the element's background in the dark background color
+ *   flip     inverted, hues kept (logos and pictures drawn dark on dark)
+ *   hide     not shown at all
+ */
+export function userFixCss(fixes, look, engine = 'dynamic') {
+  if (!fixes?.length) return '';
+  const filter = engine === 'filter';
+  const fg = filter ? 'rgb(0,0,0)' : formatRgb(quantize(transformColor('#000000', 'fg', look)));
+  const bg = filter ? 'rgb(255,255,255)' : formatRgb(quantize(transformColor('#ffffff', 'bg', look)));
+  const rules = [];
+  for (const { selector: s, action } of fixes) {
+    if (action === 'lighter') {
+      rules.push(`${s},${s} *${NOT_MEDIA}{color:${fg}!important;-webkit-text-fill-color:${fg}!important}`);
+      rules.push(`${s} svg [fill]:not([fill="none"]),${s}[fill]:not([fill="none"]),${s} text{fill:${fg}!important}`);
+    } else if (action === 'darker') {
+      rules.push(`${s}{background-color:${bg}!important;background-image:none!important}`);
+    } else if (action === 'flip') {
+      rules.push(`${s}{filter:invert(100%) hue-rotate(180deg)!important}`);
+    } else if (action === 'hide') {
+      rules.push(`${s}{display:none!important}`);
+    }
+  }
+  return rules.join('\n');
+}

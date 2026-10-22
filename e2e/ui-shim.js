@@ -24,6 +24,7 @@ export function shim({ settings, tabUrl, report }) {
       },
       onChanged: { addListener: (f) => listeners.add(f), removeListener: (f) => listeners.delete(f) },
     },
+    scripting: { executeScript: async (o) => { (globalThis.__injected ??= []).push(o); } },
     tabs: { query: async () => [${tabUrl === null ? '{ id: 5 }' : `{ id: 5, url: ${JSON.stringify(tabUrl)} }`}] },
     runtime: {
       id: 'e2e',
