@@ -2,8 +2,10 @@
 # Build Sunglasses at Night and install it on a connected iPhone or iPad.
 # Usage: scripts/build-ios.sh
 # Regenerates the extension bundles from engine/src, builds the iOS app with
-# Xcode automatic signing (-allowProvisioningUpdates fetches or renews the
-# development profile) and installs it. Does not launch the app.
+# Xcode automatic signing and your "Apple Development" certificate (the
+# project's default identity is ad-hoc "-", which a device build can't use;
+# -allowProvisioningUpdates fetches or renews the development profile) and
+# installs it. Does not launch the app.
 # Like scripts/build-mac.sh, this build leaves out the App Group entitlement:
 # the development profiles don't carry it, so App Group sync with the app is
 # off in this build. Settings still work; they live in Safari's extension store.
@@ -42,6 +44,7 @@ fi
 echo "device: $DEVICE"
 xcodebuild -scheme "Sunglasses at Night (iOS)" -destination "id=$DEVICE" -derivedDataPath "$D" \
   -allowProvisioningUpdates DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic \
+  CODE_SIGN_IDENTITY="Apple Development" \
   CODE_SIGN_ENTITLEMENTS="$ENT" build -quiet
 APP="$D/Build/Products/Debug-iphoneos/Sunglasses at Night.app"
 xcrun devicectl device install app --device "$DEVICE" "$APP"
