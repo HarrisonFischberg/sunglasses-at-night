@@ -18,6 +18,7 @@ const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 
 export const TARGETS = [
   { entry: 'engine/src/content.js', out: 'Extension/Resources/content/engine.js' },
+  { entry: 'engine/src/picker.js', out: 'Extension/Resources/content/picker.js' },
   { entry: 'engine/src/background.js', out: 'Extension/Resources/background.js' },
   { entry: 'engine/src/popup.js', out: 'Extension/Resources/popup/popup.js' },
   { entry: 'engine/src/options.js', out: 'Extension/Resources/options/options.js' },

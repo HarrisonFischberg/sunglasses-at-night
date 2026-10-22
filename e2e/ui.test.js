@@ -145,6 +145,33 @@ test('popup on an already-dark page shows the note and the override', async () =
   await context.close();
 });
 
+test('popup: "Fix something on this page" injects the picker and closes; your fixes are listed and removable', async () => {
+  const settings = {
+    ...defaultSettings(),
+    sites: { 'example.com': { rule: 'default', fixes: [
+      { selector: '#top > span', action: 'lighter', label: '“Developer Dashboard”' },
+      { selector: 'img.wordmark', action: 'flip', label: 'Picture' },
+    ] } },
+  };
+  const { p, context, errors } = await open('popup', { settings, report: { on: true, reason: 'mode-always', host: 'example.com' } });
+  await p.evaluate(() => { globalThis.close = () => { globalThis.__closed = true; }; });
+  // The popup scrolls back to the top on its first focus for 800 ms after
+  // opening (popup.js openAtTop); a click below the fold waits that out.
+  await p.waitForTimeout(900);
+  const rows = await p.$$eval('#fixes li', (lis) => lis.map((li) => [li.querySelector('.what').textContent, li.querySelector('.summary').textContent]));
+  assert.deepEqual(rows, [['“Developer Dashboard”', 'Lighter text'], ['Picture', 'Flip colors']]);
+  assert.equal(await p.getAttribute('#fixes li:nth-child(1) .remove', 'aria-label'), 'Remove fix: Lighter text, “Developer Dashboard”');
+  await p.click('#fixes li:nth-child(1) .remove');
+  await p.waitForFunction(() => globalThis.__data.settings.sites['example.com'].fixes.length === 1);
+  assert.equal(await p.locator('#fixes li').count(), 1);
+  await p.click('#pick');
+  await p.waitForFunction(() => globalThis.__closed === true);
+  assert.deepEqual(await p.evaluate(() => globalThis.__injected), [{ target: { tabId: 5 }, files: ['content/picker.js'] }]);
+  assert.deepEqual(errors, []);
+  results.push({ case: 'popup-fixes', ok: true });
+  await context.close();
+});
+
 test('options page: named remove buttons, keyboard pass, Reset dialog focus', async () => {
   const settings = { ...defaultSettings(), mode: 'schedule', sites: { 'a.test': { rule: 'never' }, 'b.test': { rule: 'always' } } };
   for (const scheme of ['light', 'dark']) {

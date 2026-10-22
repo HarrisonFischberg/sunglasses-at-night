@@ -183,8 +183,9 @@ test('resolveSite merges per-site overrides over globals', () => {
     look: { brightness: 90, contrast: 100, sepia: 40, grayscale: 0 },
     engine: 'filter',
     detectDark: true,
+    fixes: [],
   });
-  assert.deepEqual(resolveSite(s, 'other.example'), { rule: 'default', look: s.look, engine: 'dynamic', detectDark: true });
+  assert.deepEqual(resolveSite(s, 'other.example'), { rule: 'default', look: s.look, engine: 'dynamic', detectDark: true, fixes: [] });
   assert.equal(resolveSite(s, 'not a host').rule, 'default');
 });
 

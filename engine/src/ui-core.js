@@ -5,6 +5,7 @@
 import { normalizeHostname, LOOK_RANGES } from './settings.js';
 import { PRESETS } from './transform.js';
 import { OFF_TEXT } from './messages.js';
+import { FIX_LABELS } from './fix-rules.js';
 
 export const MODE_LABELS = Object.freeze({
   system: 'Match system appearance',
@@ -84,6 +85,7 @@ function tidy(entry) {
   if (entry.look && Object.keys(entry.look).length) out.look = entry.look;
   if (entry.engine !== undefined) out.engine = entry.engine;
   if (entry.detectDark !== undefined) out.detectDark = entry.detectDark;
+  if (entry.fixes?.length) out.fixes = entry.fixes;
   return out.rule === 'default' && Object.keys(out).length === 1 ? null : out;
 }
 
@@ -107,6 +109,26 @@ export function withDetectDark(entry, value) {
 export function withEngine(entry, engine) {
   const { engine: _old, ...rest } = entry;
   return tidy(engine === undefined || engine === 'default' ? rest : { ...rest, engine });
+}
+
+/** Adds `fix` ({ selector, action, label? }), replacing any fix for the same element. */
+export function withFix(entry, fix) {
+  const fixes = (entry.fixes ?? []).filter((f) => f.selector !== fix.selector);
+  return tidy({ ...entry, fixes: [...fixes, { ...fix }] });
+}
+
+/** Removes the fix for `selector`. */
+export function withoutFix(entry, selector) {
+  return tidy({ ...entry, fixes: (entry.fixes ?? []).filter((f) => f.selector !== selector) });
+}
+
+/** Rows for "Your fixes" in the popup: what was picked and what was done. */
+export function fixRows(entry) {
+  return (entry.fixes ?? []).map((f) => ({
+    selector: f.selector,
+    title: f.label || f.selector,
+    action: FIX_LABELS[f.action] ?? f.action,
+  }));
 }
 
 /** Name of the preset `look` matches exactly, or 'custom'. */
@@ -153,6 +175,7 @@ export function popupView({ settings, url, report, focusedUrl }) {
     alreadyDark: report?.on === false && report.reason === 'already-dark',
     forcedDark: entry.detectDark === false,
     engine: entry.engine ?? 'default',
+    fixes: fixRows(entry),
     status: statusText(report),
   };
 }
@@ -173,6 +196,7 @@ export function siteRows(settings) {
     if (e.engine) details.push(`${e.engine} engine`);
     if (e.detectDark === false) details.push('darken even if already dark');
     if (e.detectDark === true) details.push('skip if already dark');
+    if (e.fixes?.length) details.push(e.fixes.length === 1 ? '1 fix' : `${e.fixes.length} fixes`);
     return { host, summary: details.join(', ') };
   });
 }

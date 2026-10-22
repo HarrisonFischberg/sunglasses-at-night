@@ -4,6 +4,8 @@
 // storage area. No DOM, no network. The storage area is injected so the
 // same code runs in background.js, the popup, and node:test.
 
+import { normalizeFixes } from './fix-rules.js';
+
 export const SCHEMA_VERSION = 1;
 export const STORAGE_KEY = 'settings';
 
@@ -152,6 +154,10 @@ function normalizeSite(v, path, errors) {
     const d = normalizeBool(v.detectDark, undefined, `${path}.detectDark`, errors);
     if (d !== undefined) site.detectDark = d;
   }
+  if (v.fixes !== undefined) {
+    const fixes = normalizeFixes(v.fixes, `${path}.fixes`, errors);
+    if (fixes.length) site.fixes = fixes;
+  }
   return site;
 }
 
@@ -271,6 +277,7 @@ export function resolveSite(settings, hostname) {
     look: { ...settings.look, ...site.look },
     engine: site.engine ?? settings.engine,
     detectDark: site.detectDark ?? settings.detectDark,
+    fixes: site.fixes ?? [],
   };
 }
 

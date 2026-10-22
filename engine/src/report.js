@@ -3,7 +3,8 @@
 // shows a plain link and the user presses Send in Mail, after reading and
 // editing the draft. Fields: site hostname, extension version, system
 // (user agent string) and settings. Only the current site's rule is included,
-// never the other sites the user has set rules for. Pure; no network.
+// never the other sites the user has set rules for, and of your own fixes only
+// how many there are. Pure; no network.
 
 export const REPORT_ADDRESS = 'support@rarecreatures.app';
 export const REPORT_SUBJECT = 'Sunglasses at Night: problem report';
@@ -12,7 +13,12 @@ export function reportSettings(settings, host) {
   const { sites = {}, ...rest } = settings ?? {};
   const out = { ...rest };
   const entry = host ? sites[host] : undefined;
-  if (entry) out.thisSite = entry;
+  // Your fixes name parts of the page (and a few words of its text), so the
+  // draft only says how many there are.
+  if (entry) {
+    const { fixes, ...rule } = entry;
+    out.thisSite = fixes ? { ...rule, fixes: fixes.length } : rule;
+  }
   out.otherSiteRules = Object.keys(sites).filter((h) => h !== host).length;
   return out;
 }
