@@ -786,3 +786,8 @@
 - Popup lists this site's fixes with a remove button; Sites summary counts them; Report a problem says only how many.
 - Ran here (Linux, no WebKit download allowed): npm test 376/376; npm run privacy-check 18/18; npm run check OK. New e2e (e2e/picker.test.js 7, ui.test.js popup-fixes 1) pass on the preinstalled Chromium through a local launch override; the full e2e suite on Chromium has the same 16 failures with and without this change (Chromium vs WebKit differences). Not run: WebKit e2e, perf, Xcode builds, Safari on Mac/iPhone.
 
+
+## 2026-10-22 - iPhone build script; picker e2e keyboard fix
+- Mac builds session at 1b45e9b: WebKit e2e failed in `e2e/picker.test.js` "Flip colors" (timeout waiting for the invert rule). Cause: the test moved between fix buttons with Tab, which WebKit (like Safari by default) doesn't send to buttons, so Enter applied Lighter text instead. Fix: the picker menu now moves around its 2×2 grid of fixes with the arrow keys (useful in Safari too, where Tab skips buttons), and the test uses ArrowDown.
+- iPhone build was blocked at signing: the team's development profiles don't include the App Group entitlement. New `scripts/build-ios.sh` builds with automatic signing (team `SAN_TEAM`, default KTV2G3Z883) and an empty entitlements file, like `scripts/build-mac.sh` drops the group, then installs on the connected device (`SAN_IOS_DEVICE`). App Group sync with the app is off in these builds.
+- Ran here: npm test, privacy-check, check; picker e2e 7/7 on Chromium (local launch override). Not run here: WebKit e2e, Xcode, device install.

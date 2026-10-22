@@ -45,9 +45,10 @@ test('picker: click the wordmark picture, Flip colors, saved and applied; applie
   const at = await centerOf(page, '.wordmark');
   await page.mouse.move(at.x, at.y);
   await page.mouse.click(at.x, at.y);
-  // The menu opens with its first fix focused: Lighter text, Darker background, Flip colors, Hide.
-  await page.keyboard.press('Tab');
-  await page.keyboard.press('Tab');
+  // The menu opens with its first fix focused, in a 2×2 grid: Lighter text,
+  // Darker background / Flip colors, Hide. Arrow keys move in the grid (Tab
+  // depends on the browser's keyboard setting).
+  await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
   await page.waitForFunction(() => document.querySelector('style[data-sunglasses-at-night="site-fix"]')?.textContent.includes('invert'));
 
