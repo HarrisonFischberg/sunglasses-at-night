@@ -46,6 +46,7 @@ const CSS = `
 .menu h2 { margin: 0; font-size: 16px; font-weight: 800; }
 .what { margin: 2px 0 12px; color: #9fb6bc; overflow-wrap: anywhere; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid button:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .row { display: flex; gap: 8px; margin-top: 8px; }
 .row button { flex: 1; }
 button {
@@ -224,13 +225,18 @@ export function startPicker({ document: doc, window: win, store, hostname, touch
     e.preventDefault();
     e.stopPropagation();
   }
-  // Arrow keys move around the 2×2 grid of fixes: Safari's Tab skips
-  // buttons unless "Press Tab to highlight each item" is on.
+  // Arrow keys move around the two-column grid of fixes (the last one spans
+  // both columns): Safari's Tab skips buttons unless "Press Tab to highlight
+  // each item" is on.
   const STEP = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 2, ArrowUp: -2 };
   function onKey(e) {
     const at = fixButtons.indexOf(root.activeElement);
     if (picked && at >= 0 && e.key in STEP) {
-      const next = fixButtons[at + STEP[e.key]];
+      const last = fixButtons.length - 1;
+      let to = at + STEP[e.key];
+      if (e.key === 'ArrowDown' && to > last && at < last) to = last;
+      if (e.key === 'ArrowUp' && at === last && last % 2 === 0) to = last - 2;
+      const next = fixButtons[to];
       e.preventDefault();
       e.stopPropagation();
       next?.focus({ preventScroll: true });

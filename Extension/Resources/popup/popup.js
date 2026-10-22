@@ -11,13 +11,14 @@ const __m_engine_src_fix_rules_js = (() => {
 // no imports, so the settings model can use it everywhere.
 
 // What each fix does to the picked element. The CSS is in site-fixes.js.
-const FIX_ACTIONS = Object.freeze(['lighter', 'darker', 'flip', 'hide']);
+const FIX_ACTIONS = Object.freeze(['lighter', 'darker', 'flip', 'hide', 'original']);
 
 const FIX_LABELS = Object.freeze({
   lighter: 'Lighter text',
   darker: 'Darker background',
   flip: 'Flip colors',
   hide: 'Hide',
+  original: 'Remove dark mode',
 });
 
 const MAX_FIXES_PER_SITE = 50;

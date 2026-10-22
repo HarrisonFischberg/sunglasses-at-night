@@ -127,8 +127,21 @@ test('userFixCss: under the filter engine the colors come out right after the pa
   assert.ok(relativeLuminance(colorIn(css, 'background-color')) > 0.9, 'light before inversion = dark on screen');
 });
 
-test('every fix action writes CSS', () => {
-  for (const action of FIX_ACTIONS) assert.ok(userFixCss([{ selector: '#x', action }], LOOK), action);
+test('every fix action writes CSS (Remove dark mode only under the filter engine)', () => {
+  for (const action of FIX_ACTIONS) {
+    assert.ok(userFixCss([{ selector: '#x', action }], LOOK, 'filter'), `${action}, filter`);
+    if (action !== 'original') assert.ok(userFixCss([{ selector: '#x', action }], LOOK), `${action}, dynamic`);
+  }
+});
+
+test('userFixCss: Remove dark mode is left to keep-original.js under the dynamic engine', () => {
+  assert.equal(userFixCss([{ selector: '#x', action: 'original' }], LOOK), '');
+});
+
+test('userFixCss: Remove dark mode under the filter engine inverts the part back, media inside stay as authored', () => {
+  const css = userFixCss([{ selector: '#x', action: 'original' }], LOOK, 'filter');
+  assert.match(css, /^#x:not\(img,video,canvas,embed,object,iframe\)\{filter:invert\(100%\) hue-rotate\(180deg\)!important\}$/m);
+  assert.match(css, /^#x :is\(img,video,canvas,embed,object,iframe\)\{filter:none!important\}$/m);
 });
 
 // --------------------------------------------------------------- popup
@@ -153,6 +166,7 @@ test('ui-core: the popup lists this site’s fixes, the Sites list counts them',
     { selector: '#a', title: '“Developer Dashboard”', action: 'Lighter text' },
     { selector: '#b', title: '#b', action: 'Flip colors' },
   ]);
+  assert.equal(popupView({ settings: validateSettings({ ...defaultSettings(), sites: { 'a.example': { rule: 'default', fixes: [{ selector: '#c', action: 'original' }] } } }).settings, url: 'https://a.example/', report: { on: true } }).fixes[0].action, 'Remove dark mode');
   assert.deepEqual(siteRows(settings), [{ host: 'a.example', summary: 'Default, 2 fixes' }]);
 });
 

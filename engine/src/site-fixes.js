@@ -168,6 +168,8 @@ export function fixCss(fix, look) {
 // Media a "Lighter text" fix leaves alone: recoloring them does nothing
 // useful and `fill` would flood outline icons.
 const NOT_MEDIA = ':not(img):not(picture):not(video):not(canvas):not(iframe)';
+// What the filter engine already turns back to authored (filter.js MEDIA).
+const KEEP_MEDIA = 'img,video,canvas,embed,object,iframe';
 
 /**
  * CSS for your own fixes (fix-rules.js) under `look`, one rule per fix so a
@@ -178,6 +180,10 @@ const NOT_MEDIA = ':not(img):not(picture):not(video):not(canvas):not(iframe)';
  *   darker   the element's background in the dark background color
  *   flip     inverted, hues kept (logos and pictures drawn dark on dark)
  *   hide     not shown at all
+ *   original as the site made it ("Remove dark mode"): under the filter
+ *            engine, inverted back with the media inside left as authored;
+ *            under the dynamic engine nothing here, keep-original.js reads
+ *            the site's own colors once the engine is ready
  */
 export function userFixCss(fixes, look, engine = 'dynamic') {
   if (!fixes?.length) return '';
@@ -195,6 +201,9 @@ export function userFixCss(fixes, look, engine = 'dynamic') {
       rules.push(`${s}{filter:invert(100%) hue-rotate(180deg)!important}`);
     } else if (action === 'hide') {
       rules.push(`${s}{display:none!important}`);
+    } else if (action === 'original' && filter) {
+      rules.push(`${s}:not(${KEEP_MEDIA}){filter:invert(100%) hue-rotate(180deg)!important}`);
+      rules.push(`${s} :is(${KEEP_MEDIA}){filter:none!important}`);
     }
   }
   return rules.join('\n');
