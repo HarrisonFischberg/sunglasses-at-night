@@ -799,3 +799,10 @@
 - Picker menu: fifth button, full width; arrow keys reach it.
 - Ran here: npm test 378/378, privacy-check 18/18, check OK; e2e/picker.test.js 10/10 on Chromium (local launch override); the rest of the e2e suite on Chromium shows only the known Chromium-only failures. Not run: WebKit e2e, Xcode, Safari.
 
+
+## 2026-10-22 - TestFlight upload script
+- Owner asked (Scout project) to upload Scout and Sunglasses at Night to App Store Connect, latest versions. Sunglasses had no upload path.
+- New `scripts/archive-testflight.sh` (modelled on Scout's): runs privacy-check, regenerates the bundles, archives the Release build for macOS and iOS with automatic signing and a timestamp build number (`SAN_BUILD_NUMBER`), then exports and uploads with `scripts/ExportOptions-testflight.plist` (app-store-connect, upload). `--no-upload` stops after the archive; `SAN_PLATFORMS` picks platforms. Like the device build scripts it leaves the App Group entitlement out unless `SAN_APP_GROUP=1`, because the team's profiles don't carry the group yet.
+- App Store requirements: new `App/PrivacyInfo.xcprivacy` (no tracking, nothing collected; UserDefaults for the App Group mirror, reasons CA92.1 and 1C8F.1), shipped in the app (synchronized group) and copied into both extensions by their resource phase; `ITSAppUsesNonExemptEncryption = NO` on both app targets (no encryption beyond Apple's own HTTPS, and no network code at all). New privacy test checks the manifest.
+- Owner steps before the first upload: App Store Connect app record for bundle ID app.rarecreatures.sunglassesatnight (iOS + macOS), Xcode signed in to the team.
+- Ran here: npm test, privacy-check 19/19, `bash -n` on the script. Not run here: Xcode archive or upload (Mac only).
