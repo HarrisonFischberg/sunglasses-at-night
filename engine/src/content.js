@@ -12,6 +12,7 @@ import { startDynamic } from './dynamic.js';
 import { startFilter } from './filter.js';
 import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
 import { fixesFor, fixCss, userFixCss } from './site-fixes.js';
+import { keepOriginalCss } from './keep-original.js';
 import { siteFixes } from './generated/site-fixes-data.js';
 import { cspBlocked, cspBlocksStyles, startAdoptedMirror } from './adopted.js';
 import { cacheKey, readCached, writeCached, adoptCss } from './style-cache.js';
@@ -116,6 +117,7 @@ function run(settings) {
     rearmed?.remove();
     dropCached?.();
     dropCached = null;
+    refreshKeep();
     saveCache();
   };
   const saveCache = () => {
@@ -142,6 +144,27 @@ function run(settings) {
   };
   const stopPrefetch = ctl.activation.on && window.MutationObserver ? prefetchSheets(document, window.MutationObserver) : () => {};
   let engine = null, cancelled = false, fixStyle = null, mirror = null;
+  // Fix sheet = built-in + your own fixes (siteCss), then the parts you set
+  // to "Remove dark mode" (keepCss, re-read whenever the engine settles).
+  let siteCss = '', keepCss = '', keepSelectors = [];
+  function pushSiteCss() {
+    const css = [siteCss, keepCss].filter(Boolean).join('\n');
+    if (engine?.setSiteCss) { engine.setSiteCss(css); return; }
+    if (!css) { fixStyle?.remove(); fixStyle = null; return; }
+    if (!fixStyle) {
+      fixStyle = document.createElement('style');
+      fixStyle.setAttribute('data-sunglasses-at-night', 'site-fix');
+      document.documentElement.appendChild(fixStyle);
+    }
+    fixStyle.textContent = css;
+  }
+  function refreshKeep() {
+    if (!keepSelectors.length || !engine || cancelled) return;
+    try {
+      keepCss = keepOriginalCss({ document, getComputedStyle: (el) => getComputedStyle(el), selectors: keepSelectors });
+    } catch { keepCss = ''; }
+    pushSiteCss();
+  }
   // The early sheet was refused already (CSP from the response header).
   if (cspBlocked(ctl.style)) mirror = startAdoptedMirror(document, window);
   whenParsed(document, () => {
@@ -188,14 +211,10 @@ function run(settings) {
       const own = userFixCss(site.fixes, site.look, site.engine);
       if (own) css += (css ? '\n' : '') + own;
     } catch { /* no fix */ }
-    if (css && engine?.setSiteCss) {
-      engine.setSiteCss(css);
-    } else if (css) {
-      fixStyle = document.createElement('style');
-      fixStyle.setAttribute('data-sunglasses-at-night', 'site-fix');
-      fixStyle.textContent = css;
-      document.documentElement.appendChild(fixStyle);
-    }
+    siteCss = css;
+    if (site.engine !== 'filter') keepSelectors = site.fixes.filter((f) => f.action === 'original').map((f) => f.selector);
+    if (siteCss) pushSiteCss();
+    if (document.documentElement.hasAttribute(READY_ATTRIBUTE)) refreshKeep();
   });
   return () => {
     cancelled = true;
@@ -204,6 +223,7 @@ function run(settings) {
     ctl.style?.remove();
     rearmed?.remove();
     fixStyle?.remove();
+    for (const el of document.querySelectorAll('[data-sunglasses-keep]')) el.removeAttribute('data-sunglasses-keep');
     mirror?.stop();
     dropCached?.();
     if (key) globalThis.removeEventListener?.('pagehide', saveCache);

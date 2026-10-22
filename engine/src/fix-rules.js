@@ -6,13 +6,14 @@
 // no imports, so the settings model can use it everywhere.
 
 // What each fix does to the picked element. The CSS is in site-fixes.js.
-export const FIX_ACTIONS = Object.freeze(['lighter', 'darker', 'flip', 'hide']);
+export const FIX_ACTIONS = Object.freeze(['lighter', 'darker', 'flip', 'hide', 'original']);
 
 export const FIX_LABELS = Object.freeze({
   lighter: 'Lighter text',
   darker: 'Darker background',
   flip: 'Flip colors',
   hide: 'Hide',
+  original: 'Remove dark mode',
 });
 
 export const MAX_FIXES_PER_SITE = 50;

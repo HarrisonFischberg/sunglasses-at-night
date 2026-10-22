@@ -791,3 +791,10 @@
 - Mac builds session at 1b45e9b: WebKit e2e failed in `e2e/picker.test.js` "Flip colors" (timeout waiting for the invert rule). Cause: the test moved between fix buttons with Tab, which WebKit (like Safari by default) doesn't send to buttons, so Enter applied Lighter text instead. Fix: the picker menu now moves around its 2×2 grid of fixes with the arrow keys (useful in Safari too, where Tab skips buttons), and the test uses ArrowDown.
 - iPhone build was blocked at signing: the team's development profiles don't include the App Group entitlement. New `scripts/build-ios.sh` builds with automatic signing (team `SAN_TEAM`, default KTV2G3Z883) and an empty entitlements file, like `scripts/build-mac.sh` drops the group, then installs on the connected device (`SAN_IOS_DEVICE`). App Group sync with the app is off in these builds.
 - Ran here: npm test, privacy-check, check; picker e2e 7/7 on Chromium (local launch override). Not run here: WebKit e2e, Xcode, device install.
+
+## 2026-10-22 - Fix picker: Remove dark mode
+- Owner (16:49Z): one option in the picker should be "Remove dark mode", showing that part exactly as it would look without dark mode.
+- New fix action `original`. Dynamic engine: `engine/src/keep-original.js` switches every sheet of ours off for one synchronous read (plus `data-sunglasses-off` for the manifest base.css), reads the site's own colors of the picked element and its contents (up to 600 elements), switches ours back on, and pins them with `!important` rules keyed by `data-sunglasses-keep`, lifted above the engine's own rules with `:is(…, #id#id)`. A part with no background gets the one the site paints behind it. Re-read each time the engine settles. Filter engine: the part is inverted back and media inside it lose the counter-filter.
+- Picker menu: fifth button, full width; arrow keys reach it.
+- Ran here: npm test 378/378, privacy-check 18/18, check OK; e2e/picker.test.js 10/10 on Chromium (local launch override); the rest of the e2e suite on Chromium shows only the known Chromium-only failures. Not run: WebKit e2e, Xcode, Safari.
+

@@ -87,6 +87,61 @@ test('picker: grey subtitle, Lighter text, comes out near-white', { timeout: 600
   await context.close();
 });
 
+test('picker: Remove dark mode shows the part exactly as the site made it, now and on the next visit', { timeout: 60000 }, async () => {
+  const { page, context } = await openPage(browser, servers, '/picker.html', { extension: true });
+  const look = (sel) => page.evaluate((s) => {
+    const cs = getComputedStyle(document.querySelector(s));
+    return { bg: cs.backgroundColor, color: cs.color };
+  }, sel);
+  const darkCard = await look('.card');
+  assert.notEqual(darkCard.bg, 'rgb(241, 243, 244)', 'darkened to start with');
+  await page.addScriptTag({ content: pickerBundle() });
+  const at = await centerOf(page, '.card >> nth=0');
+  await page.mouse.click(at.x, at.y);
+  // Lighter text → Flip colors → Remove dark mode (the full-width last button).
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(() => document.querySelector('style[data-sunglasses-at-night="site-fix"]')?.textContent.includes('data-sunglasses-keep'));
+  const settings = await stored(page);
+  assert.equal(settings.sites['127.0.0.1'].fixes[0].action, 'original');
+  assert.deepEqual(await look('.card'), { bg: 'rgb(241, 243, 244)', color: 'rgb(32, 33, 36)' });
+  assert.notEqual((await look('.card ~ .card')).bg, 'rgb(241, 243, 244)', 'the other card stays dark');
+  await context.close();
+
+  const again = await openPage(browser, servers, '/picker.html', { extension: true, settings });
+  await again.page.waitForFunction(() => document.querySelector('style[data-sunglasses-at-night="site-fix"]')?.textContent.includes('data-sunglasses-keep'));
+  const card = await again.page.evaluate(() => {
+    const cs = getComputedStyle(document.querySelector('.card'));
+    return { bg: cs.backgroundColor, color: cs.color };
+  });
+  assert.deepEqual(card, { bg: 'rgb(241, 243, 244)', color: 'rgb(32, 33, 36)' });
+  await again.context.close();
+});
+
+test('Remove dark mode: a part with no background of its own gets the one the site shows behind it', { timeout: 60000 }, async () => {
+  const settings = { ...defaultSettings(), mode: 'always', sites: { '127.0.0.1': { rule: 'default', fixes: [{ selector: '#top > span', action: 'original' }] } } };
+  const { page, context } = await openPage(browser, servers, '/picker.html', { extension: true, settings });
+  await page.waitForFunction(() => document.querySelector('[data-sunglasses-keep]'));
+  const r = await page.evaluate(() => {
+    const cs = getComputedStyle(document.querySelector('#top > span'));
+    return { bg: cs.backgroundColor, color: cs.color, body: getComputedStyle(document.body).backgroundColor };
+  });
+  assert.equal(r.bg, 'rgb(255, 255, 255)', 'the white the site paints behind it');
+  assert.equal(r.color, 'rgb(32, 33, 36)');
+  assert.notEqual(r.body, 'rgb(255, 255, 255)', 'the rest of the page stays dark');
+  await context.close();
+});
+
+test('Remove dark mode under the filter engine inverts the part back', { timeout: 60000 }, async () => {
+  const settings = { ...defaultSettings(), mode: 'always', engine: 'filter', sites: { '127.0.0.1': { rule: 'default', fixes: [{ selector: 'main > div.card:nth-of-type(1)', action: 'original' }] } } };
+  const { page, context } = await openPage(browser, servers, '/picker.html', { extension: true, settings, ready: 'filter' });
+  await page.waitForFunction(() => document.querySelector('style[data-sunglasses-at-night="site-fix"]'));
+  assert.match(await page.evaluate(() => getComputedStyle(document.querySelector('.card')).filter), /invert\(1\)|invert\(100%\)/);
+  assert.equal(await page.evaluate(() => getComputedStyle(document.querySelectorAll('.card')[1]).filter), 'none');
+  await context.close();
+});
+
 test('picker: Undo takes the fix back out', { timeout: 60000 }, async () => {
   const { page, context } = await openPage(browser, servers, '/picker.html', { extension: true });
   await page.addScriptTag({ content: pickerBundle() });
