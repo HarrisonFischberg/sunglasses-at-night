@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA strict CSP</title>
+<script src="/probe.js"></script>
+<link rel="stylesheet" href="/csp.css">
+</head>
+<body><main>
+<h1 data-qa-text="h1">Strict style CSP</h1>
+<p data-qa-text="body">Served with ?csp=strict: Content-Security-Policy style-src 'self'. Inline &lt;style&gt; elements are blocked. Dark mode should still work or back off cleanly, without looping.</p>
+<div class="card" data-qa-text="card">A light card from the page's own stylesheet.</div>
+<img data-qa-media="photo" src="/img/photo.png" alt="sunset" width="240">
+</main>
+<script>setTimeout(() => { document.title = 'QA strict CSP (' + (window.__qa?.extra.cspViolations ?? '?') + ' violations)'; }, 3500);</script>
+</body></html>

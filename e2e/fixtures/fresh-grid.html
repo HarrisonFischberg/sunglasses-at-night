@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture: grocery product grid</title>
+<!-- T032: a grocery grid in original markup. Each tile is a solid-color photo with
+     a "+" button (an icon image) on it, under an absolutely positioned overlay
+     <div> whose light tint multiplies over both: #f7f7f7, or rgba(0,0,0,.03) on
+     every second tile. On a white page the tint is invisible. Rows are inserted
+     lazily when they scroll into view, as the real grid does, so the engine sees
+     each tile through its mutation path, not at load. Row r starts at y = r * 1000. -->
+<style>
+  body { margin: 0; background: #ffffff; color: #111111; font: 16px/1.4 system-ui, sans-serif; }
+  header { padding: 12px 16px; border-bottom: 1px solid #dddddd; }
+  #grid { position: relative; height: 3200px; }
+  .row { position: absolute; left: 0; right: 0; display: flex; gap: 16px; padding: 16px; }
+  .tile { position: relative; width: 200px; }
+  .tile .photo { display: block; width: 200px; height: 200px; }
+  .tile .add { position: absolute; right: 8px; bottom: 8px; width: 40px; height: 40px; padding: 4px; border: 0; background: transparent; }
+  .tile .add img { display: block; width: 32px; height: 32px; }
+  .tile .tint { position: absolute; inset: 0; width: 200px; height: 200px; mix-blend-mode: multiply; pointer-events: none; }
+  .tint.a { background: #f7f7f7; }
+  .tint.b { background: rgba(0, 0, 0, 0.03); }
+  .tile p { margin: 8px 0 0; }
+</style>
+</head>
+<body>
+  <header><strong>Grocery</strong></header>
+  <main id="grid"></main>
+  <script>
+    const COLORS = ['3a7bd5', 'd5523a', '3aa56b', '8a4fd1'];
+    const svg = (w, h, fill, extra = '') =>
+      'data:image/svg+xml,' + encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="${w}" height="${h}" fill="#${fill}"/>${extra}</svg>`);
+    const grid = document.getElementById('grid');
+    globalThis.__rows = 0;
+    globalThis.__fixtureDone = false;
+
+    function insertRow(r) {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.style.top = r * 1000 + 'px';
+      for (let c = 0; c < 4; c++) {
+        const i = r * 4 + c;
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.dataset.tile = i;
+        tile.innerHTML =
+          `<img class="photo" alt="Item ${i}" width="200" height="200" src="${svg(200, 200, COLORS[c])}">` +
+          `<button class="add" type="button" aria-label="Add item ${i}"><img alt="" src="${svg(32, 32, 'e47911')}"></button>` +
+          `<div class="tint ${i % 2 ? 'b' : 'a'}"></div>` +
+          `<p>Item ${i}</p>`;
+        row.appendChild(tile);
+      }
+      grid.appendChild(row);
+      globalThis.__rows = r + 1;
+    }
+
+    // A row is inserted once its top is 250 px inside the viewport.
+    function lazy() {
+      while (globalThis.__rows < 3 && globalThis.__rows * 1000 <= scrollY + innerHeight - 250) insertRow(globalThis.__rows);
+    }
+    addEventListener('scroll', lazy, { passive: true });
+    lazy();
+    globalThis.__fixtureDone = true;
+  </script>
+</body>
+</html>

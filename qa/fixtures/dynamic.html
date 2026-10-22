@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA dynamic content</title>
+<script src="/probe.js"></script>
+<style>
+body{margin:0;font:16px/1.45 -apple-system,system-ui,sans-serif;background:#fff;color:#111}main{padding:14px}
+.item{background:#f4f4f6;border:1px solid #e3e3e8;margin:6px 0;padding:10px;border-radius:8px}
+iframe{width:100%;height:110px;border:1px solid #ccc}
+</style></head>
+<body><main>
+<h1 data-qa-text="h1" id="title">Home route</h1>
+<p><button data-qa-click="route">QA tap target</button></p>
+<div id="host"></div>
+<qa-card data-qa-text="late-component">Late component (shadow root attached when its definition loads)</qa-card>
+<qa-card>Second late component</qa-card>
+<iframe title="same-origin frame" src="/frame.html"></iframe>
+<iframe title="cross-origin frame" id="xo"></iframe>
+<div id="list"></div>
+</main>
+<script>
+document.getElementById('xo').src = `http://${location.hostname === 'localhost' ? '127.0.0.1' : 'localhost'}:${location.port}/frame.html?xo=1`;
+const host = document.getElementById('host').attachShadow({ mode: 'open' });
+host.innerHTML = '<style>.s{background:#fff8e1;color:#4e3b00;padding:10px;border:1px solid #f0d58c}</style><div class="s">Shadow DOM card</div>';
+// A custom element defined 900 ms after load, like a framework bundle
+// upgrading server-rendered markup: its shadow root appears with no DOM
+// mutation to observe, carrying a white card style.
+setTimeout(() => customElements.define('qa-card', class extends HTMLElement {
+  constructor() { super(); const r = this.attachShadow({ mode: 'open' });
+    r.innerHTML = '<style>:host{display:block;margin:8px 0}.c{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:12px;color:#222}</style><div class="c"><slot></slot></div>'; }
+}), 900);
+let n = 0;
+const add = () => { const d = document.createElement('div'); d.className = 'item'; d.textContent = `Inserted item ${++n}`; document.getElementById('list').appendChild(d); if (n < 10) setTimeout(add, 400); };
+setTimeout(add, 300);
+document.querySelector('[data-qa-click=route]').addEventListener('click', () => {
+  history.pushState({}, '', `?route=detail&run=${new URLSearchParams(location.search).get('run') || ''}`);
+  document.getElementById('title').textContent = 'Detail route';
+  const s = document.createElement('style'); s.textContent = '.detail{background:#fff;border:2px solid #eee;padding:14px}';
+  document.head.appendChild(s);
+  const d = document.createElement('section'); d.className = 'detail'; d.textContent = 'Route content added with a new stylesheet.'; document.querySelector('main').prepend(d);
+  setTimeout(() => window.__qaReaudit?.(), 1500);
+});
+</script></body></html>

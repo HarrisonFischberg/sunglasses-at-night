@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA late sheets (Shopify pattern)</title>
+<script src="/probe.js"></script>
+<style>
+:root{--color-background:255,255,255;--color-foreground:18,18,18;--color-button:18,18,18;--color-button-text:255,255,255}
+body{margin:0;font:17px/1.5 -apple-system,system-ui,sans-serif;background:rgb(var(--color-background));color:rgb(var(--color-foreground))}
+header{padding:16px;border-bottom:1px solid rgba(var(--color-foreground),.1)} main{padding:16px}
+.btn{display:inline-block;background:rgb(var(--color-button));color:rgb(var(--color-button-text));padding:10px 16px;border-radius:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px} .grid img{width:100%;display:block}
+</style></head>
+<body>
+<header><strong data-qa-text="brand">QUIET FIXTURE</strong></header>
+<main>
+<h1 data-qa-text="h1">Products</h1>
+<p data-qa-text="body">Colors come from channel-list variables (rgb(var(--x))), and more sheets arrive after the page is up: an inline &lt;style&gt; at 1.2 s and a slow cross-origin sheet.</p>
+<a class="btn" href="#" data-qa-text="button" data-qa-click="button">Choose options</a>
+<div class="grid">
+  <figure><img data-qa-media="p1" src="/img/photo.png" alt="sunset"></figure>
+  <figure><img data-qa-media="p2" src="/img/product-white.png" alt="bottle"></figure>
+</div>
+<div class="late-card" data-qa-text="late-card">Late card painted by the late sheet.</div>
+</main>
+<script>
+const other = location.hostname === 'localhost' ? '127.0.0.1' : 'localhost';
+setTimeout(() => {
+  const s = document.createElement('style');
+  s.textContent = 'body{background:rgb(var(--color-background))} main{background:rgb(var(--color-background))} .grid figure{background:#fff;padding:8px;margin:0}';
+  document.head.appendChild(s);
+  const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = `http://${other}:${location.port}/late.css?delay=900`;
+  document.head.appendChild(l);
+}, 1200);
+</script>
+</body></html>

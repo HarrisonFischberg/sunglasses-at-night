@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture: links</title>
+<style>
+  body { font: 16px/1.5 system-ui, sans-serif; margin: 16px; }
+  nav { background: #f0f0f0; padding: 8px; }
+  nav a { color: #0645ad; margin-right: 12px; }
+  .pill { background: #0b57d0; color: #ffffff; padding: 4px 10px; border-radius: 12px; text-decoration: none; }
+  .muted a { color: #999999; }
+  a:hover { color: #c00000; }
+  #target { margin-top: 1200px; }
+</style>
+</head>
+<body>
+  <nav><a href="#one">Styled nav link</a><a href="#two">Another</a></nav>
+  <p>Default user-agent link: <a href="#default">plain link</a>, and <a id="jump" href="#target">jump to target</a>.</p>
+  <p><a class="pill" href="#pill">Pill link on a blue background</a></p>
+  <p class="muted">Muted paragraph with a <a href="#light">light gray link</a>.</p>
+  <p id="target">Target paragraph far below.</p>
+</body>
+</html>

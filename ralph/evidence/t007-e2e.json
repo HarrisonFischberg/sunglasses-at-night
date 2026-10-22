@@ -1,0 +1,178 @@
+{
+  "light": {
+    "before": {
+      "rootLuminance": 1,
+      "minRatio": 4.48
+    },
+    "after": {
+      "rootLuminance": 0.007,
+      "checked": 18,
+      "minRatio": 10.34,
+      "maxTextBgLuminance": 0.009,
+      "failures": []
+    },
+    "ourElements": [
+      "style",
+      "style",
+      "style"
+    ],
+    "sheetFetches": []
+  },
+  "inline": {
+    "before": {
+      "rootLuminance": 1,
+      "minRatio": 5.74
+    },
+    "after": {
+      "rootLuminance": 0.007,
+      "checked": 9,
+      "minRatio": 10.79,
+      "maxTextBgLuminance": 0.009,
+      "failures": []
+    },
+    "ourElements": [
+      "style",
+      "style",
+      "style"
+    ],
+    "sheetFetches": []
+  },
+  "spa": {
+    "before": {
+      "rootLuminance": 1,
+      "minRatio": 6.85
+    },
+    "after": {
+      "rootLuminance": 0.007,
+      "checked": 6,
+      "minRatio": 11.01,
+      "maxTextBgLuminance": 0.009,
+      "failures": []
+    },
+    "ourElements": [
+      "style",
+      "style",
+      "style"
+    ],
+    "sheetFetches": []
+  },
+  "shadow": {
+    "before": {
+      "rootLuminance": 1,
+      "minRatio": 10.04
+    },
+    "after": {
+      "rootLuminance": 0.007,
+      "checked": 6,
+      "minRatio": 11.87,
+      "maxTextBgLuminance": 0.008,
+      "failures": []
+    },
+    "ourElements": [
+      "style",
+      "style",
+      "style",
+      "style",
+      "style",
+      "style",
+      "style",
+      "style",
+      "style",
+      "style",
+      "style"
+    ],
+    "sheetFetches": []
+  },
+  "cross-origin": {
+    "before": {
+      "rootLuminance": 1,
+      "minRatio": 8.95
+    },
+    "after": {
+      "rootLuminance": 0.007,
+      "checked": 4,
+      "minRatio": 11.83,
+      "maxTextBgLuminance": 0.009,
+      "failures": []
+    },
+    "ourElements": [
+      "style",
+      "style",
+      "style"
+    ],
+    "sheetFetches": [
+      "http://127.0.0.1:64638/cross.css",
+      "http://127.0.0.1:64638/imported.css"
+    ]
+  },
+  "links": {
+    "before": {
+      "rootLuminance": 1,
+      "minRatio": 2.85
+    },
+    "after": {
+      "rootLuminance": 0.007,
+      "checked": 9,
+      "minRatio": 4.51,
+      "maxTextBgLuminance": 0.049,
+      "failures": []
+    },
+    "ourElements": [
+      "style",
+      "style",
+      "style"
+    ],
+    "sheetFetches": []
+  },
+  "shop": {
+    "before": {
+      "rootLuminance": 1,
+      "minRatio": 4.77
+    },
+    "after": {
+      "rootLuminance": 0.007,
+      "checked": 16,
+      "minRatio": 4.96,
+      "maxTextBgLuminance": 0.035,
+      "failures": []
+    },
+    "ourElements": [
+      "style",
+      "style",
+      "style"
+    ],
+    "sheetFetches": []
+  },
+  "shopify-dawn": {
+    "before": {
+      "rootLuminance": 1,
+      "minRatio": 7.96
+    },
+    "after": {
+      "rootLuminance": 0.007,
+      "checked": 15,
+      "minRatio": 4.52,
+      "maxTextBgLuminance": 0.014,
+      "failures": []
+    },
+    "ourElements": [
+      "style",
+      "style",
+      "style"
+    ],
+    "sheetFetches": [],
+    "paint": {
+      "header": "rgb(20, 20, 20)",
+      "body": "rgb(20, 20, 20)",
+      "sections": [
+        "rgb(20, 20, 20)",
+        "rgb(23, 23, 23)",
+        "rgb(20, 30, 60)"
+      ]
+    }
+  },
+  "_meta": {
+    "engine": "webkit (Playwright 1.64.1)",
+    "date": "2026-10-19T05:39:00.402Z"
+  }
+}

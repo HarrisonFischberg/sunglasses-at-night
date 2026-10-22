@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Frame level 1</title>
+<style>
+  body { margin: 8px; background: #fafafa; color: #262626; font: 14px/1.4 system-ui, sans-serif; }
+  .row { display: flex; gap: 10px; align-items: flex-start; }
+  .tile { display: block; width: 64px; height: 64px; }
+  iframe { border: 1px solid #cccccc; display: block; margin-top: 6px; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <a href="#l1"><img id="f1-img" class="tile" data-expect="light" alt="Tile in frame 1" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='64'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e6c896'/%3E%3C/svg%3E"></a>
+    <p id="l1">Frame level 1: a linked image, and a frame inside this frame.</p>
+  </div>
+  <iframe src="hard-frame-2.html" title="Frame level 2" width="590" height="330"></iframe>
+</body>
+</html>

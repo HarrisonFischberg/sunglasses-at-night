@@ -1,0 +1,107 @@
+{
+ "version": 1,
+ "note": "Deterministic local fixtures (qa/fixtures), served by qa/lib/server.js on port 8765. {run} is replaced with the batch id so page beacons land in that batch. Expected results are in qa/manifest/fixture-expectations.json.",
+ "sites": [
+  {
+   "id": "fx-activation",
+   "url": "http://localhost:8765/activation.html?run={run}",
+   "scrolls": 0,
+   "kind": "baseline"
+  },
+  {
+   "id": "fx-late-sheet",
+   "url": "http://localhost:8765/late-sheet.html?run={run}",
+   "scrolls": 1,
+   "kind": "regression",
+   "tap": "Choose options"
+  },
+  {
+   "id": "fx-slow",
+   "url": "http://localhost:8765/slow.html?stall=1500&run={run}",
+   "scrolls": 0,
+   "kind": "regression"
+  },
+  {
+   "id": "fx-media",
+   "url": "http://localhost:8765/media.html?run={run}",
+   "scrolls": 3,
+   "kind": "regression"
+  },
+  {
+   "id": "fx-forms",
+   "url": "http://localhost:8765/forms.html?run={run}",
+   "scrolls": 2,
+   "kind": "regression",
+   "tap": "QA tap target"
+  },
+  {
+   "id": "fx-dynamic",
+   "url": "http://localhost:8765/dynamic.html?run={run}",
+   "scrolls": 1,
+   "kind": "regression",
+   "tap": "QA tap target"
+  },
+  {
+   "id": "fx-native-dark",
+   "url": "http://localhost:8765/native-dark.html?run={run}",
+   "scrolls": 0,
+   "kind": "regression"
+  },
+  {
+   "id": "fx-system-aware",
+   "url": "http://localhost:8765/system-aware.html?run={run}",
+   "scrolls": 0,
+   "kind": "regression"
+  },
+  {
+   "id": "fx-csp",
+   "url": "http://localhost:8765/csp.html?csp=strict&run={run}",
+   "scrolls": 0,
+   "kind": "regression"
+  },
+  {
+   "id": "fx-good",
+   "url": "http://localhost:8765/known-bad.html?run={run}",
+   "scrolls": 0,
+   "kind": "harness-good",
+   "tap": "QA tap target"
+  },
+  {
+   "id": "fx-bad-flash",
+   "url": "http://localhost:8765/known-bad.html?bad=flash&run={run}",
+   "scrolls": 0,
+   "kind": "harness-bad",
+   "expect": {
+    "flash": "FAIL"
+   }
+  },
+  {
+   "id": "fx-bad-gray",
+   "url": "http://localhost:8765/known-bad.html?bad=gray&run={run}",
+   "scrolls": 0,
+   "kind": "harness-bad",
+   "expect": {
+    "media": "FAIL"
+   }
+  },
+  {
+   "id": "fx-bad-text",
+   "url": "http://localhost:8765/known-bad.html?bad=text&run={run}",
+   "scrolls": 0,
+   "kind": "harness-bad",
+   "expect": {
+    "text": "FAIL"
+   }
+  },
+  {
+   "id": "fx-bad-overlay",
+   "url": "http://localhost:8765/known-bad.html?bad=overlay&run={run}",
+   "scrolls": 0,
+   "kind": "harness-bad",
+   "tap": "QA tap target",
+   "expect": {
+    "function": "FAIL"
+   }
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture: inline styles</title>
+<style>
+  body { font: 15px/1.4 Helvetica, Arial, sans-serif; margin: 16px; }
+  .card { background: var(--card); color: var(--ink, #333); padding: 8px; margin: 8px 0; }
+</style>
+</head>
+<body bgcolor="#ffffff" text="#202020">
+  <div style="background:#ffffff;color:#333333;border:1px solid #dddddd;padding:8px">Inline white panel with dark text.</div>
+  <p style="color: #666 !important">Inline important gray text.</p>
+  <p>Text with <span style="background-color: rgb(255 250 200)">an inline highlight</span> in it.</p>
+  <table bgcolor="#ffffff" border="1" cellpadding="4">
+    <tr><td bgcolor="#eeeeee"><font color="#444444">Legacy bgcolor cell with a font color.</font></td></tr>
+    <tr><td bgcolor="f0f8ff">Hex bgcolor without a hash.</td></tr>
+  </table>
+  <div class="card" style="--card:#fafafa">Card colored through an inline custom property.</div>
+  <div class="card" style="--card:hsl(40 100% 96%); --ink: hsl(30 40% 25%)">Second card with two inline variables.</div>
+  <div style="background: linear-gradient(#ffffff, #eeeeee); color: black; padding: 8px">Inline gradient panel.</div>
+</body>
+</html>

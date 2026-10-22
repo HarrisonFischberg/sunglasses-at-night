@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA known-bad variants</title>
+<script src="/probe.js"></script>
+<style>body{margin:0;font:17px/1.5 -apple-system,system-ui,sans-serif;background:#fff;color:#111}main{padding:16px}
+.card{background:#f2f2f2;border:1px solid #ddd;padding:12px;border-radius:8px;margin:10px 0}button{font:inherit;padding:10px 16px;border:0;border-radius:8px;background:#0a66c2;color:#fff}</style>
+</head><body><main>
+<h1 data-qa-text="h1">Harness check</h1>
+<p data-qa-text="body" id="txt">This paragraph must stay readable. The photo must keep its color. The button must take taps.</p>
+<div class="card" data-qa-text="card">Card surface.</div>
+<img id="ph" data-qa-media="photo" src="/img/photo.png" alt="sunset" width="320">
+<p><button data-qa-click="primary">QA tap target</button></p>
+</main>
+<script>
+// Controlled DEFECT SIMULATION for harness validation (?bad=flash|gray|text|overlay).
+// Each defect appears only once the extension marks the page ready, i.e. it
+// imitates what a broken dark-mode build would do. Without ?bad the page is
+// the correct baseline. Never used for product acceptance.
+const bad = new URLSearchParams(location.search).get('bad');
+if (bad) {
+  const apply = () => {
+    // A full-viewport white canvas for 700 ms: media the extension (rightly)
+    // leaves alone, so the bright area really reaches the screen.
+    if (bad === 'flash') { const c = document.createElement('canvas'); c.width = 8; c.height = 8; c.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:2147483646';
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, 8, 8); document.body.appendChild(c); setTimeout(() => c.remove(), 700); }
+    if (bad === 'gray') document.getElementById('ph').style.setProperty('filter', 'grayscale(1) brightness(.45)', 'important');
+    // Text faded to near-invisible (opacity, which a dark-mode engine has no reason to touch).
+    if (bad === 'text') { for (const el of [document.getElementById('txt'), document.querySelector('h1'), document.querySelector('.card')]) el.style.setProperty('opacity', '0.12', 'important'); }
+    if (bad === 'overlay') { const o = document.createElement('div'); o.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:transparent'; document.body.appendChild(o); }
+  };
+  const seen = () => document.documentElement.hasAttribute('data-sunglasses-ready');
+  if (seen()) apply(); else new MutationObserver((r, o) => { if (seen()) { o.disconnect(); apply(); } }).observe(document.documentElement, { attributes: true });
+}
+</script></body></html>

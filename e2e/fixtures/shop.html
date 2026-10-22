@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture: shop</title>
+<style>
+  :root { --accent: #ffcc33; --price: #b3261e; --panel: #ffffff; }
+  body { font: 15px/1.4 Helvetica, Arial, sans-serif; margin: 0; background: #f6f6f6; color: #111; }
+  .bar { position: sticky; top: 0; background: #ffffff; border-bottom: 1px solid #e5e5e5; padding: 10px 16px; z-index: 2; }
+  .cart { float: right; background: #eaeaea; padding: 2px 8px; border-radius: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 16px; }
+  .product { background: linear-gradient(#ffffff, #f2f2f2); border: 1px solid #dddddd; padding: 12px; }
+  .price { color: var(--price); font-weight: bold; }
+  .buy { background: var(--accent); color: #0f0f0f; border: 1px solid #e6b800; padding: 6px 12px; cursor: pointer; }
+  .buy:hover { background: #ffd65c; }
+  .sold-out { pointer-events: none; opacity: 1; background: #e0e0e0; color: #555; border: 1px solid #ccc; padding: 6px 12px; }
+  input, select { background: #ffffff; color: #222; border: 1px solid #bbbbbb; padding: 4px; }
+  .badge { background: #d93025; color: #ffffff; padding: 0 6px; border-radius: 8px; }
+</style>
+</head>
+<body>
+  <div class="bar">Night Market <span class="cart">Cart: <span id="cart-count">0</span></span></div>
+  <div class="grid">
+    <div class="product">
+      <h2>Reading lamp</h2>
+      <p class="price">$24.00</p>
+      <p><span class="badge">Sale</span> Warm light for late pages.</p>
+      <button id="add-1" class="buy" onclick="add()">Add to cart</button>
+    </div>
+    <div class="product">
+      <h2>Wool blanket</h2>
+      <p class="price">$58.00</p>
+      <label for="qty">Quantity</label> <input id="qty" type="number" value="1">
+      <label for="size">Size</label>
+      <select id="size"><option value="s">Small</option><option value="l">Large</option></select>
+      <button id="add-2" class="buy" onclick="add()">Add to cart</button>
+    </div>
+    <div class="product">
+      <h2>Night owl mug</h2>
+      <p class="price">$12.00</p>
+      <button class="sold-out" disabled>Sold out</button>
+    </div>
+  </div>
+<script>
+  function add() {
+    const c = document.getElementById('cart-count');
+    c.textContent = String(Number(c.textContent) + 1);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+[
+  {
+    "concept": "a",
+    "size": "1440x900",
+    "state": "default",
+    "screenshot": "design/screenshots/a-1440x900.png",
+    "overflowX": 0,
+    "scrollHeight": 969,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "a",
+    "size": "390x844",
+    "state": "default",
+    "screenshot": "design/screenshots/a-390x844.png",
+    "overflowX": 0,
+    "scrollHeight": 1829,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "a",
+    "size": "390x844",
+    "state": "-off",
+    "screenshot": "design/screenshots/a-390x844-off.png",
+    "overflowX": 0,
+    "scrollHeight": 1829,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "a",
+    "size": "390x844",
+    "state": "-restricted",
+    "screenshot": "design/screenshots/a-390x844-restricted.png",
+    "overflowX": 0,
+    "scrollHeight": 1733,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "b",
+    "size": "1440x900",
+    "state": "default",
+    "screenshot": "design/screenshots/b-1440x900.png",
+    "overflowX": 0,
+    "scrollHeight": 900,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "b",
+    "size": "390x844",
+    "state": "default",
+    "screenshot": "design/screenshots/b-390x844.png",
+    "overflowX": 0,
+    "scrollHeight": 1632,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "b",
+    "size": "390x844",
+    "state": "-off",
+    "screenshot": "design/screenshots/b-390x844-off.png",
+    "overflowX": 0,
+    "scrollHeight": 1632,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "b",
+    "size": "390x844",
+    "state": "-restricted",
+    "screenshot": "design/screenshots/b-390x844-restricted.png",
+    "overflowX": 0,
+    "scrollHeight": 1528,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "c",
+    "size": "1440x900",
+    "state": "default",
+    "screenshot": "design/screenshots/c-1440x900.png",
+    "overflowX": 0,
+    "scrollHeight": 900,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "c",
+    "size": "390x844",
+    "state": "default",
+    "screenshot": "design/screenshots/c-390x844.png",
+    "overflowX": 0,
+    "scrollHeight": 1632,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "c",
+    "size": "390x844",
+    "state": "-off",
+    "screenshot": "design/screenshots/c-390x844-off.png",
+    "overflowX": 0,
+    "scrollHeight": 1632,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "concept": "c",
+    "size": "390x844",
+    "state": "-restricted",
+    "screenshot": "design/screenshots/c-390x844-restricted.png",
+    "overflowX": 0,
+    "scrollHeight": 1494,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  }
+]

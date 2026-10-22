@@ -1,0 +1,122 @@
+[
+  {
+    "page": "popup",
+    "size": "390x844",
+    "state": "default",
+    "screenshot": "design/screenshots/real-popup-390x844undefined.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "popup",
+    "size": "390x844",
+    "state": "-off",
+    "screenshot": "design/screenshots/real-popup-390x844-off.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "popup",
+    "size": "390x844",
+    "state": "-already-dark",
+    "screenshot": "design/screenshots/real-popup-390x844-already-dark.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "popup",
+    "size": "390x844",
+    "state": "-restricted",
+    "screenshot": "design/screenshots/real-popup-390x844-restricted.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "options",
+    "size": "390x844",
+    "state": "default",
+    "screenshot": "design/screenshots/real-options-390x844undefined.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "options",
+    "size": "390x844",
+    "state": "-empty",
+    "screenshot": "design/screenshots/real-options-390x844-empty.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "popup",
+    "size": "1440x900",
+    "state": "default",
+    "screenshot": "design/screenshots/real-popup-1440x900undefined.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "popup",
+    "size": "1440x900",
+    "state": "-off",
+    "screenshot": "design/screenshots/real-popup-1440x900-off.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "popup",
+    "size": "1440x900",
+    "state": "-already-dark",
+    "screenshot": "design/screenshots/real-popup-1440x900-already-dark.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "popup",
+    "size": "1440x900",
+    "state": "-restricted",
+    "screenshot": "design/screenshots/real-popup-1440x900-restricted.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "options",
+    "size": "1440x900",
+    "state": "default",
+    "screenshot": "design/screenshots/real-options-1440x900undefined.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "page": "options",
+    "size": "1440x900",
+    "state": "-empty",
+    "screenshot": "design/screenshots/real-options-1440x900-empty.png",
+    "overflowX": 0,
+    "lowContrast": [],
+    "small": [],
+    "errors": []
+  }
+]

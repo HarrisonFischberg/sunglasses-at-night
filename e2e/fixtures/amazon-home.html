@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture: storefront home</title>
+<!-- T031: the three defects of a large storefront's home page, in original markup.
+     (1) product photos drawn with mix-blend-mode: multiply over light-gray tiles;
+     (2) headlines over photos, once as a url() background, once over an absolutely
+         positioned <img>; the headline's authored color is white;
+     (3) a carousel the page inserts 800 ms after load, with white placeholders
+         that a late (cross-origin, 500 ms) sheet paints. -->
+<style>
+  body { margin: 0; background: #ffffff; color: #111111; font: 16px/1.4 system-ui, sans-serif; }
+  .shell-bar { background: #ffffff; padding: 12px 16px; border-bottom: 1px solid #dddddd; }
+  main { padding: 16px; }
+  .row { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+  .ptile { width: 180px; height: 180px; background: #f7f7f7; display: flex; align-items: center; justify-content: center; }
+  .ptile img { width: 140px; height: 140px; mix-blend-mode: multiply; }
+  .photo-card { position: relative; width: 300px; height: 160px; overflow: hidden; }
+  .photo-card h2 { position: relative; margin: 0; padding: 16px; color: #ffffff; font-size: 22px; }
+  #card-bg { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Crect width='300' height='160' fill='%23c0392b'/%3E%3C/svg%3E"); }
+  #card-img > img { position: absolute; inset: 0; width: 300px; height: 160px; }
+  #hero { min-height: 220px; }
+  /* T035: carousel-slide promo cards. The copy and the picture are siblings in
+     separate layers, so the headline's own ancestor chain never meets the picture. */
+  .slide { position: relative; width: 300px; height: 160px; overflow: hidden; background: #f3e8ff; }
+  .slide-art { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Crect width='300' height='160' fill='%237b3fe4'/%3E%3C/svg%3E"); }
+  .slide-link { display: block; }
+  .slide-link img { display: block; width: 300px; height: 160px; }
+  .slide-copy { position: relative; padding: 16px; }
+  .slide-copy-over { margin-top: -160px; }
+  .slide h3 { margin: 0; color: #ffffff; font-size: 26px; font-weight: 700; }
+  .slide p { margin: 8px 0 0; color: #ffffff; font-size: 14px; }
+  .slide-solid { background: #d9822b; }
+</style>
+</head>
+<body>
+  <header class="shell-bar"><strong>Storefront</strong> <nav style="display:inline"><a href="#a">Deals</a> <a href="#b">Orders</a></nav></header>
+  <main>
+    <section class="row" id="products">
+      <div class="ptile"><img id="prod-1" alt="Lamp" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Crect width='140' height='140' fill='%23ffffff'/%3E%3Ccircle cx='70' cy='70' r='42' fill='%23e8a317'/%3E%3C/svg%3E"></div>
+      <div class="ptile"><img id="prod-2" alt="Blanket" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Crect width='140' height='140' fill='%23ffffff'/%3E%3Crect x='30' y='40' width='80' height='60' fill='%232e7d32'/%3E%3C/svg%3E"></div>
+    </section>
+    <section class="row">
+      <div class="photo-card" id="card-bg"><h2 id="h-bg">Shop gifts for outdoor athletes</h2></div>
+      <div class="photo-card" id="card-img"><img alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Crect width='300' height='160' fill='%232e5aa8'/%3E%3C/svg%3E"><h2 id="h-img">Back to school deals</h2></div>
+    </section>
+    <section class="row slides" id="slides" aria-label="Promotions">
+      <div class="slide" id="slide-layers"><div class="slide-art" aria-hidden="true"></div><div class="slide-copy"><h3 id="h-slide-layers">$2 flash finds</h3><p>Ends tonight</p></div></div>
+      <div class="slide" id="slide-sibling"><a href="#s" class="slide-link"><img alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Crect width='300' height='160' fill='%232e7d32'/%3E%3C/svg%3E"></a><div class="slide-copy slide-copy-over"><h3 id="h-slide-sibling">Complete your Halloween deals</h3></div></div>
+      <div class="slide slide-solid" id="slide-solid"><div class="slide-copy"><h3 id="h-slide-solid">Fresh picks for you</h3></div></div>
+    </section>
+    <section id="hero" aria-label="Featured"></section>
+  </main>
+  <script>
+    globalThis.__fixtureDone = false;
+    addEventListener('load', () => setTimeout(() => {
+      document.getElementById('hero').innerHTML =
+        '<link rel="stylesheet" href="{{CDN}}/amazon-carousel.css?delay=500">' +
+        '<div class="car"><div class="car-card"><img class="car-ph" alt="" width="120" height="80"><p>Holiday picks</p></div>' +
+        '<div class="car-card"><img class="car-ph" alt="" width="120" height="80"><p>New arrivals</p></div>' +
+        '<div class="car-card"><img class="car-ph" alt="" width="120" height="80"><p>Under $25</p></div></div>';
+      globalThis.__sanInsertedAt = Math.round(performance.now());
+      globalThis.__fixtureDone = true;
+    }, 800));
+  </script>
+</body>
+</html>

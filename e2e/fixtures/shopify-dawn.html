@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture: shopify-dawn</title>
+<style>
+  :root { --color-background: 255,255,255; --color-foreground: 18,18,18; --color-button: 18,18,18; --color-button-text: 255,255,255; --color-link: 10, 60, 130; --color-border: 220 220 220; }
+  .color-scheme-1 { --color-background: 255,255,255; --color-foreground: 18,18,18; }
+  .color-scheme-2 { --color-background: 243,243,243; --color-foreground: 18,18,18; --color-button: 18,18,18; --color-button-text: 243,243,243; }
+  .color-scheme-3 { --color-background: 36,40,51; --color-foreground: 255,255,255; }
+  body { margin: 0; font: 16px/1.5 Helvetica, Arial, sans-serif; background-color: rgb(var(--color-background)); color: rgba(var(--color-foreground), .75); }
+  .header { background-color: rgb(var(--color-background)); color: rgb(var(--color-foreground)); border-bottom: 1px solid rgba(var(--color-foreground), .08); padding: 12px 20px; display: flex; gap: 16px; align-items: center; }
+  .header a { color: rgb(var(--color-foreground)); text-decoration: none; }
+  section { background-color: rgb(var(--color-background)); color: rgba(var(--color-foreground), .75); padding: 24px 20px; }
+  h2 { color: rgb(var(--color-foreground)); margin: 0 0 8px; }
+  a.link { color: rgb(var(--color-link)); }
+  .button { background-color: rgb(var(--color-button)); color: rgb(var(--color-button-text)); border: 1px solid rgb(var(--color-button)); padding: 8px 16px; font: inherit; cursor: pointer; }
+  .button--secondary { background-color: transparent; color: rgb(var(--color-foreground)); border: 1px solid rgba(var(--color-foreground), .55); }
+  .card { background-color: rgb(var(--color-background)); border: 1px solid rgb(var(--color-border)); padding: 12px; margin: 8px 0; }
+</style>
+</head>
+<body class="color-scheme-1">
+  <header class="header color-scheme-1">
+    <a href="#home" id="logo">Quiet Town</a>
+    <a href="#shop">Shop</a>
+    <a href="#bundles">Bundles</a>
+    <button class="button button--secondary" id="cart">Cart (0)</button>
+  </header>
+  <section class="color-scheme-1">
+    <h2>Bundles</h2>
+    <p>Everything for a slower evening, packed together. <a class="link" href="#more">Read more</a></p>
+    <div class="card"><p>Evening set</p><button class="button" id="add-1">Add to cart</button></div>
+  </section>
+  <section class="color-scheme-2">
+    <h2>Gift ideas</h2>
+    <p>Small things that feel considered.</p>
+    <button class="button" id="add-2">Add to cart</button>
+    <button class="button button--secondary" id="more">See more</button>
+  </section>
+  <section class="color-scheme-3" style="--color-background: 20,30,60;">
+    <h2>Inline-scoped section</h2>
+    <p>This section sets its channel list inline.</p>
+  </section>
+</body>
+</html>

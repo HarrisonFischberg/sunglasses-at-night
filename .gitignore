@@ -7,3 +7,19 @@ build/
 .DS_Store
 *.log
 ralph/logs/
+
+# third-party listing screenshots: observation only, not redistributed
+replica/evidence/*.png
+
+# third-party site screenshots (supervised profiling), not redistributed
+ralph/evidence/amazon/*.png
+ralph/evidence/webbrowsertools/*.png
+
+# Impeccable install (owner ran npx impeccable install 2026-10-18): local tooling, not app code
+.claude/skills/impeccable/
+.claude/agents/
+.claude/settings.local.json
+ralph/evidence/amazon/video1/
+ralph/evidence/amazon/video2/
+ralph/evidence/quiettown-*.png
+ralph/evidence/quiettown-*.png
