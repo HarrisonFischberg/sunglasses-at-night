@@ -791,6 +791,7 @@
 - Mac builds session at 1b45e9b: WebKit e2e failed in `e2e/picker.test.js` "Flip colors" (timeout waiting for the invert rule). Cause: the test moved between fix buttons with Tab, which WebKit (like Safari by default) doesn't send to buttons, so Enter applied Lighter text instead. Fix: the picker menu now moves around its 2×2 grid of fixes with the arrow keys (useful in Safari too, where Tab skips buttons), and the test uses ArrowDown.
 - iPhone build was blocked at signing: the team's development profiles don't include the App Group entitlement. New `scripts/build-ios.sh` builds with automatic signing (team `SAN_TEAM`, default KTV2G3Z883) and an empty entitlements file, like `scripts/build-mac.sh` drops the group, then installs on the connected device (`SAN_IOS_DEVICE`). App Group sync with the app is off in these builds.
 - Ran here: npm test, privacy-check, check; picker e2e 7/7 on Chromium (local launch override). Not run here: WebKit e2e, Xcode, device install.
+- 06:43Z Mac builds session at ffa3455: e2e 121/122 (picker passes; perf.test.js failed once in the full run, passed alone). iPhone build failed: "has entitlements that require signing with a development certificate", because the project's CODE_SIGN_IDENTITY is "-". `scripts/build-ios.sh` now passes CODE_SIGN_IDENTITY="Apple Development".
 
 ## 2026-10-22 - Fix picker: Remove dark mode
 - Owner (16:49Z): one option in the picker should be "Remove dark mode", showing that part exactly as it would look without dark mode.
