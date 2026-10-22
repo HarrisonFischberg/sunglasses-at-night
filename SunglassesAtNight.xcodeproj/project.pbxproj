@@ -347,7 +347,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -eu\nres=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nmkdir -p \"$res\"\nditto \"${SRCROOT}/Extension/Resources\" \"$res\"\nrm -rf \"$res/engine\"\nditto \"${SRCROOT}/engine/src\" \"$res/engine\"\n";
+			shellScript = "set -eu\nres=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nmkdir -p \"$res\"\nditto \"${SRCROOT}/Extension/Resources\" \"$res\"\nrm -rf \"$res/engine\"\nditto \"${SRCROOT}/engine/src\" \"$res/engine\"\ncp \"${SRCROOT}/App/PrivacyInfo.xcprivacy\" \"$res/PrivacyInfo.xcprivacy\"\n";
 		};
 		5A000000000000000000005F /* Copy Web Extension Resources and engine/src */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -362,7 +362,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -eu\nres=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nmkdir -p \"$res\"\nditto \"${SRCROOT}/Extension/Resources\" \"$res\"\nrm -rf \"$res/engine\"\nditto \"${SRCROOT}/engine/src\" \"$res/engine\"\n";
+			shellScript = "set -eu\nres=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nmkdir -p \"$res\"\nditto \"${SRCROOT}/Extension/Resources\" \"$res\"\nrm -rf \"$res/engine\"\nditto \"${SRCROOT}/engine/src\" \"$res/engine\"\ncp \"${SRCROOT}/App/PrivacyInfo.xcprivacy\" \"$res/PrivacyInfo.xcprivacy\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -473,6 +473,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sunglasses at Night";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -499,6 +500,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sunglasses at Night";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -528,6 +530,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sunglasses at Night";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -550,6 +553,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sunglasses at Night";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
