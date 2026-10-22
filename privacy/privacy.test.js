@@ -280,6 +280,19 @@ test('npm audit: no known vulnerabilities in the lockfile', () => {
   assert.equal(total, 0, `npm audit found vulnerabilities: ${JSON.stringify(v)}`);
 });
 
+// ---- privacy manifest -------------------------------------------------------
+
+test('privacy manifest: no tracking, nothing collected, shipped in the app and the extension', () => {
+  const m = read('App/PrivacyInfo.xcprivacy');
+  assert.match(m, /<key>NSPrivacyTracking<\/key>\s*<false\/>/);
+  assert.match(m, /<key>NSPrivacyTrackingDomains<\/key>\s*<array\/>/);
+  assert.match(m, /<key>NSPrivacyCollectedDataTypes<\/key>\s*<array\/>/);
+  const apis = [...m.matchAll(/<string>(NSPrivacyAccessedAPICategory\w+)<\/string>/g)].map((x) => x[1]);
+  assert.deepEqual(apis, ['NSPrivacyAccessedAPICategoryUserDefaults'], 'UserDefaults (SettingsBridge) is the only required-reason API');
+  const pbx = read('SunglassesAtNight.xcodeproj/project.pbxproj');
+  assert.equal(pbx.split('App/PrivacyInfo.xcprivacy').length - 1, 2, 'both extension targets copy the manifest');
+});
+
 // ---- the checker itself ------------------------------------------------------
 
 test('self-check: the scanner catches a planted network call and permission', () => {

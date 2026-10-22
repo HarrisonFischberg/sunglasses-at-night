@@ -25,6 +25,10 @@ onboarding and in the privacy policy, and access is used only on-device.
 
 ## Vendors / processors
 
-None in the app. Apple (App Store distribution, Safari) is the platform. The
+None in the app. Apple (App Store distribution, Safari) is the platform. Uploads to App Store Connect
+(`scripts/archive-testflight.sh`, 2026-10-22) send only the signed app build
+from the owner's Mac to Apple; no user data. The app and extension ship a
+privacy manifest (`App/PrivacyInfo.xcprivacy`): no tracking, nothing collected,
+UserDefaults read for the App Group settings mirror only. The
 owner's email provider for hello@ and support@rarecreatures.app is UNKNOWN; it only
 receives voluntary user emails.
