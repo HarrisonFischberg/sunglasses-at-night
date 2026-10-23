@@ -12,7 +12,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8017
+          "atMs": 8011
         },
         "pixels": {
           "max": 1,
@@ -31,7 +31,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8025
+          "atMs": 8023
         },
         "pixels": {
           "max": 0.009,
@@ -70,7 +70,7 @@
             24
           ],
           "luminance": 0.007,
-          "atMs": 8015
+          "atMs": 8014
         },
         "pixels": {
           "max": 0.017,
@@ -89,7 +89,7 @@
             24
           ],
           "luminance": 0.007,
-          "atMs": 8015
+          "atMs": 8013
         },
         "pixels": {
           "max": 0.017,
@@ -128,7 +128,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8009
+          "atMs": 8007
         },
         "pixels": {
           "max": 1,
@@ -138,7 +138,7 @@
       },
       "extension": {
         "canvas": {
-          "root": "rgb(20, 20, 20)",
+          "root": "rgba(0, 0, 0, 0)",
           "scheme": "dark",
           "bodyChildren": 7,
           "rgb": [
@@ -147,7 +147,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8026
+          "atMs": 8016
         },
         "pixels": {
           "max": 0.007,
@@ -186,7 +186,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8007
+          "atMs": 8015
         },
         "pixels": {
           "max": 1,
@@ -205,7 +205,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8026
+          "atMs": 8010
         },
         "pixels": {
           "max": 0.007,
@@ -244,7 +244,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8017
+          "atMs": 8014
         },
         "pixels": {
           "max": 1,
@@ -263,7 +263,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8023
+          "atMs": 8848
         },
         "pixels": {
           "max": 0.694,
@@ -302,7 +302,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8015
+          "atMs": 8007
         },
         "pixels": {
           "max": 1,
@@ -312,7 +312,7 @@
       },
       "extension": {
         "canvas": {
-          "root": "rgb(20, 20, 20)",
+          "root": "rgba(0, 0, 0, 0)",
           "scheme": "dark",
           "bodyChildren": 4,
           "rgb": [
@@ -321,7 +321,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8018
+          "atMs": 8026
         },
         "pixels": {
           "max": 0.007,
@@ -360,7 +360,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8016
+          "atMs": 8004
         },
         "pixels": {
           "max": 1,
@@ -379,7 +379,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8018
+          "atMs": 8024
         },
         "pixels": {
           "max": 0.007,
@@ -418,7 +418,7 @@
             246
           ],
           "luminance": 0.922,
-          "atMs": 8017
+          "atMs": 8011
         },
         "pixels": {
           "max": 0.991,
@@ -428,16 +428,16 @@
       },
       "extension": {
         "canvas": {
-          "root": "rgb(20, 20, 20)",
+          "root": "rgba(0, 0, 0, 0)",
           "scheme": "dark",
           "bodyChildren": 3,
           "rgb": [
-            20,
-            20,
-            20
+            22,
+            22,
+            22
           ],
-          "luminance": 0.007,
-          "atMs": 8017
+          "luminance": 0.008,
+          "atMs": 8015
         },
         "pixels": {
           "max": 0.046,
@@ -451,7 +451,7 @@
         "url": "/shop.html",
         "top": true,
         "kind": "text/html",
-        "rootLuminance": 0.007,
+        "rootLuminance": 0.008,
         "checked": 16,
         "minRatio": 4.96,
         "maxTextBgLuminance": 0.035,
@@ -495,7 +495,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8012
+          "atMs": 8020
         },
         "pixels": {
           "max": 0.038,
@@ -534,7 +534,7 @@
             255
           ],
           "luminance": 1,
-          "atMs": 8039
+          "atMs": 8541
         },
         "pixels": {
           "max": 1,
@@ -553,7 +553,7 @@
             20
           ],
           "luminance": 0.007,
-          "atMs": 8037
+          "atMs": 8023
         },
         "pixels": {
           "max": 0.603,
@@ -617,7 +617,7 @@
         "url": "/hard-frame-3.html",
         "top": false,
         "kind": "text/html",
-        "rootLuminance": 0.007,
+        "rootLuminance": 0.008,
         "checked": 2,
         "minRatio": 6.4,
         "maxTextBgLuminance": 0.079,
@@ -1288,6 +1288,6 @@
   },
   "_meta": {
     "engine": "webkit (Playwright 1.64.1)",
-    "date": "2026-10-19T05:43:18.317Z"
+    "date": "2026-10-22T17:44:55.358Z"
   }
 }

@@ -7,15 +7,15 @@
         "type": "select-one",
         "id": "site-engine",
         "name": "Engine"
+      },
+      {
+        "tag": "summary",
+        "type": "",
+        "id": "",
+        "name": "More settings"
       }
     ],
     "allOrder": [
-      {
-        "tag": "button",
-        "type": "button",
-        "id": "more",
-        "name": "More settings"
-      },
       {
         "tag": "input",
         "type": "checkbox",
@@ -45,6 +45,12 @@
         "type": "select-one",
         "id": "site-engine",
         "name": "Engine"
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "pick",
+        "name": "Fix something on this page…"
       },
       {
         "tag": "input",
@@ -81,6 +87,12 @@
         "type": "range",
         "id": "grayscale",
         "name": "Grayscale"
+      },
+      {
+        "tag": "summary",
+        "type": "",
+        "id": "",
+        "name": "More settings"
       },
       {
         "tag": "a",
@@ -98,15 +110,15 @@
         "type": "select-one",
         "id": "site-engine",
         "name": "Engine"
+      },
+      {
+        "tag": "summary",
+        "type": "",
+        "id": "",
+        "name": "More settings"
       }
     ],
     "allOrder": [
-      {
-        "tag": "button",
-        "type": "button",
-        "id": "more",
-        "name": "More settings"
-      },
       {
         "tag": "input",
         "type": "checkbox",
@@ -136,6 +148,12 @@
         "type": "select-one",
         "id": "site-engine",
         "name": "Engine"
+      },
+      {
+        "tag": "button",
+        "type": "button",
+        "id": "pick",
+        "name": "Fix something on this page…"
       },
       {
         "tag": "input",
@@ -172,6 +190,12 @@
         "type": "range",
         "id": "grayscale",
         "name": "Grayscale"
+      },
+      {
+        "tag": "summary",
+        "type": "",
+        "id": "",
+        "name": "More settings"
       },
       {
         "tag": "a",
@@ -199,6 +223,10 @@
   },
   {
     "case": "popup-already-dark",
+    "ok": true
+  },
+  {
+    "case": "popup-fixes",
     "ok": true
   },
   {
@@ -263,6 +291,12 @@
         "type": "select-one",
         "id": "engine",
         "name": "Engine"
+      },
+      {
+        "tag": "summary",
+        "type": "",
+        "id": "",
+        "name": "Dark Reader: site lists and parts of the page engine"
       }
     ],
     "allOrder": [
@@ -409,6 +443,12 @@
         "type": "button",
         "id": "reset",
         "name": "Reset all settings…"
+      },
+      {
+        "tag": "summary",
+        "type": "",
+        "id": "",
+        "name": "Dark Reader: site lists and parts of the page engine"
       }
     ]
   },
@@ -474,6 +514,12 @@
         "type": "select-one",
         "id": "engine",
         "name": "Engine"
+      },
+      {
+        "tag": "summary",
+        "type": "",
+        "id": "",
+        "name": "Dark Reader: site lists and parts of the page engine"
       }
     ],
     "allOrder": [
@@ -620,6 +666,12 @@
         "type": "button",
         "id": "reset",
         "name": "Reset all settings…"
+      },
+      {
+        "tag": "summary",
+        "type": "",
+        "id": "",
+        "name": "Dark Reader: site lists and parts of the page engine"
       }
     ]
   }
