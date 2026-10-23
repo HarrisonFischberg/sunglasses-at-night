@@ -33,6 +33,7 @@
     "ourElements": [
       "style",
       "style",
+      "style",
       "style"
     ],
     "sheetFetches": []
@@ -98,11 +99,12 @@
     "ourElements": [
       "style",
       "style",
+      "style",
       "style"
     ],
     "sheetFetches": [
-      "http://127.0.0.1:64638/cross.css",
-      "http://127.0.0.1:64638/imported.css"
+      "http://127.0.0.1:53266/cross.css",
+      "http://127.0.0.1:53266/imported.css"
     ]
   },
   "links": {
@@ -126,17 +128,18 @@
   },
   "shop": {
     "before": {
-      "rootLuminance": 1,
+      "rootLuminance": 0.922,
       "minRatio": 4.77
     },
     "after": {
-      "rootLuminance": 0.007,
+      "rootLuminance": 0.008,
       "checked": 16,
       "minRatio": 4.96,
       "maxTextBgLuminance": 0.035,
       "failures": []
     },
     "ourElements": [
+      "style",
       "style",
       "style",
       "style"
@@ -158,6 +161,7 @@
     "ourElements": [
       "style",
       "style",
+      "style",
       "style"
     ],
     "sheetFetches": [],
@@ -173,6 +177,6 @@
   },
   "_meta": {
     "engine": "webkit (Playwright 1.64.1)",
-    "date": "2026-10-19T05:39:00.402Z"
+    "date": "2026-10-22T17:38:03.114Z"
   }
 }

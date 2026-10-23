@@ -1,8 +1,8 @@
 {
   "dark": {
-    "insertedAt": 424,
-    "lastSheetAt": 435,
-    "frames": 196,
+    "insertedAt": 437,
+    "lastSheetAt": 444,
+    "frames": 205,
     "peakLight": 0,
     "toggles": [
       true,
@@ -17,8 +17,8 @@
     }
   },
   "light": {
-    "insertedAt": 422,
-    "lastSheetAt": 428,
+    "insertedAt": 423,
+    "lastSheetAt": 429,
     "frames": 205,
     "peakLight": 0,
     "toggles": [
@@ -35,6 +35,6 @@
   },
   "_meta": {
     "engine": "webkit (Playwright 1.64.1)",
-    "date": "2026-10-19T05:45:29.245Z"
+    "date": "2026-10-22T17:47:07.260Z"
   }
 }

@@ -116,7 +116,7 @@
     "headBg": "rgb(255, 255, 255)",
     "headImg": "rgb(255, 255, 255)",
     "blend": "normal",
-    "insertedAt": 834,
+    "insertedAt": 838,
     "framesAfterInsert": 162,
     "peakLightAfterInsert": 0,
     "peakLightAll": 0,
@@ -167,6 +167,6 @@
   },
   "_meta": {
     "engine": "webkit (Playwright 1.64.1)",
-    "date": "2026-10-19T05:44:13.569Z"
+    "date": "2026-10-22T17:45:51.838Z"
   }
 }
