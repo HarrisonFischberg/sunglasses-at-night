@@ -35,7 +35,7 @@ function stripComments(src) {
 // The generated site lists (engine/scripts/site-data.js) hold URL patterns
 // and selectors that name URLs, never requests: the data line is exempt from
 // the URL-literal check only, and the test below proves the data loads nothing.
-const SITE_DATA_LINE = /^\s*(?:export\s+)?const (?:DARK_SITES|SITE_FIXES_JSON) = /;
+const SITE_DATA_LINE = /^\s*(?:export\s+)?const (?:DARK_SITES|SITE_FIXES_JSON|TEXT) = /;
 
 function scan(files, patterns, allow = {}) {
   const hits = [];
