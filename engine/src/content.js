@@ -13,7 +13,7 @@ import { startFilter } from './filter.js';
 import { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE } from './messages.js';
 import { fixesFor, fixCss, userFixCss } from './site-fixes.js';
 import { keepOriginalCss } from './keep-original.js';
-import { siteFixes } from './generated/site-fixes-data.js';
+import { siteFixesFor } from './generated/site-fixes-data.js';
 import { cspBlocked, cspBlocksStyles, startAdoptedMirror } from './adopted.js';
 import { cacheKey, readCached, writeCached, adoptCss } from './style-cache.js';
 
@@ -206,7 +206,7 @@ function run(settings) {
     // them after its override sheet so they win. Your own fixes (picked with
     // "Fix something on this page") come last, so they win over both.
     let css = '';
-    try { css = fixCss(fixesFor(location.href, siteFixes()), site.look); } catch { /* no fix */ }
+    try { css = fixCss(fixesFor(location.href, siteFixesFor(location.href)), site.look); } catch { /* no fix */ }
     try {
       const own = userFixCss(site.fixes, site.look, site.engine);
       if (own) css += (css ? '\n' : '') + own;
