@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Sunglasses at Night",
   "description": "Dark mode for websites.",
-  "version": "0.1.0",
+  "version": "1.0",
   "permissions": ["storage", "nativeMessaging", "scripting"],
   "host_permissions": ["<all_urls>"],
   "background": {
