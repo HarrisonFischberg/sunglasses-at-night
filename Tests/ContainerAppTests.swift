@@ -50,6 +50,29 @@ final class ContainerAppTests: XCTestCase {
         cancellable.cancel()
     }
 
+    func testRefreshedWaitsForABackgroundAnswer() async {
+        let model = ExtensionStatusModel(provider: BackgroundProvider())
+        let status = await model.refreshed()
+        XCTAssertEqual(status, .enabled)
+        XCTAssertEqual(model.status, .enabled)
+    }
+
+    func testStageShowsItsLabelForAtLeastTheMinimum() async {
+        let progress = StagedProgress(minimum: .milliseconds(200))
+        let clock = ContinuousClock()
+        let start = clock.now
+        let result = await progress.stage("Checking Safari…") { () -> Int in
+            XCTAssertEqual(progress.state, .working("Checking Safari…"))
+            return 7
+        }
+        XCTAssertEqual(result, 7)
+        XCTAssertGreaterThanOrEqual(clock.now - start, .milliseconds(200))
+        await progress.finish("Found it")
+        XCTAssertEqual(progress.state, .done("Found it"))
+        progress.reset()
+        XCTAssertEqual(progress.state, .idle)
+    }
+
     #if os(macOS)
     func testClosingTheLastWindowTerminatesTheApp() {
         let delegate = QuitOnLastWindowDelegate()

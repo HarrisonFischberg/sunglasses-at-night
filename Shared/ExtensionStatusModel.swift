@@ -35,4 +35,13 @@ final class ExtensionStatusModel: ObservableObject {
             }
         }
     }
+
+    /// Asks again and waits for the answer, for flows that show the check.
+    func refreshed() async -> ExtensionStatus {
+        let newStatus = await withCheckedContinuation { (continuation: CheckedContinuation<ExtensionStatus, Never>) in
+            provider.fetchStatus { continuation.resume(returning: $0) }
+        }
+        status = newStatus
+        return newStatus
+    }
 }
