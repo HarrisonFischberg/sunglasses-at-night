@@ -80,6 +80,7 @@ struct ContentView: View {
     @State private var phase: Phase
     @State private var isChecking = false
     @State private var checkedOnce = false
+    @State private var stillOff = false
     @State private var celebrateNow = false
 
     /// A famously bright page to try it on.
@@ -134,7 +135,7 @@ struct ContentView: View {
             StagedProgressView(progress: check)
         case .setup:
             SetupProgressView(title: "Sunglasses at Night", steps: steps, timeLeft: "About a minute left") {
-                if checkedOnce {
+                if stillOff {
                     Text("Not on yet. Turn on Sunglasses at Night in Safari, open any website, then come back.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -216,6 +217,8 @@ struct ContentView: View {
         let on = await check.stage(Self.checkingLabel) { await extensionIsOn() }
         if on { await check.finish("Found it") }
         check.reset()
+        // Only after a later check: the first launch isn't a failure.
+        stillOff = !on && checkedOnce
         checkedOnce = true
         celebrateNow = on && !celebrated
         phase = on ? .done : .setup
