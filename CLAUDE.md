@@ -30,7 +30,7 @@ loop. Verify each before claiming use: `docs/tool-environment.md`.
 | Swift (inside Ralph) | run by the runner: `ralph/verify-swift.sh` → `ralph/evidence/swift-build-latest.md` |
 | e2e (WebKit fixtures) | `npm run e2e` (Playwright 1.64.1, approved) |
 
-Exact scheme names are fixed by task T002; update this table if they change.
+Update this table if the scheme names change.
 
 ## Naming
 
