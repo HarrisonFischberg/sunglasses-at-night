@@ -31,10 +31,39 @@ export function generate() {
     .filter((f) => f.invert?.length || f.css || f.ignoreInlineStyle?.length);
   mkdirSync(OUT, { recursive: true });
   writeFileSync(`${OUT}dark-sites.js`, `${HEADER}export const DARK_SITES = ${JSON.stringify(darkSites)};\n`);
-  // Parsed on first use only: the content script runs in every frame, and
-  // most frames (dark mode off, already-dark sites) never need the list.
-  writeFileSync(`${OUT}site-fixes-data.js`, `${HEADER}const SITE_FIXES_JSON = ${JSON.stringify(JSON.stringify(fixes))};\n` +
-    'let parsed = null;\nexport function siteFixes() { return (parsed ??= JSON.parse(SITE_FIXES_JSON)); }\n');
+  // One JSON string per fix, plus an index from host label to fix numbers, so
+  // a page parses only the few fixes whose pattern can match its host (the
+  // content script runs in every frame). A pattern matches only when each of
+  // its literal host labels equals the URL's label at the same position from
+  // the right, so indexing one literal label is safe. Regex patterns and
+  // patterns with no literal label go in ALWAYS.
+  const index = {}, always = [];
+  fixes.forEach((f, n) => {
+    if (f.url[0] === '*') return;
+    for (const p of f.url) {
+      const host = p.replace(/^\^/, '').replace(/^[a-z]+:\/\//i, '').split('/')[0].replace(/:[^:\]]*$/, '');
+      const label = p.length > 2 && p.startsWith('/') && p.endsWith('/') ? null : host.split('.').find((l) => l && l !== '*');
+      const list = label ? (index[label] ??= []) : always;
+      if (!list.includes(n)) list.push(n);
+    }
+  });
+  const texts = fixes.map((f) => JSON.stringify(f));
+  const ends = texts.map(((t) => (n) => (t += n.length))(0));
+  const common = fixes.findIndex((f) => f.url[0] === '*');
+  writeFileSync(`${OUT}site-fixes-data.js`, `${HEADER}const TEXT = ${JSON.stringify(texts.join(''))};\nconst END = ${JSON.stringify(ends)};\n` +
+    `const INDEX = ${JSON.stringify(Object.entries(index).map(([l, v]) => `\n${l}\t${v}`).join('') + '\n')};\nconst ALWAYS = ${JSON.stringify(always)};\nconst COMMON = ${common};\n` +
+    `// The fixes that can match this URL's host, in file order (the \`*\` block first), for fixesFor.\n` +
+    'const fix = (n) => JSON.parse(TEXT.slice(END[n - 1] ?? 0, END[n]));\n' +
+    'export function siteFixes() { return END.map((_, n) => fix(n)); }\n' +
+    'export function siteFixesFor(url) {\n' +
+    '  let host; try { host = new URL(url).hostname; } catch { return []; }\n' +
+    '  const at = new Set(ALWAYS);\n' +
+    '  for (const l of host.split(\'.\')) {\n' +
+    '    const i = INDEX.indexOf(`\\n${l}\\t`);\n' +
+    '    if (i >= 0) for (const n of INDEX.slice(INDEX.indexOf(\'\\t\', i) + 1, INDEX.indexOf(\'\\n\', i + 1)).split(\',\')) at.add(+n);\n' +
+    '  }\n' +
+    '  if (!at.size) return [];\n' +
+    '  return [...(COMMON < 0 ? [] : [COMMON]), ...[...at].sort((a, b) => a - b)].map(fix);\n}\n');
   return { darkSites: darkSites.length, fixes: fixes.length };
 }
 
