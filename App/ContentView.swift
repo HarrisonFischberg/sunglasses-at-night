@@ -2,6 +2,8 @@ import SwiftUI
 #if os(macOS)
 import AppKit
 import SafariServices
+#else
+import UIKit
 #endif
 
 // Placeholder identifiers until the seller account is known (B1/B7).
@@ -61,103 +63,186 @@ final class MirrorModel: ObservableObject {
     }
 }
 
+/// The app's one screen: setup with progress until the extension is on, then
+/// "You're set" with the next step. Below it, what Safari is using and
+/// Privacy and help. No tab bar: the app is opened for setup and rarely after.
 struct ContentView: View {
+    enum Phase { case checking, setup, done }
+
     #if os(macOS)
     @StateObject private var status = ExtensionStatusModel(provider: SafariExtensionStateProvider())
     #endif
     @StateObject private var mirror = MirrorModel()
+    @StateObject private var check = StagedProgress()
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openURL) private var openURL
+    @AppStorage("setupCelebrated") private var celebrated = false
+    @State private var phase: Phase
+    @State private var isChecking = false
+    @State private var checkedOnce = false
+    @State private var celebrateNow = false
+
+    /// A famously bright page to try it on.
+    static let tryURL = URL(string: "https://en.wikipedia.org/wiki/Sunglasses")!
+
+    init() {
+        // Once setup has finished, opening the app goes straight to the done
+        // state and checks quietly: no staged check on a routine visit.
+        _phase = State(initialValue: UserDefaults.standard.bool(forKey: "setupCelebrated") ? .done : .checking)
+    }
 
     var body: some View {
-        TabView {
-            WelcomeView(isEnabled: isEnabled)
-                .tabItem { Label("Welcome", systemImage: "sunglasses") }
-            SettingsSummaryView(mirror: mirror)
-                .tabItem { Label("Settings", systemImage: "slider.horizontal.3") }
-            SitesView(mirror: mirror)
-                .tabItem { Label("Sites", systemImage: "list.bullet") }
-            AboutView(mirror: mirror)
-                .tabItem { Label("About", systemImage: "hand.raised") }
+        NavigationStack {
+            List {
+                Section {
+                    hero
+                        .padding(.vertical)
+                        .listRowBackground(Color.clear)
+                }
+                if phase == .done, let summary = mirror.summary {
+                    Section("What Safari is using") {
+                        NavigationLink { SettingsSummaryView(mirror: mirror) } label: {
+                            LabeledContent("Look and timing", value: summary.mode)
+                        }
+                        NavigationLink { SitesView(mirror: mirror) } label: {
+                            LabeledContent("Sites", value: summary.sites.isEmpty ? "None yet" : "\(summary.sites.count)")
+                        }
+                    }
+                }
+                Section {
+                    NavigationLink("Privacy and help") { AboutView(mirror: mirror) }
+                }
+            }
+            .navigationTitle(phase == .done ? "Sunglasses at Night" : "")
         }
+        .task { await checkSetup() }
         #if os(macOS)
         .frame(minWidth: 480, minHeight: 420)
-        .onAppear { status.refresh(); mirror.refresh() }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
-            status.refresh()
-            mirror.refresh()
+            Task { await checkSetup() }
         }
         #else
-        .onAppear { mirror.refresh() }
-        .onChange(of: scenePhase) { phase in
-            if phase == .active { mirror.refresh() }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active { Task { await checkSetup() } }
         }
         #endif
     }
 
-    private var isEnabled: Bool {
-        #if os(macOS)
-        return status.status == .enabled
-        #else
-        return false // iOS can't ask Safari; the steps stay visible.
-        #endif
-    }
-}
-
-// MARK: - S01 Welcome / Enable
-
-struct WelcomeView: View {
-    let isEnabled: Bool
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Image(systemName: "sunglasses.fill")
-                    .font(.largeTitle)
-                    .accessibilityHidden(true)
-                Text("Sunglasses at Night")
-                    .font(.largeTitle.bold())
-                    .accessibilityAddTraits(.isHeader)
-                #if os(macOS)
-                if isEnabled {
-                    Text("You're set, you can close this.")
-                        .font(.title3)
-                    Button("Done") { NSApp.terminate(nil) }
-                        .keyboardShortcut(.defaultAction)
-                } else {
-                    steps
-                    Button("Open Safari Extension Settings") {
-                        // Async API: Safari replies on an XPC queue, so no main-actor completion closure.
-                        let identifier = AppIdentifiers.extensionBundleID
-                        Task.detached { try? await SFSafariApplication.showPreferencesForExtension(withIdentifier: identifier) }
-                    }
-                    .keyboardShortcut(.defaultAction)
+    @ViewBuilder private var hero: some View {
+        switch phase {
+        case .checking:
+            StagedProgressView(progress: check)
+        case .setup:
+            SetupProgressView(title: "Sunglasses at Night", steps: steps, timeLeft: "About a minute left") {
+                if checkedOnce {
+                    Text("Not on yet. Turn on Sunglasses at Night in Safari, open any website, then come back.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
+                Button(action: openSafariSettings) {
+                    Text(Self.settingsButtonTitle).frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .keyboardShortcut(.defaultAction)
+            }
+        case .done:
+            SuccessView(title: "You're set.",
+                        message: "White pages, consider yourself warned.",
+                        celebrate: celebrateNow) {
+                #if os(macOS)
+                Button("Done") { NSApp.terminate(nil) }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .keyboardShortcut(.defaultAction)
+                Button("Try it on a white page") { trySafari() }
+                    .buttonStyle(.borderless)
                 #else
-                steps
+                Button { openURL(Self.tryURL) } label: {
+                    Text("Try it on a white page").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
                 #endif
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
+            .onAppear { celebrated = true }
         }
     }
 
-    @ViewBuilder private var steps: some View {
-        Text("Turn it on in three steps.")
-            .font(.title3)
+    private var steps: [SetupStep] {
+        [
+            SetupStep(id: "install", title: "Install Sunglasses at Night", detail: "Done. You found us.", isDone: true),
+            SetupStep(id: "turn-on", title: "Turn it on in Safari", detail: Self.turnOnDetail, isDone: false),
+            SetupStep(id: "allow", title: "Allow it on websites", detail: "When Safari asks, choose Always Allow on Every Website.", isDone: false),
+            SetupStep(id: "try", title: "Open a white page", detail: "Watch it go dark.", isDone: false),
+        ]
+    }
+
+    #if os(macOS)
+    private static let settingsButtonTitle = "Open Safari Settings"
+    private static let turnOnDetail = "In Safari Settings, Extensions, tick Sunglasses at Night."
+    private static let checkingLabel = "Checking Safari…"
+    private static let canSeeTurnedOff = true
+    #else
+    private static let settingsButtonTitle = "Open Settings"
+    private static let turnOnDetail = "In Settings, go to Apps, then Safari, then Extensions, and turn on Sunglasses at Night."
+    private static let checkingLabel = "Looking for Sunglasses at Night in Safari…"
+    // The mirror stays empty after Reset all until the extension runs again.
+    private static let canSeeTurnedOff = false
+    #endif
+
+    /// The real check: Safari's answer on the Mac; on iOS, whether the
+    /// extension has written its settings mirror (it does on every start).
+    private func extensionIsOn() async -> Bool {
+        mirror.refresh()
         #if os(macOS)
-        VStack(alignment: .leading, spacing: 12) {
-            Text("1. Open Safari Settings, then Extensions.")
-            Text("2. Tick Sunglasses at Night.")
-            Text("3. Allow it on the websites you want, so it can make pages dark on this Mac.")
-        }
+        return await status.refreshed() == .enabled
         #else
-        VStack(alignment: .leading, spacing: 12) {
-            Text("1. Open the Settings app, then Safari, then Extensions.")
-            Text("2. Turn on Sunglasses at Night.")
-            Text("3. Allow it on the websites you want, so it can make pages dark on this device.")
-        }
+        return mirror.summary != nil
         #endif
     }
+
+    private func checkSetup() async {
+        guard !isChecking else { return }
+        isChecking = true
+        defer { isChecking = false }
+        if phase == .done {
+            // Routine visit: check quietly. Only the Mac can tell when it was turned off.
+            let on = await extensionIsOn()
+            if !on && Self.canSeeTurnedOff { phase = .setup }
+            return
+        }
+        phase = .checking
+        let on = await check.stage(Self.checkingLabel) { await extensionIsOn() }
+        if on { await check.finish("Found it") }
+        check.reset()
+        checkedOnce = true
+        celebrateNow = on && !celebrated
+        phase = on ? .done : .setup
+    }
+
+    private func openSafariSettings() {
+        #if os(macOS)
+        // Async API: Safari replies on an XPC queue, so no main-actor completion closure.
+        let identifier = AppIdentifiers.extensionBundleID
+        Task.detached { try? await SFSafariApplication.showPreferencesForExtension(withIdentifier: identifier) }
+        #else
+        if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+        #endif
+    }
+
+    #if os(macOS)
+    /// Opens the bright page in Safari (not the default browser), then quits.
+    private func trySafari() {
+        guard let safari = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Safari") else {
+            NSApp.terminate(nil)
+            return
+        }
+        NSWorkspace.shared.open([Self.tryURL], withApplicationAt: safari, configuration: NSWorkspace.OpenConfiguration()) { _, _ in
+            Task { @MainActor in NSApp.terminate(nil) }
+        }
+    }
+    #endif
 }
 
 // MARK: - S02 Settings (read-only mirror)
@@ -166,40 +251,38 @@ struct SettingsSummaryView: View {
     @ObservedObject var mirror: MirrorModel
 
     var body: some View {
-        NavigationStack {
-            Form {
-                if let s = mirror.summary {
-                    Section("Dark mode") {
-                        LabeledContent("When", value: s.mode)
-                        if let schedule = s.schedule {
-                            LabeledContent("Schedule", value: schedule)
-                        }
-                        LabeledContent("Pages already dark", value: s.detectDark ? "Left as they are" : "Made dark anyway")
+        Form {
+            if let s = mirror.summary {
+                Section("Dark mode") {
+                    LabeledContent("When", value: s.mode)
+                    if let schedule = s.schedule {
+                        LabeledContent("Schedule", value: schedule)
                     }
-                    Section("Look") {
-                        LabeledContent("Brightness", value: "\(s.brightness)%")
-                        LabeledContent("Contrast", value: "\(s.contrast)%")
-                        LabeledContent("Sepia", value: "\(s.sepia)%")
-                        LabeledContent("Grayscale", value: "\(s.grayscale)%")
-                    }
-                    Section("Images") {
-                        LabeledContent("Images", value: s.images)
-                        LabeledContent("Background images", value: s.hideBackgroundImages ? "Hidden" : "Shown")
-                    }
-                } else {
-                    Section {
-                        Text(mirror.storageAvailable
-                             ? "No settings yet. Open the Sunglasses at Night button in Safari's toolbar on any page to choose a look."
-                             : "Settings sharing isn't available in this build.")
-                    }
+                    LabeledContent("Pages already dark", value: s.detectDark ? "Left as they are" : "Made dark anyway")
                 }
+                Section("Look") {
+                    LabeledContent("Brightness", value: "\(s.brightness)%")
+                    LabeledContent("Contrast", value: "\(s.contrast)%")
+                    LabeledContent("Sepia", value: "\(s.sepia)%")
+                    LabeledContent("Grayscale", value: "\(s.grayscale)%")
+                }
+                Section("Images") {
+                    LabeledContent("Images", value: s.images)
+                    LabeledContent("Background images", value: s.hideBackgroundImages ? "Hidden" : "Shown")
+                }
+            } else {
                 Section {
-                    Text("Change these from the Sunglasses at Night button in Safari's toolbar. This screen shows what Safari is using.")
-                        .foregroundStyle(.secondary)
+                    Text(mirror.storageAvailable
+                         ? "No settings yet. Open the Sunglasses at Night button in Safari's toolbar on any page to choose a look."
+                         : "Settings sharing isn't available in this build.")
                 }
             }
-            .navigationTitle("Settings")
+            Section {
+                Text("Change these from the Sunglasses at Night button in Safari's toolbar. This screen shows what Safari is using.")
+                    .foregroundStyle(.secondary)
+            }
         }
+        .navigationTitle("Look and timing")
     }
 }
 
@@ -207,30 +290,50 @@ struct SettingsSummaryView: View {
 
 struct SitesView: View {
     @ObservedObject var mirror: MirrorModel
+    @State private var query = ""
+
+    private static let groupOrder = ["Always dark", "Never dark", "Automatic"]
+
+    private var groups: [(rule: String, sites: [MirrorSummary.Site])] {
+        let sites = (mirror.summary?.sites ?? []).filter { query.isEmpty || $0.host.localizedCaseInsensitiveContains(query) }
+        return Self.groupOrder.compactMap { rule in
+            let matches = sites.filter { $0.rule == rule }
+            return matches.isEmpty ? nil : (rule: rule, sites: matches)
+        }
+    }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if let sites = mirror.summary?.sites, !sites.isEmpty {
-                    List(sites) { site in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(site.host).font(.headline)
-                            Text(site.hasCustomLook ? "\(site.rule), with its own look" : site.rule)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+        Group {
+            if mirror.summary?.sites.isEmpty ?? true {
+                EmptyStateView(symbol: "list.bullet",
+                               title: "No site choices yet",
+                               message: "In Safari, open the sunglasses button on any page to keep that site dark or leave it alone.")
+            } else if groups.isEmpty {
+                EmptyStateView(symbol: "magnifyingglass",
+                               title: "No sites match \u{201C}\(query)\u{201D}",
+                               message: "Check the spelling, or search for part of the address.")
+            } else {
+                List {
+                    ForEach(groups, id: \.rule) { group in
+                        Section(group.rule) {
+                            ForEach(group.sites) { site in
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(site.host).font(.headline)
+                                    if site.hasCustomLook {
+                                        Text("With its own look")
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .accessibilityElement(children: .combine)
+                            }
                         }
-                        .accessibilityElement(children: .combine)
-                    }
-                } else {
-                    ScrollView {
-                        Text("No site choices yet. Use the toolbar button on a page to always or never darken that site.")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding()
                     }
                 }
             }
-            .navigationTitle("Sites")
         }
+        .searchable(text: $query, prompt: "Search sites")
+        .navigationTitle("Sites")
     }
 }
 
@@ -241,39 +344,38 @@ struct AboutView: View {
     @State private var confirmingReset = false
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    section("Privacy at a glance",
-                            "Sunglasses at Night doesn't collect your data. No account, no analytics, no ads. Your settings and per-site choices stay on this device.")
-                    section("Why it asks for access to all websites",
-                            "To make pages dark, the extension has to run on the pages you visit. It does this on your device. Page content and addresses aren't stored or sent anywhere.")
-                    section("Report a problem",
-                            "Opens a draft email in your Mail app with the site's hostname, app version, system version and your settings. Nothing is sent unless you press Send. Use the link in the toolbar popup.")
-                    section("Reset all settings",
-                            "Erases your settings and per-site choices from this device.")
-                    Button("Reset all settings…") { confirmingReset = true }
-                    if let message = mirror.resetMessage {
-                        Text(message).foregroundStyle(.secondary)
-                    }
-                    if let contact = URL(string: "mailto:support@rarecreatures.app") {
-                        Link("Support: support@rarecreatures.app", destination: contact)
-                    }
-                    NavigationLink("Licenses") { LicensesView() }
-                    Text("Draft for legal review.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                section("Privacy at a glance",
+                        "Sunglasses at Night doesn't collect your data. No account, no analytics, no ads. Your settings and per-site choices stay on this device.")
+                section("Why it asks for access to all websites",
+                        "To make pages dark, the extension has to run on the pages you visit. It does this on your device. Page content and addresses aren't stored or sent anywhere.")
+                section("Report a problem",
+                        "Opens a draft email in your Mail app with the site's hostname, app version, system version and your settings. Nothing is sent unless you press Send. Use the link in the toolbar popup.")
+                if let contact = URL(string: "mailto:support@rarecreatures.app") {
+                    Link("Support: support@rarecreatures.app", destination: contact)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
+                NavigationLink("Licenses") { LicensesView() }
+                // Last and quiet: the destructive action never leads the trust screen.
+                section("Reset all settings",
+                        "Erases your settings and per-site choices from this device.")
+                Button("Reset all settings…", role: .destructive) { confirmingReset = true }
+                if let message = mirror.resetMessage {
+                    Text(message).foregroundStyle(.secondary)
+                }
+                Text("Draft for legal review.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
-            .navigationTitle("About")
-            .confirmationDialog("Reset all settings?", isPresented: $confirmingReset, titleVisibility: .visible) {
-                Button("Reset all settings", role: .destructive) { mirror.resetAll() }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This erases your settings and per-site choices from this device.")
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+        }
+        .navigationTitle("Privacy and help")
+        .confirmationDialog("Reset all settings?", isPresented: $confirmingReset, titleVisibility: .visible) {
+            Button("Reset all settings", role: .destructive) { mirror.resetAll() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This erases your settings and per-site choices from this device.")
         }
     }
 
