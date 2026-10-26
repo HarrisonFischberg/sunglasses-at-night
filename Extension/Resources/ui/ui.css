@@ -57,6 +57,7 @@
   /* elevation */
   --lift: 0 1px 0 var(--line), 0 2px 6px rgb(0 0 0 / 0.3);
   --float: 0 8px 24px rgb(0 0 0 / 0.45);
+  --sheen: inset 0 1px 0 rgb(255 255 255 / 0.14), inset 0 -1px 0 rgb(0 0 0 / 0.3);
 
   /* motion */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -418,6 +419,35 @@ body.popup {
   background: var(--group);
 }
 .hero-text { display: flex; align-items: center; gap: var(--s-4); }
+/* Clear Lens (look 1): the popup borrows Liquid Glass shapes, not its blur
+   (nothing sits behind a popover to blur): a lit edge on the power card and
+   capsule controls. */
+.popup .hero { background: var(--raised); box-shadow: var(--sheen); }
+.popup .tiles, .popup .segment {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--s-1);
+  padding: var(--s-1);
+  background: var(--raised);
+  border-radius: var(--r-full);
+  box-shadow: var(--sheen);
+}
+.popup .tiles > :last-child:nth-child(odd) { grid-column: auto; }
+.popup .tile span, .popup .segment span {
+  justify-content: center;
+  min-height: var(--target);
+  padding: 0 var(--s-2);
+  background: transparent;
+  border-radius: var(--r-full);
+  font-size: var(--text-sm);
+  line-height: 1.15;
+  text-align: center;
+  box-shadow: none;
+}
+.popup .tile:hover span, .popup .segment label:hover span { background: var(--line); }
+.popup .tile input:checked + span, .popup .segment input:checked + span { background: var(--accent); color: var(--on-accent); box-shadow: var(--lift); }
+
 #status { min-width: 0; overflow-wrap: anywhere; font-size: var(--text-base); line-height: 1.3; text-wrap: balance; }
 
 .host { font-family: var(--mono); font-weight: var(--weight-bold); margin-bottom: var(--s-2); overflow-wrap: anywhere; }

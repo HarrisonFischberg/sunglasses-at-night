@@ -148,27 +148,45 @@ struct ContentView: View {
                 .keyboardShortcut(.defaultAction)
             }
         case .done:
+            #if os(macOS)
             SuccessView(title: "You're set.",
                         message: "White pages, consider yourself warned.",
                         celebrate: celebrateNow) {
-                #if os(macOS)
                 Button("Done") { NSApp.terminate(nil) }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                     .keyboardShortcut(.defaultAction)
                 Button("Try it on a white page") { trySafari() }
                     .buttonStyle(.borderless)
-                #else
-                Button { openURL(Self.tryURL) } label: {
-                    Text("Try it on a white page").frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                #endif
             }
             .onAppear { celebrated = true }
+            #else
+            let isOn = mirror.summary?.mode != "Off"
+            MirrorShadesView(isOn: isOn,
+                             title: celebrateNow ? "You're set." : (isOn ? "Shades on" : "Shades off"),
+                             message: shadesMessage(isOn: isOn)) { openURL(Self.tryURL) }
+                .onAppear {
+                    if celebrateNow { Haptics.success() }
+                    celebrated = true
+                }
+            #endif
         }
     }
+
+    #if os(iOS)
+    private func shadesMessage(isOn: Bool) -> String {
+        guard isOn, let summary = mirror.summary else {
+            return "Turn them on from the sunglasses button in Safari."
+        }
+        let when: String
+        switch summary.mode {
+        case "Always on": when = "Every page, all the time."
+        case "On a schedule": when = summary.schedule.map { "From \($0)." } ?? "On a schedule."
+        default: when = "Whenever Dark Mode is on."
+        }
+        return when + " Tap the shades to try them on a white page."
+    }
+    #endif
 
     private var steps: [SetupStep] {
         [
