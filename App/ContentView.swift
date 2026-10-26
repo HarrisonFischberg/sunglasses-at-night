@@ -146,6 +146,14 @@ struct ContentView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .keyboardShortcut(.defaultAction)
+                #if os(iOS)
+                // iOS can't confirm the extension is on until it first runs, so never trap people here.
+                Button("I turned it on") {
+                    celebrateNow = !celebrated
+                    phase = .done
+                }
+                .frame(maxWidth: .infinity)
+                #endif
             }
         case .done:
             #if os(macOS)
@@ -203,8 +211,11 @@ struct ContentView: View {
     private static let checkingLabel = "Checking Safari…"
     private static let canSeeTurnedOff = true
     #else
-    private static let settingsButtonTitle = "Open Settings"
-    private static let turnOnDetail = "In Settings, go to Apps, then Safari, then Extensions, and turn on Sunglasses at Night."
+    // iOS has no public way to open Settings > Safari > Extensions, but Safari's
+    // own page menu has Manage Extensions, and opening a page also starts the
+    // extension so it writes the mirror this screen checks for.
+    private static let settingsButtonTitle = "Open Safari"
+    private static let turnOnDetail = "In Safari, tap the page menu in the address bar, choose Manage Extensions, and turn on Sunglasses at Night. Then come back here."
     private static let checkingLabel = "Looking for Sunglasses at Night in Safari…"
     // The mirror stays empty after Reset all until the extension runs again.
     private static let canSeeTurnedOff = false
@@ -248,7 +259,10 @@ struct ContentView: View {
         let identifier = AppIdentifiers.extensionBundleID
         Task.detached { try? await SFSafariApplication.showPreferencesForExtension(withIdentifier: identifier) }
         #else
-        if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+        // shortcut: x-safari-https is undocumented; falls back to the default browser if iOS drops it.
+        if let url = URL(string: "x-safari-" + Self.tryURL.absoluteString) {
+            openURL(url) { accepted in if !accepted { openURL(Self.tryURL) } }
+        }
         #endif
     }
 
