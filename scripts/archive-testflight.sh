@@ -5,8 +5,11 @@
 # app record for app.rarecreatures.sunglassesatnight already created (one
 # record covers both platforms). Uploads go to Apple: owner's approval only.
 # Usage: scripts/archive-testflight.sh [--no-upload]
-# Build number: SAN_BUILD_NUMBER, default a UTC timestamp, so every upload is
-# higher. Version: MARKETING_VERSION in the project. SAN_PLATFORMS="macOS iOS"
+# Build number: the counter in BUILD_NUMBER (or SAN_BUILD_NUMBER), bumped after
+# a successful upload; commit that file afterwards. iOS shows it as is (21).
+# macOS shows 20261027.21, since Apple never lets Mac build numbers go below an
+# earlier upload, across all versions, and the first uploads were timestamps
+# (20261026.0734). Version: MARKETING_VERSION in the project. SAN_PLATFORMS="macOS iOS"
 # (default both) picks platforms; --no-upload stops after the archive.
 # Team: SAN_TEAM (default KTV2G3Z883).
 # App Group: like scripts/build-ios.sh and build-mac.sh, the archive leaves
@@ -17,7 +20,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 TEAM="${SAN_TEAM:-KTV2G3Z883}"
-BUILD="${SAN_BUILD_NUMBER:-$(date -u +%Y%m%d.%H%M)}"
+N="${SAN_BUILD_NUMBER:-$(cat BUILD_NUMBER)}"
 UPLOAD=1; [ "${1:-}" = "--no-upload" ] && UPLOAD=0
 npm run --silent privacy-check
 node engine/scripts/site-data.js
@@ -26,6 +29,7 @@ node engine/scripts/base-css.js
 tmp="$(mktemp -d -t san-archive)"
 trap 'rm -rf "$tmp"' EXIT
 for platform in ${SAN_PLATFORMS:-macOS iOS}; do
+  BUILD="$N"; [ "$platform" = macOS ] && BUILD="20261027.$N"
   case "$platform" in
     macOS) dest='generic/platform=macOS'
       body='<key>com.apple.security.app-sandbox</key><true/>' ;;
@@ -65,4 +69,8 @@ for platform in ${SAN_PLATFORMS:-macOS iOS}; do
     echo "uploaded: $platform build $BUILD"
   fi
 done
-echo "Done: build $BUILD. App Store Connect ▸ TestFlight shows it after Apple's processing (usually 5–30 minutes)."
+if [ "$UPLOAD" = 1 ] && [ -z "${SAN_BUILD_NUMBER:-}" ]; then
+  echo $((N + 1)) > BUILD_NUMBER
+  echo "BUILD_NUMBER is now $((N + 1)): commit it so the next upload is higher."
+fi
+echo "Done: build $N. App Store Connect ▸ TestFlight shows it after Apple's processing (usually 5–30 minutes)."
