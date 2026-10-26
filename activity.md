@@ -806,3 +806,9 @@
 - App Store requirements: new `App/PrivacyInfo.xcprivacy` (no tracking, nothing collected; UserDefaults for the App Group mirror, reasons CA92.1 and 1C8F.1), shipped in the app (synchronized group) and copied into both extensions by their resource phase; `ITSAppUsesNonExemptEncryption = NO` on both app targets (no encryption beyond Apple's own HTTPS, and no network code at all). New privacy test checks the manifest.
 - Owner steps before the first upload: App Store Connect app record for bundle ID app.rarecreatures.sunglassesatnight (iOS + macOS), Xcode signed in to the team.
 - Ran here: npm test, privacy-check 19/19, `bash -n` on the script. Not run here: Xcode archive or upload (Mac only).
+
+## 2026-10-26: Readable TestFlight build numbers
+
+- Build numbers now come from a committed counter, `BUILD_NUMBER` (starts at 1), which `scripts/archive-testflight.sh` bumps after a successful upload; commit the file afterwards. `SAN_BUILD_NUMBER` still overrides and does not bump.
+- Version is now 1.1, because iOS only needs higher build numbers within a version and 1.0 already has timestamp builds (20261026.0734). iOS builds show as 1, 2, 3.
+- macOS builds show as 20261027.N: Apple never lets a Mac build number go below an earlier upload, across all versions.
