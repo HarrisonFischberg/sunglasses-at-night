@@ -7,7 +7,7 @@
 // extension can't run on (restricted), only the global controls show.
 // No network.
 
-import { createSettingsStore, LOOK_RANGES, isValidTime } from './settings.js';
+import { createSettingsStore, extensionArea, LOOK_RANGES, isValidTime } from './settings.js';
 import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } from './ui-core.js';
 import { GET_TAB_STATE, RESET_ALL } from './messages.js';
 import { buildReportUrl } from './report.js';
@@ -15,11 +15,7 @@ import { buildReportUrl } from './report.js';
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
-const store = createSettingsStore({
-  get: (k) => api.storage.local.get(k),
-  set: (o) => api.storage.local.set(o),
-  remove: (k) => api.storage.local.remove(k),
-});
+const store = createSettingsStore(extensionArea(api));
 
 let settings = null;
 let tab = null;

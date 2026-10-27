@@ -437,6 +437,31 @@ function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
   return { load, save, update, setSite, reset, subscribe };
 }
 
+// browser.storage.local as a store area. onChanged comes from
+// storage.onChanged narrowed to 'local' (the per-area event isn't available
+// in every Safari version).
+function extensionArea(api) {
+  const local = api.storage.local;
+  const handlers = new Map();
+  return {
+    get: (k) => local.get(k),
+    set: (o) => local.set(o),
+    remove: (k) => local.remove(k),
+    onChanged: {
+      addListener(fn) {
+        const h = (changes, area) => { if (area === 'local') fn(changes, area); };
+        handlers.set(fn, h);
+        api.storage.onChanged.addListener(h);
+      },
+      removeListener(fn) {
+        const h = handlers.get(fn);
+        if (h) api.storage.onChanged.removeListener(h);
+        handlers.delete(fn);
+      },
+    },
+  };
+}
+
 // In-memory StorageArea for tests and previews. Values are deep-copied
 // through JSON, the same as real extension storage.
 function createMemoryArea(initial = {}) {
@@ -476,7 +501,7 @@ function createMemoryArea(initial = {}) {
     _raw: () => clone(data),
   };
 }
-return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, LOOK_RANGES, MAX_SITES, defaultSettings, normalizeHostname, isValidTime, timeToMinutes, validateSettings, migrate, resolveSite, createSettingsStore, createMemoryArea };
+return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, LOOK_RANGES, MAX_SITES, defaultSettings, normalizeHostname, isValidTime, timeToMinutes, validateSettings, migrate, resolveSite, createSettingsStore, extensionArea, createMemoryArea };
 })();
 
 // ---- engine/src/color.js
@@ -1860,31 +1885,14 @@ const __m_engine_src_options_js = (() => {
 // screens (S02/S03) for people who stay in Safari: activation and schedule,
 // look, images, engine, the per-site rule list, and Reset all. No network.
 
-const { createSettingsStore, LOOK_RANGES, isValidTime } = __m_engine_src_settings_js;
+const { createSettingsStore, extensionArea, LOOK_RANGES, isValidTime } = __m_engine_src_settings_js;
 const { matchPreset, presetLook, siteRows, scheduleHint } = __m_engine_src_ui_core_js;
 const { RESET_ALL } = __m_engine_src_messages_js;
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
-const store = createSettingsStore({
-  get: (k) => api.storage.local.get(k),
-  set: (o) => api.storage.local.set(o),
-  remove: (k) => api.storage.local.remove(k),
-  onChanged: {
-    listeners: new Map(),
-    addListener(fn) {
-      const h = (changes, area) => { if (area === 'local') fn(changes, area); };
-      this.listeners.set(fn, h);
-      api.storage.onChanged.addListener(h);
-    },
-    removeListener(fn) {
-      const h = this.listeners.get(fn);
-      if (h) api.storage.onChanged.removeListener(h);
-      this.listeners.delete(fn);
-    },
-  },
-});
+const store = createSettingsStore(extensionArea(api));
 
 let settings = null;
 
