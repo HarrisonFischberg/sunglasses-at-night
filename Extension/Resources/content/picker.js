@@ -437,6 +437,31 @@ function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
   return { load, save, update, setSite, reset, subscribe };
 }
 
+// browser.storage.local as a store area. onChanged comes from
+// storage.onChanged narrowed to 'local' (the per-area event isn't available
+// in every Safari version).
+function extensionArea(api) {
+  const local = api.storage.local;
+  const handlers = new Map();
+  return {
+    get: (k) => local.get(k),
+    set: (o) => local.set(o),
+    remove: (k) => local.remove(k),
+    onChanged: {
+      addListener(fn) {
+        const h = (changes, area) => { if (area === 'local') fn(changes, area); };
+        handlers.set(fn, h);
+        api.storage.onChanged.addListener(h);
+      },
+      removeListener(fn) {
+        const h = handlers.get(fn);
+        if (h) api.storage.onChanged.removeListener(h);
+        handlers.delete(fn);
+      },
+    },
+  };
+}
+
 // In-memory StorageArea for tests and previews. Values are deep-copied
 // through JSON, the same as real extension storage.
 function createMemoryArea(initial = {}) {
@@ -476,7 +501,7 @@ function createMemoryArea(initial = {}) {
     _raw: () => clone(data),
   };
 }
-return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, LOOK_RANGES, MAX_SITES, defaultSettings, normalizeHostname, isValidTime, timeToMinutes, validateSettings, migrate, resolveSite, createSettingsStore, createMemoryArea };
+return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, LOOK_RANGES, MAX_SITES, defaultSettings, normalizeHostname, isValidTime, timeToMinutes, validateSettings, migrate, resolveSite, createSettingsStore, extensionArea, createMemoryArea };
 })();
 
 // ---- engine/src/color.js
@@ -2019,7 +2044,7 @@ const __m_engine_src_picker_js = (() => {
 // constructable sheet, which a page's Content-Security-Policy allows. No
 // network.
 
-const { createSettingsStore, normalizeHostname } = __m_engine_src_settings_js;
+const { createSettingsStore, extensionArea, normalizeHostname } = __m_engine_src_settings_js;
 const { FIX_ACTIONS, FIX_LABELS } = __m_engine_src_fix_rules_js;
 const { siteEntry, withFix } = __m_engine_src_ui_core_js;
 const { buildSelector, describeElement, pickTarget } = __m_engine_src_picker_core_js;
@@ -2309,11 +2334,7 @@ function main() {
   if (!api?.storage?.local || globalThis.top !== globalThis) return;
   // Injected twice (the popup button pressed again): the first one stays.
   if (globalThis[ACTIVE_KEY]) return;
-  const store = createSettingsStore({
-    get: (k) => api.storage.local.get(k),
-    set: (o) => api.storage.local.set(o),
-    remove: (k) => api.storage.local.remove(k),
-  });
+  const store = createSettingsStore(extensionArea(api));
   const touch = globalThis.matchMedia?.('(hover: none)').matches ?? false;
   globalThis[ACTIVE_KEY] = startPicker({ document, window, store, hostname: location.hostname, touch });
 }

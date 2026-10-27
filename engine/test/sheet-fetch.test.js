@@ -24,12 +24,22 @@ function fakeFetch(responses) {
 
 test('rejectSheetUrl: only http(s) without credentials', () => {
   assert.equal(rejectSheetUrl('https://cdn.example/a.css'), null);
-  assert.equal(rejectSheetUrl('http://127.0.0.1:8080/a.css'), null);
+  assert.equal(rejectSheetUrl('http://127.0.0.1:8080/a.css', 'http://127.0.0.1:8081/'), null);
   assert.match(rejectSheetUrl('file:///etc/passwd'), /scheme/);
   assert.match(rejectSheetUrl('data:text/css,a{}'), /scheme/);
   assert.match(rejectSheetUrl('javascript:alert(1)'), /scheme/);
   assert.match(rejectSheetUrl('https://u:p@cdn.example/a.css'), /credentials/);
   assert.match(rejectSheetUrl('not a url'), /invalid/);
+});
+
+test('rejectSheetUrl: a public page may not reach the local network', () => {
+  for (const sheet of ['http://127.0.0.1/a.css', 'http://localhost:3000/a.css', 'http://192.168.1.1/a.css',
+    'http://10.0.0.2/a.css', 'http://172.20.0.1/a.css', 'http://router.local/a.css', 'http://[::1]/a.css']) {
+    assert.match(rejectSheetUrl(sheet, 'https://evil.example/'), /local network/, sheet);
+    assert.match(rejectSheetUrl(sheet), /local network/, sheet);
+    assert.equal(rejectSheetUrl(sheet, 'http://192.168.1.5/'), null, sheet);
+  }
+  assert.equal(rejectSheetUrl('http://172.32.0.1/a.css', 'https://evil.example/'), null);
 });
 
 test('isTrustedSender: needs a tab and our extension id', () => {

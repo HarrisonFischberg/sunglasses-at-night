@@ -45,11 +45,12 @@ final class SettingsBridgeTests: XCTestCase {
         XCTAssertEqual(other.settings?["mode"] as? String, "always")
     }
 
-    func testGetReturnsMirror() {
-        XCTAssertNil(bridge.handle(["type": "get"])["settings"])
-        _ = bridge.handle(["type": "sync", "settings": sample, "resetGeneration": 0])
-        let reply = bridge.handle(["type": "get"])
-        XCTAssertEqual((reply["settings"] as? [String: Any])?["mode"] as? String, "always")
+    // App Group wiped while the extension kept its count: still a reset.
+    func testExtensionAheadOfWipedAppGroupIsTreatedAsReset() {
+        let reply = bridge.handle(["type": "sync", "settings": sample, "resetGeneration": 3])
+        XCTAssertEqual(reply["reset"] as? Bool, true)
+        XCTAssertEqual(reply["resetGeneration"] as? Int, 0)
+        XCTAssertNil(bridge.settings)
     }
 
     // Reset all from the app: mirror cleared, extension told to clear its store.

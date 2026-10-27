@@ -437,6 +437,31 @@ function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
   return { load, save, update, setSite, reset, subscribe };
 }
 
+// browser.storage.local as a store area. onChanged comes from
+// storage.onChanged narrowed to 'local' (the per-area event isn't available
+// in every Safari version).
+function extensionArea(api) {
+  const local = api.storage.local;
+  const handlers = new Map();
+  return {
+    get: (k) => local.get(k),
+    set: (o) => local.set(o),
+    remove: (k) => local.remove(k),
+    onChanged: {
+      addListener(fn) {
+        const h = (changes, area) => { if (area === 'local') fn(changes, area); };
+        handlers.set(fn, h);
+        api.storage.onChanged.addListener(h);
+      },
+      removeListener(fn) {
+        const h = handlers.get(fn);
+        if (h) api.storage.onChanged.removeListener(h);
+        handlers.delete(fn);
+      },
+    },
+  };
+}
+
 // In-memory StorageArea for tests and previews. Values are deep-copied
 // through JSON, the same as real extension storage.
 function createMemoryArea(initial = {}) {
@@ -476,7 +501,7 @@ function createMemoryArea(initial = {}) {
     _raw: () => clone(data),
   };
 }
-return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, LOOK_RANGES, MAX_SITES, defaultSettings, normalizeHostname, isValidTime, timeToMinutes, validateSettings, migrate, resolveSite, createSettingsStore, createMemoryArea };
+return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, LOOK_RANGES, MAX_SITES, defaultSettings, normalizeHostname, isValidTime, timeToMinutes, validateSettings, migrate, resolveSite, createSettingsStore, extensionArea, createMemoryArea };
 })();
 
 // ---- engine/src/messages.js
@@ -521,8 +546,19 @@ const { FETCH_SHEET } = __m_engine_src_messages_js;
 const MAX_SHEET_BYTES = 4 * 1024 * 1024;
 const CACHE_LIMIT = 64;
 
-/** Why `url` may not be fetched, or null when it may. */
-function rejectSheetUrl(url) {
+const LOCAL_HOST_RE = /^(?:localhost|.+\.localhost|.+\.local|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+|0\.0\.0\.0|\[(?:::1?|f[cd][0-9a-f]*:.*|fe80:.*)\])$/i;
+
+/** Loopback, private or link-local host: this device or the local network. */
+function isLocalUrl(url) {
+  try { return LOCAL_HOST_RE.test(new URL(url).hostname); } catch { return false; }
+}
+
+/**
+ * Why `url` may not be fetched, or null when it may. A page on the public web
+ * may not have us read sheets on the local network (the rewritten rules land
+ * in the page, where it could read them); `pageUrl` is the asking frame's URL.
+ */
+function rejectSheetUrl(url, pageUrl) {
   let u;
   try {
     u = new URL(url);
@@ -531,6 +567,7 @@ function rejectSheetUrl(url) {
   }
   if (u.protocol !== 'https:' && u.protocol !== 'http:') return `scheme ${u.protocol} not allowed`;
   if (u.username || u.password) return 'credentials in URL not allowed';
+  if (isLocalUrl(u.href) && !isLocalUrl(pageUrl)) return 'local network sheet from a public page';
   return null;
 }
 
@@ -540,7 +577,7 @@ function isTrustedSender(sender, extensionId) {
 }
 
 /**
- * Create the fetcher. Returns `fetchSheetText(url) → Promise<{ ok, text } |
+ * Create the fetcher. Returns `fetchSheetText(url, pageUrl) → Promise<{ ok, text } |
  * { ok: false, error }>`. Results are cached in memory (LRU, 64 sheets).
  */
 function createSheetFetcher({ fetch }) {
@@ -564,8 +601,8 @@ function createSheetFetcher({ fetch }) {
     return { ok: true, text };
   }
 
-  return async function fetchSheetText(url) {
-    const reason = rejectSheetUrl(url);
+  return async function fetchSheetText(url, pageUrl) {
+    const reason = rejectSheetUrl(url, pageUrl);
     if (reason) return { ok: false, error: reason };
     const key = new URL(url).href;
     if (cache.has(key)) {
@@ -595,11 +632,11 @@ function createSheetMessageHandler({ fetch, extensionId }) {
       sendResponse({ ok: false, error: 'untrusted sender' });
       return false;
     }
-    fetchSheetText(message.url).then(sendResponse);
+    fetchSheetText(message.url, sender.url ?? sender.tab.url).then(sendResponse);
     return true; // async response
   };
 }
-return { MAX_SHEET_BYTES, rejectSheetUrl, isTrustedSender, createSheetFetcher, createSheetMessageHandler };
+return { MAX_SHEET_BYTES, isLocalUrl, rejectSheetUrl, isTrustedSender, createSheetFetcher, createSheetMessageHandler };
 })();
 
 // ---- engine/src/activation.js
@@ -717,10 +754,10 @@ const { isInSchedule } = __m_engine_src_activation_js;
 const FIRST_PAINT_ID = 'sunglasses-first-paint';
 const FIRST_PAINT_CSS = 'content/base-on.css';
 
-// Match patterns for a normalized hostname and its subdomains (resolveSite
-// treats a rule for example.com as covering www.example.com).
+// Match patterns for a normalized hostname. Exact host only: resolveSite
+// looks a rule up by the exact hostname, so subdomains aren't covered.
 function hostPatterns(host) {
-  return [`*://${host}/*`, `*://*.${host}/*`];
+  return [`*://${host}/*`];
 }
 
 /**
@@ -775,7 +812,7 @@ const __m_engine_src_background_core_js = (() => {
 //
 // No network here: the only request is the sheet re-fetch in sheet-fetch.js.
 
-const { createSettingsStore, migrate, STORAGE_KEY, MODES } = __m_engine_src_settings_js;
+const { createSettingsStore, extensionArea, migrate, STORAGE_KEY, MODES } = __m_engine_src_settings_js;
 const { createSheetMessageHandler } = __m_engine_src_sheet_fetch_js;
 const { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT } = __m_engine_src_messages_js;
 const { firstPaintPlan, minutesToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } = __m_engine_src_first_paint_js;
@@ -813,16 +850,6 @@ function toolbarState(report) {
   return { state: 'off', title: why ? `${NAME}: off, ${why}` : `${NAME}: off`, badge: 'off' };
 }
 
-// browser.storage.local with onChanged narrowed to the local area.
-function localArea(api) {
-  const local = api.storage.local;
-  return {
-    get: (k) => local.get(k),
-    set: (o) => local.set(o),
-    remove: (k) => local.remove(k),
-  };
-}
-
 const ignore = () => {};
 
 /**
@@ -832,7 +859,7 @@ const ignore = () => {};
  *   tabStates           Map tabId → last report
  */
 function createBackground({ api, fetch }) {
-  const store = createSettingsStore(localArea(api));
+  const store = createSettingsStore(extensionArea(api));
   const action = api.action ?? api.browserAction;
   const tabStates = new Map();
 

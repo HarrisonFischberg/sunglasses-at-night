@@ -20,10 +20,10 @@ test('cacheKey: path and query, not hash; look in the key; bad URLs give null', 
   assert.equal(cacheKey('nope', 'L'), null);
 });
 
-test('writeCached / readCached: round trip, keeps the newest 6 entries', () => {
+test('writeCached / readCached: round trip, keeps the newest 3 entries', () => {
   const s = memoryStorage();
-  for (let i = 0; i < 8; i++) assert.ok(writeCached(s, cacheKey(`https://a.com/${i}`, 'L'), `css${i}`));
-  assert.equal(readCached(s, cacheKey('https://a.com/7', 'L')), 'css7');
+  for (let i = 0; i < 5; i++) assert.ok(writeCached(s, cacheKey(`https://a.com/${i}`, 'L'), `css${i}`));
+  assert.equal(readCached(s, cacheKey('https://a.com/4', 'L')), 'css4');
   assert.equal(readCached(s, cacheKey('https://a.com/0', 'L')), null, 'oldest dropped');
   assert.equal(readCached(s, cacheKey('https://a.com/1', 'L')), null);
   assert.equal(readCached(s, cacheKey('https://a.com/2', 'L')), 'css2');
@@ -31,7 +31,7 @@ test('writeCached / readCached: round trip, keeps the newest 6 entries', () => {
 
 test('writeCached: oversized CSS, quota errors and blocked storage are harmless', () => {
   const k = cacheKey('https://a.com/', 'L');
-  assert.equal(writeCached(memoryStorage(), k, 'x'.repeat(1_500_001)), false);
+  assert.equal(writeCached(memoryStorage(), k, 'x'.repeat(200_001)), false);
   assert.equal(writeCached(memoryStorage({ quota: 10 }), k, 'x'.repeat(100)), false);
   assert.equal(writeCached(memoryStorage({ throws: true }), k, 'a{}'), false);
   assert.equal(readCached(memoryStorage({ throws: true }), k), null);

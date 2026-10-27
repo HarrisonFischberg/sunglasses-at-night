@@ -11,7 +11,6 @@ import Foundation
 //           browser.storage and syncs again.
 //   reset   extension → native: clears the mirror and bumps the generation,
 //           so both stores end up empty from either side.
-//   get     extension → native: the mirror as stored.
 //
 // The app's Reset all calls resetAll(): it can't reach browser.storage, so the
 // bumped generation tells the extension to clear its own store on next sync.
@@ -26,7 +25,6 @@ enum BridgeKeys {
 enum BridgeMessage {
     static let sync = "sync"
     static let reset = "reset"
-    static let get = "get"
 }
 
 struct SettingsBridge {
@@ -84,7 +82,8 @@ struct SettingsBridge {
         case BridgeMessage.sync:
             let current = resetGeneration
             let seen = (message["resetGeneration"] as? NSNumber)?.intValue ?? 0
-            if seen < current {
+            // Not equal, not less: a wiped App Group starts counting from 0 again.
+            if seen != current {
                 return ["ok": true, "reset": true, "resetGeneration": current]
             }
             if let error = store(settings: message["settings"] as Any) {
@@ -93,10 +92,6 @@ struct SettingsBridge {
             return ["ok": true, "reset": false, "resetGeneration": current]
         case BridgeMessage.reset:
             return ["ok": true, "resetGeneration": resetAll()]
-        case BridgeMessage.get:
-            var reply: [String: Any] = ["ok": true, "resetGeneration": resetGeneration]
-            if let settings { reply["settings"] = settings }
-            return reply
         default:
             return ["ok": false, "error": "unknown type"]
         }
@@ -105,7 +100,7 @@ struct SettingsBridge {
 
 extension SettingsBridge {
     // Placeholder until the seller account is known (B1/B7). Must match the
-    // entitlements in Config/ and AppIdentifiers.appGroup.
+    // entitlements in Config/.
     static let appGroup = "group.app.rarecreatures.sunglassesatnight"
 
     /// The bridge over the shared App Group, or nil if the container is unavailable
