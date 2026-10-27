@@ -106,6 +106,9 @@ async function capture({ page, size, tag, settings = defaultSettings(), tabUrl =
   await p.goto(`${base}/${page}/${page}.html`, { waitUntil: 'load' });
   await p.waitForFunction(() => document.getElementById('status')?.textContent !== 'Loading…' || !document.getElementById('status'));
   await p.evaluate(() => document.fonts.ready);
+  // The checked tile's background fades in (180 ms) while its text color
+  // switches at once: measure the settled colors, not mid-transition.
+  await p.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))));
   const m = await p.evaluate(measure);
   const file = `real-${page}-${size.name}${tag}.png`;
   await p.screenshot({ path: resolve(SHOTS, file), fullPage: true });

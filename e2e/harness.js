@@ -84,7 +84,7 @@ export async function startServers() {
 // `siteFixes` replaces the bundled per-site fix list (site-fixes-data.js).
 const contentBundle = (siteFixes) => {
   const substitute = siteFixes
-    ? { [resolve(ROOT, 'engine/src/generated/site-fixes-data.js')]: `export function siteFixes() { return ${JSON.stringify(siteFixes)}; }\n` }
+    ? { [resolve(ROOT, 'engine/src/generated/site-fixes-data.js')]: `export function siteFixes() { return ${JSON.stringify(siteFixes)}; }\nexport function siteFixesFor() { return siteFixes(); }\n` }
     : {};
   return `if (location.protocol !== 'about:') {\n${bundle(resolve(ROOT, 'engine/src/content.js'), { substitute })}\n}`;
 };
