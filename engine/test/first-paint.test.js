@@ -11,6 +11,11 @@ import { createBackground } from '../src/background-core.js';
 const s = (over) => ({ ...defaultSettings(), ...over });
 const at = (h, m) => new Date(2026, 9, 19, h, m);
 
+test('hostPatterns: the exact host only, like resolveSite', () => {
+  assert.deepEqual(hostPatterns('example.com'), ['*://example.com/*']);
+  assert.deepEqual(hostPatterns('[::1]'), ['*://[::1]/*']);
+});
+
 test('firstPaintPlan: always → every site except "never" sites; off → nothing', () => {
   assert.deepEqual(firstPaintPlan(s({ mode: 'always' })), { matches: ['<all_urls>'], excludeMatches: [] });
   const p = firstPaintPlan(s({ mode: 'always', sites: { 'example.com': { rule: 'never' } } }));

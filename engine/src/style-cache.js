@@ -13,8 +13,10 @@
 
 const PREFIX = 'sunglasses-at-night:css:';
 const INDEX = 'sunglasses-at-night:css-index';
-const MAX_ENTRIES = 6;
-const MAX_CSS = 1_500_000; // characters per entry
+// The site shares this storage (about 5 MB per origin in WebKit), so we keep
+// to at most about 0.6 million characters of it.
+const MAX_ENTRIES = 3;
+const MAX_CSS = 200_000; // characters per entry
 
 // Same page = same origin storage + path + query (no hash); the look is part
 // of the key, so changing it never shows stale colors.

@@ -10,7 +10,7 @@
 // constructable sheet, which a page's Content-Security-Policy allows. No
 // network.
 
-import { createSettingsStore, normalizeHostname } from './settings.js';
+import { createSettingsStore, extensionArea, normalizeHostname } from './settings.js';
 import { FIX_ACTIONS, FIX_LABELS } from './fix-rules.js';
 import { siteEntry, withFix } from './ui-core.js';
 import { buildSelector, describeElement, pickTarget } from './picker-core.js';
@@ -300,11 +300,7 @@ function main() {
   if (!api?.storage?.local || globalThis.top !== globalThis) return;
   // Injected twice (the popup button pressed again): the first one stays.
   if (globalThis[ACTIVE_KEY]) return;
-  const store = createSettingsStore({
-    get: (k) => api.storage.local.get(k),
-    set: (o) => api.storage.local.set(o),
-    remove: (k) => api.storage.local.remove(k),
-  });
+  const store = createSettingsStore(extensionArea(api));
   const touch = globalThis.matchMedia?.('(hover: none)').matches ?? false;
   globalThis[ACTIVE_KEY] = startPicker({ document, window, store, hostname: location.hostname, touch });
 }

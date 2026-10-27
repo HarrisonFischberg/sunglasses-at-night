@@ -3,31 +3,14 @@
 // screens (S02/S03) for people who stay in Safari: activation and schedule,
 // look, images, engine, the per-site rule list, and Reset all. No network.
 
-import { createSettingsStore, LOOK_RANGES, isValidTime } from './settings.js';
+import { createSettingsStore, extensionArea, LOOK_RANGES, isValidTime } from './settings.js';
 import { matchPreset, presetLook, siteRows, scheduleHint } from './ui-core.js';
 import { RESET_ALL } from './messages.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
-const store = createSettingsStore({
-  get: (k) => api.storage.local.get(k),
-  set: (o) => api.storage.local.set(o),
-  remove: (k) => api.storage.local.remove(k),
-  onChanged: {
-    listeners: new Map(),
-    addListener(fn) {
-      const h = (changes, area) => { if (area === 'local') fn(changes, area); };
-      this.listeners.set(fn, h);
-      api.storage.onChanged.addListener(h);
-    },
-    removeListener(fn) {
-      const h = this.listeners.get(fn);
-      if (h) api.storage.onChanged.removeListener(h);
-      this.listeners.delete(fn);
-    },
-  },
-});
+const store = createSettingsStore(extensionArea(api));
 
 let settings = null;
 

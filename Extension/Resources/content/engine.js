@@ -437,6 +437,31 @@ function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
   return { load, save, update, setSite, reset, subscribe };
 }
 
+// browser.storage.local as a store area. onChanged comes from
+// storage.onChanged narrowed to 'local' (the per-area event isn't available
+// in every Safari version).
+function extensionArea(api) {
+  const local = api.storage.local;
+  const handlers = new Map();
+  return {
+    get: (k) => local.get(k),
+    set: (o) => local.set(o),
+    remove: (k) => local.remove(k),
+    onChanged: {
+      addListener(fn) {
+        const h = (changes, area) => { if (area === 'local') fn(changes, area); };
+        handlers.set(fn, h);
+        api.storage.onChanged.addListener(h);
+      },
+      removeListener(fn) {
+        const h = handlers.get(fn);
+        if (h) api.storage.onChanged.removeListener(h);
+        handlers.delete(fn);
+      },
+    },
+  };
+}
+
 // In-memory StorageArea for tests and previews. Values are deep-copied
 // through JSON, the same as real extension storage.
 function createMemoryArea(initial = {}) {
@@ -476,7 +501,7 @@ function createMemoryArea(initial = {}) {
     _raw: () => clone(data),
   };
 }
-return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, LOOK_RANGES, MAX_SITES, defaultSettings, normalizeHostname, isValidTime, timeToMinutes, validateSettings, migrate, resolveSite, createSettingsStore, createMemoryArea };
+return { SCHEMA_VERSION, STORAGE_KEY, MODES, SITE_RULES, IMAGE_MODES, ENGINES, LOOK_RANGES, MAX_SITES, defaultSettings, normalizeHostname, isValidTime, timeToMinutes, validateSettings, migrate, resolveSite, createSettingsStore, extensionArea, createMemoryArea };
 })();
 
 // ---- engine/src/activation.js
@@ -4577,8 +4602,10 @@ const __m_engine_src_style_cache_js = (() => {
 
 const PREFIX = 'sunglasses-at-night:css:';
 const INDEX = 'sunglasses-at-night:css-index';
-const MAX_ENTRIES = 6;
-const MAX_CSS = 1_500_000; // characters per entry
+// The site shares this storage (about 5 MB per origin in WebKit), so we keep
+// to at most about 0.6 million characters of it.
+const MAX_ENTRIES = 3;
+const MAX_CSS = 200_000; // characters per entry
 
 // Same page = same origin storage + path + query (no hash); the look is part
 // of the key, so changing it never shows stale colors.
@@ -4628,6 +4655,70 @@ function adoptCss(document, win, css) {
 return { cacheKey, readCached, writeCached, adoptCss };
 })();
 
+// ---- engine/src/first-paint.js
+const __m_engine_src_first_paint_js = (() => {
+// Sunglasses at Night: dark first paint when dark mode doesn't depend on
+// the system appearance (QA 2026-10-19, white first frame).
+//
+// The manifest's content/base.css paints the page dark before its first
+// frame, but only under (prefers-color-scheme: dark): it can't know the
+// settings. With "Always", a schedule that is on, or a site set to "Always
+// dark" while the system is light, nothing dark is in place until the
+// content script's async settings read lands, and Safari can paint the
+// page's own white for a frame or two (seen on every fixture in the iOS
+// Simulator, and on amazon.com in a new tab on the Mac).
+//
+// So the background registers the same anti-flash CSS, without the media
+// gate, as a document_start content script (scripting.registerContentScripts)
+// whenever the settings say "on regardless of the system": for every site
+// (minus "never" sites) or only for the "Always dark" sites. Like base.css it
+// is gated on :root:not([data-sunglasses-off]), so it steps aside the moment
+// the content script has the real decision (off, never, already dark).
+// Pure planning here; background-core.js applies the plan.
+
+const { isInSchedule } = __m_engine_src_activation_js;
+
+const FIRST_PAINT_ID = 'sunglasses-first-paint';
+const FIRST_PAINT_CSS = 'content/base-on.css';
+
+// Match patterns for a normalized hostname. Exact host only: resolveSite
+// looks a rule up by the exact hostname, so subdomains aren't covered.
+function hostPatterns(host) {
+  return [`*://${host}/*`];
+}
+
+/**
+ * What to register for `settings` at time `now`: null (nothing), or
+ * { matches, excludeMatches }. `timeZone` as in activation.js.
+ */
+function firstPaintPlan(settings, now = new Date(), timeZone) {
+  if (!settings || settings.mode === 'off') return null;
+  const sites = Object.entries(settings.sites ?? {});
+  const never = sites.filter(([, s]) => s.rule === 'never').map(([h]) => h);
+  const always = sites.filter(([, s]) => s.rule === 'always').map(([h]) => h);
+  const allOn = settings.mode === 'always' || (settings.mode === 'schedule' && isInSchedule(settings.schedule, now, timeZone));
+  if (allOn) return { matches: ['<all_urls>'], excludeMatches: never.flatMap(hostPatterns) };
+  if (always.length) return { matches: always.flatMap(hostPatterns), excludeMatches: [] };
+  return null;
+}
+
+/** Minutes until the schedule next changes state (for re-planning), or null. */
+function minutesToNextChange(settings, now = new Date()) {
+  if (settings?.mode !== 'schedule') return null;
+  const [sh, sm] = String(settings.schedule?.start ?? '').split(':').map(Number);
+  const [eh, em] = String(settings.schedule?.end ?? '').split(':').map(Number);
+  if ([sh, sm, eh, em].some((n) => !Number.isFinite(n))) return null;
+  const m = now.getHours() * 60 + now.getMinutes();
+  const until = (t) => ((t - m + 1440) % 1440) || 1440;
+  return Math.min(until(sh * 60 + sm), until(eh * 60 + em));
+}
+
+function samePlan(a, b) {
+  return JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+}
+return { FIRST_PAINT_ID, FIRST_PAINT_CSS, hostPatterns, firstPaintPlan, minutesToNextChange, samePlan };
+})();
+
 // ---- engine/src/content.js
 const __m_engine_src_content_js = (() => {
 // Sunglasses at Night: content script entry (bundled to
@@ -4638,7 +4729,7 @@ const __m_engine_src_content_js = (() => {
 // switches included, restart the decision without a reload. No network: the only
 // request is the cross-origin sheet re-fetch, which the background script does.
 
-const { createSettingsStore, resolveSite, migrate } = __m_engine_src_settings_js;
+const { createSettingsStore, extensionArea, resolveSite, migrate } = __m_engine_src_settings_js;
 const { startEarly, whenParsed, whenRoot, interimCss, antiFlashCss, READY_ATTRIBUTE } = __m_engine_src_early_js;
 const { startDynamic } = __m_engine_src_dynamic_js;
 const { startFilter } = __m_engine_src_filter_js;
@@ -4648,35 +4739,13 @@ const { keepOriginalCss } = __m_engine_src_keep_original_js;
 const { siteFixesFor } = __m_engine_src_generated_site_fixes_data_js;
 const { cspBlocked, cspBlocksStyles, startAdoptedMirror } = __m_engine_src_adopted_js;
 const { cacheKey, readCached, writeCached, adoptCss } = __m_engine_src_style_cache_js;
+const { minutesToNextChange } = __m_engine_src_first_paint_js;
 
 // Bumped when the engine's output changes, so old cached CSS is never reused.
 const CACHE_VERSION = 1;
 
 const api = globalThis.browser ?? globalThis.chrome;
 
-// browser.storage.local, with onChanged taken from storage.onChanged (the
-// per-area event isn't available in every Safari version).
-function localArea() {
-  const local = api.storage.local;
-  return {
-    get: (k) => local.get(k),
-    set: (o) => local.set(o),
-    remove: (k) => local.remove(k),
-    onChanged: {
-      listeners: new Map(),
-      addListener(fn) {
-        const h = (changes, area) => { if (area === 'local') fn(changes, area); };
-        this.listeners.set(fn, h);
-        api.storage.onChanged.addListener(h);
-      },
-      removeListener(fn) {
-        const h = this.listeners.get(fn);
-        if (h) api.storage.onChanged.removeListener(h);
-        this.listeners.delete(fn);
-      },
-    },
-  };
-}
 
 // One request per sheet URL for the life of the page: the prefetch below and
 // the engine's own re-fetch share it. A failure is forgotten so it can retry.
@@ -4864,20 +4933,34 @@ function run(settings) {
 
 async function main() {
   if (!api?.storage?.local) return;
-  const store = createSettingsStore(localArea());
+  const store = createSettingsStore(extensionArea(api));
   const { settings } = await store.load();
   await new Promise((resolve) => whenRoot(document, resolve));
+  let latest = settings;
   let current = JSON.stringify(settings);
-  let teardown = run(settings);
+  let teardown = () => {};
+  let scheduleTimer = null;
+  // Re-decide with the latest settings. Also at the next schedule boundary,
+  // so an open page follows the schedule without a reload.
+  const restart = () => {
+    teardown();
+    teardown = run(latest);
+    clearTimeout(scheduleTimer);
+    const next = minutesToNextChange(latest, new Date());
+    if (next !== null) scheduleTimer = setTimeout(restart, next * 60000 + 1000);
+  };
+  restart();
   // Settings arrive twice per write (storage.onChanged here, and the
   // background's SETTINGS_CHANGED push); restart only on a real change.
   const apply = (next) => {
     const key = JSON.stringify(next);
     if (key === current) return;
     current = key;
-    teardown();
-    teardown = run(next);
+    latest = next;
+    restart();
   };
+  // The system appearance changed (macOS Auto at sunset): open pages follow it.
+  globalThis.matchMedia?.('(prefers-color-scheme: dark)').addEventListener?.('change', restart);
   store.subscribe(apply);
   api.runtime?.onMessage?.addListener((message, sender) => {
     if (message?.type !== SETTINGS_CHANGED) return false;
