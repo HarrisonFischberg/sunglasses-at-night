@@ -8,8 +8,7 @@ import UIKit
 
 // Placeholder identifiers until the seller account is known (B1/B7).
 enum AppIdentifiers {
-    static let extensionBundleID = "app.rarecreatures.sunglassesatnight.extension" // keep in sync with SafariExtensionStateProvider
-    static let appGroup = SettingsBridge.appGroup
+    static let extensionBundleID = "app.rarecreatures.sunglassesatnight.extension"
 }
 
 #if os(macOS)
@@ -21,7 +20,7 @@ enum AppIdentifiers {
 /// main-actor-inferred completion closure trapped at launch, 2026-10-18).
 struct SafariExtensionStateProvider: ExtensionStateProviding {
     nonisolated func fetchStatus(completion: @escaping @Sendable (ExtensionStatus) -> Void) {
-        let identifier = "app.rarecreatures.sunglassesatnight.extension"
+        let identifier = AppIdentifiers.extensionBundleID
         Task.detached {
             do {
                 let state = try await SFSafariExtensionManager.stateOfSafariExtension(withIdentifier: identifier)

@@ -22,10 +22,10 @@ import { isInSchedule } from './activation.js';
 export const FIRST_PAINT_ID = 'sunglasses-first-paint';
 export const FIRST_PAINT_CSS = 'content/base-on.css';
 
-// Match patterns for a normalized hostname and its subdomains (resolveSite
-// treats a rule for example.com as covering www.example.com).
+// Match patterns for a normalized hostname. Exact host only: resolveSite
+// looks a rule up by the exact hostname, so subdomains aren't covered.
 export function hostPatterns(host) {
-  return [`*://${host}/*`, `*://*.${host}/*`];
+  return [`*://${host}/*`];
 }
 
 /**

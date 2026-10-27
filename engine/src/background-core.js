@@ -16,7 +16,7 @@
 //
 // No network here: the only request is the sheet re-fetch in sheet-fetch.js.
 
-import { createSettingsStore, migrate, STORAGE_KEY, MODES } from './settings.js';
+import { createSettingsStore, extensionArea, migrate, STORAGE_KEY, MODES } from './settings.js';
 import { createSheetMessageHandler } from './sheet-fetch.js';
 import { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT } from './messages.js';
 import { firstPaintPlan, minutesToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } from './first-paint.js';
@@ -54,16 +54,6 @@ export function toolbarState(report) {
   return { state: 'off', title: why ? `${NAME}: off, ${why}` : `${NAME}: off`, badge: 'off' };
 }
 
-// browser.storage.local with onChanged narrowed to the local area.
-function localArea(api) {
-  const local = api.storage.local;
-  return {
-    get: (k) => local.get(k),
-    set: (o) => local.set(o),
-    remove: (k) => local.remove(k),
-  };
-}
-
 const ignore = () => {};
 
 /**
@@ -73,7 +63,7 @@ const ignore = () => {};
  *   tabStates           Map tabId → last report
  */
 export function createBackground({ api, fetch }) {
-  const store = createSettingsStore(localArea(api));
+  const store = createSettingsStore(extensionArea(api));
   const action = api.action ?? api.browserAction;
   const tabStates = new Map();
 

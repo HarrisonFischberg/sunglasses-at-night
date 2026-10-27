@@ -6,7 +6,7 @@
 // switches included, restart the decision without a reload. No network: the only
 // request is the cross-origin sheet re-fetch, which the background script does.
 
-import { createSettingsStore, resolveSite, migrate } from './settings.js';
+import { createSettingsStore, extensionArea, resolveSite, migrate } from './settings.js';
 import { startEarly, whenParsed, whenRoot, interimCss, antiFlashCss, READY_ATTRIBUTE } from './early.js';
 import { startDynamic } from './dynamic.js';
 import { startFilter } from './filter.js';
@@ -16,35 +16,13 @@ import { keepOriginalCss } from './keep-original.js';
 import { siteFixesFor } from './generated/site-fixes-data.js';
 import { cspBlocked, cspBlocksStyles, startAdoptedMirror } from './adopted.js';
 import { cacheKey, readCached, writeCached, adoptCss } from './style-cache.js';
+import { minutesToNextChange } from './first-paint.js';
 
 // Bumped when the engine's output changes, so old cached CSS is never reused.
 const CACHE_VERSION = 1;
 
 const api = globalThis.browser ?? globalThis.chrome;
 
-// browser.storage.local, with onChanged taken from storage.onChanged (the
-// per-area event isn't available in every Safari version).
-function localArea() {
-  const local = api.storage.local;
-  return {
-    get: (k) => local.get(k),
-    set: (o) => local.set(o),
-    remove: (k) => local.remove(k),
-    onChanged: {
-      listeners: new Map(),
-      addListener(fn) {
-        const h = (changes, area) => { if (area === 'local') fn(changes, area); };
-        this.listeners.set(fn, h);
-        api.storage.onChanged.addListener(h);
-      },
-      removeListener(fn) {
-        const h = this.listeners.get(fn);
-        if (h) api.storage.onChanged.removeListener(h);
-        this.listeners.delete(fn);
-      },
-    },
-  };
-}
 
 // One request per sheet URL for the life of the page: the prefetch below and
 // the engine's own re-fetch share it. A failure is forgotten so it can retry.
@@ -232,20 +210,34 @@ function run(settings) {
 
 async function main() {
   if (!api?.storage?.local) return;
-  const store = createSettingsStore(localArea());
+  const store = createSettingsStore(extensionArea(api));
   const { settings } = await store.load();
   await new Promise((resolve) => whenRoot(document, resolve));
+  let latest = settings;
   let current = JSON.stringify(settings);
-  let teardown = run(settings);
+  let teardown = () => {};
+  let scheduleTimer = null;
+  // Re-decide with the latest settings. Also at the next schedule boundary,
+  // so an open page follows the schedule without a reload.
+  const restart = () => {
+    teardown();
+    teardown = run(latest);
+    clearTimeout(scheduleTimer);
+    const next = minutesToNextChange(latest, new Date());
+    if (next !== null) scheduleTimer = setTimeout(restart, next * 60000 + 1000);
+  };
+  restart();
   // Settings arrive twice per write (storage.onChanged here, and the
   // background's SETTINGS_CHANGED push); restart only on a real change.
   const apply = (next) => {
     const key = JSON.stringify(next);
     if (key === current) return;
     current = key;
-    teardown();
-    teardown = run(next);
+    latest = next;
+    restart();
   };
+  // The system appearance changed (macOS Auto at sunset): open pages follow it.
+  globalThis.matchMedia?.('(prefers-color-scheme: dark)').addEventListener?.('change', restart);
   store.subscribe(apply);
   api.runtime?.onMessage?.addListener((message, sender) => {
     if (message?.type !== SETTINGS_CHANGED) return false;

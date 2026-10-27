@@ -204,7 +204,7 @@ async function preparePage(browser, servers, { extension, settings, colorScheme 
     const handler = createSheetMessageHandler({ fetch: nodeFetch, extensionId: 'e2e' });
     await page.exposeFunction('__sanBackground', (msg) => new Promise((resolveMsg) => {
       const respond = fetchDelayMs > 0 ? (res) => setTimeout(() => resolveMsg(res), fetchDelayMs) : resolveMsg;
-      if (handler(msg, { tab: { id: 1 }, id: 'e2e' }, respond) === false) resolveMsg(undefined);
+      if (handler(msg, { tab: { id: 1, url: page.url() }, id: 'e2e' }, respond) === false) resolveMsg(undefined);
     }));
     await page.addInitScript({ content: baseCssShim(baseCssText()) });
     await page.addInitScript({ content: apiShim(settings ?? { ...defaultSettings(), mode: 'always' }, settingsDelayMs) });

@@ -10,8 +10,19 @@ import { FETCH_SHEET } from './messages.js';
 export const MAX_SHEET_BYTES = 4 * 1024 * 1024;
 const CACHE_LIMIT = 64;
 
-/** Why `url` may not be fetched, or null when it may. */
-export function rejectSheetUrl(url) {
+const LOCAL_HOST_RE = /^(?:localhost|.+\.localhost|.+\.local|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+|0\.0\.0\.0|\[(?:::1?|f[cd][0-9a-f]*:.*|fe80:.*)\])$/i;
+
+/** Loopback, private or link-local host: this device or the local network. */
+export function isLocalUrl(url) {
+  try { return LOCAL_HOST_RE.test(new URL(url).hostname); } catch { return false; }
+}
+
+/**
+ * Why `url` may not be fetched, or null when it may. A page on the public web
+ * may not have us read sheets on the local network (the rewritten rules land
+ * in the page, where it could read them); `pageUrl` is the asking frame's URL.
+ */
+export function rejectSheetUrl(url, pageUrl) {
   let u;
   try {
     u = new URL(url);
@@ -20,6 +31,7 @@ export function rejectSheetUrl(url) {
   }
   if (u.protocol !== 'https:' && u.protocol !== 'http:') return `scheme ${u.protocol} not allowed`;
   if (u.username || u.password) return 'credentials in URL not allowed';
+  if (isLocalUrl(u.href) && !isLocalUrl(pageUrl)) return 'local network sheet from a public page';
   return null;
 }
 
@@ -29,7 +41,7 @@ export function isTrustedSender(sender, extensionId) {
 }
 
 /**
- * Create the fetcher. Returns `fetchSheetText(url) → Promise<{ ok, text } |
+ * Create the fetcher. Returns `fetchSheetText(url, pageUrl) → Promise<{ ok, text } |
  * { ok: false, error }>`. Results are cached in memory (LRU, 64 sheets).
  */
 export function createSheetFetcher({ fetch }) {
@@ -53,8 +65,8 @@ export function createSheetFetcher({ fetch }) {
     return { ok: true, text };
   }
 
-  return async function fetchSheetText(url) {
-    const reason = rejectSheetUrl(url);
+  return async function fetchSheetText(url, pageUrl) {
+    const reason = rejectSheetUrl(url, pageUrl);
     if (reason) return { ok: false, error: reason };
     const key = new URL(url).href;
     if (cache.has(key)) {
@@ -84,7 +96,7 @@ export function createSheetMessageHandler({ fetch, extensionId }) {
       sendResponse({ ok: false, error: 'untrusted sender' });
       return false;
     }
-    fetchSheetText(message.url).then(sendResponse);
+    fetchSheetText(message.url, sender.url ?? sender.tab.url).then(sendResponse);
     return true; // async response
   };
 }
