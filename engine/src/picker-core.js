@@ -11,6 +11,7 @@
 // rebuild them all the time.
 
 import { isSafeSelector, tidyLabel } from './fix-rules.js';
+import { parseColor, composite, contrastRatio } from './color.js';
 
 const IDENT_RE = /^[A-Za-z_][\w-]*$/;
 const GENERATED_PREFIX_RE = /^(css|sc|jsx|svelte|emotion|tw|ember|ng|astro|chakra|_)[-_]?[a-z0-9]*$/i;
@@ -92,16 +93,71 @@ function findsOnly(doc, selector, el) {
 
 /**
  * The element worth fixing for a click on `node`: shapes inside an SVG
- * become the whole <svg> (a logo, an icon), and an element inside a shadow
- * root becomes its host, since page selectors can't reach inside.
+ * become the whole <svg> (a logo, an icon). An element inside a shadow root
+ * stays itself: widening it to the host silently turned a fix for one field
+ * into a fix for a whole web-component app (owner report, 2026-10-28). The
+ * picker refuses it instead (see isSealed).
  */
 export function pickTarget(node) {
-  let el = node?.nodeType === 1 ? node : node?.parentElement ?? null;
+  const el = node?.nodeType === 1 ? node : node?.parentElement ?? null;
   if (!el) return null;
-  for (let root = el.getRootNode?.(); root && root.nodeType === 11 && root.host; root = el.getRootNode()) el = root.host;
   let svg = null;
   for (let p = el; p && p.nodeType === 1; p = p.parentElement) if (tagOf(p) === 'svg') svg = p;
   return svg ?? el;
+}
+
+/** Inside a shadow root: a page selector can't name it on its own. */
+export const isSealed = (el, doc = el?.ownerDocument) => !!el && el.getRootNode?.() !== doc;
+
+/** One step out: the parent, or the host at the top of a shadow root. */
+export const outerOf = (el) => el?.parentElement ?? el?.getRootNode?.().host ?? null;
+
+/** The element under (x, y), looking inside open shadow roots. */
+export function deepElementFromPoint(doc, x, y) {
+  let el = doc.elementFromPoint(x, y);
+  for (let inner; el?.shadowRoot && (inner = el.shadowRoot.elementFromPoint(x, y)) && inner !== el;) el = inner;
+  return el;
+}
+
+const flatParent = (el) => el.assignedSlot ?? el.parentElement ?? el.getRootNode?.().host ?? null;
+
+/**
+ * Text in `el` (open shadow roots included) whose contrast on the background
+ * painted behind it is under `min`. Backgrounds are composited up the flat
+ * tree onto white; text over a background image is skipped (unknown).
+ */
+export function hardToRead(el, getCS, min = 3) {
+  const out = [];
+  const visit = (node) => {
+    for (const e of node.children ?? []) {
+      check(e);
+      if (e.shadowRoot) visit(e.shadowRoot);
+      visit(e);
+    }
+  };
+  const check = (e) => {
+    const field = tagOf(e) === 'input' || tagOf(e) === 'textarea';
+    const text = field ? e.value || e.placeholder : [...e.childNodes].some((n) => n.nodeType === 3 && n.data.trim());
+    if (!text) return;
+    const cs = getCS(e);
+    if (cs.display === 'none' || cs.visibility !== 'visible' || Number(cs.opacity) === 0) return;
+    const fg = parseColor(cs.webkitTextFillColor || cs.color);
+    if (!fg || fg.alpha === 0) return;
+    const layers = [];
+    for (let p = e; p; p = flatParent(p)) {
+      const pcs = p === e ? cs : getCS(p);
+      if (pcs.backgroundImage && pcs.backgroundImage !== 'none') return;
+      const c = parseColor(pcs.backgroundColor);
+      if (c && c.alpha > 0) { layers.push(c); if (c.alpha >= 1) break; }
+    }
+    let bg = { r: 1, g: 1, b: 1, alpha: 1 };
+    for (let i = layers.length - 1; i >= 0; i--) bg = composite(layers[i], bg);
+    if (contrastRatio(fg, bg) < min) out.push(e);
+  };
+  check(el);
+  if (el.shadowRoot) visit(el.shadowRoot);
+  visit(el);
+  return out;
 }
 
 /**
