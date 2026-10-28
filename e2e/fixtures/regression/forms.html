@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Regression: forms</title>
+<style>
+  :root { --field-bg: #ffffff; --field-ink: #1d2327; --line: #c3c4c7; }
+  body { background: #f6f7f7; color: #1d2327; font: 16px/1.4 -apple-system, sans-serif; margin: 0; padding: 24px; }
+  form { background: #fff; border: 1px solid var(--line); padding: 16px; margin-bottom: 16px; max-width: 640px; }
+  label { display: block; margin: 8px 0 4px; }
+  input, textarea, select { background: var(--field-bg); color: var(--field-ink); border: 1px solid var(--line); padding: 6px 8px; font: inherit; width: 100%; box-sizing: border-box; }
+  .field { position: relative; margin: 12px 0; }
+  .field input { padding-top: 18px; }
+  /* Floating label: drawn over the input and lets clicks through. */
+  .field span { position: absolute; left: 9px; top: 2px; font-size: 12px; color: #50575e; pointer-events: none; }
+  .editor { border: 1px solid var(--line); padding: 8px; min-height: 40px; background: var(--field-bg); }
+  input::placeholder { color: #8c8f94; }
+</style></head>
+<body>
+  <h1>Sign in</h1>
+  <form id="signin">
+    <label for="email">Email</label><input id="email" type="email" placeholder="you@example.com">
+    <label>Password</label><input name="password" type="password">
+    <div class="field"><span>First name</span><input type="text"></div>
+    <div class="field"><span>Last name</span><input type="text"></div>
+    <label>Country</label><select><option>Canada</option><option>Mexico</option></select>
+    <label>Notes</label><textarea rows="2" placeholder="Anything else"></textarea>
+    <div class="editor" contenteditable="true">Editable text</div>
+    <button type="submit">Sign in</button>
+  </form>
+  <app-shell></app-shell>
+  <script>
+    // A web-component app: the whole UI lives in one shadow root.
+    customElements.define('app-shell', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).innerHTML = `
+          <style>
+            :host { display: block; background: #fff; border: 1px solid #c3c4c7; padding: 16px; max-width: 640px; }
+            input { background: #fff; color: #1d2327; border: 1px solid #c3c4c7; padding: 6px 8px; width: 100%; box-sizing: border-box; }
+            p { margin: 8px 0; }
+          </style>
+          <p>Search the catalogue</p>
+          <input id="q" type="search" placeholder="Search">
+          <p>Coupon</p>
+          <input id="coupon" type="text">`;
+      }
+    });
+    document.getElementById('signin').addEventListener('submit', (e) => { e.preventDefault(); window.__submitted = true; });
+  </script>
+</body></html>

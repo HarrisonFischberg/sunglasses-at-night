@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Regression: embedded and dynamic</title>
+<style>
+  body { background: #fff; color: #222; font: 16px/1.5 -apple-system, sans-serif; margin: 0; padding: 24px; }
+  .box { border: 1px solid #ddd; background: #fafafa; padding: 12px; margin: 0 0 12px; max-width: 640px; }
+  iframe { border: 1px solid #ddd; width: 640px; height: 120px; display: block; margin: 0 0 12px; }
+  .new { background: #fff3e0; color: #4e342e; padding: 8px; margin-top: 8px; }
+</style></head>
+<body>
+  <h1 id="title">Embedded and dynamic</h1>
+  <div class="box"><info-card></info-card></div>
+  <iframe id="same" src="/regression/frame.html" title="Same-origin frame"></iframe>
+  <iframe id="cross" src="{{CDN}}/regression-frame.html" title="Cross-origin frame"></iframe>
+  <div class="box" id="dyn"><button id="add">Add a card</button></div>
+  <div class="box" id="view"><p>Home view. <a href="/regression/embedded.html?page=2" id="spa-link">Go to page 2</a></p></div>
+  <script>
+    customElements.define('info-card', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).innerHTML = '<style>p{background:#e8f5e9;color:#1b5e20;padding:8px;margin:0}</style><p id="shadow-text">Text inside an open shadow root.</p>';
+      }
+    });
+    document.getElementById('add').onclick = () => {
+      const d = document.createElement('div');
+      d.className = 'new'; d.id = 'inserted'; d.textContent = 'A card inserted after load.';
+      document.getElementById('dyn').append(d);
+    };
+    // SPA navigation: pushState and swap the view without a page load.
+    document.getElementById('spa-link').onclick = (e) => {
+      e.preventDefault();
+      history.pushState({}, '', e.target.href);
+      document.getElementById('view').innerHTML = '<p id="page2" style="background:#e3f2fd;color:#0d47a1;padding:8px">Page 2, rendered by script.</p>';
+      document.getElementById('title').textContent = 'Page 2';
+    };
+  </script>
+</body></html>

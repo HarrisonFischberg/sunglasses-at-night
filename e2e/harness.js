@@ -13,7 +13,7 @@ import { createServer } from 'node:http';
 import { readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { webkit } from 'playwright';
+import { webkit, chromium } from 'playwright';
 import { bundle } from '../engine/scripts/bundle.js';
 import { createSheetMessageHandler } from '../engine/src/sheet-fetch.js';
 import { defaultSettings } from '../engine/src/settings.js';
@@ -140,8 +140,10 @@ function apiShim(settings, delayMs = 0) {
 })();`;
 }
 
+// E2E_BROWSER=chromium is a stand-in where WebKit can't be installed (a
+// cloud box without the Playwright CDN); results there are not WebKit results.
 export async function launch() {
-  return webkit.launch();
+  return process.env.E2E_BROWSER === 'chromium' ? chromium.launch({ executablePath: process.env.E2E_CHROMIUM_PATH }) : webkit.launch();
 }
 
 /**

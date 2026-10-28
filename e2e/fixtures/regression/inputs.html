@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Regression: inputs</title>
+<style>
+  body { background: #fff; color: #222; font: 16px/1.4 -apple-system, sans-serif; margin: 0; padding: 24px; }
+  label { display: block; margin: 10px 0 4px; }
+  .plain { }
+  .styled { background: #fafafa; color: #111; border: 1px solid #ccc; padding: 6px; font: inherit; }
+  .inherit { color: inherit; background: transparent; border: 1px solid #ccc; }
+  .fill { -webkit-text-fill-color: #333; }
+  .var { --ink: #000; --paper: #fff; color: var(--ink); background: var(--paper); border: 1px solid #ccc; }
+  .imp { color: #000 !important; background: #fff !important; }
+  .err:invalid { border: 2px solid #d63638; background: #fcf0f1; }
+  .caret { caret-color: #000; }
+  .grad { background: linear-gradient(#fff, #f3f3f3); color: #222; border: 1px solid #ccc; }
+  .scheme { color-scheme: light; }
+  .focus-white:focus { background: #fff; color: #000; outline: 2px solid #2271b1; }
+  .filled:not(:placeholder-shown) { background: #ffffff; color: #111; }
+  .has-value { background: #fffbe5; color: #000; }
+  [contenteditable] { border: 1px solid #ccc; padding: 6px; min-height: 2em; }
+</style></head>
+<body>
+  <h1>Inputs</h1>
+  <form id="f" novalidate>
+    <label>Plain (browser default)</label><input id="plain" class="plain" placeholder="Placeholder">
+    <label>Styled</label><input id="styled" class="styled" placeholder="Placeholder">
+    <label>color: inherit, transparent</label><input id="inherit" class="inherit">
+    <label>-webkit-text-fill-color</label><input id="fill" class="fill styled">
+    <label>CSS variables</label><input id="var" class="var">
+    <label>!important</label><input id="imp" class="imp">
+    <label>Invalid email (validation error)</label><input id="err" class="err styled" type="email" value="not-an-email">
+    <label>Caret color</label><input id="caret" class="caret styled">
+    <label>Gradient background</label><input id="grad" class="grad">
+    <label>color-scheme: light</label><input id="scheme" class="scheme">
+    <label>Disabled</label><input id="disabled" class="styled" disabled value="Disabled value">
+    <label>Search</label><input id="search" type="search">
+    <label>Textarea</label><textarea id="ta" class="styled" placeholder="Placeholder"></textarea>
+    <label>Select</label><select id="sel"><option>One</option><option>Two</option></select>
+    <label>White on :focus</label><input id="focus" class="focus-white styled">
+    <label>White once filled (:not(:placeholder-shown))</label><input id="filled" class="filled styled" placeholder="Type here">
+    <label>Inline style set by script while typing</label><input id="jsinline" class="styled">
+    <label>Class added by script while typing</label><input id="jsclass" class="styled">
+    <label>Rich editor that wraps typed text in a black span</label><div id="rich" contenteditable="true"></div>
+    <label>Contenteditable</label><div id="ce" contenteditable="true"></div>
+    <button type="submit" id="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('jsinline').addEventListener('input', (e) => { e.target.style.backgroundColor = '#ffffff'; e.target.style.color = '#000000'; });
+    document.getElementById('jsclass').addEventListener('input', (e) => e.target.classList.add('has-value'));
+    document.getElementById('rich').addEventListener('beforeinput', (e) => {
+      if (e.inputType !== 'insertText') return;
+      e.preventDefault();
+      const ed = e.currentTarget;
+      let span = ed.querySelector('span');
+      if (!span) { span = document.createElement('span'); span.style.color = 'rgb(0, 0, 0)'; ed.append(span); }
+      span.textContent += e.data;
+    });document.getElementById('f').addEventListener('submit', (e) => { e.preventDefault(); window.__submitted = (window.__submitted || 0) + 1; });</script>
+</body></html>

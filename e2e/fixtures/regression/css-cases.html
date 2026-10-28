@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Regression: CSS cases</title>
+<style>
+  :root { --brand: #0b57d0; --surface: #ffffff; --ink: #202124; --muted: #5f6368; }
+  body { background: var(--surface); color: var(--ink); font: 16px/1.5 -apple-system, sans-serif; margin: 0; padding: 24px; }
+  section { margin: 0 0 16px; max-width: 720px; }
+  .transparent { background: transparent; }
+  .inherit { color: inherit; }
+  .card { background: #f8f9fa; border: 1px solid #dadce0; padding: 12px; }
+  .vars { background: var(--surface); color: var(--muted); border: 1px solid var(--brand); padding: 12px; }
+  .important { background: #fff8e1 !important; color: #3e2723 !important; padding: 12px; }
+  .pseudo { position: relative; padding: 12px 12px 12px 40px; background: #f1f3f4; }
+  .pseudo::before { content: "i"; position: absolute; left: 10px; top: 10px; width: 20px; height: 20px; border-radius: 50%; background: #0b57d0; color: #fff; text-align: center; font: bold 14px/20px serif; }
+  .pseudo::after { content: " (pseudo text)"; color: #5f6368; }
+  .gradient { background: linear-gradient(90deg, #ffffff, #e8f0fe); padding: 12px; color: #174ea6; }
+  .bgimage { background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='6' fill='%23e8eaed'/%3E%3C/svg%3E") repeat; padding: 12px; }
+  .hero { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='120'%3E%3Crect width='600' height='120' fill='%23fbbc04'/%3E%3C/svg%3E") center/cover; color: #202124; padding: 24px; }
+  .hover { padding: 8px; border: 1px solid #dadce0; }
+  .hover:hover { background: #e8f0fe; color: #0b57d0; }
+  .alpha { background: rgba(11, 87, 208, 0.08); padding: 12px; }
+  a { color: var(--brand); }
+  ::selection { background: #c2e7ff; color: #001d35; }
+</style></head>
+<body>
+  <h1>CSS cases</h1>
+  <section class="transparent"><p>Transparent section, <span class="inherit">inherited color</span>, <a href="#x">a link</a>.</p></section>
+  <section class="card"><p id="select-me">Card on a light grey background. Select this sentence.</p></section>
+  <section class="vars" id="vars">Colors from CSS variables.</section>
+  <section class="important" id="important">Colors set with !important.</section>
+  <section class="pseudo" id="pseudo">Icon and suffix drawn by ::before and ::after</section>
+  <section class="gradient" id="gradient">Text on a gradient.</section>
+  <section class="bgimage" id="bgimage">Text on a patterned background image.</section>
+  <section class="hero" id="hero">Text on a yellow photo-like banner (background image).</section>
+  <section class="hover" id="hover">Hover over me.</section>
+  <section class="alpha" id="alpha">Text on a translucent tint.</section>
+</body></html>

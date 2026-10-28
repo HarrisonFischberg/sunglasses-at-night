@@ -1893,6 +1893,7 @@ const __m_engine_src_picker_core_js = (() => {
 // rebuild them all the time.
 
 const { isSafeSelector, tidyLabel } = __m_engine_src_fix_rules_js;
+const { parseColor, composite, contrastRatio } = __m_engine_src_color_js;
 
 const IDENT_RE = /^[A-Za-z_][\w-]*$/;
 const GENERATED_PREFIX_RE = /^(css|sc|jsx|svelte|emotion|tw|ember|ng|astro|chakra|_)[-_]?[a-z0-9]*$/i;
@@ -1974,16 +1975,71 @@ function findsOnly(doc, selector, el) {
 
 /**
  * The element worth fixing for a click on `node`: shapes inside an SVG
- * become the whole <svg> (a logo, an icon), and an element inside a shadow
- * root becomes its host, since page selectors can't reach inside.
+ * become the whole <svg> (a logo, an icon). An element inside a shadow root
+ * stays itself: widening it to the host silently turned a fix for one field
+ * into a fix for a whole web-component app (owner report, 2026-10-28). The
+ * picker refuses it instead (see isSealed).
  */
 function pickTarget(node) {
-  let el = node?.nodeType === 1 ? node : node?.parentElement ?? null;
+  const el = node?.nodeType === 1 ? node : node?.parentElement ?? null;
   if (!el) return null;
-  for (let root = el.getRootNode?.(); root && root.nodeType === 11 && root.host; root = el.getRootNode()) el = root.host;
   let svg = null;
   for (let p = el; p && p.nodeType === 1; p = p.parentElement) if (tagOf(p) === 'svg') svg = p;
   return svg ?? el;
+}
+
+/** Inside a shadow root: a page selector can't name it on its own. */
+const isSealed = (el, doc = el?.ownerDocument) => !!el && el.getRootNode?.() !== doc;
+
+/** One step out: the parent, or the host at the top of a shadow root. */
+const outerOf = (el) => el?.parentElement ?? el?.getRootNode?.().host ?? null;
+
+/** The element under (x, y), looking inside open shadow roots. */
+function deepElementFromPoint(doc, x, y) {
+  let el = doc.elementFromPoint(x, y);
+  for (let inner; el?.shadowRoot && (inner = el.shadowRoot.elementFromPoint(x, y)) && inner !== el;) el = inner;
+  return el;
+}
+
+const flatParent = (el) => el.assignedSlot ?? el.parentElement ?? el.getRootNode?.().host ?? null;
+
+/**
+ * Text in `el` (open shadow roots included) whose contrast on the background
+ * painted behind it is under `min`. Backgrounds are composited up the flat
+ * tree onto white; text over a background image is skipped (unknown).
+ */
+function hardToRead(el, getCS, min = 3) {
+  const out = [];
+  const visit = (node) => {
+    for (const e of node.children ?? []) {
+      check(e);
+      if (e.shadowRoot) visit(e.shadowRoot);
+      visit(e);
+    }
+  };
+  const check = (e) => {
+    const field = tagOf(e) === 'input' || tagOf(e) === 'textarea';
+    const text = field ? e.value || e.placeholder : [...e.childNodes].some((n) => n.nodeType === 3 && n.data.trim());
+    if (!text) return;
+    const cs = getCS(e);
+    if (cs.display === 'none' || cs.visibility !== 'visible' || Number(cs.opacity) === 0) return;
+    const fg = parseColor(cs.webkitTextFillColor || cs.color);
+    if (!fg || fg.alpha === 0) return;
+    const layers = [];
+    for (let p = e; p; p = flatParent(p)) {
+      const pcs = p === e ? cs : getCS(p);
+      if (pcs.backgroundImage && pcs.backgroundImage !== 'none') return;
+      const c = parseColor(pcs.backgroundColor);
+      if (c && c.alpha > 0) { layers.push(c); if (c.alpha >= 1) break; }
+    }
+    let bg = { r: 1, g: 1, b: 1, alpha: 1 };
+    for (let i = layers.length - 1; i >= 0; i--) bg = composite(layers[i], bg);
+    if (contrastRatio(fg, bg) < min) out.push(e);
+  };
+  check(el);
+  if (el.shadowRoot) visit(el.shadowRoot);
+  visit(el);
+  return out;
 }
 
 /**
@@ -2027,7 +2083,7 @@ function describeElement(el) {
   if (words) return tidyLabel(`“${words.length > 40 ? `${words.slice(0, 39).trimEnd()}…` : words}”`);
   return KIND[tagOf(el)] ?? 'Part of the page';
 }
-return { isStableToken, pickTarget, buildSelector, describeElement };
+return { isStableToken, pickTarget, isSealed, outerOf, deepElementFromPoint, hardToRead, buildSelector, describeElement };
 })();
 
 // ---- engine/src/picker.js
@@ -2047,11 +2103,12 @@ const __m_engine_src_picker_js = (() => {
 const { createSettingsStore, extensionArea, normalizeHostname } = __m_engine_src_settings_js;
 const { FIX_ACTIONS, FIX_LABELS } = __m_engine_src_fix_rules_js;
 const { siteEntry, withFix } = __m_engine_src_ui_core_js;
-const { buildSelector, describeElement, pickTarget } = __m_engine_src_picker_core_js;
+const { buildSelector, describeElement, pickTarget, isSealed, outerOf, deepElementFromPoint, hardToRead } = __m_engine_src_picker_core_js;
 
 const ACTIVE_KEY = '__sunglassesAtNightPicker';
 const MOVE_SLOP = 10; // px a touch may move and still count as a tap
 const TOAST_MS = 6000;
+const SETTLE_MS = 3000; // longest wait for a saved fix to show before checking it
 
 const CSS = `
 :host { all: initial; }
@@ -2180,14 +2237,20 @@ function startPicker({ document: doc, window: win, store, hostname, touch = fals
     if (!keepTrail) trail = [];
     picked = target;
     hovered = null;
-    what.textContent = describeElement(target);
+    // A part inside a web component can't be addressed on its own: say so,
+    // and leave widening to the whole component to Bigger area.
+    const sealed = isSealed(target, doc);
+    what.textContent = sealed
+      ? 'This part is inside a self-contained component, so it can’t be fixed on its own. Bigger area picks the whole component.'
+      : describeElement(target);
+    for (const b of fixButtons) b.disabled = sealed;
     smaller.hidden = trail.length === 0;
-    const parent = target.parentElement;
+    const parent = outerOf(target);
     bigger.disabled = !parent || parent === doc.body || parent === doc.documentElement;
     bar.hidden = true;
     outline(target);
     placeMenu();
-    fixButtons[0].focus({ preventScroll: true });
+    (sealed ? bigger : fixButtons[0]).focus({ preventScroll: true });
   }
 
   function unchoose() {
@@ -2200,7 +2263,13 @@ function startPicker({ document: doc, window: win, store, hostname, touch = fals
 
   async function apply(action) {
     const target = picked;
-    const selector = target && buildSelector(target, doc);
+    if (!target) return;
+    if (!target.isConnected) {
+      what.textContent = 'That part changed on the page. Pick it again.';
+      return;
+    }
+    if (isSealed(target, doc)) return;
+    const selector = buildSelector(target, doc);
     if (!selector || !host) {
       what.textContent = 'Sunglasses at Night can’t find a lasting address for this part. Try Bigger area.';
       return;
@@ -2214,6 +2283,7 @@ function startPicker({ document: doc, window: win, store, hostname, touch = fals
     removeInputListeners();
     toastText.textContent = `${FIX_LABELS[action]}: saved for ${host}.`;
     toast.hidden = false;
+    checkReadable(target, action);
     undo.onclick = async () => {
       undo.disabled = true;
       await store.setSite(host, before);
@@ -2223,6 +2293,19 @@ function startPicker({ document: doc, window: win, store, hostname, touch = fals
     toastTimer = win.setTimeout(stop, TOAST_MS);
   }
 
+  // Once the saved fix shows (content.js restarts on the settings change),
+  // text in the part it left unreadable is reported in the toast, next to Undo.
+  async function checkReadable(target, action) {
+    if (action === 'hide') return;
+    const look = () => { const cs = win.getComputedStyle(target); return `${cs.backgroundColor}|${cs.color}|${cs.filter}`; };
+    const start = look();
+    for (let t = 0; t < SETTLE_MS && look() === start && !stopped; t += 100) await new Promise((r) => win.setTimeout(r, 100));
+    await new Promise((r) => win.setTimeout(r, 300));
+    if (stopped || !target.isConnected) return;
+    const bad = hardToRead(target, (e) => win.getComputedStyle(e));
+    if (bad.length) toastText.textContent += ` Some text in it is hard to read now (${bad.length} ${bad.length === 1 ? 'place' : 'places'}).`;
+  }
+
   // ---- input: pointer events, so one path covers mouse, pen and touch.
   function onMove(e) {
     if (picked || e.pointerType === 'touch') return;
@@ -2230,7 +2313,7 @@ function startPicker({ document: doc, window: win, store, hostname, touch = fals
     // covers the part you want (headers at the top, footers at the bottom).
     if (e.composedPath?.().includes(bar)) { bar.classList.toggle('high'); return; }
     if (ours(e)) return;
-    const target = pickTarget(e.target);
+    const target = pickTarget(e.composedPath?.()[0] ?? e.target);
     if (target !== hovered) { hovered = target; outline(target); }
   }
   function onDown(e) {
@@ -2248,7 +2331,7 @@ function startPicker({ document: doc, window: win, store, hostname, touch = fals
     down = null;
     if (!start || start.id !== e.pointerId) return;
     if (Math.hypot(e.clientX - start.x, e.clientY - start.y) > MOVE_SLOP) return; // a scroll, not a tap
-    const hit = doc.elementFromPoint(e.clientX, e.clientY);
+    const hit = deepElementFromPoint(doc, e.clientX, e.clientY);
     const target = pickTarget(hit === shell ? e.target : hit);
     if (target && target !== doc.documentElement) choose(target);
   }
@@ -2303,7 +2386,7 @@ function startPicker({ document: doc, window: win, store, hostname, touch = fals
 
   for (const b of fixButtons) b.addEventListener('click', () => apply(b.dataset.action));
   bigger.addEventListener('click', () => {
-    const parent = picked?.parentElement;
+    const parent = outerOf(picked);
     if (!parent || parent === doc.body) return;
     trail.push(picked);
     choose(parent, { keepTrail: true });
@@ -2324,7 +2407,19 @@ function startPicker({ document: doc, window: win, store, hostname, touch = fals
     if (win[ACTIVE_KEY]?.stop === stop) delete win[ACTIVE_KEY];
   }
 
-  return { stop };
+  // What the picker shows, for tests and diagnostics (its root is closed).
+  const rect = (n) => { const r = n.getBoundingClientRect(); return [r.x, r.y, r.width, r.height]; };
+  function state() {
+    const shown = [bar, menu, toast].filter((n) => !n.hidden);
+    const buttons = {};
+    for (const b of root.querySelectorAll('button')) if (!b.disabled && b.getClientRects().length) buttons[b.textContent] = rect(b);
+    return {
+      message: shown.map((n) => (n === menu ? what : n === toast ? toastText : n).textContent).join(' '),
+      outline: box.hidden ? null : rect(box), toast: toast.hidden ? null : rect(toast), buttons,
+    };
+  }
+
+  return { stop, state };
 }
 
 // ---- entry: injected by the popup (scripting.executeScript, top frame).
