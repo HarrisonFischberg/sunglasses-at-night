@@ -1,0 +1,57 @@
+{
+  "state": {
+    "message": "That part changed on the page. Pick it again.",
+    "outline": [
+      39,
+      161.0625,
+      644,
+      40.390625
+    ],
+    "toast": null,
+    "buttons": {
+      "Lighter text": [
+        56,
+        298.546875,
+        141,
+        44
+      ],
+      "Darker background": [
+        205,
+        298.546875,
+        141,
+        44
+      ],
+      "Flip colors": [
+        56,
+        350.546875,
+        141,
+        44
+      ],
+      "Hide": [
+        205,
+        350.546875,
+        141,
+        44
+      ],
+      "Remove dark mode": [
+        56,
+        402.546875,
+        290,
+        44
+      ],
+      "Bigger area": [
+        56,
+        454.546875,
+        141,
+        44
+      ],
+      "Cancel": [
+        205,
+        454.546875,
+        141,
+        44
+      ]
+    }
+  },
+  "fixes": []
+}

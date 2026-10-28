@@ -1,0 +1,54 @@
+{
+  "fix": {
+    "selector": "body > app-shell",
+    "action": "original",
+    "label": "Part of the page",
+    "matched": [
+      "<app-shell>"
+    ],
+    "appliedCss": [
+      ":is([data-sunglasses-keep=\"1\"],#sunglasses-keep#sunglasses-keep){color:rgb(29, 35, 39)!important;outline-color:rgb(29, 35, 39)!important;text-decoration-color:rgb(29, 35, 39)!important;-webkit-text-fill-color:rgb(29, 35, 39)!important;caret-color:rgb(29, 35, 39)!important;color-scheme:normal!important}"
+    ]
+  },
+  "state": {
+    "message": "Remove dark mode: saved for 127.0.0.1. Some text in it is hard to read now (3 places).",
+    "outline": null,
+    "toast": [
+      178,
+      826,
+      668.390625,
+      58
+    ],
+    "buttons": {
+      "Undo": [
+        773.015625,
+        833,
+        66.375,
+        44
+      ]
+    }
+  },
+  "contrast": [
+    {
+      "el": "<p> (in shadow of <app-shell>)",
+      "text": "Search the catalogue",
+      "color": "rgb(29, 35, 39)",
+      "ratio": 1.16,
+      "image": false
+    },
+    {
+      "el": "<input#q> (in shadow of <app-shell>)",
+      "text": "Search",
+      "color": "rgb(29, 35, 39)",
+      "ratio": 1.16,
+      "image": false
+    },
+    {
+      "el": "<p> (in shadow of <app-shell>)",
+      "text": "Coupon",
+      "color": "rgb(29, 35, 39)",
+      "ratio": 1.16,
+      "image": false
+    }
+  ]
+}

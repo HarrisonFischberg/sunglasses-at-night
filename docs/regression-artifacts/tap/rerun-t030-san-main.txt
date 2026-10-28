@@ -1,0 +1,160 @@
+TAP version 13
+# Subtest: popup @ 390x844: on, normal page
+ok 1 - popup @ 390x844: on, normal page
+  ---
+  duration_ms: 485.8045
+  type: 'test'
+  ...
+# Subtest: popup @ 390x844: off
+ok 2 - popup @ 390x844: off
+  ---
+  duration_ms: 205.597167
+  type: 'test'
+  ...
+# Subtest: popup @ 390x844: already-dark note
+ok 3 - popup @ 390x844: already-dark note
+  ---
+  duration_ms: 191.370875
+  type: 'test'
+  ...
+# Subtest: popup @ 390x844: restricted page
+not ok 4 - popup @ 390x844: restricted page
+  ---
+  duration_ms: 192.668042
+  type: 'test'
+  location: '/Users/harrison/projects/san-main/e2e/t030.test.js:124:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    text contrast >= 4.5:1 (3:1 large)
+    + actual - expected
+    
+    + [
+    +   {
+    +     ratio: 1.1,
+    +     text: 'Match system'
+    +   }
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      text: 'Match system'
+      ratio: 1.1
+  operator: 'deepStrictEqual'
+  stack: |-
+    capture (file:///Users/harrison/projects/san-main/e2e/t030.test.js:117:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: options @ 390x844
+ok 5 - options @ 390x844
+  ---
+  duration_ms: 197.019875
+  type: 'test'
+  ...
+# Subtest: options @ 390x844: no site rules
+ok 6 - options @ 390x844: no site rules
+  ---
+  duration_ms: 198.081417
+  type: 'test'
+  ...
+# Subtest: popup @ 1440x900: on, normal page
+not ok 7 - popup @ 1440x900: on, normal page
+  ---
+  duration_ms: 226.510708
+  type: 'test'
+  location: '/Users/harrison/projects/san-main/e2e/t030.test.js:121:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    text contrast >= 4.5:1 (3:1 large)
+    + actual - expected
+    
+    + [
+    +   {
+    +     ratio: 1.1,
+    +     text: 'Match system'
+    +   }
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      text: 'Match system'
+      ratio: 1.1
+  operator: 'deepStrictEqual'
+  stack: |-
+    capture (file:///Users/harrison/projects/san-main/e2e/t030.test.js:117:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: popup @ 1440x900: off
+ok 8 - popup @ 1440x900: off
+  ---
+  duration_ms: 222.545
+  type: 'test'
+  ...
+# Subtest: popup @ 1440x900: already-dark note
+not ok 9 - popup @ 1440x900: already-dark note
+  ---
+  duration_ms: 225.102958
+  type: 'test'
+  location: '/Users/harrison/projects/san-main/e2e/t030.test.js:123:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    text contrast >= 4.5:1 (3:1 large)
+    + actual - expected
+    
+    + [
+    +   {
+    +     ratio: 1.1,
+    +     text: 'Match system'
+    +   }
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      text: 'Match system'
+      ratio: 1.1
+  operator: 'deepStrictEqual'
+  stack: |-
+    capture (file:///Users/harrison/projects/san-main/e2e/t030.test.js:117:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: popup @ 1440x900: restricted page
+ok 10 - popup @ 1440x900: restricted page
+  ---
+  duration_ms: 224.941458
+  type: 'test'
+  ...
+# Subtest: options @ 1440x900
+ok 11 - options @ 1440x900
+  ---
+  duration_ms: 236.335875
+  type: 'test'
+  ...
+# Subtest: options @ 1440x900: no site rules
+ok 12 - options @ 1440x900: no site rules
+  ---
+  duration_ms: 223.287875
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 9
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3009.277875

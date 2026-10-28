@@ -1,0 +1,88 @@
+{
+  "off": {
+    "inside": [
+      255,
+      255,
+      255
+    ],
+    "outside": [
+      153,
+      153,
+      153
+    ],
+    "ratio": 2.849,
+    "contrast": [
+      {
+        "el": "<h2>",
+        "text": "Newsletter",
+        "color": "rgb(29, 35, 39)",
+        "ratio": 15.89,
+        "image": false
+      },
+      {
+        "el": "<p>",
+        "text": "Get updates by email.",
+        "color": "rgb(29, 35, 39)",
+        "ratio": 15.89,
+        "image": false
+      },
+      {
+        "el": "<input#modal-input>",
+        "text": "Email",
+        "color": "rgb(0, 0, 0)",
+        "ratio": 21,
+        "image": false
+      },
+      {
+        "el": "<button#modal-close>",
+        "text": "Close",
+        "color": "rgba(0, 0, 0, 0.847)",
+        "ratio": 9.23,
+        "image": false
+      }
+    ]
+  },
+  "on": {
+    "inside": [
+      39,
+      39,
+      39
+    ],
+    "outside": [
+      12,
+      12,
+      12
+    ],
+    "ratio": 1.309,
+    "contrast": [
+      {
+        "el": "<h2>",
+        "text": "Newsletter",
+        "color": "rgb(211, 218, 223)",
+        "ratio": 10.57,
+        "image": false
+      },
+      {
+        "el": "<p>",
+        "text": "Get updates by email.",
+        "color": "rgb(211, 218, 223)",
+        "ratio": 10.57,
+        "image": false
+      },
+      {
+        "el": "<input#modal-input>",
+        "text": "Email",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 16.67,
+        "image": false
+      },
+      {
+        "el": "<button#modal-close>",
+        "text": "Close",
+        "color": "rgba(255, 255, 255, 0.847)",
+        "ratio": 5.33,
+        "image": false
+      }
+    ]
+  }
+}

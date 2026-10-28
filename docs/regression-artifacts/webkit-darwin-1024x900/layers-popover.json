@@ -1,0 +1,60 @@
+{
+  "off": {
+    "inside": [
+      255,
+      255,
+      255
+    ],
+    "outside": [
+      255,
+      255,
+      255
+    ],
+    "ratio": 1,
+    "contrast": [
+      {
+        "el": "<strong>",
+        "text": "Popover",
+        "color": "rgb(0, 0, 0)",
+        "ratio": 21,
+        "image": false
+      },
+      {
+        "el": "<p>",
+        "text": "Shown in the top layer.",
+        "color": "rgb(0, 0, 0)",
+        "ratio": 21,
+        "image": false
+      }
+    ]
+  },
+  "on": {
+    "inside": [
+      39,
+      39,
+      39
+    ],
+    "outside": [
+      20,
+      20,
+      20
+    ],
+    "ratio": 1.233,
+    "contrast": [
+      {
+        "el": "<strong>",
+        "text": "Popover",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 14.94,
+        "image": false
+      },
+      {
+        "el": "<p>",
+        "text": "Shown in the top layer.",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 14.94,
+        "image": false
+      }
+    ]
+  }
+}

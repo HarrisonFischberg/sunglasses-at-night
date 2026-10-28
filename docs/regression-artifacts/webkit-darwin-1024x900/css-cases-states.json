@@ -1,0 +1,14 @@
+{
+  "hover": {
+    "el": "<section#hover.hover>",
+    "text": "Hover over me.",
+    "color": "rgb(169, 201, 255)",
+    "ratio": 10.6,
+    "image": false
+  },
+  "selection": {
+    "bg": "rgb(5, 30, 44)",
+    "color": "rgb(192, 223, 253)",
+    "ratio": 12.38448205932104
+  }
+}

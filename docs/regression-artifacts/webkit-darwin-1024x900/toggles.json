@@ -1,0 +1,113 @@
+{
+  "first": {
+    "sheets": [
+      "base",
+      "canvas",
+      "dynamic",
+      "override"
+    ],
+    "adopted": 0,
+    "attrs": [
+      "data-sunglasses-at-night",
+      "data-sunglasses-at-night",
+      "data-sunglasses-at-night",
+      "data-sunglasses-at-night"
+    ],
+    "rootAttrs": [
+      "data-sunglasses-off",
+      "data-sunglasses-ready"
+    ]
+  },
+  "rounds": [
+    {
+      "off": {
+        "sheets": [],
+        "adopted": 0,
+        "attrs": [],
+        "rootAttrs": [
+          "data-sunglasses-off"
+        ],
+        "changes": []
+      },
+      "on": {
+        "sheets": [
+          "base",
+          "canvas",
+          "dynamic",
+          "override"
+        ],
+        "adopted": 0,
+        "attrs": [
+          "data-sunglasses-at-night",
+          "data-sunglasses-at-night",
+          "data-sunglasses-at-night",
+          "data-sunglasses-at-night"
+        ],
+        "rootAttrs": [
+          "data-sunglasses-off",
+          "data-sunglasses-ready"
+        ]
+      }
+    },
+    {
+      "off": {
+        "sheets": [],
+        "adopted": 0,
+        "attrs": [],
+        "rootAttrs": [
+          "data-sunglasses-off"
+        ],
+        "changes": []
+      },
+      "on": {
+        "sheets": [
+          "base",
+          "canvas",
+          "dynamic",
+          "override"
+        ],
+        "adopted": 0,
+        "attrs": [
+          "data-sunglasses-at-night",
+          "data-sunglasses-at-night",
+          "data-sunglasses-at-night",
+          "data-sunglasses-at-night"
+        ],
+        "rootAttrs": [
+          "data-sunglasses-off",
+          "data-sunglasses-ready"
+        ]
+      }
+    },
+    {
+      "off": {
+        "sheets": [],
+        "adopted": 0,
+        "attrs": [],
+        "rootAttrs": [
+          "data-sunglasses-off"
+        ],
+        "changes": []
+      },
+      "on": {
+        "sheets": [
+          "base",
+          "canvas",
+          "dynamic",
+          "override"
+        ],
+        "adopted": 0,
+        "attrs": [
+          "data-sunglasses-at-night",
+          "data-sunglasses-at-night",
+          "data-sunglasses-at-night",
+          "data-sunglasses-at-night"
+        ],
+        "rootAttrs": [
+          "data-sunglasses-off",
+          "data-sunglasses-ready"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "safari": "27.0.1",
+  "pages": {
+    "forms": {
+      "markers": {
+        "ready": true,
+        "ours": 4,
+        "canvas": 0.008,
+        "rs": "complete"
+      },
+      "shot": "/Users/harrison/projects/san-regression/e2e/regression-out/safari-macos/forms-on.png",
+      "audit": {
+        "rootLuminance": 0.008,
+        "checked": 11,
+        "minRatio": 6.54,
+        "maxTextBgLuminance": 0.076,
+        "failures": []
+      },
+      "typed": [
+        {
+          "id": "email",
+          "el": "<input#email>",
+          "text": "Typed text",
+          "color": "rgb(211, 218, 223)",
+          "ratio": 13.04,
+          "image": false
+        }
+      ],
+      "shotTyped": "/Users/harrison/projects/san-regression/e2e/regression-out/safari-macos/forms-typed.png"
+    },
+    "inputs": {
+      "markers": {
+        "ready": true,
+        "ours": 4,
+        "canvas": 0.008,
+        "rs": "complete"
+      },
+      "shot": "/Users/harrison/projects/san-regression/e2e/regression-out/safari-macos/inputs-on.png",
+      "audit": {
+        "rootLuminance": 0.007,
+        "checked": 22,
+        "minRatio": 6.54,
+        "maxTextBgLuminance": 0.076,
+        "failures": []
+      },
+      "typed": [
+        {
+          "id": "plain",
+          "el": "<input#plain.plain>",
+          "text": "Typed text",
+          "color": "rgb(255, 255, 255)",
+          "ratio": 16.67,
+          "image": false
+        },
+        {
+          "id": "styled",
+          "el": "<input#styled.styled>",
+          "text": "Typed text",
+          "color": "rgb(222, 222, 222)",
+          "ratio": 13.57,
+          "image": false
+        },
+        {
+          "id": "inherit",
+          "el": "<input#inherit.inherit>",
+          "text": "Typed text",
+          "color": "rgb(217, 217, 217)",
+          "ratio": 13.05,
+          "image": false
+        },
+        {
+          "id": "fill",
+          "el": "<input#fill.fill.styled>",
+          "text": "Typed text",
+          "color": "rgb(212, 212, 212)",
+          "ratio": 12.32,
+          "image": false
+        },
+        {
+          "id": "var",
+          "el": "<input#var.var>",
+          "text": "Typed text",
+          "color": "rgb(235, 235, 235)",
+          "ratio": 15.45,
+          "image": false
+        },
+        {
+          "id": "imp",
+          "el": "<input#imp.imp>",
+          "text": "Typed text",
+          "color": "rgb(235, 235, 235)",
+          "ratio": 15.45,
+          "image": false
+        },
+        {
+          "id": "err",
+          "el": "<input#err.err.styled>",
+          "text": "Typed text",
+          "color": "rgb(222, 222, 222)",
+          "ratio": 13.4,
+          "image": false
+        },
+        {
+          "id": "caret",
+          "el": "<input#caret.caret.styled>",
+          "text": "Typed text",
+          "color": "rgb(222, 222, 222)",
+          "ratio": 13.57,
+          "image": false
+        },
+        {
+          "id": "grad",
+          "el": "<input#grad.grad>",
+          "text": "Typed text",
+          "color": "rgb(217, 217, 217)",
+          "ratio": 13.05,
+          "image": true
+        },
+        {
+          "id": "scheme",
+          "el": "<input#scheme.scheme>",
+          "text": "Typed text",
+          "color": "rgb(255, 255, 255)",
+          "ratio": 16.67,
+          "image": false
+        },
+        {
+          "id": "search",
+          "el": "<input#search>",
+          "text": "Typed text",
+          "color": "rgb(255, 255, 255)",
+          "ratio": 16.67,
+          "image": false
+        },
+        {
+          "id": "ta",
+          "el": "<textarea#ta.styled>",
+          "text": "Typed text",
+          "color": "rgb(222, 222, 222)",
+          "ratio": 13.57,
+          "image": false
+        },
+        {
+          "id": "focus",
+          "el": "<input#focus.focus-white.styled>",
+          "text": "Typed text",
+          "color": "rgb(235, 235, 235)",
+          "ratio": 15.45,
+          "image": false
+        },
+        {
+          "id": "filled",
+          "el": "<input#filled.filled.styled>",
+          "text": "Typed text",
+          "color": "rgb(222, 222, 222)",
+          "ratio": 13.69,
+          "image": false
+        },
+        {
+          "id": "jsinline",
+          "el": "<input#jsinline.styled>",
+          "text": "Typed text",
+          "color": "rgb(235, 235, 235)",
+          "ratio": 15.45,
+          "image": false
+        },
+        {
+          "id": "jsclass",
+          "el": "<input#jsclass.styled.has-value>",
+          "text": "Typed text",
+          "color": "rgb(235, 235, 235)",
+          "ratio": 15.32,
+          "image": false
+        }
+      ],
+      "shotTyped": "/Users/harrison/projects/san-regression/e2e/regression-out/safari-macos/inputs-typed.png"
+    },
+    "layers": {
+      "markers": {
+        "ready": true,
+        "ours": 4,
+        "canvas": 0.007,
+        "rs": "complete"
+      },
+      "shot": "/Users/harrison/projects/san-regression/e2e/regression-out/safari-macos/layers-on.png",
+      "audit": {
+        "rootLuminance": 0.007,
+        "checked": 7,
+        "minRatio": 6.37,
+        "maxTextBgLuminance": 0.076,
+        "failures": []
+      },
+      "layers": {
+        "menu": {
+          "inside": [
+            39,
+            39,
+            39
+          ],
+          "outside": [
+            20,
+            20,
+            20
+          ]
+        },
+        "dlg": {
+          "inside": [
+            39,
+            39,
+            39
+          ],
+          "outside": [
+            13,
+            13,
+            13
+          ]
+        },
+        "pop": {
+          "inside": [
+            39,
+            39,
+            39
+          ],
+          "outside": [
+            20,
+            20,
+            20
+          ]
+        },
+        "modal-panel": {
+          "inside": [
+            39,
+            39,
+            39
+          ],
+          "outside": [
+            12,
+            12,
+            12
+          ]
+        }
+      }
+    },
+    "css-cases": {
+      "markers": {
+        "ready": true,
+        "ours": 4,
+        "canvas": 0.007,
+        "rs": "complete"
+      },
+      "shot": "/Users/harrison/projects/san-regression/e2e/regression-out/safari-macos/css-cases-on.png",
+      "audit": {
+        "rootLuminance": 0.007,
+        "checked": 13,
+        "minRatio": 10.95,
+        "maxTextBgLuminance": 0.009,
+        "failures": []
+      }
+    },
+    "embedded": {
+      "markers": {
+        "ready": true,
+        "ours": 4,
+        "canvas": 0.007,
+        "rs": "complete"
+      },
+      "shot": "/Users/harrison/projects/san-regression/e2e/regression-out/safari-macos/embedded-on.png",
+      "audit": {
+        "rootLuminance": 0.007,
+        "checked": 5,
+        "minRatio": 6.47,
+        "maxTextBgLuminance": 0.078,
+        "failures": []
+      }
+    },
+    "media": {
+      "markers": {
+        "ready": true,
+        "ours": 4,
+        "canvas": 0.007,
+        "rs": "complete"
+      },
+      "shot": "/Users/harrison/projects/san-regression/e2e/regression-out/safari-macos/media-on.png",
+      "audit": {
+        "rootLuminance": 0.007,
+        "checked": 2,
+        "minRatio": 12,
+        "maxTextBgLuminance": 0.007,
+        "failures": []
+      }
+    },
+    "own-dark": {
+      "markers": {
+        "ready": true,
+        "ours": 4,
+        "canvas": 0.007,
+        "rs": "complete"
+      },
+      "shot": "/Users/harrison/projects/san-regression/e2e/regression-out/safari-macos/own-dark-on.png",
+      "audit": {
+        "rootLuminance": 0.005,
+        "checked": 4,
+        "minRatio": 6.85,
+        "maxTextBgLuminance": 0.915,
+        "failures": []
+      }
+    }
+  },
+  "proof": {
+    "ready": true,
+    "ours": 4,
+    "canvas": 0.008,
+    "rs": "complete"
+  }
+}

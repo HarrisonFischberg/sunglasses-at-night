@@ -1,0 +1,18 @@
+{
+  "off": {
+    "rootLuminance": 1,
+    "checked": 7,
+    "minRatio": 9.23,
+    "maxTextBgLuminance": 1,
+    "failures": []
+  },
+  "on": {
+    "rootLuminance": 0.007,
+    "checked": 7,
+    "minRatio": 6.37,
+    "maxTextBgLuminance": 0.076,
+    "failures": []
+  },
+  "regressions": [],
+  "siteOwn": []
+}

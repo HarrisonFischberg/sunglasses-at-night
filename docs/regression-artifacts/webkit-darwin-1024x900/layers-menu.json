@@ -1,0 +1,74 @@
+{
+  "off": {
+    "inside": [
+      255,
+      255,
+      255
+    ],
+    "outside": [
+      255,
+      255,
+      255
+    ],
+    "ratio": 1,
+    "contrast": [
+      {
+        "el": "<li>",
+        "text": "Profile",
+        "color": "rgb(29, 35, 39)",
+        "ratio": 15.89,
+        "image": false
+      },
+      {
+        "el": "<li>",
+        "text": "Settings",
+        "color": "rgb(29, 35, 39)",
+        "ratio": 15.89,
+        "image": false
+      },
+      {
+        "el": "<li>",
+        "text": "Sign out",
+        "color": "rgb(29, 35, 39)",
+        "ratio": 15.89,
+        "image": false
+      }
+    ]
+  },
+  "on": {
+    "inside": [
+      39,
+      39,
+      39
+    ],
+    "outside": [
+      20,
+      20,
+      20
+    ],
+    "ratio": 1.233,
+    "contrast": [
+      {
+        "el": "<li>",
+        "text": "Profile",
+        "color": "rgb(211, 218, 223)",
+        "ratio": 10.57,
+        "image": false
+      },
+      {
+        "el": "<li>",
+        "text": "Settings",
+        "color": "rgb(211, 218, 223)",
+        "ratio": 10.57,
+        "image": false
+      },
+      {
+        "el": "<li>",
+        "text": "Sign out",
+        "color": "rgb(211, 218, 223)",
+        "ratio": 10.57,
+        "image": false
+      }
+    ]
+  }
+}

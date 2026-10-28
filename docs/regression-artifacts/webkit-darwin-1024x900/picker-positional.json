@@ -1,0 +1,23 @@
+{
+  "picked": ".field:nth-of-type(2) input",
+  "fix": {
+    "selector": "div.field:nth-of-type(2) > input",
+    "action": "flip",
+    "label": "Text box",
+    "matched": [
+      "<input>"
+    ],
+    "appliedCss": [
+      "div.field:nth-of-type(2) > input{filter:invert(100%) hue-rotate(180deg)!important}"
+    ]
+  },
+  "changes": [
+    {
+      "el": "/html[0]/body[0]/form[1]#signin/div[5]/input[1]",
+      "prop": "filter",
+      "before": "none",
+      "after": "invert(1) hue-rotate(180deg)"
+    }
+  ],
+  "pixelsChangedOutsideField": 0
+}

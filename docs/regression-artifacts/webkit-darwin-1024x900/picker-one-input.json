@@ -1,0 +1,44 @@
+{
+  "picked": "<input#email> (top frame, no shadow root)",
+  "fix": {
+    "selector": "#email",
+    "action": "original",
+    "label": "Text box",
+    "matched": [
+      "<input#email>"
+    ],
+    "appliedCss": [
+      ":is([data-sunglasses-keep=\"1\"],#sunglasses-keep#sunglasses-keep){color:rgb(29, 35, 39)!important;background-color:rgb(255, 255, 255)!important;border-top-color:rgb(195, 196, 199)!important;border-right-color:rgb(195, 196, 199)!important;border-bottom-color:rgb(195, 196, 199)!important;border-left-color:rgb(195, 196, 199)!important;outline-color:rgb(29, 35, 39)!important;text-decoration-color:rgb(29, 35, 39)!important;-webkit-text-fill-color:rgb(29, 35, 39)!important;caret-color:rgb(29, 35, 39)!important;color-scheme:normal!important}"
+    ]
+  },
+  "changes": [
+    {
+      "el": "/html[0]/body[0]/form[1]#signin/input[1]#email",
+      "prop": "bg",
+      "before": "rgb(20, 20, 20)",
+      "after": "rgb(255, 255, 255)"
+    },
+    {
+      "el": "/html[0]/body[0]/form[1]#signin/input[1]#email",
+      "prop": "color",
+      "before": "rgb(211, 218, 223)",
+      "after": "rgb(29, 35, 39)"
+    },
+    {
+      "el": "/html[0]/body[0]/form[1]#signin/input[1]#email",
+      "prop": "fill",
+      "before": "rgb(211, 218, 223)",
+      "after": "rgb(29, 35, 39)"
+    }
+  ],
+  "pixelsChangedOutsideField": 0,
+  "contrast": [
+    {
+      "el": "<input#email>",
+      "text": "me@example.com",
+      "color": "rgb(29, 35, 39)",
+      "ratio": 15.89,
+      "image": false
+    }
+  ]
+}

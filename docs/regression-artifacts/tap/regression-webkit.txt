@@ -1,0 +1,154 @@
+TAP version 13
+# Subtest: layers: the open menu stands out from the dark page, and its text is readable
+ok 1 - layers: the open menu stands out from the dark page, and its text is readable
+  ---
+  duration_ms: 4468.522625
+  type: 'test'
+  ...
+# Subtest: layers: the open dialog stands out from the dark page, and its text is readable
+ok 2 - layers: the open dialog stands out from the dark page, and its text is readable
+  ---
+  duration_ms: 4149.854667
+  type: 'test'
+  ...
+# Subtest: layers: the open popover stands out from the dark page, and its text is readable
+ok 3 - layers: the open popover stands out from the dark page, and its text is readable
+  ---
+  duration_ms: 4102.182584
+  type: 'test'
+  ...
+# Subtest: layers: the open custom-modal stands out from the dark page, and its text is readable
+ok 4 - layers: the open custom-modal stands out from the dark page, and its text is readable
+  ---
+  duration_ms: 4141.04875
+  type: 'test'
+  ...
+# Subtest: layers: typing into an input inside the dialog and the modal stays readable
+ok 5 - layers: typing into an input inside the dialog and the modal stays readable
+  ---
+  duration_ms: 2280.568292
+  type: 'test'
+  ...
+# Subtest: gallery forms: text readable with the extension on; page dark
+ok 6 - gallery forms: text readable with the extension on; page dark
+  ---
+  duration_ms: 3682.755541
+  type: 'test'
+  ...
+# Subtest: gallery inputs: text readable with the extension on; page dark
+ok 7 - gallery inputs: text readable with the extension on; page dark
+  ---
+  duration_ms: 3457.895583
+  type: 'test'
+  ...
+# Subtest: gallery layers: text readable with the extension on; page dark
+ok 8 - gallery layers: text readable with the extension on; page dark
+  ---
+  duration_ms: 3413.930208
+  type: 'test'
+  ...
+# Subtest: gallery css-cases: text readable with the extension on; page dark
+ok 9 - gallery css-cases: text readable with the extension on; page dark
+  ---
+  duration_ms: 3418.174292
+  type: 'test'
+  ...
+# Subtest: gallery embedded: text readable with the extension on; page dark
+ok 10 - gallery embedded: text readable with the extension on; page dark
+  ---
+  duration_ms: 3432.612583
+  type: 'test'
+  ...
+# Subtest: gallery media: text readable with the extension on; page dark
+ok 11 - gallery media: text readable with the extension on; page dark
+  ---
+  duration_ms: 3426.917125
+  type: 'test'
+  ...
+# Subtest: gallery own-dark: a site with its own dark theme is left as it is
+ok 12 - gallery own-dark: a site with its own dark theme is left as it is
+  ---
+  duration_ms: 3399.850542
+  type: 'test'
+  ...
+# Subtest: inputs: typed text, placeholders and carets readable in every field, focused and not
+ok 13 - inputs: typed text, placeholders and carets readable in every field, focused and not
+  ---
+  duration_ms: 4922.822334
+  type: 'test'
+  ...
+# Subtest: css-cases: hover state, text selection and the patterned background stay readable
+ok 14 - css-cases: hover state, text selection and the patterned background stay readable
+  ---
+  duration_ms: 1783.43025
+  type: 'test'
+  ...
+# Subtest: embedded: shadow root, frames, inserted content and SPA navigation all go dark and stay readable
+ok 15 - embedded: shadow root, frames, inserted content and SPA navigation all go dark and stay readable
+  ---
+  duration_ms: 2744.599125
+  type: 'test'
+  ...
+# Subtest: media: photos keep their pixels, icons stay visible and keep their hue
+ok 16 - media: photos keep their pixels, icons stay visible and keep their hue
+  ---
+  duration_ms: 3515.988791
+  type: 'test'
+  ...
+# Subtest: toggles: on and off three times leaves no duplicate sheets, and off restores every computed style
+ok 17 - toggles: on and off three times leaves no duplicate sheets, and off restores every computed style
+  ---
+  duration_ms: 7048.270875
+  type: 'test'
+  ...
+# Subtest: settings: a fix stored for another site, and the "never" rule, change nothing here
+ok 18 - settings: a fix stored for another site, and the "never" rule, change nothing here
+  ---
+  duration_ms: 3351.140875
+  type: 'test'
+  ...
+# Subtest: picker: Remove dark mode on one input changes that input only; page and other inputs keep their look
+ok 19 - picker: Remove dark mode on one input changes that input only; page and other inputs keep their look
+  ---
+  duration_ms: 7195.349584
+  type: 'test'
+  ...
+# Subtest: picker: a positional pick (no id or name) flips exactly that input; Undo restores the page pixel for pixel
+ok 20 - picker: a positional pick (no id or name) flips exactly that input; Undo restores the page pixel for pixel
+  ---
+  duration_ms: 3030.052334
+  type: 'test'
+  ...
+# Subtest: picker: a field inside a web component is never silently widened to the whole component
+ok 21 - picker: a field inside a web component is never silently widened to the whole component
+  ---
+  duration_ms: 2549.980792
+  type: 'test'
+  ...
+# Subtest: picker: choosing the whole component on purpose works, and unreadable text after Remove dark mode is reported
+ok 22 - picker: choosing the whole component on purpose works, and unreadable text after Remove dark mode is reported
+  ---
+  duration_ms: 5205.132709
+  type: 'test'
+  ...
+# Subtest: picker: a part that went away before you chose a fix is not saved
+ok 23 - picker: a part that went away before you chose a fix is not saved
+  ---
+  duration_ms: 2252.41825
+  type: 'test'
+  ...
+# Subtest: stored fix: a selector that now matches more than one element is not applied to any of them
+ok 24 - stored fix: a selector that now matches more than one element is not applied to any of them
+  ---
+  duration_ms: 2518.090709
+  type: 'test'
+  ...
+1..24
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 90069.807958

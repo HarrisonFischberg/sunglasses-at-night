@@ -1,0 +1,88 @@
+{
+  "off": {
+    "inside": [
+      255,
+      255,
+      255
+    ],
+    "outside": [
+      166,
+      166,
+      166
+    ],
+    "ratio": 2.434,
+    "contrast": [
+      {
+        "el": "<h2>",
+        "text": "Delete file?",
+        "color": "rgb(0, 0, 0)",
+        "ratio": 21,
+        "image": false
+      },
+      {
+        "el": "<p>",
+        "text": "This can't be undone.",
+        "color": "rgb(0, 0, 0)",
+        "ratio": 21,
+        "image": false
+      },
+      {
+        "el": "<input#dlg-input>",
+        "text": "Type DELETE",
+        "color": "rgb(0, 0, 0)",
+        "ratio": 21,
+        "image": false
+      },
+      {
+        "el": "<button#dlg-close>",
+        "text": "Cancel",
+        "color": "rgba(0, 0, 0, 0.847)",
+        "ratio": 9.23,
+        "image": false
+      }
+    ]
+  },
+  "on": {
+    "inside": [
+      39,
+      39,
+      39
+    ],
+    "outside": [
+      13,
+      13,
+      13
+    ],
+    "ratio": 1.301,
+    "contrast": [
+      {
+        "el": "<h2>",
+        "text": "Delete file?",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 14.94,
+        "image": false
+      },
+      {
+        "el": "<p>",
+        "text": "This can't be undone.",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 14.94,
+        "image": false
+      },
+      {
+        "el": "<input#dlg-input>",
+        "text": "Type DELETE",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 16.67,
+        "image": false
+      },
+      {
+        "el": "<button#dlg-close>",
+        "text": "Cancel",
+        "color": "rgba(255, 255, 255, 0.847)",
+        "ratio": 5.33,
+        "image": false
+      }
+    ]
+  }
+}

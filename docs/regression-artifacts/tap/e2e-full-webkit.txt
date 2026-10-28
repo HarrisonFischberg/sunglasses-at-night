@@ -1,0 +1,1125 @@
+TAP version 13
+# Subtest: strict CSP: our <style> sheets are refused, adopted mirrors darken the page
+ok 1 - strict CSP: our <style> sheets are refused, adopted mirrors darken the page
+  ---
+  duration_ms: 1953.526042
+  type: 'test'
+  ...
+# Subtest: concept a @ 1440x900
+ok 2 - concept a @ 1440x900
+  ---
+  duration_ms: 504.802959
+  type: 'test'
+  ...
+# Subtest: concept a @ 390x844
+ok 3 - concept a @ 390x844
+  ---
+  duration_ms: 219.639584
+  type: 'test'
+  ...
+# Subtest: concept a @ 390x844-off
+ok 4 - concept a @ 390x844-off
+  ---
+  duration_ms: 212.972167
+  type: 'test'
+  ...
+# Subtest: concept a @ 390x844-restricted
+ok 5 - concept a @ 390x844-restricted
+  ---
+  duration_ms: 192.459834
+  type: 'test'
+  ...
+# Subtest: concept b @ 1440x900
+ok 6 - concept b @ 1440x900
+  ---
+  duration_ms: 201.116708
+  type: 'test'
+  ...
+# Subtest: concept b @ 390x844
+ok 7 - concept b @ 390x844
+  ---
+  duration_ms: 197.571125
+  type: 'test'
+  ...
+# Subtest: concept b @ 390x844-off
+ok 8 - concept b @ 390x844-off
+  ---
+  duration_ms: 190.926167
+  type: 'test'
+  ...
+# Subtest: concept b @ 390x844-restricted
+ok 9 - concept b @ 390x844-restricted
+  ---
+  duration_ms: 189.733417
+  type: 'test'
+  ...
+# Subtest: concept c @ 1440x900
+ok 10 - concept c @ 1440x900
+  ---
+  duration_ms: 200.600209
+  type: 'test'
+  ...
+# Subtest: concept c @ 390x844
+ok 11 - concept c @ 390x844
+  ---
+  duration_ms: 186.353875
+  type: 'test'
+  ...
+# Subtest: concept c @ 390x844-off
+ok 12 - concept c @ 390x844-off
+  ---
+  duration_ms: 191.553084
+  type: 'test'
+  ...
+# Subtest: concept c @ 390x844-restricted
+ok 13 - concept c @ 390x844-restricted
+  ---
+  duration_ms: 184.852208
+  type: 'test'
+  ...
+# Subtest: light: renders dark, readable, and nothing intercepts pointer events
+ok 14 - light: renders dark, readable, and nothing intercepts pointer events
+  ---
+  duration_ms: 3673.54
+  type: 'test'
+  ...
+# Subtest: inline: renders dark, readable, and nothing intercepts pointer events
+ok 15 - inline: renders dark, readable, and nothing intercepts pointer events
+  ---
+  duration_ms: 3408.108458
+  type: 'test'
+  ...
+# Subtest: spa: renders dark, readable, and nothing intercepts pointer events
+ok 16 - spa: renders dark, readable, and nothing intercepts pointer events
+  ---
+  duration_ms: 4610.386208
+  type: 'test'
+  ...
+# Subtest: shadow: renders dark, readable, and nothing intercepts pointer events
+ok 17 - shadow: renders dark, readable, and nothing intercepts pointer events
+  ---
+  duration_ms: 4023.960209
+  type: 'test'
+  ...
+# Subtest: cross-origin: renders dark, readable, and nothing intercepts pointer events
+ok 18 - cross-origin: renders dark, readable, and nothing intercepts pointer events
+  ---
+  duration_ms: 3414.14
+  type: 'test'
+  ...
+# Subtest: links: renders dark, readable, and nothing intercepts pointer events
+ok 19 - links: renders dark, readable, and nothing intercepts pointer events
+  ---
+  duration_ms: 3472.804
+  type: 'test'
+  ...
+# Subtest: shop: renders dark, readable, and nothing intercepts pointer events
+ok 20 - shop: renders dark, readable, and nothing intercepts pointer events
+  ---
+  duration_ms: 3526.986917
+  type: 'test'
+  ...
+# Subtest: shopify-dawn: renders dark, readable, and nothing intercepts pointer events
+ok 21 - shopify-dawn: renders dark, readable, and nothing intercepts pointer events
+  ---
+  duration_ms: 3454.738875
+  type: 'test'
+  ...
+# Subtest: filter engine: page dark, media as authored (not inverted, not double-inverted), nothing intercepts clicks
+ok 22 - filter engine: page dark, media as authored (not inverted, not double-inverted), nothing intercepts clicks
+  ---
+  duration_ms: 3725.27575
+  type: 'test'
+  ...
+# Subtest: dynamic engine: media untouched by default
+ok 23 - dynamic engine: media untouched by default
+  ---
+  duration_ms: 1731.879375
+  type: 'test'
+  ...
+# Subtest: dynamic engine: images "dim" dims media; "hide background images" hides url() backgrounds
+ok 24 - dynamic engine: images "dim" dims media; "hide background images" hides url() backgrounds
+  ---
+  duration_ms: 1752.758708
+  type: 'test'
+  ...
+# Subtest: filter engine: images "dim" dims media; "hide background images" hides url() backgrounds
+ok 25 - filter engine: images "dim" dims media; "hide background images" hides url() backgrounds
+  ---
+  duration_ms: 1737.956916
+  type: 'test'
+  ...
+# Subtest: per-site engine switches dynamic → filter → dynamic without a reload
+ok 26 - per-site engine switches dynamic → filter → dynamic without a reload
+  ---
+  duration_ms: 1785.528042
+  type: 'test'
+  ...
+# run 1/3
+# T013 perf (Playwright WebKit 27.2 (headless), darwin arm64, HEAD f6a31ef)
+# PASS nodesInitialMedian: 45 (max 50)
+# FAIL nodesBatchMedian: 10 (max 8)
+# PASS gridLongestEngineTaskAfterFirstPaint: 17 (max 50)
+# PASS gridStormEngineShare: 0.02438 (max 0.1)
+# PASS gridInsertRecalc: 0 (max 2)
+# PASS gridGeneratedRules: 246 (max 887)
+# ADVISORY-OVER gridStormRafGapMax: 45 (max 29) [advisory]
+# grid runs (rAF gap max with / without engine, ms): 45/21, 53/24, 40/21
+# grid insert recalc (ms, with / without engine): 0/0, 1/0, 0/0; without pruning: 1; override rules: 246 after storm (212 after load) vs 1774 without pruning
+# nodes initial ms: 49, 41, 43, 46, 51, 42, 45; batch ms: 5, 11, 10, 10, 10, 12, 5, 9, 6, 11
+# grid storm: 1000 mutations in 5005 ms, engine 116 ms (2.3%), longest engine task 15 ms, rAF gap max 45 / p99 21 ms (baseline without engine: max 21 / p99 19 ms)
+# grid load: engine 80 ms before storm, longest after first paint slice 17 ms; ads styled 24/24; card bg rgb(25, 21, 11)
+# overall: FAIL → /Users/harrison/projects/san-regression/ralph/evidence/t013-perf.json
+# run 2/3
+# T013 perf (Playwright WebKit 27.2 (headless), darwin arm64, HEAD f6a31ef)
+# PASS nodesInitialMedian: 42 (max 50)
+# PASS nodesBatchMedian: 8 (max 8)
+# PASS gridLongestEngineTaskAfterFirstPaint: 17 (max 50)
+# PASS gridStormEngineShare: 0.023989999999999997 (max 0.1)
+# PASS gridInsertRecalc: 0 (max 2)
+# PASS gridGeneratedRules: 246 (max 887)
+# ADVISORY-OVER gridStormRafGapMax: 37 (max 32) [advisory]
+# grid runs (rAF gap max with / without engine, ms): 26/19, 46/24, 37/27
+# grid insert recalc (ms, with / without engine): 0/1, 0/0, 0/0; without pruning: 3; override rules: 246 after storm (212 after load) vs 1774 without pruning
+# nodes initial ms: 50, 38, 46, 42, 44, 40, 42; batch ms: 8, 6, 8, 8, 7, 8, 9, 10, 3, 10
+# grid storm: 1000 mutations in 5001 ms, engine 111 ms (2.2%), longest engine task 9 ms, rAF gap max 37 / p99 27 ms (baseline without engine: max 27 / p99 19 ms)
+# grid load: engine 78 ms before storm, longest after first paint slice 17 ms; ads styled 24/24; card bg rgb(25, 21, 11)
+# overall: PASS → /Users/harrison/projects/san-regression/ralph/evidence/t013-perf.json
+# run 3/3
+# T013 perf (Playwright WebKit 27.2 (headless), darwin arm64, HEAD f6a31ef)
+# PASS nodesInitialMedian: 40 (max 50)
+# PASS nodesBatchMedian: 7.5 (max 8)
+# PASS gridLongestEngineTaskAfterFirstPaint: 16 (max 50)
+# PASS gridStormEngineShare: 0.0268 (max 0.1)
+# PASS gridInsertRecalc: 0 (max 2)
+# PASS gridGeneratedRules: 246 (max 887)
+# ADVISORY-OVER gridStormRafGapMax: 42 (max 28) [advisory]
+# grid runs (rAF gap max with / without engine, ms): 46/20, 39/19, 42/23
+# grid insert recalc (ms, with / without engine): 0/0, 1/0, 0/0; without pruning: 0; override rules: 246 after storm (212 after load) vs 1774 without pruning
+# nodes initial ms: 52, 40, 38, 51, 42, 39, 40; batch ms: 6, 9, 9, 10, 7, 5, 9, 8, 6, 7
+# grid storm: 1000 mutations in 5003 ms, engine 112 ms (2.2%), longest engine task 13 ms, rAF gap max 42 / p99 19 ms (baseline without engine: max 23 / p99 20 ms)
+# grid load: engine 78 ms before storm, longest after first paint slice 16 ms; ads styled 24/24; card bg rgb(25, 21, 11)
+# overall: PASS → /Users/harrison/projects/san-regression/ralph/evidence/t013-perf.json
+# PASS median-of-3 nodesInitialMedian: 42 (max 50) values 45/42/40
+# PASS median-of-3 nodesBatchMedian: 8 (max 8) values 10/8/7.5
+# PASS median-of-3 gridLongestEngineTaskAfterFirstPaint: 17 (max 50) values 17/17/16
+# PASS median-of-3 gridStormEngineShare: 0.02438 (max 0.1) values 0.02438/0.023989999999999997/0.0268
+# PASS median-of-3 gridInsertRecalc: 0 (max 2) values 0/0/0
+# PASS median-of-3 gridGeneratedRules: 246 (max 887) values 246/246/246
+# ADVISORY-OVER median-of-3 gridStormRafGapMax: 42 (max 29) values 45/37/42
+# Subtest: T013 perf budget: 5,000-node page and product-grid storm
+ok 27 - T013 perf budget: 5,000-node page and product-grid storm
+  ---
+  duration_ms: 177452.935625
+  type: 'test'
+  ...
+# Subtest: picker: click the wordmark picture, Flip colors, saved and applied; applied again on the next visit
+ok 28 - picker: click the wordmark picture, Flip colors, saved and applied; applied again on the next visit
+  ---
+  duration_ms: 3725.675542
+  type: 'test'
+  ...
+# Subtest: picker: grey subtitle, Lighter text, comes out near-white
+ok 29 - picker: grey subtitle, Lighter text, comes out near-white
+  ---
+  duration_ms: 1762.099209
+  type: 'test'
+  ...
+# Subtest: picker: Remove dark mode shows the part exactly as the site made it, now and on the next visit
+ok 30 - picker: Remove dark mode shows the part exactly as the site made it, now and on the next visit
+  ---
+  duration_ms: 3428.365792
+  type: 'test'
+  ...
+# Subtest: Remove dark mode: a part with no background of its own gets the one the site shows behind it
+ok 31 - Remove dark mode: a part with no background of its own gets the one the site shows behind it
+  ---
+  duration_ms: 1706.278709
+  type: 'test'
+  ...
+# Subtest: Remove dark mode under the filter engine inverts the part back
+ok 32 - Remove dark mode under the filter engine inverts the part back
+  ---
+  duration_ms: 1729.1265
+  type: 'test'
+  ...
+# Subtest: picker: Undo takes the fix back out
+ok 33 - picker: Undo takes the fix back out
+  ---
+  duration_ms: 1761.924459
+  type: 'test'
+  ...
+# Subtest: picker: the page never gets the press, and Esc leaves without saving
+ok 34 - picker: the page never gets the press, and Esc leaves without saving
+  ---
+  duration_ms: 2056.950292
+  type: 'test'
+  ...
+# Subtest: picker: a second injection while picking does not stack a second picker
+ok 35 - picker: a second injection while picking does not stack a second picker
+  ---
+  duration_ms: 1712.487167
+  type: 'test'
+  ...
+# Subtest: buildSelector: prefers names, skips hashed classes, anchors on an id, uses position only when it must
+ok 36 - buildSelector: prefers names, skips hashed classes, anchors on an id, uses position only when it must
+  ---
+  duration_ms: 1674.601542
+  type: 'test'
+  ...
+# Subtest: picker: settings with a fix but dark mode off for the site leave the page alone
+ok 37 - picker: settings with a fix but dark mode off for the site leave the page alone
+  ---
+  duration_ms: 1689.784334
+  type: 'test'
+  ...
+# Subtest: layers: the open menu stands out from the dark page, and its text is readable
+ok 38 - layers: the open menu stands out from the dark page, and its text is readable
+  ---
+  duration_ms: 4392.287958
+  type: 'test'
+  ...
+# Subtest: layers: the open dialog stands out from the dark page, and its text is readable
+ok 39 - layers: the open dialog stands out from the dark page, and its text is readable
+  ---
+  duration_ms: 4107.858875
+  type: 'test'
+  ...
+# Subtest: layers: the open popover stands out from the dark page, and its text is readable
+ok 40 - layers: the open popover stands out from the dark page, and its text is readable
+  ---
+  duration_ms: 4153.581208
+  type: 'test'
+  ...
+# Subtest: layers: the open custom-modal stands out from the dark page, and its text is readable
+ok 41 - layers: the open custom-modal stands out from the dark page, and its text is readable
+  ---
+  duration_ms: 4120.597083
+  type: 'test'
+  ...
+# Subtest: layers: typing into an input inside the dialog and the modal stays readable
+ok 42 - layers: typing into an input inside the dialog and the modal stays readable
+  ---
+  duration_ms: 2284.102167
+  type: 'test'
+  ...
+# Subtest: gallery forms: text readable with the extension on; page dark
+ok 43 - gallery forms: text readable with the extension on; page dark
+  ---
+  duration_ms: 3671.983917
+  type: 'test'
+  ...
+# Subtest: gallery inputs: text readable with the extension on; page dark
+ok 44 - gallery inputs: text readable with the extension on; page dark
+  ---
+  duration_ms: 3456.640583
+  type: 'test'
+  ...
+# Subtest: gallery layers: text readable with the extension on; page dark
+ok 45 - gallery layers: text readable with the extension on; page dark
+  ---
+  duration_ms: 3414.81575
+  type: 'test'
+  ...
+# Subtest: gallery css-cases: text readable with the extension on; page dark
+ok 46 - gallery css-cases: text readable with the extension on; page dark
+  ---
+  duration_ms: 3437.798208
+  type: 'test'
+  ...
+# Subtest: gallery embedded: text readable with the extension on; page dark
+ok 47 - gallery embedded: text readable with the extension on; page dark
+  ---
+  duration_ms: 3451.649125
+  type: 'test'
+  ...
+# Subtest: gallery media: text readable with the extension on; page dark
+ok 48 - gallery media: text readable with the extension on; page dark
+  ---
+  duration_ms: 3439.31525
+  type: 'test'
+  ...
+# Subtest: gallery own-dark: a site with its own dark theme is left as it is
+ok 49 - gallery own-dark: a site with its own dark theme is left as it is
+  ---
+  duration_ms: 3411.396292
+  type: 'test'
+  ...
+# Subtest: inputs: typed text, placeholders and carets readable in every field, focused and not
+ok 50 - inputs: typed text, placeholders and carets readable in every field, focused and not
+  ---
+  duration_ms: 4822.007167
+  type: 'test'
+  ...
+# Subtest: css-cases: hover state, text selection and the patterned background stay readable
+ok 51 - css-cases: hover state, text selection and the patterned background stay readable
+  ---
+  duration_ms: 1753.909916
+  type: 'test'
+  ...
+# Subtest: embedded: shadow root, frames, inserted content and SPA navigation all go dark and stay readable
+ok 52 - embedded: shadow root, frames, inserted content and SPA navigation all go dark and stay readable
+  ---
+  duration_ms: 2747.494416
+  type: 'test'
+  ...
+# Subtest: media: photos keep their pixels, icons stay visible and keep their hue
+ok 53 - media: photos keep their pixels, icons stay visible and keep their hue
+  ---
+  duration_ms: 3482.96
+  type: 'test'
+  ...
+# Subtest: toggles: on and off three times leaves no duplicate sheets, and off restores every computed style
+ok 54 - toggles: on and off three times leaves no duplicate sheets, and off restores every computed style
+  ---
+  duration_ms: 7034.391417
+  type: 'test'
+  ...
+# Subtest: settings: a fix stored for another site, and the "never" rule, change nothing here
+ok 55 - settings: a fix stored for another site, and the "never" rule, change nothing here
+  ---
+  duration_ms: 3388.826709
+  type: 'test'
+  ...
+# Subtest: picker: Remove dark mode on one input changes that input only; page and other inputs keep their look
+ok 56 - picker: Remove dark mode on one input changes that input only; page and other inputs keep their look
+  ---
+  duration_ms: 7145.877542
+  type: 'test'
+  ...
+# Subtest: picker: a positional pick (no id or name) flips exactly that input; Undo restores the page pixel for pixel
+ok 57 - picker: a positional pick (no id or name) flips exactly that input; Undo restores the page pixel for pixel
+  ---
+  duration_ms: 3036.145917
+  type: 'test'
+  ...
+# Subtest: picker: a field inside a web component is never silently widened to the whole component
+ok 58 - picker: a field inside a web component is never silently widened to the whole component
+  ---
+  duration_ms: 2568.184875
+  type: 'test'
+  ...
+# Subtest: picker: choosing the whole component on purpose works, and unreadable text after Remove dark mode is reported
+ok 59 - picker: choosing the whole component on purpose works, and unreadable text after Remove dark mode is reported
+  ---
+  duration_ms: 5161.795208
+  type: 'test'
+  ...
+# Subtest: picker: a part that went away before you chose a fix is not saved
+ok 60 - picker: a part that went away before you chose a fix is not saved
+  ---
+  duration_ms: 2264.456625
+  type: 'test'
+  ...
+# Subtest: stored fix: a selector that now matches more than one element is not applied to any of them
+ok 61 - stored fix: a selector that now matches more than one element is not applied to any of them
+  ---
+  duration_ms: 2506.329084
+  type: 'test'
+  ...
+# Subtest: site fix: sheet after the override, fix rule wins, INVERT applied
+not ok 62 - site fix: sheet after the override, fix rule wins, INVERT applied
+  ---
+  duration_ms: 31955.923458
+  type: 'test'
+  location: '/Users/harrison/projects/san-regression/e2e/site-fixes.test.js:19:1'
+  failureType: 'testCodeFailure'
+  error: 'page.waitForFunction: Timeout 30000ms exceeded.'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TimeoutError'
+  stack: |-
+    TestContext.<anonymous> (/Users/harrison/projects/san-regression/e2e/site-fixes.test.js:21:14)
+  ...
+# Subtest: site fix: no matching fix, no fix sheet
+ok 63 - site fix: no matching fix, no fix sheet
+  ---
+  duration_ms: 2097.21075
+  type: 'test'
+  ...
+# Subtest: style cache: stored after the first visit, adopted on reload before ready, removed when ready
+ok 64 - style cache: stored after the first visit, adopted on reload before ready, removed when ready
+  ---
+  duration_ms: 2617.704208
+  type: 'test'
+  ...
+# Subtest: system appearance change: an open page goes dark and back without a reload
+ok 65 - system appearance change: an open page goes dark and back without a reload
+  ---
+  duration_ms: 1991.69125
+  type: 'test'
+  ...
+# Subtest: light: first paint is not white
+ok 66 - light: first paint is not white
+  ---
+  duration_ms: 16670.661667
+  type: 'test'
+  ...
+# Subtest: already-dark: first paint is not white
+ok 67 - already-dark: first paint is not white
+  ---
+  duration_ms: 16418.308709
+  type: 'test'
+  ...
+# Subtest: inline: first paint is not white
+ok 68 - inline: first paint is not white
+  ---
+  duration_ms: 16411.202791
+  type: 'test'
+  ...
+# Subtest: spa: first paint is not white
+ok 69 - spa: first paint is not white
+  ---
+  duration_ms: 16422.102083
+  type: 'test'
+  ...
+# Subtest: images: first paint is not white
+ok 70 - images: first paint is not white
+  ---
+  duration_ms: 16560.879333
+  type: 'test'
+  ...
+# Subtest: cross-origin: first paint is not white
+ok 71 - cross-origin: first paint is not white
+  ---
+  duration_ms: 16439.672375
+  type: 'test'
+  ...
+# Subtest: links: first paint is not white
+ok 72 - links: first paint is not white
+  ---
+  duration_ms: 16410.423458
+  type: 'test'
+  ...
+# Subtest: shop: first paint is not white
+ok 73 - shop: first paint is not white
+  ---
+  duration_ms: 16563.853458
+  type: 'test'
+  ...
+# Subtest: shadow: first paint is not white
+ok 74 - shadow: first paint is not white
+  ---
+  duration_ms: 16477.28075
+  type: 'test'
+  ...
+# Subtest: hard-cases: first paint is not white
+ok 75 - hard-cases: first paint is not white
+  ---
+  duration_ms: 16605.545625
+  type: 'test'
+  ...
+# Subtest: light: every text node ≥ 4.5:1, buttons clickable
+ok 76 - light: every text node ≥ 4.5:1, buttons clickable
+  ---
+  duration_ms: 1740.951625
+  type: 'test'
+  ...
+# Subtest: already-dark: every text node ≥ 4.5:1, buttons clickable, left as authored
+ok 77 - already-dark: every text node ≥ 4.5:1, buttons clickable, left as authored
+  ---
+  duration_ms: 3450.885917
+  type: 'test'
+  ...
+# Subtest: inline: every text node ≥ 4.5:1, buttons clickable
+ok 78 - inline: every text node ≥ 4.5:1, buttons clickable
+  ---
+  duration_ms: 1733.493375
+  type: 'test'
+  ...
+# Subtest: spa: every text node ≥ 4.5:1, buttons clickable
+ok 79 - spa: every text node ≥ 4.5:1, buttons clickable
+  ---
+  duration_ms: 2333.752333
+  type: 'test'
+  ...
+# Subtest: images: every text node ≥ 4.5:1, buttons clickable
+ok 80 - images: every text node ≥ 4.5:1, buttons clickable
+  ---
+  duration_ms: 1772.085125
+  type: 'test'
+  ...
+# Subtest: cross-origin: every text node ≥ 4.5:1, buttons clickable
+ok 81 - cross-origin: every text node ≥ 4.5:1, buttons clickable
+  ---
+  duration_ms: 1730.129125
+  type: 'test'
+  ...
+# Subtest: links: every text node ≥ 4.5:1, buttons clickable
+ok 82 - links: every text node ≥ 4.5:1, buttons clickable
+  ---
+  duration_ms: 1728.254625
+  type: 'test'
+  ...
+# Subtest: shop: every text node ≥ 4.5:1, buttons clickable
+ok 83 - shop: every text node ≥ 4.5:1, buttons clickable
+  ---
+  duration_ms: 1779.654542
+  type: 'test'
+  ...
+# Subtest: shadow: every text node ≥ 4.5:1, buttons clickable
+ok 84 - shadow: every text node ≥ 4.5:1, buttons clickable
+  ---
+  duration_ms: 2020.196459
+  type: 'test'
+  ...
+# Subtest: hard-cases: every text node ≥ 4.5:1, buttons clickable
+ok 85 - hard-cases: every text node ≥ 4.5:1, buttons clickable
+  ---
+  duration_ms: 4741.412291
+  type: 'test'
+  ...
+# Subtest: light: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 86 - light: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1813.070042
+  type: 'test'
+  ...
+# Subtest: already-dark: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 87 - already-dark: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1546.817458
+  type: 'test'
+  ...
+# Subtest: inline: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 88 - inline: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1534.7015
+  type: 'test'
+  ...
+# Subtest: spa: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 89 - spa: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1556.483083
+  type: 'test'
+  ...
+# Subtest: images: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 90 - images: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1584.327375
+  type: 'test'
+  ...
+# Subtest: cross-origin: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 91 - cross-origin: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1594.031625
+  type: 'test'
+  ...
+# Subtest: links: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 92 - links: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1575.372208
+  type: 'test'
+  ...
+# Subtest: shop: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 93 - shop: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1564.223666
+  type: 'test'
+  ...
+# Subtest: shadow: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 94 - shadow: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1549.161375
+  type: 'test'
+  ...
+# Subtest: hard-cases: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+ok 95 - hard-cases: system dark, mode always, settings read 300 ms: no white frame before settings arrive
+  ---
+  duration_ms: 1610.9595
+  type: 'test'
+  ...
+# Subtest: light: system light, mode off: no dark frame at all
+ok 96 - light: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 1001.571291
+  type: 'test'
+  ...
+# Subtest: already-dark: system light, mode off: no dark frame at all
+ok 97 - already-dark: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 1027.14275
+  type: 'test'
+  ...
+# Subtest: inline: system light, mode off: no dark frame at all
+ok 98 - inline: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 1021.53325
+  type: 'test'
+  ...
+# Subtest: spa: system light, mode off: no dark frame at all
+ok 99 - spa: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 1028.524833
+  type: 'test'
+  ...
+# Subtest: images: system light, mode off: no dark frame at all
+ok 100 - images: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 1024.895042
+  type: 'test'
+  ...
+# Subtest: cross-origin: system light, mode off: no dark frame at all
+ok 101 - cross-origin: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 1016.428625
+  type: 'test'
+  ...
+# Subtest: links: system light, mode off: no dark frame at all
+ok 102 - links: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 991.786
+  type: 'test'
+  ...
+# Subtest: shop: system light, mode off: no dark frame at all
+ok 103 - shop: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 1000.767834
+  type: 'test'
+  ...
+# Subtest: shadow: system light, mode off: no dark frame at all
+ok 104 - shadow: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 1016.79625
+  type: 'test'
+  ...
+# Subtest: hard-cases: system light, mode off: no dark frame at all
+ok 105 - hard-cases: system light, mode off: no dark frame at all
+  ---
+  duration_ms: 1033.583417
+  type: 'test'
+  ...
+# Subtest: light: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+ok 106 - light: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+  ---
+  duration_ms: 1006.785916
+  type: 'test'
+  ...
+# Subtest: inline: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+ok 107 - inline: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+  ---
+  duration_ms: 1032.305667
+  type: 'test'
+  ...
+# Subtest: spa: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+ok 108 - spa: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+  ---
+  duration_ms: 1024.404875
+  type: 'test'
+  ...
+# Subtest: images: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+ok 109 - images: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+  ---
+  duration_ms: 1003.076125
+  type: 'test'
+  ...
+# Subtest: cross-origin: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+ok 110 - cross-origin: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+  ---
+  duration_ms: 1024.570125
+  type: 'test'
+  ...
+# Subtest: links: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+ok 111 - links: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+  ---
+  duration_ms: 1009.832917
+  type: 'test'
+  ...
+# Subtest: shop: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+ok 112 - shop: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+  ---
+  duration_ms: 997.003125
+  type: 'test'
+  ...
+# Subtest: shadow: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+ok 113 - shadow: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+  ---
+  duration_ms: 995.317125
+  type: 'test'
+  ...
+# Subtest: hard-cases: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+ok 114 - hard-cases: system dark, mode off: transient dark ≤ settings read + 1 frame, then as authored
+  ---
+  duration_ms: 1036.989666
+  type: 'test'
+  ...
+# Subtest: heavy-grid: unmodified page is mostly light (the sampler can see white)
+ok 115 - heavy-grid: unmodified page is mostly light (the sampler can see white)
+  ---
+  duration_ms: 2298.996208
+  type: 'test'
+  ...
+# Subtest: heavy-grid: system dark, mode always, sheets 1500 ms late, settings 300 ms: no white frame, images untouched
+ok 116 - heavy-grid: system dark, mode always, sheets 1500 ms late, settings 300 ms: no white frame, images untouched
+  ---
+  duration_ms: 3233.54025
+  type: 'test'
+  ...
+# Subtest: heavy-grid: system dark, mode off: the interim rule never applies after settings arrive
+ok 117 - heavy-grid: system dark, mode off: the interim rule never applies after settings arrive
+  ---
+  duration_ms: 2915.578833
+  type: 'test'
+  ...
+# Subtest: heavy-grid: system dark, a "never" site: the interim rule never applies after settings arrive
+ok 118 - heavy-grid: system dark, a "never" site: the interim rule never applies after settings arrive
+  ---
+  duration_ms: 2905.614291
+  type: 'test'
+  ...
+# Subtest: popup @ 390x844: on, normal page
+not ok 119 - popup @ 390x844: on, normal page
+  ---
+  duration_ms: 457.622125
+  type: 'test'
+  location: '/Users/harrison/projects/san-regression/e2e/t030.test.js:121:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    text contrast >= 4.5:1 (3:1 large)
+    + actual - expected
+    
+    + [
+    +   {
+    +     ratio: 1.1,
+    +     text: 'Match system'
+    +   }
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      text: 'Match system'
+      ratio: 1.1
+  operator: 'deepStrictEqual'
+  stack: |-
+    capture (file:///Users/harrison/projects/san-regression/e2e/t030.test.js:117:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: popup @ 390x844: off
+ok 120 - popup @ 390x844: off
+  ---
+  duration_ms: 198.571542
+  type: 'test'
+  ...
+# Subtest: popup @ 390x844: already-dark note
+not ok 121 - popup @ 390x844: already-dark note
+  ---
+  duration_ms: 189.153542
+  type: 'test'
+  location: '/Users/harrison/projects/san-regression/e2e/t030.test.js:123:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    text contrast >= 4.5:1 (3:1 large)
+    + actual - expected
+    
+    + [
+    +   {
+    +     ratio: 1.1,
+    +     text: 'Match system'
+    +   }
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      text: 'Match system'
+      ratio: 1.1
+  operator: 'deepStrictEqual'
+  stack: |-
+    capture (file:///Users/harrison/projects/san-regression/e2e/t030.test.js:117:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: popup @ 390x844: restricted page
+not ok 122 - popup @ 390x844: restricted page
+  ---
+  duration_ms: 183.908834
+  type: 'test'
+  location: '/Users/harrison/projects/san-regression/e2e/t030.test.js:124:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    text contrast >= 4.5:1 (3:1 large)
+    + actual - expected
+    
+    + [
+    +   {
+    +     ratio: 1.1,
+    +     text: 'Match system'
+    +   }
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      text: 'Match system'
+      ratio: 1.1
+  operator: 'deepStrictEqual'
+  stack: |-
+    capture (file:///Users/harrison/projects/san-regression/e2e/t030.test.js:117:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: options @ 390x844
+ok 123 - options @ 390x844
+  ---
+  duration_ms: 191.639875
+  type: 'test'
+  ...
+# Subtest: options @ 390x844: no site rules
+ok 124 - options @ 390x844: no site rules
+  ---
+  duration_ms: 184.688041
+  type: 'test'
+  ...
+# Subtest: popup @ 1440x900: on, normal page
+not ok 125 - popup @ 1440x900: on, normal page
+  ---
+  duration_ms: 206.538375
+  type: 'test'
+  location: '/Users/harrison/projects/san-regression/e2e/t030.test.js:121:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    text contrast >= 4.5:1 (3:1 large)
+    + actual - expected
+    
+    + [
+    +   {
+    +     ratio: 1.1,
+    +     text: 'Match system'
+    +   }
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      text: 'Match system'
+      ratio: 1.1
+  operator: 'deepStrictEqual'
+  stack: |-
+    capture (file:///Users/harrison/projects/san-regression/e2e/t030.test.js:117:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: popup @ 1440x900: off
+ok 126 - popup @ 1440x900: off
+  ---
+  duration_ms: 217.653834
+  type: 'test'
+  ...
+# Subtest: popup @ 1440x900: already-dark note
+not ok 127 - popup @ 1440x900: already-dark note
+  ---
+  duration_ms: 209.224458
+  type: 'test'
+  location: '/Users/harrison/projects/san-regression/e2e/t030.test.js:123:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    text contrast >= 4.5:1 (3:1 large)
+    + actual - expected
+    
+    + [
+    +   {
+    +     ratio: 1.1,
+    +     text: 'Match system'
+    +   }
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      text: 'Match system'
+      ratio: 1.1
+  operator: 'deepStrictEqual'
+  stack: |-
+    capture (file:///Users/harrison/projects/san-regression/e2e/t030.test.js:117:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: popup @ 1440x900: restricted page
+not ok 128 - popup @ 1440x900: restricted page
+  ---
+  duration_ms: 215.036584
+  type: 'test'
+  location: '/Users/harrison/projects/san-regression/e2e/t030.test.js:124:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    text contrast >= 4.5:1 (3:1 large)
+    + actual - expected
+    
+    + [
+    +   {
+    +     ratio: 1.1,
+    +     text: 'Match system'
+    +   }
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      text: 'Match system'
+      ratio: 1.1
+  operator: 'deepStrictEqual'
+  stack: |-
+    capture (file:///Users/harrison/projects/san-regression/e2e/t030.test.js:117:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: options @ 1440x900
+ok 129 - options @ 1440x900
+  ---
+  duration_ms: 224.586042
+  type: 'test'
+  ...
+# Subtest: options @ 1440x900: no site rules
+ok 130 - options @ 1440x900: no site rules
+  ---
+  duration_ms: 209.970042
+  type: 'test'
+  ...
+# Subtest: amazon-home: the unmodified page is the reference (blend multiply, white headlines, light page)
+ok 131 - amazon-home: the unmodified page is the reference (blend multiply, white headlines, light page)
+  ---
+  duration_ms: 2728.392
+  type: 'test'
+  ...
+# Subtest: amazon-home: photos, headlines and the late carousel (system dark, mode always)
+ok 132 - amazon-home: photos, headlines and the late carousel (system dark, mode always)
+  ---
+  duration_ms: 3773.081208
+  type: 'test'
+  ...
+# Subtest: fresh-grid: the unmodified page is the reference (12 tiles, both tints multiply)
+ok 133 - fresh-grid: the unmodified page is the reference (12 tiles, both tints multiply)
+  ---
+  duration_ms: 8048.148833
+  type: 'test'
+  ...
+# Subtest: fresh-grid: dynamic engine, images leave: photos and "+" icons are not blacked out
+ok 134 - fresh-grid: dynamic engine, images leave: photos and "+" icons are not blacked out
+  ---
+  duration_ms: 7850.0605
+  type: 'test'
+  ...
+# Subtest: fresh-grid: dynamic engine, images dim: photos and "+" icons are not blacked out
+ok 135 - fresh-grid: dynamic engine, images dim: photos and "+" icons are not blacked out
+  ---
+  duration_ms: 7848.792042
+  type: 'test'
+  ...
+# Subtest: fresh-grid: dynamic engine, images no-invert: photos and "+" icons are not blacked out
+ok 136 - fresh-grid: dynamic engine, images no-invert: photos and "+" icons are not blacked out
+  ---
+  duration_ms: 7840.286042
+  type: 'test'
+  ...
+# Subtest: fresh-grid: filter engine, images leave: photos and "+" icons are not blacked out
+ok 137 - fresh-grid: filter engine, images leave: photos and "+" icons are not blacked out
+  ---
+  duration_ms: 7857.180875
+  type: 'test'
+  ...
+# Subtest: fresh-grid: filter engine, images dim: photos and "+" icons are not blacked out
+ok 138 - fresh-grid: filter engine, images dim: photos and "+" icons are not blacked out
+  ---
+  duration_ms: 7883.925834
+  type: 'test'
+  ...
+# Subtest: fresh-grid: filter engine, images no-invert: photos and "+" icons are not blacked out
+ok 139 - fresh-grid: filter engine, images no-invert: photos and "+" icons are not blacked out
+  ---
+  duration_ms: 7842.542042
+  type: 'test'
+  ...
+# Subtest: popup 360x560, normal page (all sections): wheel scrolls on every step through the 300 ms re-render
+ok 140 - popup 360x560, normal page (all sections): wheel scrolls on every step through the 300 ms re-render
+  ---
+  duration_ms: 2217.557958
+  type: 'test'
+  ...
+# Subtest: popup 360x560, restricted page (fewer sections): wheel scrolls on every step through the 300 ms re-render
+ok 141 - popup 360x560, restricted page (fewer sections): wheel scrolls on every step through the 300 ms re-render
+  ---
+  duration_ms: 1911.983375
+  type: 'test'
+  ...
+# Subtest: late-sheets: sheets added after ready never paint white (dark system, re-fetch 800 ms)
+ok 142 - late-sheets: sheets added after ready never paint white (dark system, re-fetch 800 ms)
+  ---
+  duration_ms: 7959.812417
+  type: 'test'
+  ...
+# Subtest: late-sheets: sheets added after ready never paint white (light system, re-fetch 800 ms)
+ok 143 - late-sheets: sheets added after ready never paint white (light system, re-fetch 800 ms)
+  ---
+  duration_ms: 7738.755417
+  type: 'test'
+  ...
+# Subtest: popup on a normal page: site controls, keyboard pass, rule saved from the keyboard
+ok 144 - popup on a normal page: site controls, keyboard pass, rule saved from the keyboard
+  ---
+  duration_ms: 687.453084
+  type: 'test'
+  ...
+# Subtest: popup on a restricted page: no site controls, says why
+ok 145 - popup on a restricted page: no site controls, says why
+  ---
+  duration_ms: 507.84675
+  type: 'test'
+  ...
+# Subtest: popup in Safari: tab.url undefined, host comes from the stored report
+ok 146 - popup in Safari: tab.url undefined, host comes from the stored report
+  ---
+  duration_ms: 169.076834
+  type: 'test'
+  ...
+# Subtest: popup with no tab.url and no stored host is restricted
+ok 147 - popup with no tab.url and no stored host is restricted
+  ---
+  duration_ms: 161.187709
+  type: 'test'
+  ...
+# Subtest: popup on an already-dark page shows the note and the override
+ok 148 - popup on an already-dark page shows the note and the override
+  ---
+  duration_ms: 193.480875
+  type: 'test'
+  ...
+# Subtest: popup: "Fix something on this page" injects the picker and closes; your fixes are listed and removable
+ok 149 - popup: "Fix something on this page" injects the picker and closes; your fixes are listed and removable
+  ---
+  duration_ms: 1133.580917
+  type: 'test'
+  ...
+# Subtest: options page: named remove buttons, keyboard pass, Reset dialog focus
+ok 150 - options page: named remove buttons, keyboard pass, Reset dialog focus
+  ---
+  duration_ms: 508.270875
+  type: 'test'
+  ...
+1..150
+# tests 150
+# suites 0
+# pass 143
+# fail 7
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 697591.307667

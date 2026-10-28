@@ -1,0 +1,49 @@
+{
+  "shadow": {
+    "el": "<p#shadow-text> (in shadow of <info-card>)",
+    "text": "Text inside an open shadow roo",
+    "color": "rgb(162, 223, 162)",
+    "ratio": 11.59,
+    "image": false
+  },
+  "same": {
+    "text": "rgb(212, 212, 212)",
+    "input": "rgb(255, 255, 255)",
+    "behind": [
+      20,
+      20,
+      20
+    ],
+    "textRatio": 12.43,
+    "inputRatio": 18.42
+  },
+  "cross": {
+    "text": "rgb(203, 206, 254)",
+    "input": "rgb(203, 206, 254)",
+    "behind": [
+      20,
+      20,
+      20
+    ],
+    "textRatio": 12.11,
+    "inputRatio": 12.11
+  },
+  "inserted": {
+    "el": "<div#inserted.new>",
+    "text": "A card inserted after load.",
+    "color": "rgb(232, 202, 195)",
+    "ratio": 11.77,
+    "image": false
+  },
+  "spa": {
+    "url": "?page=2",
+    "text": {
+      "el": "<p#page2>",
+      "text": "Page 2, rendered by script.",
+      "color": "rgb(176, 206, 255)",
+      "ratio": 11.11,
+      "image": false
+    },
+    "canvas": 0.007
+  }
+}

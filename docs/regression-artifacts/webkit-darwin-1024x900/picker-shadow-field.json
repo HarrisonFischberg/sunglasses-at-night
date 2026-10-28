@@ -1,0 +1,46 @@
+{
+  "picked": "app-shell → #shadow-root(open) → input#q",
+  "hover": {
+    "message": "Click the part that looks wrongCancel",
+    "outline": [
+      39,
+      717.875,
+      644,
+      31
+    ],
+    "toast": null,
+    "buttons": {
+      "Cancel": [
+        585.609375,
+        833,
+        76.625,
+        44
+      ]
+    }
+  },
+  "state": {
+    "message": "This part is inside a self-contained component, so it can’t be fixed on its own. Bigger area picks the whole component.",
+    "outline": [
+      39,
+      717.875,
+      644,
+      31
+    ],
+    "toast": null,
+    "buttons": {
+      "Bigger area": [
+        56,
+        652.875,
+        141,
+        44
+      ],
+      "Cancel": [
+        205,
+        652.875,
+        141,
+        44
+      ]
+    }
+  },
+  "fixesSaved": []
+}

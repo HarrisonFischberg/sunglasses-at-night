@@ -1,0 +1,2296 @@
+TAP version 13
+# Subtest: truth table covers every mode × site rule
+ok 1 - truth table covers every mode × site rule
+  ---
+  duration_ms: 1.311958
+  type: 'test'
+  ...
+# Subtest: truth table: mode=system rule=default
+ok 2 - truth table: mode=system rule=default
+  ---
+  duration_ms: 7.095167
+  type: 'test'
+  ...
+# Subtest: truth table: mode=system rule=always
+ok 3 - truth table: mode=system rule=always
+  ---
+  duration_ms: 0.6785
+  type: 'test'
+  ...
+# Subtest: truth table: mode=system rule=never
+ok 4 - truth table: mode=system rule=never
+  ---
+  duration_ms: 0.102166
+  type: 'test'
+  ...
+# Subtest: truth table: mode=always rule=default
+ok 5 - truth table: mode=always rule=default
+  ---
+  duration_ms: 0.075
+  type: 'test'
+  ...
+# Subtest: truth table: mode=always rule=always
+ok 6 - truth table: mode=always rule=always
+  ---
+  duration_ms: 0.054041
+  type: 'test'
+  ...
+# Subtest: truth table: mode=always rule=never
+ok 7 - truth table: mode=always rule=never
+  ---
+  duration_ms: 0.047125
+  type: 'test'
+  ...
+# Subtest: truth table: mode=schedule rule=default
+ok 8 - truth table: mode=schedule rule=default
+  ---
+  duration_ms: 18.415
+  type: 'test'
+  ...
+# Subtest: truth table: mode=schedule rule=always
+ok 9 - truth table: mode=schedule rule=always
+  ---
+  duration_ms: 0.223167
+  type: 'test'
+  ...
+# Subtest: truth table: mode=schedule rule=never
+ok 10 - truth table: mode=schedule rule=never
+  ---
+  duration_ms: 0.170917
+  type: 'test'
+  ...
+# Subtest: truth table: mode=off rule=default
+ok 11 - truth table: mode=off rule=default
+  ---
+  duration_ms: 0.054958
+  type: 'test'
+  ...
+# Subtest: truth table: mode=off rule=always
+ok 12 - truth table: mode=off rule=always
+  ---
+  duration_ms: 0.046875
+  type: 'test'
+  ...
+# Subtest: truth table: mode=off rule=never
+ok 13 - truth table: mode=off rule=never
+  ---
+  duration_ms: 0.029584
+  type: 'test'
+  ...
+# Subtest: reasons name the deciding input
+ok 14 - reasons name the deciding input
+  ---
+  duration_ms: 0.257667
+  type: 'test'
+  ...
+# Subtest: per-site rule matches by normalized hostname and only that host
+ok 15 - per-site rule matches by normalized hostname and only that host
+  ---
+  duration_ms: 0.061708
+  type: 'test'
+  ...
+# Subtest: system mode treats a non-boolean scheme as light
+ok 16 - system mode treats a non-boolean scheme as light
+  ---
+  duration_ms: 0.04825
+  type: 'test'
+  ...
+# Subtest: schedule crossing midnight: boundaries are start-inclusive, end-exclusive
+ok 17 - schedule crossing midnight: boundaries are start-inclusive, end-exclusive
+  ---
+  duration_ms: 0.256
+  type: 'test'
+  ...
+# Subtest: schedule within one day (start < end)
+ok 18 - schedule within one day (start < end)
+  ---
+  duration_ms: 0.158
+  type: 'test'
+  ...
+# Subtest: schedule ending at 00:00 and starting at 00:00
+ok 19 - schedule ending at 00:00 and starting at 00:00
+  ---
+  duration_ms: 0.11775
+  type: 'test'
+  ...
+# Subtest: equal start and end is an empty window at every minute of the day
+ok 20 - equal start and end is an empty window at every minute of the day
+  ---
+  duration_ms: 0.287459
+  type: 'test'
+  ...
+# Subtest: equal start and end still lets a per-site "always" rule turn a page on
+ok 21 - equal start and end still lets a per-site "always" rule turn a page on
+  ---
+  duration_ms: 0.03225
+  type: 'test'
+  ...
+# Subtest: DST spring forward: a skipped start time takes effect at the first minute after it
+ok 22 - DST spring forward: a skipped start time takes effect at the first minute after it
+  ---
+  duration_ms: 0.184417
+  type: 'test'
+  ...
+# Subtest: DST spring forward: overnight schedule ends at the same wall-clock time
+ok 23 - DST spring forward: overnight schedule ends at the same wall-clock time
+  ---
+  duration_ms: 0.092292
+  type: 'test'
+  ...
+# Subtest: DST fall back: the repeated hour is evaluated by wall-clock both times
+ok 24 - DST fall back: the repeated hour is evaluated by wall-clock both times
+  ---
+  duration_ms: 0.151084
+  type: 'test'
+  ...
+# Subtest: DST spring forward in Europe/London
+ok 25 - DST spring forward in Europe/London
+  ---
+  duration_ms: 0.092125
+  type: 'test'
+  ...
+# Subtest: localMinutes without a time zone uses the runtime local clock
+ok 26 - localMinutes without a time zone uses the runtime local clock
+  ---
+  duration_ms: 0.02075
+  type: 'test'
+  ...
+# Subtest: localMinutes reports midnight as 0, not 24:00
+ok 27 - localMinutes reports midnight as 0, not 24:00
+  ---
+  duration_ms: 0.061708
+  type: 'test'
+  ...
+# Subtest: invalid clock or schedule input is out of window, never a throw
+ok 28 - invalid clock or schedule input is out of window, never a throw
+  ---
+  duration_ms: 0.070291
+  type: 'test'
+  ...
+# Subtest: toggleMode: any on mode turns off and remembers it
+ok 29 - toggleMode: any on mode turns off and remembers it
+  ---
+  duration_ms: 1.0055
+  type: 'test'
+  ...
+# Subtest: toggleMode: off restores the remembered mode
+ok 30 - toggleMode: off restores the remembered mode
+  ---
+  duration_ms: 0.245084
+  type: 'test'
+  ...
+# Subtest: toggleMode: off with nothing (or junk) remembered goes to always
+ok 31 - toggleMode: off with nothing (or junk) remembered goes to always
+  ---
+  duration_ms: 0.187458
+  type: 'test'
+  ...
+# Subtest: toolbarState: on, off with reason, unknown reason, and unavailable
+ok 32 - toolbarState: on, off with reason, unknown reason, and unavailable
+  ---
+  duration_ms: 0.268
+  type: 'test'
+  ...
+# Subtest: broadcast: a settings write reaches every open tab in < 200 ms
+ok 33 - broadcast: a settings write reaches every open tab in < 200 ms
+  ---
+  duration_ms: 5.139041
+  type: 'test'
+  ...
+# Subtest: broadcast: sends validated settings, not the raw stored value
+ok 34 - broadcast: sends validated settings, not the raw stored value
+  ---
+  duration_ms: 0.960625
+  type: 'test'
+  ...
+# Subtest: broadcast: ignores other keys and other storage areas
+ok 35 - broadcast: ignores other keys and other storage areas
+  ---
+  duration_ms: 6.850791
+  type: 'test'
+  ...
+# Subtest: broadcast: a tab without a content script does not stop the others
+ok 36 - broadcast: a tab without a content script does not stop the others
+  ---
+  duration_ms: 3.896792
+  type: 'test'
+  ...
+# Subtest: toolbar: top-frame report sets that tab's title and badge
+ok 37 - toolbar: top-frame report sets that tab's title and badge
+  ---
+  duration_ms: 7.4705
+  type: 'test'
+  ...
+# Subtest: toolbar: icon is the full glyph when on and the dimmed glyph when off
+ok 38 - toolbar: icon is the full glyph when on and the dimmed glyph when off
+  ---
+  duration_ms: 7.631167
+  type: 'test'
+  ...
+# Subtest: toolbar: subframe and foreign-sender reports are ignored
+ok 39 - toolbar: subframe and foreign-sender reports are ignored
+  ---
+  duration_ms: 6.257959
+  type: 'test'
+  ...
+# Subtest: toolbar: navigation resets the tab to unavailable; closing forgets it
+ok 40 - toolbar: navigation resets the tab to unavailable; closing forgets it
+  ---
+  duration_ms: 7.16725
+  type: 'test'
+  ...
+# Subtest: messages: sheet requests still go to the sheet handler; unknown types are ignored
+ok 41 - messages: sheet requests still go to the sheet handler; unknown types are ignored
+  ---
+  duration_ms: 1.776
+  type: 'test'
+  ...
+# Subtest: shortcut: toggles off and back to the previous mode, and tabs hear each change
+ok 42 - shortcut: toggles off and back to the previous mode, and tabs hear each change
+  ---
+  duration_ms: 5.238583
+  type: 'test'
+  ...
+# Subtest: shortcut: from off with nothing remembered turns dark mode on (always)
+ok 43 - shortcut: from off with nothing remembered turns dark mode on (always)
+  ---
+  duration_ms: 0.5225
+  type: 'test'
+  ...
+# Subtest: shortcut: keeps every other setting
+ok 44 - shortcut: keeps every other setting
+  ---
+  duration_ms: 0.850125
+  type: 'test'
+  ...
+# Subtest: shortcut: other command names do nothing
+ok 45 - shortcut: other command names do nothing
+  ---
+  duration_ms: 5.808625
+  type: 'test'
+  ...
+# Subtest: native: startup and every settings write mirror into the App Group
+ok 46 - native: startup and every settings write mirror into the App Group
+  ---
+  duration_ms: 0.670042
+  type: 'test'
+  ...
+# Subtest: native: Reset all in the app clears the extension store on next sync
+ok 47 - native: Reset all in the app clears the extension store on next sync
+  ---
+  duration_ms: 0.535584
+  type: 'test'
+  ...
+# Subtest: native: a Reset all made while the background was stopped applies at startup
+ok 48 - native: a Reset all made while the background was stopped applies at startup
+  ---
+  duration_ms: 0.313
+  type: 'test'
+  ...
+# Subtest: native: Reset all from the extension clears both stores
+ok 49 - native: Reset all from the extension clears both stores
+  ---
+  duration_ms: 0.147208
+  type: 'test'
+  ...
+# Subtest: native: no native messaging, or a failing host, never breaks settings
+ok 50 - native: no native messaging, or a failing host, never breaks settings
+  ---
+  duration_ms: 0.160125
+  type: 'test'
+  ...
+# Subtest: native: a malformed reply does not reset anything
+ok 51 - native: a malformed reply does not reset anything
+  ---
+  duration_ms: 0.055708
+  type: 'test'
+  ...
+# Subtest: content/base.css is up to date
+ok 52 - content/base.css is up to date
+  ---
+  duration_ms: 1.92725
+  type: 'test'
+  ...
+# Subtest: base.css paints only under a dark system and without the off attribute, using no network or layout properties
+ok 53 - base.css paints only under a dark system and without the off attribute, using no network or layout properties
+  ---
+  duration_ms: 0.310625
+  type: 'test'
+  ...
+# Subtest: manifest declares base.css on the content script that runs at document_start
+ok 54 - manifest declares base.css on the content script that runs at document_start
+  ---
+  duration_ms: 0.955917
+  type: 'test'
+  ...
+# Subtest: startEarly sets the off attribute whether the sheet is painted or the page is off
+ok 55 - startEarly sets the off attribute whether the sheet is painted or the page is off
+  ---
+  duration_ms: 0.678625
+  type: 'test'
+  ...
+# Subtest: startEarly sets the off attribute for a "never" site
+ok 56 - startEarly sets the off attribute for a "never" site
+  ---
+  duration_ms: 0.137459
+  type: 'test'
+  ...
+# Subtest: lightOrClear: light (L >= 0.85) or near-transparent backgrounds only
+ok 57 - lightOrClear: light (L >= 0.85) or near-transparent backgrounds only
+  ---
+  duration_ms: 1.542959
+  type: 'test'
+  ...
+# Subtest: isBlendOverlay: a light tint with a darkening blend mode
+ok 58 - isBlendOverlay: a light tint with a darkening blend mode
+  ---
+  duration_ms: 0.577625
+  type: 'test'
+  ...
+# Subtest: isBlendOverlay: not media, not other modes, not dark tints, not picture layers
+ok 59 - isBlendOverlay: not media, not other modes, not dark tints, not picture layers
+  ---
+  duration_ms: 0.159209
+  type: 'test'
+  ...
+# Subtest: OVERLAY_DECLS: transparent background, normal blend
+ok 60 - OVERLAY_DECLS: transparent background, normal blend
+  ---
+  duration_ms: 0.766208
+  type: 'test'
+  ...
+# Subtest: bundles are up to date with engine/src
+ok 61 - bundles are up to date with engine/src
+  ---
+  duration_ms: 17.454916
+  type: 'test'
+  ...
+# Subtest: bundles are classic scripts (no import/export) that compile
+ok 62 - bundles are classic scripts (no import/export) that compile
+  ---
+  duration_ms: 19.563917
+  type: 'test'
+  ...
+# Subtest: the background bundle registers exactly its listeners and expects no other API
+ok 63 - the background bundle registers exactly its listeners and expects no other API
+  ---
+  duration_ms: 5.847417
+  type: 'test'
+  ...
+# Subtest: manifest declares the toolbar action and the toggle shortcut the background handles
+ok 64 - manifest declares the toolbar action and the toggle shortcut the background handles
+  ---
+  duration_ms: 1.543667
+  type: 'test'
+  ...
+# Subtest: network APIs appear only in the background sheet fetcher
+ok 65 - network APIs appear only in the background sheet fetcher
+  ---
+  duration_ms: 3.54375
+  type: 'test'
+  ...
+# Subtest: bundler rejects module forms it does not support
+ok 66 - bundler rejects module forms it does not support
+  ---
+  duration_ms: 1.82775
+  type: 'test'
+  ...
+# Subtest: hex: \#rgb, \#rgba, \#rrggbb, \#rrggbbaa
+ok 67 - hex: \#rgb, \#rgba, \#rrggbb, \#rrggbbaa
+  ---
+  duration_ms: 0.791709
+  type: 'test'
+  ...
+# Subtest: hex: uppercase and mixed case
+ok 68 - hex: uppercase and mixed case
+  ---
+  duration_ms: 0.07275
+  type: 'test'
+  ...
+# Subtest: hex: invalid lengths and digits rejected
+ok 69 - hex: invalid lengths and digits rejected
+  ---
+  duration_ms: 0.052375
+  type: 'test'
+  ...
+# Subtest: named colors: all 148 CSS keywords present
+ok 70 - named colors: all 148 CSS keywords present
+  ---
+  duration_ms: 0.10325
+  type: 'test'
+  ...
+# Subtest: transparent is black at zero alpha
+ok 71 - transparent is black at zero alpha
+  ---
+  duration_ms: 0.336125
+  type: 'test'
+  ...
+# Subtest: currentcolor resolves only with opts.currentColor
+ok 72 - currentcolor resolves only with opts.currentColor
+  ---
+  duration_ms: 0.052208
+  type: 'test'
+  ...
+# Subtest: system colors and var() are unresolvable → null or fallback
+ok 73 - system colors and var() are unresolvable → null or fallback
+  ---
+  duration_ms: 0.195959
+  type: 'test'
+  ...
+# Subtest: garbage input rejected
+ok 74 - garbage input rejected
+  ---
+  duration_ms: 0.122333
+  type: 'test'
+  ...
+# Subtest: rgb legacy comma syntax with alpha
+ok 75 - rgb legacy comma syntax with alpha
+  ---
+  duration_ms: 0.25325
+  type: 'test'
+  ...
+# Subtest: rgb modern space syntax with slash alpha
+ok 76 - rgb modern space syntax with slash alpha
+  ---
+  duration_ms: 0.12525
+  type: 'test'
+  ...
+# Subtest: rgb percentages, and mixing allowed only in modern syntax
+ok 77 - rgb percentages, and mixing allowed only in modern syntax
+  ---
+  duration_ms: 0.066125
+  type: 'test'
+  ...
+# Subtest: rgb out-of-range channels and alpha are clamped
+ok 78 - rgb out-of-range channels and alpha are clamped
+  ---
+  duration_ms: 0.05
+  type: 'test'
+  ...
+# Subtest: rgb scientific notation and decimals
+ok 79 - rgb scientific notation and decimals
+  ---
+  duration_ms: 0.035958
+  type: 'test'
+  ...
+# Subtest: rgb malformed separators rejected
+ok 80 - rgb malformed separators rejected
+  ---
+  duration_ms: 0.038042
+  type: 'test'
+  ...
+# Subtest: none keyword: modern only; treated as 0 for display
+ok 81 - none keyword: modern only; treated as 0 for display
+  ---
+  duration_ms: 0.034
+  type: 'test'
+  ...
+# Subtest: calc() in channels
+ok 82 - calc() in channels
+  ---
+  duration_ms: 0.241625
+  type: 'test'
+  ...
+# Subtest: hsl legacy requires percentages for s and l
+ok 83 - hsl legacy requires percentages for s and l
+  ---
+  duration_ms: 0.791708
+  type: 'test'
+  ...
+# Subtest: hsl modern with numbers, angle units and none
+ok 84 - hsl modern with numbers, angle units and none
+  ---
+  duration_ms: 0.242042
+  type: 'test'
+  ...
+# Subtest: hwb including whiteness + blackness ≥ 100%
+ok 85 - hwb including whiteness + blackness ≥ 100%
+  ---
+  duration_ms: 0.200208
+  type: 'test'
+  ...
+# Subtest: lab() and lch() of sRGB red
+ok 86 - lab() and lch() of sRGB red
+  ---
+  duration_ms: 1.770834
+  type: 'test'
+  ...
+# Subtest: oklab() and oklch() of sRGB red, numbers and percentages
+ok 87 - oklab() and oklch() of sRGB red, numbers and percentages
+  ---
+  duration_ms: 0.268916
+  type: 'test'
+  ...
+# Subtest: lab/oklab lightness clamps; L=100 is white and L=0 is black
+ok 88 - lab/oklab lightness clamps; L=100 is white and L=0 is black
+  ---
+  duration_ms: 0.116625
+  type: 'test'
+  ...
+# Subtest: legacy commas not allowed in lab-family functions
+ok 89 - legacy commas not allowed in lab-family functions
+  ---
+  duration_ms: 0.061917
+  type: 'test'
+  ...
+# Subtest: color() predefined RGB spaces map white to white
+ok 90 - color() predefined RGB spaces map white to white
+  ---
+  duration_ms: 0.281666
+  type: 'test'
+  ...
+# Subtest: color() xyz spaces: D65 and D50 white points map to white
+ok 91 - color() xyz spaces: D65 and D50 white points map to white
+  ---
+  duration_ms: 0.113834
+  type: 'test'
+  ...
+# Subtest: color(srgb-linear) applies the sRGB transfer curve
+ok 92 - color(srgb-linear) applies the sRGB transfer curve
+  ---
+  duration_ms: 0.099667
+  type: 'test'
+  ...
+# Subtest: sRGB red in display-p3 coordinates matches reference
+ok 93 - sRGB red in display-p3 coordinates matches reference
+  ---
+  duration_ms: 0.062042
+  type: 'test'
+  ...
+# Subtest: out-of-gamut display-p3 red is gamut-mapped into sRGB
+ok 94 - out-of-gamut display-p3 red is gamut-mapped into sRGB
+  ---
+  duration_ms: 0.199
+  type: 'test'
+  ...
+# Subtest: color() rejects unknown spaces and wrong arity
+ok 95 - color() rejects unknown spaces and wrong arity
+  ---
+  duration_ms: 0.051709
+  type: 'test'
+  ...
+# Subtest: color-mix in srgb: default 50/50 and single percentage
+ok 96 - color-mix in srgb: default 50/50 and single percentage
+  ---
+  duration_ms: 0.334625
+  type: 'test'
+  ...
+# Subtest: color-mix percentages summing under 100% scale alpha
+ok 97 - color-mix percentages summing under 100% scale alpha
+  ---
+  duration_ms: 0.150917
+  type: 'test'
+  ...
+# Subtest: color-mix uses premultiplied alpha
+ok 98 - color-mix uses premultiplied alpha
+  ---
+  duration_ms: 0.065875
+  type: 'test'
+  ...
+# Subtest: color-mix in oklch interpolates the shorter hue arc
+ok 99 - color-mix in oklch interpolates the shorter hue arc
+  ---
+  duration_ms: 0.215708
+  type: 'test'
+  ...
+# Subtest: color-mix hue interpolation methods
+ok 100 - color-mix hue interpolation methods
+  ---
+  duration_ms: 0.20225
+  type: 'test'
+  ...
+# Subtest: color-mix missing components take the other color
+ok 101 - color-mix missing components take the other color
+  ---
+  duration_ms: 0.161708
+  type: 'test'
+  ...
+# Subtest: color-mix defaults to oklab and supports every space
+ok 102 - color-mix defaults to oklab and supports every space
+  ---
+  duration_ms: 0.934791
+  type: 'test'
+  ...
+# Subtest: color-mix with unresolvable operand falls back
+ok 103 - color-mix with unresolvable operand falls back
+  ---
+  duration_ms: 0.083833
+  type: 'test'
+  ...
+# Subtest: color-mix invalid forms rejected
+ok 104 - color-mix invalid forms rejected
+  ---
+  duration_ms: 0.061042
+  type: 'test'
+  ...
+# Subtest: nested color-mix
+ok 105 - nested color-mix
+  ---
+  duration_ms: 0.061417
+  type: 'test'
+  ...
+# Subtest: relative color syntax: rgb(from …) keeps or edits channels
+ok 106 - relative color syntax: rgb(from …) keeps or edits channels
+  ---
+  duration_ms: 0.28625
+  type: 'test'
+  ...
+# Subtest: relative color syntax across spaces
+ok 107 - relative color syntax across spaces
+  ---
+  duration_ms: 0.378458
+  type: 'test'
+  ...
+# Subtest: light-dark() picks by opts.scheme
+ok 108 - light-dark() picks by opts.scheme
+  ---
+  duration_ms: 0.097
+  type: 'test'
+  ...
+# Subtest: srgbToOklch reference values
+ok 109 - srgbToOklch reference values
+  ---
+  duration_ms: 0.114
+  type: 'test'
+  ...
+# Subtest: sRGB → OKLCH → sRGB round-trip on 1,000 in-gamut colors
+ok 110 - sRGB → OKLCH → sRGB round-trip on 1,000 in-gamut colors
+  ---
+  duration_ms: 8.439541
+  type: 'test'
+  ...
+# Subtest: oklchToSrgb gamut-maps high chroma while keeping lightness
+ok 111 - oklchToSrgb gamut-maps high chroma while keeping lightness
+  ---
+  duration_ms: 0.587792
+  type: 'test'
+  ...
+# Subtest: oklchToSrgb at L extremes returns white / black
+ok 112 - oklchToSrgb at L extremes returns white / black
+  ---
+  duration_ms: 0.090125
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#000000 on \#ffffff = 21 ±0.01
+ok 113 - WCAG contrast \#000000 on \#ffffff = 21 ±0.01
+  ---
+  duration_ms: 0.700583
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#ffffff on \#ffffff = 1 ±0.01
+ok 114 - WCAG contrast \#ffffff on \#ffffff = 1 ±0.01
+  ---
+  duration_ms: 0.045292
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#777777 on \#ffffff = 4.48 ±0.01
+ok 115 - WCAG contrast \#777777 on \#ffffff = 4.48 ±0.01
+  ---
+  duration_ms: 0.022542
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#767676 on \#ffffff = 4.54 ±0.01
+ok 116 - WCAG contrast \#767676 on \#ffffff = 4.54 ±0.01
+  ---
+  duration_ms: 0.018042
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#595959 on \#ffffff = 7 ±0.01
+ok 117 - WCAG contrast \#595959 on \#ffffff = 7 ±0.01
+  ---
+  duration_ms: 0.090875
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#ff0000 on \#ffffff = 4 ±0.01
+ok 118 - WCAG contrast \#ff0000 on \#ffffff = 4 ±0.01
+  ---
+  duration_ms: 0.0885
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#0000ff on \#ffffff = 8.59 ±0.01
+ok 119 - WCAG contrast \#0000ff on \#ffffff = 8.59 ±0.01
+  ---
+  duration_ms: 0.0225
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#008000 on \#ffffff = 5.14 ±0.01
+ok 120 - WCAG contrast \#008000 on \#ffffff = 5.14 ±0.01
+  ---
+  duration_ms: 0.015875
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#ffff00 on \#000000 = 19.56 ±0.01
+ok 121 - WCAG contrast \#ffff00 on \#000000 = 19.56 ±0.01
+  ---
+  duration_ms: 0.017625
+  type: 'test'
+  ...
+# Subtest: WCAG contrast \#808080 on \#000000 = 5.32 ±0.01
+ok 122 - WCAG contrast \#808080 on \#000000 = 5.32 ±0.01
+  ---
+  duration_ms: 0.019209
+  type: 'test'
+  ...
+# Subtest: contrast is symmetric and accepts parsed objects
+ok 123 - contrast is symmetric and accepts parsed objects
+  ---
+  duration_ms: 0.241792
+  type: 'test'
+  ...
+# Subtest: relative luminance endpoints
+ok 124 - relative luminance endpoints
+  ---
+  duration_ms: 2.08675
+  type: 'test'
+  ...
+# Subtest: translucent text is composited over its background
+ok 125 - translucent text is composited over its background
+  ---
+  duration_ms: 0.170708
+  type: 'test'
+  ...
+# Subtest: translucent background is composited over white canvas
+ok 126 - translucent background is composited over white canvas
+  ---
+  duration_ms: 0.050708
+  type: 'test'
+  ...
+# Subtest: contrast of an unparseable color is NaN
+ok 127 - contrast of an unparseable color is NaN
+  ---
+  duration_ms: 0.027625
+  type: 'test'
+  ...
+# Subtest: formatHex and formatRgb
+ok 128 - formatHex and formatRgb
+  ---
+  duration_ms: 0.071875
+  type: 'test'
+  ...
+# Subtest: parseColorScheme: keywords, only, normal, junk
+ok 129 - parseColorScheme: keywords, only, normal, junk
+  ---
+  duration_ms: 2.650708
+  type: 'test'
+  ...
+# Subtest: usedColorScheme: CSS beats meta; both schemes follow the system
+ok 130 - usedColorScheme: CSS beats meta; both schemes follow the system
+  ---
+  duration_ms: 0.203417
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: plain white page
+ok 131 - detectAlreadyDark: plain white page
+  ---
+  duration_ms: 1.017042
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: explicit white body
+ok 132 - detectAlreadyDark: explicit white body
+  ---
+  duration_ms: 0.792208
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: dark body, light text
+ok 133 - detectAlreadyDark: dark body, light text
+  ---
+  duration_ms: 0.222167
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: dark root, transparent body
+ok 134 - detectAlreadyDark: dark root, transparent body
+  ---
+  duration_ms: 0.081542
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: white root, dark body covers it
+ok 135 - detectAlreadyDark: white root, dark body covers it
+  ---
+  duration_ms: 0.049542
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: dark root, white body covers it
+ok 136 - detectAlreadyDark: dark root, white body covers it
+  ---
+  duration_ms: 0.041667
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: oklch dark theme
+ok 137 - detectAlreadyDark: oklch dark theme
+  ---
+  duration_ms: 0.178416
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: mid-gray is not dark
+ok 138 - detectAlreadyDark: mid-gray is not dark
+  ---
+  duration_ms: 0.069875
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: dark text on darkish bg still gets fixed
+ok 139 - detectAlreadyDark: dark text on darkish bg still gets fixed
+  ---
+  duration_ms: 0.049416
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: translucent black over white canvas is light
+ok 140 - detectAlreadyDark: translucent black over white canvas is light
+  ---
+  duration_ms: 0.056458
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: translucent black, mostly opaque
+ok 141 - detectAlreadyDark: translucent black, mostly opaque
+  ---
+  duration_ms: 0.048459
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: transparent page with color-scheme dark shows dark canvas
+ok 142 - detectAlreadyDark: transparent page with color-scheme dark shows dark canvas
+  ---
+  duration_ms: 0.041459
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: meta dark, transparent page
+ok 143 - detectAlreadyDark: meta dark, transparent page
+  ---
+  duration_ms: 0.030292
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: meta dark but page paints white
+ok 144 - detectAlreadyDark: meta dark but page paints white
+  ---
+  duration_ms: 0.029875
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: light dark, system light, transparent
+ok 145 - detectAlreadyDark: light dark, system light, transparent
+  ---
+  duration_ms: 0.029125
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: light dark, system dark, transparent
+ok 146 - detectAlreadyDark: light dark, system dark, transparent
+  ---
+  duration_ms: 0.023209
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: no readable colors, light scheme
+ok 147 - detectAlreadyDark: no readable colors, light scheme
+  ---
+  duration_ms: 0.02025
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: no readable colors, dark scheme
+ok 148 - detectAlreadyDark: no readable colors, dark scheme
+  ---
+  duration_ms: 0.022166
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: unparseable var() colors fall back
+ok 149 - detectAlreadyDark: unparseable var() colors fall back
+  ---
+  duration_ms: 0.022709
+  type: 'test'
+  ...
+# Subtest: detectAlreadyDark: luminance threshold is exclusive and reported
+ok 150 - detectAlreadyDark: luminance threshold is exclusive and reported
+  ---
+  duration_ms: 0.075125
+  type: 'test'
+  ...
+# Subtest: finalDecision: inactive, already dark, detection off, apply
+ok 151 - finalDecision: inactive, already dark, detection off, apply
+  ---
+  duration_ms: 0.067625
+  type: 'test'
+  ...
+# Subtest: antiFlashCss: dark root, readable text, colors only
+ok 152 - antiFlashCss: dark root, readable text, colors only
+  ---
+  duration_ms: 0.449792
+  type: 'test'
+  ...
+# Subtest: antiFlashCss: follows the look (brightness lowers the bg)
+ok 153 - antiFlashCss: follows the look (brightness lowers the bg)
+  ---
+  duration_ms: 0.332334
+  type: 'test'
+  ...
+# Subtest: startEarly: injects the sheet at document_start when active
+ok 154 - startEarly: injects the sheet at document_start when active
+  ---
+  duration_ms: 0.600875
+  type: 'test'
+  ...
+# Subtest: interimCss: neutralizes backgrounds below <body> until ready, never media
+ok 155 - interimCss: neutralizes backgrounds below <body> until ready, never media
+  ---
+  duration_ms: 0.088459
+  type: 'test'
+  ...
+# Subtest: startEarly: no head yet → sheet goes on the root element
+ok 156 - startEarly: no head yet → sheet goes on the root element
+  ---
+  duration_ms: 0.100958
+  type: 'test'
+  ...
+# Subtest: startEarly: inactive → no sheet, finish does not measure
+ok 157 - startEarly: inactive → no sheet, finish does not measure
+  ---
+  duration_ms: 0.42
+  type: 'test'
+  ...
+# Subtest: startEarly: system mode with light system → no sheet
+ok 158 - startEarly: system mode with light system → no sheet
+  ---
+  duration_ms: 0.15425
+  type: 'test'
+  ...
+# Subtest: finish: sheet removed when the site is already dark
+ok 159 - finish: sheet removed when the site is already dark
+  ---
+  duration_ms: 0.792125
+  type: 'test'
+  ...
+# Subtest: finish: sheet removed on a transparent page that declares color-scheme dark via meta
+ok 160 - finish: sheet removed on a transparent page that declares color-scheme dark via meta
+  ---
+  duration_ms: 0.145
+  type: 'test'
+  ...
+# Subtest: finish: sheet kept on a light site (measured with the sheet off, then restored)
+ok 161 - finish: sheet kept on a light site (measured with the sheet off, then restored)
+  ---
+  duration_ms: 0.08925
+  type: 'test'
+  ...
+# Subtest: finish: global detectDark off keeps the sheet on a dark site
+ok 162 - finish: global detectDark off keeps the sheet on a dark site
+  ---
+  duration_ms: 0.0605
+  type: 'test'
+  ...
+# Subtest: finish: per-site detectDark override beats the global setting
+ok 163 - finish: per-site detectDark override beats the global setting
+  ---
+  duration_ms: 0.161375
+  type: 'test'
+  ...
+# Subtest: finish: site rule never → no sheet even on a light page
+ok 164 - finish: site rule never → no sheet even on a light page
+  ---
+  duration_ms: 0.046625
+  type: 'test'
+  ...
+# Subtest: finish: idempotent
+ok 165 - finish: idempotent
+  ---
+  duration_ms: 0.071834
+  type: 'test'
+  ...
+# Subtest: readPageColors: reads page colors, not the sheet, and restores media
+ok 166 - readPageColors: reads page colors, not the sheet, and restores media
+  ---
+  duration_ms: 0.142584
+  type: 'test'
+  ...
+# Subtest: whenRoot: runs now with a root, else once <html> is inserted
+ok 167 - whenRoot: runs now with a root, else once <html> is inserted
+  ---
+  duration_ms: 0.093625
+  type: 'test'
+  ...
+# Subtest: whenParsed: runs now after parsing, else on DOMContentLoaded
+ok 168 - whenParsed: runs now after parsing, else on DOMContentLoaded
+  ---
+  duration_ms: 0.05025
+  type: 'test'
+  ...
+# Subtest: startEarly: a listed dark site gets no sheet and decides already-dark, unless detection is off
+ok 169 - startEarly: a listed dark site gets no sheet and decides already-dark, unless detection is off
+  ---
+  duration_ms: 0.459167
+  type: 'test'
+  ...
+# Subtest: rewriteValue: plain colors map by role
+ok 170 - rewriteValue: plain colors map by role
+  ---
+  duration_ms: 2.138542
+  type: 'test'
+  ...
+# Subtest: rewriteValue: keywords, transparent and unknown values are left alone
+ok 171 - rewriteValue: keywords, transparent and unknown values are left alone
+  ---
+  duration_ms: 0.364583
+  type: 'test'
+  ...
+# Subtest: rewriteValue: gradients rewrite every color stop and nothing else
+ok 172 - rewriteValue: gradients rewrite every color stop and nothing else
+  ---
+  duration_ms: 0.51325
+  type: 'test'
+  ...
+# Subtest: rewriteValue: url() and strings inside a value are untouched
+ok 173 - rewriteValue: url() and strings inside a value are untouched
+  ---
+  duration_ms: 0.105
+  type: 'test'
+  ...
+# Subtest: rewriteValue: var() reads the role variant and falls back to the original
+ok 174 - rewriteValue: var() reads the role variant and falls back to the original
+  ---
+  duration_ms: 0.154292
+  type: 'test'
+  ...
+# Subtest: rewriteValue: color-mix with var() operands rewrites its parts
+ok 175 - rewriteValue: color-mix with var() operands rewrites its parts
+  ---
+  duration_ms: 0.19475
+  type: 'test'
+  ...
+# Subtest: rewriteValue: identifiers that are not colors and dimensions survive
+ok 176 - rewriteValue: identifiers that are not colors and dimensions survive
+  ---
+  duration_ms: 0.066833
+  type: 'test'
+  ...
+# Subtest: rewriteDeclarations: color longhands, priorities and verbatim keywords
+ok 177 - rewriteDeclarations: color longhands, priorities and verbatim keywords
+  ---
+  duration_ms: 0.699
+  type: 'test'
+  ...
+# Subtest: rewriteDeclarations: never emits layout or hit-testing properties
+ok 178 - rewriteDeclarations: never emits layout or hit-testing properties
+  ---
+  duration_ms: 0.16325
+  type: 'test'
+  ...
+# Subtest: rewriteDeclarations: custom properties get one variant per role
+ok 179 - rewriteDeclarations: custom properties get one variant per role
+  ---
+  duration_ms: 0.364875
+  type: 'test'
+  ...
+# Subtest: rewriteDeclarations: shorthand pending var() substitution is rewritten whole
+ok 180 - rewriteDeclarations: shorthand pending var() substitution is rewritten whole
+  ---
+  duration_ms: 0.078708
+  type: 'test'
+  ...
+# Subtest: rewriteDeclarations: color-scheme light becomes dark; inline forces !important
+ok 181 - rewriteDeclarations: color-scheme light becomes dark; inline forces !important
+  ---
+  duration_ms: 0.18625
+  type: 'test'
+  ...
+# Subtest: rewriteRules: style, grouping, nested, import, keyframes and page rules
+ok 182 - rewriteRules: style, grouping, nested, import, keyframes and page rules
+  ---
+  duration_ms: 1.912333
+  type: 'test'
+  ...
+# Subtest: rewriteRules: @property initial colors get root variants (QA: MyChart login text black on dark)
+ok 183 - rewriteRules: @property initial colors get root variants (QA: MyChart login text black on dark)
+  ---
+  duration_ms: 0.195917
+  type: 'test'
+  ...
+# Subtest: rewriteRules: isDead leaves out style rules that cannot match, keeps nested parents
+ok 184 - rewriteRules: isDead leaves out style rules that cannot match, keeps nested parents
+  ---
+  duration_ms: 0.099625
+  type: 'test'
+  ...
+# Subtest: baseCss: dark canvas, readable default text and link colors, zero specificity
+ok 185 - baseCss: dark canvas, readable default text and link colors, zero specificity
+  ---
+  duration_ms: 0.902959
+  type: 'test'
+  ...
+# Subtest: rewriteDeclarations: a light tint that blends in the same rule turns transparent (QA: ::after tint over product photos)
+ok 186 - rewriteDeclarations: a light tint that blends in the same rule turns transparent (QA: ::after tint over product photos)
+  ---
+  duration_ms: 0.150291
+  type: 'test'
+  ...
+# Subtest: rewriteDeclarations: multiply / darken / color-burn / luminosity blends become normal (T031)
+ok 187 - rewriteDeclarations: multiply / darken / color-burn / luminosity blends become normal (T031)
+  ---
+  duration_ms: 0.092208
+  type: 'test'
+  ...
+# Subtest: rewriteDeclarations: channel-list custom properties (Dawn/Shopify) get per-role variants in the same format
+ok 188 - rewriteDeclarations: channel-list custom properties (Dawn/Shopify) get per-role variants in the same format
+  ---
+  duration_ms: 0.611292
+  type: 'test'
+  ...
+# Subtest: rewriteValue: rgb(var(--x)) reads the variant of the using property role
+ok 189 - rewriteValue: rgb(var(--x)) reads the variant of the using property role
+  ---
+  duration_ms: 0.1175
+  type: 'test'
+  ...
+# Subtest: pendingCss: transparent backgrounds and base text color for the tagged subtree, media untouched (T031)
+ok 190 - pendingCss: transparent backgrounds and base text color for the tagged subtree, media untouched (T031)
+  ---
+  duration_ms: 0.155791
+  type: 'test'
+  ...
+# Subtest: filter model: media under the page filter alone would show inverted
+ok 191 - filter model: media under the page filter alone would show inverted
+  ---
+  duration_ms: 2.164792
+  type: 'test'
+  ...
+# Subtest: filter model: one counter-filter restores media; a doubled counter inverts it again
+ok 192 - filter model: one counter-filter restores media; a doubled counter inverts it again
+  ---
+  duration_ms: 0.12225
+  type: 'test'
+  ...
+# Subtest: pageFilter: identity look is invert + hue-rotate only; sliders append in order
+ok 193 - pageFilter: identity look is invert + hue-rotate only; sliders append in order
+  ---
+  duration_ms: 0.106583
+  type: 'test'
+  ...
+# Subtest: filterCss: root filtered with !important; canvas fallback at zero specificity
+ok 194 - filterCss: root filtered with !important; canvas fallback at zero specificity
+  ---
+  duration_ms: 0.142
+  type: 'test'
+  ...
+# Subtest: filterCss: counter-filter only on outermost media (no double inversion)
+ok 195 - filterCss: counter-filter only on outermost media (no double inversion)
+  ---
+  duration_ms: 0.105916
+  type: 'test'
+  ...
+# Subtest: filterCss: image modes
+ok 196 - filterCss: image modes
+  ---
+  duration_ms: 0.068958
+  type: 'test'
+  ...
+# Subtest: filterCss: hide background images only when asked
+ok 197 - filterCss: hide background images only when asked
+  ---
+  duration_ms: 0.03525
+  type: 'test'
+  ...
+# Subtest: dynamicImageCss: only dim adds CSS, and it beats inline filter:none
+ok 198 - dynamicImageCss: only dim adds CSS, and it beats inline filter:none
+  ---
+  duration_ms: 0.043334
+  type: 'test'
+  ...
+# Subtest: withoutImages: drops url/image-set layers, keeps gradients
+ok 199 - withoutImages: drops url/image-set layers, keeps gradients
+  ---
+  duration_ms: 0.31975
+  type: 'test'
+  ...
+# Subtest: rewriteDeclarations: hideImages replaces image backgrounds, keeps the rest
+ok 200 - rewriteDeclarations: hideImages replaces image backgrounds, keeps the rest
+  ---
+  duration_ms: 3.169958
+  type: 'test'
+  ...
+# Subtest: startFilter: one marked <style> as the root's last child; stop() removes it
+ok 201 - startFilter: one marked <style> as the root's last child; stop() removes it
+  ---
+  duration_ms: 0.23825
+  type: 'test'
+  ...
+# Subtest: withEngine: per-site engine set, and default removes it
+ok 202 - withEngine: per-site engine set, and default removes it
+  ---
+  duration_ms: 0.080209
+  type: 'test'
+  ...
+# Subtest: popupView: reports the site engine choice
+ok 203 - popupView: reports the site engine choice
+  ---
+  duration_ms: 0.340792
+  type: 'test'
+  ...
+# Subtest: hostPatterns: the exact host only, like resolveSite
+ok 204 - hostPatterns: the exact host only, like resolveSite
+  ---
+  duration_ms: 1.116625
+  type: 'test'
+  ...
+# Subtest: firstPaintPlan: always → every site except "never" sites; off → nothing
+ok 205 - firstPaintPlan: always → every site except "never" sites; off → nothing
+  ---
+  duration_ms: 0.193542
+  type: 'test'
+  ...
+# Subtest: firstPaintPlan: system mode registers nothing (base.css covers dark systems) unless a site is "always dark"
+ok 206 - firstPaintPlan: system mode registers nothing (base.css covers dark systems) unless a site is "always dark"
+  ---
+  duration_ms: 0.071291
+  type: 'test'
+  ...
+# Subtest: firstPaintPlan: schedule follows the window, crossing midnight
+ok 207 - firstPaintPlan: schedule follows the window, crossing midnight
+  ---
+  duration_ms: 1.368625
+  type: 'test'
+  ...
+# Subtest: base-on.css is base.css without the media gate, still gated on data-sunglasses-off
+ok 208 - base-on.css is base.css without the media gate, still gated on data-sunglasses-off
+  ---
+  duration_ms: 0.500334
+  type: 'test'
+  ...
+# Subtest: background registers base-on.css for "always" and removes it when turned off
+ok 209 - background registers base-on.css for "always" and removes it when turned off
+  ---
+  duration_ms: 5.351542
+  type: 'test'
+  ...
+# Subtest: background without scripting (older Safari) keeps working
+ok 210 - background without scripting (older Safari) keeps working
+  ---
+  duration_ms: 0.117042
+  type: 'test'
+  ...
+# Subtest: isSafeSelector: ordinary selectors pass
+ok 211 - isSafeSelector: ordinary selectors pass
+  ---
+  duration_ms: 0.9905
+  type: 'test'
+  ...
+# Subtest: isSafeSelector: anything that could break out of the rule or load something is refused
+ok 212 - isSafeSelector: anything that could break out of the rule or load something is refused
+  ---
+  duration_ms: 0.181458
+  type: 'test'
+  ...
+# Subtest: normalizeFixes: keeps valid fixes, drops bad ones with a reason, last fix per element wins
+ok 213 - normalizeFixes: keeps valid fixes, drops bad ones with a reason, last fix per element wins
+  ---
+  duration_ms: 0.851416
+  type: 'test'
+  ...
+# Subtest: normalizeFixes: at most MAX_FIXES_PER_SITE, the newest kept
+ok 214 - normalizeFixes: at most MAX_FIXES_PER_SITE, the newest kept
+  ---
+  duration_ms: 0.227958
+  type: 'test'
+  ...
+# Subtest: tidyLabel: one line, at most 60 characters
+ok 215 - tidyLabel: one line, at most 60 characters
+  ---
+  duration_ms: 0.102833
+  type: 'test'
+  ...
+# Subtest: settings: a site entry keeps its fixes; an entry with only fixes is kept
+ok 216 - settings: a site entry keeps its fixes; an entry with only fixes is kept
+  ---
+  duration_ms: 0.732667
+  type: 'test'
+  ...
+# Subtest: settings: an empty fixes list leaves no entry behind
+ok 217 - settings: an empty fixes list leaves no entry behind
+  ---
+  duration_ms: 0.099042
+  type: 'test'
+  ...
+# Subtest: store: setSite with a fix, then without it, round-trips
+ok 218 - store: setSite with a fix, then without it, round-trips
+  ---
+  duration_ms: 0.486625
+  type: 'test'
+  ...
+# Subtest: userFixCss: nothing to fix, no CSS
+ok 219 - userFixCss: nothing to fix, no CSS
+  ---
+  duration_ms: 0.097333
+  type: 'test'
+  ...
+# Subtest: userFixCss: one rule set per fix, each the right kind
+ok 220 - userFixCss: one rule set per fix, each the right kind
+  ---
+  duration_ms: 3.097125
+  type: 'test'
+  ...
+# Subtest: userFixCss: lighter is light text, darker is a dark background (dynamic engine)
+ok 221 - userFixCss: lighter is light text, darker is a dark background (dynamic engine)
+  ---
+  duration_ms: 1.27275
+  type: 'test'
+  ...
+# Subtest: userFixCss: under the filter engine the colors come out right after the page inversion
+ok 222 - userFixCss: under the filter engine the colors come out right after the page inversion
+  ---
+  duration_ms: 0.36975
+  type: 'test'
+  ...
+# Subtest: every fix action writes CSS (Remove dark mode only under the filter engine)
+ok 223 - every fix action writes CSS (Remove dark mode only under the filter engine)
+  ---
+  duration_ms: 0.465958
+  type: 'test'
+  ...
+# Subtest: userFixCss: Remove dark mode is left to keep-original.js under the dynamic engine
+ok 224 - userFixCss: Remove dark mode is left to keep-original.js under the dynamic engine
+  ---
+  duration_ms: 0.106458
+  type: 'test'
+  ...
+# Subtest: userFixCss: Remove dark mode under the filter engine inverts the part back, media inside stay as authored
+ok 225 - userFixCss: Remove dark mode under the filter engine inverts the part back, media inside stay as authored
+  ---
+  duration_ms: 0.145875
+  type: 'test'
+  ...
+# Subtest: ui-core: withFix replaces the fix for the same element; other edits keep the fixes
+ok 226 - ui-core: withFix replaces the fix for the same element; other edits keep the fixes
+  ---
+  duration_ms: 0.151125
+  type: 'test'
+  ...
+# Subtest: ui-core: the popup lists this site’s fixes, the Sites list counts them
+ok 227 - ui-core: the popup lists this site’s fixes, the Sites list counts them
+  ---
+  duration_ms: 2.3315
+  type: 'test'
+  ...
+# Subtest: report: the draft says how many fixes this site has, never what they name
+ok 228 - report: the draft says how many fixes this site has, never what they name
+  ---
+  duration_ms: 0.105084
+  type: 'test'
+  ...
+# Subtest: isStableToken: hand-written names pass
+ok 229 - isStableToken: hand-written names pass
+  ---
+  duration_ms: 0.757292
+  type: 'test'
+  ...
+# Subtest: isStableToken: hashes, counters, state and obfuscated names are skipped
+ok 230 - isStableToken: hashes, counters, state and obfuscated names are skipped
+  ---
+  duration_ms: 0.279791
+  type: 'test'
+  ...
+# Subtest: describeElement: says what was picked, never reads form fields
+ok 231 - describeElement: says what was picked, never reads form fields
+  ---
+  duration_ms: 0.414666
+  type: 'test'
+  ...
+# Subtest: toolbar off-state glyphs exist for every toolbar size and are dimmer than on
+ok 232 - toolbar off-state glyphs exist for every toolbar size and are dimmer than on
+  ---
+  duration_ms: 1.783667
+  type: 'test'
+  ...
+# Subtest: popup header mark and popup/options favicons use the generated icon
+ok 233 - popup header mark and popup/options favicons use the generated icon
+  ---
+  duration_ms: 0.269875
+  type: 'test'
+  ...
+# Subtest: manifest icons and toolbar icons exist at their declared sizes
+ok 234 - manifest icons and toolbar icons exist at their declared sizes
+  ---
+  duration_ms: 2.643208
+  type: 'test'
+  ...
+# Subtest: toolbar glyphs are single-colour with transparency, light and dark variants
+ok 235 - toolbar glyphs are single-colour with transparency, light and dark variants
+  ---
+  duration_ms: 0.440958
+  type: 'test'
+  ...
+# Subtest: app icon set: every declared file exists, is square at the stated pixel size
+ok 236 - app icon set: every declared file exists, is square at the stated pixel size
+  ---
+  duration_ms: 18.808417
+  type: 'test'
+  ...
+# Subtest: app icon palette: teal glasses on cool charcoal, no coral/purple/moon hues (R15, T037)
+ok 237 - app icon palette: teal glasses on cool charcoal, no coral/purple/moon hues (R15, T037)
+  ---
+  duration_ms: 32.38875
+  type: 'test'
+  ...
+# Subtest: licenses: icon rows recorded and no third-party art claimed
+ok 238 - licenses: icon rows recorded and no third-party art claimed
+  ---
+  duration_ms: 0.258875
+  type: 'test'
+  ...
+# Subtest: fixture palette has 48 parseable swatches
+ok 239 - fixture palette has 48 parseable swatches
+  ---
+  duration_ms: 0.320584
+  type: 'test'
+  ...
+# Subtest: palette: swatches that differed by ΔE ≥ 10 stay ≥ 3 apart after the transform
+ok 240 - palette: swatches that differed by ΔE ≥ 10 stay ≥ 3 apart after the transform
+  ---
+  duration_ms: 8.542917
+  type: 'test'
+  ...
+# Subtest: palette: lightness order is kept (lighter source → darker output among inverted swatches; islands unchanged)
+ok 241 - palette: lightness order is kept (lighter source → darker output among inverted swatches; islands unchanged)
+  ---
+  duration_ms: 1.582167
+  type: 'test'
+  ...
+# Subtest: palette: hue survives the transform wherever there is chroma to carry it
+ok 242 - palette: hue survives the transform wherever there is chroma to carry it
+  ---
+  duration_ms: 1.745041
+  type: 'test'
+  ...
+# Subtest: dark island: a dark authored background is kept within ΔE 5, text on it stays ≥ 4.5:1
+ok 243 - dark island: a dark authored background is kept within ΔE 5, text on it stays ≥ 4.5:1
+  ---
+  duration_ms: 1.6725
+  type: 'test'
+  ...
+# Subtest: dark island: still kept with a non-default look is applied on top, not skipped
+ok 244 - dark island: still kept with a non-default look is applied on top, not skipped
+  ---
+  duration_ms: 0.856542
+  type: 'test'
+  ...
+# Subtest: light backgrounds are still darkened (white → canvas, light gray → dark)
+ok 245 - light backgrounds are still darkened (white → canvas, light gray → dark)
+  ---
+  duration_ms: 1.319583
+  type: 'test'
+  ...
+# Subtest: perf fixture: 5,000-element page with its sheets and a mutation batch
+ok 246 - perf fixture: 5,000-element page with its sheets and a mutation batch
+  ---
+  duration_ms: 2.998
+  type: 'test'
+  ...
+# Subtest: perf fixture: product grid has 60 cards, srcset images, badges, carousels, 15+ sheets, ~5,000 rules
+ok 247 - perf fixture: product grid has 60 cards, srcset images, badges, carousels, 15+ sheets, ~5,000 rules
+  ---
+  duration_ms: 11.351667
+  type: 'test'
+  ...
+# Subtest: perf fixture: deterministic sheets and art
+ok 248 - perf fixture: deterministic sheets and art
+  ---
+  duration_ms: 0.364792
+  type: 'test'
+  ...
+# Subtest: perf entry bundles to a classic script that compiles
+ok 249 - perf entry bundles to a classic script that compiles
+  ---
+  duration_ms: 8.021041
+  type: 'test'
+  ...
+# Subtest: decodePng: RGB and RGBA, all five row filters
+ok 250 - decodePng: RGB and RGBA, all five row filters
+  ---
+  duration_ms: 2.57125
+  type: 'test'
+  ...
+# Subtest: decodePng: rejects non-PNG input
+ok 251 - decodePng: rejects non-PNG input
+  ---
+  duration_ms: 0.317959
+  type: 'test'
+  ...
+# Subtest: resolveHost: tab.url wins over the report and the focused tab
+ok 252 - resolveHost: tab.url wins over the report and the focused tab
+  ---
+  duration_ms: 1.119959
+  type: 'test'
+  ...
+# Subtest: resolveHost: no tab.url uses the host the page reported
+ok 253 - resolveHost: no tab.url uses the host the page reported
+  ---
+  duration_ms: 0.188334
+  type: 'test'
+  ...
+# Subtest: resolveHost: no tab.url and no report host uses the last-focused window tab
+ok 254 - resolveHost: no tab.url and no report host uses the last-focused window tab
+  ---
+  duration_ms: 0.096458
+  type: 'test'
+  ...
+# Subtest: resolveHost: restricted only when every source is empty
+ok 255 - resolveHost: restricted only when every source is empty
+  ---
+  duration_ms: 0.077417
+  type: 'test'
+  ...
+# Subtest: resolveHost: a restricted tab.url is not overridden by a stale report host
+ok 256 - resolveHost: a restricted tab.url is not overridden by a stale report host
+  ---
+  duration_ms: 0.079875
+  type: 'test'
+  ...
+# Subtest: popupView: all four sources reach the popup
+ok 257 - popupView: all four sources reach the popup
+  ---
+  duration_ms: 0.732167
+  type: 'test'
+  ...
+# Subtest: background: TAB_STATE stores the host per tab and GET_TAB_STATE returns it
+ok 258 - background: TAB_STATE stores the host per tab and GET_TAB_STATE returns it
+  ---
+  duration_ms: 1.160708
+  type: 'test'
+  ...
+# Subtest: manifest: permissions are unchanged (storage, nativeMessaging, scripting; no tabs/activeTab)
+ok 259 - manifest: permissions are unchanged (storage, nativeMessaging, scripting; no tabs/activeTab)
+  ---
+  duration_ms: 0.375208
+  type: 'test'
+  ...
+# Subtest: report URL is a mailto: to the support address
+ok 260 - report URL is a mailto: to the support address
+  ---
+  duration_ms: 0.848125
+  type: 'test'
+  ...
+# Subtest: report body has exactly the fields: site, version, system, settings
+ok 261 - report body has exactly the fields: site, version, system, settings
+  ---
+  duration_ms: 1.186125
+  type: 'test'
+  ...
+# Subtest: report body never names other sites the user has rules for
+ok 262 - report body never names other sites the user has rules for
+  ---
+  duration_ms: 0.587875
+  type: 'test'
+  ...
+# Subtest: special characters survive encoding; missing fields are labelled
+ok 263 - special characters survive encoding; missing fields are labelled
+  ---
+  duration_ms: 0.102166
+  type: 'test'
+  ...
+# Subtest: restricted page: no host, still builds
+ok 264 - restricted page: no host, still builds
+  ---
+  duration_ms: 0.051042
+  type: 'test'
+  ...
+# Subtest: nothing is transmitted: report.js has no network API and the popup uses a plain link
+ok 265 - nothing is transmitted: report.js has no network API and the popup uses a plain link
+  ---
+  duration_ms: 0.799792
+  type: 'test'
+  ...
+# Subtest: requiredTokens: classes, ids and tags at the top level of each compound
+ok 266 - requiredTokens: classes, ids and tags at the top level of each compound
+  ---
+  duration_ms: 0.783791
+  type: 'test'
+  ...
+# Subtest: requiredTokens: nothing inside parentheses or attribute selectors is required
+ok 267 - requiredTokens: nothing inside parentheses or attribute selectors is required
+  ---
+  duration_ms: 0.649875
+  type: 'test'
+  ...
+# Subtest: requiredTokens: selectors it cannot reason about are null
+ok 268 - requiredTokens: selectors it cannot reason about are null
+  ---
+  duration_ms: 0.237458
+  type: 'test'
+  ...
+# Subtest: a selector is dead until every part needs only tokens the page has
+ok 269 - a selector is dead until every part needs only tokens the page has
+  ---
+  duration_ms: 0.525875
+  type: 'test'
+  ...
+# Subtest: a selector list is dead only when every part is dead
+ok 270 - a selector list is dead only when every part is dead
+  ---
+  duration_ms: 0.104208
+  type: 'test'
+  ...
+# Subtest: addElement indexes tag, id and each class, lower-cased
+ok 271 - addElement indexes tag, id and each class, lower-cased
+  ---
+  duration_ms: 0.192833
+  type: 'test'
+  ...
+# Subtest: unparseable selectors are never dead
+ok 272 - unparseable selectors are never dead
+  ---
+  duration_ms: 0.119417
+  type: 'test'
+  ...
+# Subtest: defaults are complete, versioned and valid
+ok 273 - defaults are complete, versioned and valid
+  ---
+  duration_ms: 1.886167
+  type: 'test'
+  ...
+# Subtest: defaultSettings returns a fresh object each call
+ok 274 - defaultSettings returns a fresh object each call
+  ---
+  duration_ms: 0.098708
+  type: 'test'
+  ...
+# Subtest: non-object input falls back to defaults
+ok 275 - non-object input falls back to defaults
+  ---
+  duration_ms: 0.139333
+  type: 'test'
+  ...
+# Subtest: invalid enums are rejected to defaults
+ok 276 - invalid enums are rejected to defaults
+  ---
+  duration_ms: 0.056792
+  type: 'test'
+  ...
+# Subtest: valid enums are kept
+ok 277 - valid enums are kept
+  ---
+  duration_ms: 0.739875
+  type: 'test'
+  ...
+# Subtest: look sliders are clamped to range and rounded
+ok 278 - look sliders are clamped to range and rounded
+  ---
+  duration_ms: 0.1905
+  type: 'test'
+  ...
+# Subtest: look sliders with non-numbers are rejected to defaults
+ok 279 - look sliders with non-numbers are rejected to defaults
+  ---
+  duration_ms: 0.135917
+  type: 'test'
+  ...
+# Subtest: slider range bounds are inclusive
+ok 280 - slider range bounds are inclusive
+  ---
+  duration_ms: 0.18075
+  type: 'test'
+  ...
+# Subtest: schedule times accept HH:MM only
+ok 281 - schedule times accept HH:MM only
+  ---
+  duration_ms: 0.177792
+  type: 'test'
+  ...
+# Subtest: equal schedule start and end is stored as given (T004 decides meaning)
+ok 282 - equal schedule start and end is stored as given (T004 decides meaning)
+  ---
+  duration_ms: 0.275
+  type: 'test'
+  ...
+# Subtest: unknown top-level keys are dropped and reported
+ok 283 - unknown top-level keys are dropped and reported
+  ---
+  duration_ms: 0.139
+  type: 'test'
+  ...
+# Subtest: prototype pollution keys do not leak
+ok 284 - prototype pollution keys do not leak
+  ---
+  duration_ms: 0.128916
+  type: 'test'
+  ...
+# Subtest: hostnames are normalized
+ok 285 - hostnames are normalized
+  ---
+  duration_ms: 0.074084
+  type: 'test'
+  ...
+# Subtest: invalid hostnames are rejected
+ok 286 - invalid hostnames are rejected
+  ---
+  duration_ms: 0.060291
+  type: 'test'
+  ...
+# Subtest: site entries are validated, normalized and pruned
+ok 287 - site entries are validated, normalized and pruned
+  ---
+  duration_ms: 0.148167
+  type: 'test'
+  ...
+# Subtest: site entry with only a look override is kept
+ok 288 - site entry with only a look override is kept
+  ---
+  duration_ms: 0.038666
+  type: 'test'
+  ...
+# Subtest: site count is capped at MAX_SITES
+ok 289 - site count is capped at MAX_SITES
+  ---
+  duration_ms: 6.198042
+  type: 'test'
+  ...
+# Subtest: resolveSite merges per-site overrides over globals
+ok 290 - resolveSite merges per-site overrides over globals
+  ---
+  duration_ms: 0.117416
+  type: 'test'
+  ...
+# Subtest: missing stored value migrates to defaults without a write
+ok 291 - missing stored value migrates to defaults without a write
+  ---
+  duration_ms: 0.062375
+  type: 'test'
+  ...
+# Subtest: v0 layout migrates to v1
+ok 292 - v0 layout migrates to v1
+  ---
+  duration_ms: 0.098792
+  type: 'test'
+  ...
+# Subtest: v0 enabled:false migrates to mode off; v0 invalid values are clamped
+ok 293 - v0 enabled:false migrates to mode off; v0 invalid values are clamped
+  ---
+  duration_ms: 0.026583
+  type: 'test'
+  ...
+# Subtest: empty v0 object migrates to defaults
+ok 294 - empty v0 object migrates to defaults
+  ---
+  duration_ms: 0.026917
+  type: 'test'
+  ...
+# Subtest: valid v1 is not marked migrated
+ok 295 - valid v1 is not marked migrated
+  ---
+  duration_ms: 0.031417
+  type: 'test'
+  ...
+# Subtest: future or garbage versions reset to defaults
+ok 296 - future or garbage versions reset to defaults
+  ---
+  duration_ms: 0.055958
+  type: 'test'
+  ...
+# Subtest: migration is idempotent
+ok 297 - migration is idempotent
+  ---
+  duration_ms: 0.04175
+  type: 'test'
+  ...
+# Subtest: validate round-trip: valid settings survive JSON + validation unchanged
+ok 298 - validate round-trip: valid settings survive JSON + validation unchanged
+  ---
+  duration_ms: 0.058833
+  type: 'test'
+  ...
+# Subtest: validate round-trip: random inputs normalize to a fixed point
+ok 299 - validate round-trip: random inputs normalize to a fixed point
+  ---
+  duration_ms: 11.922333
+  type: 'test'
+  ...
+# Subtest: store: load on empty storage returns defaults and writes nothing
+ok 300 - store: load on empty storage returns defaults and writes nothing
+  ---
+  duration_ms: 0.184083
+  type: 'test'
+  ...
+# Subtest: store: save → load round-trip
+ok 301 - store: save → load round-trip
+  ---
+  duration_ms: 0.292833
+  type: 'test'
+  ...
+# Subtest: store: save clamps and rejects before writing
+ok 302 - store: save clamps and rejects before writing
+  ---
+  duration_ms: 0.087875
+  type: 'test'
+  ...
+# Subtest: store: load migrates v0 storage and writes v1 back
+ok 303 - store: load migrates v0 storage and writes v1 back
+  ---
+  duration_ms: 0.074709
+  type: 'test'
+  ...
+# Subtest: store: load repairs corrupted storage
+ok 304 - store: load repairs corrupted storage
+  ---
+  duration_ms: 0.051667
+  type: 'test'
+  ...
+# Subtest: store: update merges look and schedule one level deep
+ok 305 - store: update merges look and schedule one level deep
+  ---
+  duration_ms: 0.096667
+  type: 'test'
+  ...
+# Subtest: store: setSite adds, normalizes, and deletes
+ok 306 - store: setSite adds, normalizes, and deletes
+  ---
+  duration_ms: 0.150125
+  type: 'test'
+  ...
+# Subtest: store: reset restores defaults
+ok 307 - store: reset restores defaults
+  ---
+  duration_ms: 0.183459
+  type: 'test'
+  ...
+# Subtest: store: subscribe delivers validated settings and unsubscribes
+ok 308 - store: subscribe delivers validated settings and unsubscribes
+  ---
+  duration_ms: 0.252834
+  type: 'test'
+  ...
+# Subtest: store: subscribe is a no-op without onChanged
+ok 309 - store: subscribe is a no-op without onChanged
+  ---
+  duration_ms: 0.065958
+  type: 'test'
+  ...
+# Subtest: store: custom key
+ok 310 - store: custom key
+  ---
+  duration_ms: 0.134291
+  type: 'test'
+  ...
+# Subtest: rejectSheetUrl: only http(s) without credentials
+ok 311 - rejectSheetUrl: only http(s) without credentials
+  ---
+  duration_ms: 2.114458
+  type: 'test'
+  ...
+# Subtest: rejectSheetUrl: a public page may not reach the local network
+ok 312 - rejectSheetUrl: a public page may not reach the local network
+  ---
+  duration_ms: 0.415084
+  type: 'test'
+  ...
+# Subtest: isTrustedSender: needs a tab and our extension id
+ok 313 - isTrustedSender: needs a tab and our extension id
+  ---
+  duration_ms: 0.156958
+  type: 'test'
+  ...
+# Subtest: fetcher: omits credentials and referrer, prefers the cache, returns text
+ok 314 - fetcher: omits credentials and referrer, prefers the cache, returns text
+  ---
+  duration_ms: 1.438584
+  type: 'test'
+  ...
+# Subtest: fetcher: caches successes, retries failures
+ok 315 - fetcher: caches successes, retries failures
+  ---
+  duration_ms: 0.348167
+  type: 'test'
+  ...
+# Subtest: fetcher: rejects non-CSS, HTTP errors and oversized sheets without throwing
+ok 316 - fetcher: rejects non-CSS, HTTP errors and oversized sheets without throwing
+  ---
+  duration_ms: 0.39525
+  type: 'test'
+  ...
+# Subtest: message handler: answers only FETCH_SHEET from our content scripts
+ok 317 - message handler: answers only FETCH_SHEET from our content scripts
+  ---
+  duration_ms: 0.405416
+  type: 'test'
+  ...
+# Subtest: indexed lookup equals full-list lookup
+ok 318 - indexed lookup equals full-list lookup
+  ---
+  duration_ms: 2417.856542
+  type: 'test'
+  ...
+# Subtest: matchUrl: host, www, subdomain wildcard, TLD wildcard, path prefix, regex
+ok 319 - matchUrl: host, www, subdomain wildcard, TLD wildcard, path prefix, regex
+  ---
+  duration_ms: 1.368542
+  type: 'test'
+  ...
+# Subtest: parseFixes: blocks, commands, unknown commands dropped, comments in lists
+ok 320 - parseFixes: blocks, commands, unknown commands dropped, comments in lists
+  ---
+  duration_ms: 1.367167
+  type: 'test'
+  ...
+# Subtest: fixesFor: the common block plus every matching site block, null when no site matches
+ok 321 - fixesFor: the common block plus every matching site block, null when no site matches
+  ---
+  duration_ms: 0.318666
+  type: 'test'
+  ...
+# Subtest: fixCss: neutral variables, inversion rule, ${color} darkened by role
+ok 322 - fixCss: neutral variables, inversion rule, ${color} darkened by role
+  ---
+  duration_ms: 1.389584
+  type: 'test'
+  ...
+# Subtest: generated lists: parsed from third_party, real entries match
+ok 323 - generated lists: parsed from third_party, real entries match
+  ---
+  duration_ms: 4.34225
+  type: 'test'
+  ...
+# Subtest: cacheKey: path and query, not hash; look in the key; bad URLs give null
+ok 324 - cacheKey: path and query, not hash; look in the key; bad URLs give null
+  ---
+  duration_ms: 0.456042
+  type: 'test'
+  ...
+# Subtest: writeCached / readCached: round trip, keeps the newest 3 entries
+ok 325 - writeCached / readCached: round trip, keeps the newest 3 entries
+  ---
+  duration_ms: 0.916625
+  type: 'test'
+  ...
+# Subtest: writeCached: oversized CSS, quota errors and blocked storage are harmless
+ok 326 - writeCached: oversized CSS, quota errors and blocked storage are harmless
+  ---
+  duration_ms: 0.938667
+  type: 'test'
+  ...
+# Subtest: adoptCss: adds one sheet and removes exactly it; null without constructable sheets
+ok 327 - adoptCss: adds one sheet and removes exactly it; null without constructable sheets
+  ---
+  duration_ms: 0.833584
+  type: 'test'
+  ...
+# Subtest: property: 10,000 random text/bg pairs with random looks → output ratio ≥ 4.5
+ok 328 - property: 10,000 random text/bg pairs with random looks → output ratio ≥ 4.5
+  ---
+  duration_ms: 208.436834
+  type: 'test'
+  ...
+# Subtest: property: ensureContrast on 10,000 random raw pairs (any bg, light or dark) → ratio ≥ 4.5
+ok 329 - property: ensureContrast on 10,000 random raw pairs (any bg, light or dark) → ratio ≥ 4.5
+  ---
+  duration_ms: 904.909875
+  type: 'test'
+  ...
+# Subtest: property: string inputs from CSS round-trip through transformPair
+ok 330 - property: string inputs from CSS round-trip through transformPair
+  ---
+  duration_ms: 5.957375
+  type: 'test'
+  ...
+# Subtest: ensureContrast leaves a pair that already passes unchanged (quantized)
+ok 331 - ensureContrast leaves a pair that already passes unchanged (quantized)
+  ---
+  duration_ms: 0.566583
+  type: 'test'
+  ...
+# Subtest: ensureContrast moves only lightness: hue kept for chromatic text
+ok 332 - ensureContrast moves only lightness: hue kept for chromatic text
+  ---
+  duration_ms: 167.185917
+  type: 'test'
+  ...
+# Subtest: ensureContrast picks the direction with more headroom
+ok 333 - ensureContrast picks the direction with more headroom
+  ---
+  duration_ms: 0.182834
+  type: 'test'
+  ...
+# Subtest: ensureContrast makes faint translucent text opaque when it must
+ok 334 - ensureContrast makes faint translucent text opaque when it must
+  ---
+  duration_ms: 0.119
+  type: 'test'
+  ...
+# Subtest: ensureContrast honours a custom minimum and returns the extreme when unreachable
+ok 335 - ensureContrast honours a custom minimum and returns the extreme when unreachable
+  ---
+  duration_ms: 0.090459
+  type: 'test'
+  ...
+# Subtest: ensureContrast composites a translucent background over the canvas
+ok 336 - ensureContrast composites a translucent background over the canvas
+  ---
+  duration_ms: 0.166833
+  type: 'test'
+  ...
+# Subtest: unparseable input → null
+ok 337 - unparseable input → null
+  ---
+  duration_ms: 0.27075
+  type: 'test'
+  ...
+# Subtest: transformPair ignores an unparseable canvas and uses the mapped page white
+ok 338 - transformPair ignores an unparseable canvas and uses the mapped page white
+  ---
+  duration_ms: 0.099584
+  type: 'test'
+  ...
+# Subtest: slider identity: applyLook at defaults returns every color unchanged
+ok 339 - slider identity: applyLook at defaults returns every color unchanged
+  ---
+  duration_ms: 3.017167
+  type: 'test'
+  ...
+# Subtest: slider identity: transformColor with default look equals no look, for every role
+ok 340 - slider identity: transformColor with default look equals no look, for every role
+  ---
+  duration_ms: 27.135625
+  type: 'test'
+  ...
+# Subtest: DEFAULT_LOOK matches the settings defaults and is the identity
+ok 341 - DEFAULT_LOOK matches the settings defaults and is the identity
+  ---
+  duration_ms: 0.101208
+  type: 'test'
+  ...
+# Subtest: normalizeLook clamps, rounds and rejects like the settings schema
+ok 342 - normalizeLook clamps, rounds and rejects like the settings schema
+  ---
+  duration_ms: 0.062083
+  type: 'test'
+  ...
+# Subtest: four presets, each a valid normalized look, all distinct
+ok 343 - four presets, each a valid normalized look, all distinct
+  ---
+  duration_ms: 0.068833
+  type: 'test'
+  ...
+# Subtest: every preset keeps the contrast guarantee on common page pairs
+ok 344 - every preset keeps the contrast guarantee on common page pairs
+  ---
+  duration_ms: 0.302833
+  type: 'test'
+  ...
+# Subtest: mono preset removes chroma; warm preset tints toward amber
+ok 345 - mono preset removes chroma; warm preset tints toward amber
+  ---
+  duration_ms: 0.041667
+  type: 'test'
+  ...
+# Subtest: mapping: white page → dark bg, black text → light text, borders between
+ok 346 - mapping: white page → dark bg, black text → light text, borders between
+  ---
+  duration_ms: 0.039208
+  type: 'test'
+  ...
+# Subtest: mapping inverts lightness order within a role
+ok 347 - mapping inverts lightness order within a role
+  ---
+  duration_ms: 0.079083
+  type: 'test'
+  ...
+# Subtest: mapping keeps dark backgrounds as authored and joins the inverted range at the threshold
+ok 348 - mapping keeps dark backgrounds as authored and joins the inverted range at the threshold
+  ---
+  duration_ms: 0.0345
+  type: 'test'
+  ...
+# Subtest: mapping preserves hue for chromatic colors
+ok 349 - mapping preserves hue for chromatic colors
+  ---
+  duration_ms: 18.605125
+  type: 'test'
+  ...
+# Subtest: mapping keeps alpha
+ok 350 - mapping keeps alpha
+  ---
+  duration_ms: 0.09025
+  type: 'test'
+  ...
+# Subtest: sliders: brightness and contrast move lightness; grayscale removes chroma
+ok 351 - sliders: brightness and contrast move lightness; grayscale removes chroma
+  ---
+  duration_ms: 0.1195
+  type: 'test'
+  ...
+# Subtest: sliders: sepia 100 lands every color on the amber hue
+ok 352 - sliders: sepia 100 lands every color on the amber hue
+  ---
+  duration_ms: 0.050625
+  type: 'test'
+  ...
+# Subtest: quantize snaps to formatRgb precision
+ok 353 - quantize snaps to formatRgb precision
+  ---
+  duration_ms: 0.034417
+  type: 'test'
+  ...
+# Subtest: pageHost: http(s) pages give their hostname
+ok 354 - pageHost: http(s) pages give their hostname
+  ---
+  duration_ms: 1.034
+  type: 'test'
+  ...
+# Subtest: pageHost: restricted pages give null
+ok 355 - pageHost: restricted pages give null
+  ---
+  duration_ms: 0.21525
+  type: 'test'
+  ...
+# Subtest: popupView: restricted page shows the restricted state and no site controls
+ok 356 - popupView: restricted page shows the restricted state and no site controls
+  ---
+  duration_ms: 1.005542
+  type: 'test'
+  ...
+# Subtest: popupView: site default, always, never
+ok 357 - popupView: site default, always, never
+  ---
+  duration_ms: 0.881292
+  type: 'test'
+  ...
+# Subtest: popupView: status text for on, each off reason, and no report
+ok 358 - popupView: status text for on, each off reason, and no report
+  ---
+  duration_ms: 0.276541
+  type: 'test'
+  ...
+# Subtest: popupView: already-dark detected, and the per-site override that forces dark
+ok 359 - popupView: already-dark detected, and the per-site override that forces dark
+  ---
+  duration_ms: 0.20875
+  type: 'test'
+  ...
+# Subtest: popupView: per-site look overrides the global look
+ok 360 - popupView: per-site look overrides the global look
+  ---
+  duration_ms: 0.10525
+  type: 'test'
+  ...
+# Subtest: entry edits: inherit-only entries become null (delete)
+ok 361 - entry edits: inherit-only entries become null (delete)
+  ---
+  duration_ms: 0.079083
+  type: 'test'
+  ...
+# Subtest: entry edits: other fields are kept
+ok 362 - entry edits: other fields are kept
+  ---
+  duration_ms: 0.074333
+  type: 'test'
+  ...
+# Subtest: entry edits round-trip through the settings store
+ok 363 - entry edits round-trip through the settings store
+  ---
+  duration_ms: 0.602667
+  type: 'test'
+  ...
+# Subtest: matchPreset / presetLook
+ok 364 - matchPreset / presetLook
+  ---
+  duration_ms: 0.0585
+  type: 'test'
+  ...
+# Subtest: siteRows: sorted with a readable summary
+ok 365 - siteRows: sorted with a readable summary
+  ---
+  duration_ms: 0.112708
+  type: 'test'
+  ...
+# Subtest: scheduleHint: overnight, same day, and empty window
+ok 366 - scheduleHint: overnight, same day, and empty window
+  ---
+  duration_ms: 0.056541
+  type: 'test'
+  ...
+# Subtest: background answers GET_TAB_STATE for the popup only
+ok 367 - background answers GET_TAB_STATE for the popup only
+  ---
+  duration_ms: 17.409042
+  type: 'test'
+  ...
+# Subtest: background RESET_ALL from the options page resets settings; content scripts cannot
+ok 368 - background RESET_ALL from the options page resets settings; content scripts cannot
+  ---
+  duration_ms: 6.820417
+  type: 'test'
+  ...
+# Subtest: Extension/Resources/popup/popup.html: only native controls, no ARIA widget roles or click handlers on non-controls
+ok 369 - Extension/Resources/popup/popup.html: only native controls, no ARIA widget roles or click handlers on non-controls
+  ---
+  duration_ms: 0.46525
+  type: 'test'
+  ...
+# Subtest: Extension/Resources/popup/popup.html: every button has a name; icon buttons have aria-label; icons are hidden
+ok 370 - Extension/Resources/popup/popup.html: every button has a name; icon buttons have aria-label; icons are hidden
+  ---
+  duration_ms: 0.300125
+  type: 'test'
+  ...
+# Subtest: Extension/Resources/popup/popup.html: every input and select is labelled
+ok 371 - Extension/Resources/popup/popup.html: every input and select is labelled
+  ---
+  duration_ms: 0.192958
+  type: 'test'
+  ...
+# Subtest: Extension/Resources/popup/popup.html: no inline script, lang set, script ids exist in the page
+ok 372 - Extension/Resources/popup/popup.html: no inline script, lang set, script ids exist in the page
+  ---
+  duration_ms: 0.2485
+  type: 'test'
+  ...
+# Subtest: Extension/Resources/options/options.html: only native controls, no ARIA widget roles or click handlers on non-controls
+ok 373 - Extension/Resources/options/options.html: only native controls, no ARIA widget roles or click handlers on non-controls
+  ---
+  duration_ms: 0.090792
+  type: 'test'
+  ...
+# Subtest: Extension/Resources/options/options.html: every button has a name; icon buttons have aria-label; icons are hidden
+ok 374 - Extension/Resources/options/options.html: every button has a name; icon buttons have aria-label; icons are hidden
+  ---
+  duration_ms: 0.067375
+  type: 'test'
+  ...
+# Subtest: Extension/Resources/options/options.html: every input and select is labelled
+ok 375 - Extension/Resources/options/options.html: every input and select is labelled
+  ---
+  duration_ms: 0.054625
+  type: 'test'
+  ...
+# Subtest: Extension/Resources/options/options.html: no inline script, lang set, script ids exist in the page
+ok 376 - Extension/Resources/options/options.html: no inline script, lang set, script ids exist in the page
+  ---
+  duration_ms: 0.072792
+  type: 'test'
+  ...
+# Subtest: popup: the restricted state hides site controls (wired by id)
+ok 377 - popup: the restricted state hides site controls (wired by id)
+  ---
+  duration_ms: 0.261708
+  type: 'test'
+  ...
+# Subtest: manifest points at the popup and options page, and they exist
+ok 378 - manifest points at the popup and options page, and they exist
+  ---
+  duration_ms: 0.19525
+  type: 'test'
+  ...
+# Subtest: popup and options bundles make no network requests
+ok 379 - popup and options bundles make no network requests
+  ---
+  duration_ms: 0.888625
+  type: 'test'
+  ...
+# Subtest: ui.css (Dusk) tokens meet contrast, and focus stays visible
+ok 380 - ui.css (Dusk) tokens meet contrast, and focus stays visible
+  ---
+  duration_ms: 0.824583
+  type: 'test'
+  ...
+# Subtest: ui.css: colors, type sizes, radii and durations come from :root tokens only
+ok 381 - ui.css: colors, type sizes, radii and durations come from :root tokens only
+  ---
+  duration_ms: 0.317542
+  type: 'test'
+  ...
+1..381
+# tests 381
+# suites 0
+# pass 381
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2692.19575

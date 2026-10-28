@@ -1,0 +1,12 @@
+{
+  "fixes": [
+    {
+      "selector": "#signin > div.field > input",
+      "action": "flip"
+    }
+  ],
+  "filters": [
+    "none",
+    "none"
+  ]
+}

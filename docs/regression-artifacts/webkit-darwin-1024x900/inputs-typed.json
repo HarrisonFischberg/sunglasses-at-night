@@ -1,0 +1,425 @@
+{
+  "placeholders": [
+    {
+      "id": "plain",
+      "placeholder": "rgb(169, 169, 169)",
+      "ratio": 16.67
+    },
+    {
+      "id": "styled",
+      "placeholder": "rgb(169, 169, 169)",
+      "ratio": 13.57
+    },
+    {
+      "id": "ta",
+      "placeholder": "rgb(169, 169, 169)",
+      "ratio": 13.57
+    },
+    {
+      "id": "filled",
+      "placeholder": "rgb(169, 169, 169)",
+      "ratio": 13.57
+    }
+  ],
+  "typed": [
+    {
+      "id": "plain",
+      "text": {
+        "el": "<input#plain.plain>",
+        "text": "Typed text",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 16.67,
+        "image": false
+      },
+      "caret": "rgb(255, 255, 255)",
+      "outline": "auto rgb(255, 255, 255)"
+    },
+    {
+      "id": "styled",
+      "text": {
+        "el": "<input#styled.styled>",
+        "text": "Typed text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.57,
+        "image": false
+      },
+      "caret": "rgb(222, 222, 222)",
+      "outline": "auto rgb(222, 222, 222)"
+    },
+    {
+      "id": "inherit",
+      "text": {
+        "el": "<input#inherit.inherit>",
+        "text": "Typed text",
+        "color": "rgb(217, 217, 217)",
+        "ratio": 13.05,
+        "image": false
+      },
+      "caret": "rgb(217, 217, 217)",
+      "outline": "auto rgb(217, 217, 217)"
+    },
+    {
+      "id": "fill",
+      "text": {
+        "el": "<input#fill.fill.styled>",
+        "text": "Typed text",
+        "color": "rgb(212, 212, 212)",
+        "ratio": 12.32,
+        "image": false
+      },
+      "caret": "rgb(222, 222, 222)",
+      "outline": "auto rgb(222, 222, 222)"
+    },
+    {
+      "id": "var",
+      "text": {
+        "el": "<input#var.var>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.45,
+        "image": false
+      },
+      "caret": "rgb(235, 235, 235)",
+      "outline": "auto rgb(235, 235, 235)"
+    },
+    {
+      "id": "imp",
+      "text": {
+        "el": "<input#imp.imp>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.45,
+        "image": false
+      },
+      "caret": "rgb(235, 235, 235)",
+      "outline": "auto rgb(235, 235, 235)"
+    },
+    {
+      "id": "err",
+      "text": {
+        "el": "<input#err.err.styled>",
+        "text": "not-an-emailTyped text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.4,
+        "image": false
+      },
+      "caret": "rgb(222, 222, 222)",
+      "outline": "auto rgb(222, 222, 222)"
+    },
+    {
+      "id": "caret",
+      "text": {
+        "el": "<input#caret.caret.styled>",
+        "text": "Typed text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.57,
+        "image": false
+      },
+      "caret": "rgb(235, 235, 235)",
+      "outline": "auto rgb(222, 222, 222)"
+    },
+    {
+      "id": "grad",
+      "text": {
+        "el": "<input#grad.grad>",
+        "text": "Typed text",
+        "color": "rgb(217, 217, 217)",
+        "ratio": 13.05,
+        "image": true
+      },
+      "caret": "rgb(217, 217, 217)",
+      "outline": "auto rgb(217, 217, 217)"
+    },
+    {
+      "id": "scheme",
+      "text": {
+        "el": "<input#scheme.scheme>",
+        "text": "Typed text",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 16.67,
+        "image": false
+      },
+      "caret": "rgb(255, 255, 255)",
+      "outline": "auto rgb(255, 255, 255)"
+    },
+    {
+      "id": "search",
+      "text": {
+        "el": "<input#search>",
+        "text": "Typed text",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 16.67,
+        "image": false
+      },
+      "caret": "rgb(255, 255, 255)",
+      "outline": "auto rgb(255, 255, 255)"
+    },
+    {
+      "id": "ta",
+      "text": {
+        "el": "<textarea#ta.styled>",
+        "text": "Typed text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.57,
+        "image": false
+      },
+      "caret": "rgb(222, 222, 222)",
+      "outline": "auto rgb(222, 222, 222)"
+    },
+    {
+      "id": "focus",
+      "text": {
+        "el": "<input#focus.focus-white.styled>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.45,
+        "image": false
+      },
+      "caret": "rgb(235, 235, 235)",
+      "outline": "solid rgb(27, 76, 117)"
+    },
+    {
+      "id": "filled",
+      "text": {
+        "el": "<input#filled.filled.styled>",
+        "text": "Typed text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.69,
+        "image": false
+      },
+      "caret": "rgb(222, 222, 222)",
+      "outline": "auto rgb(222, 222, 222)"
+    },
+    {
+      "id": "jsinline",
+      "text": {
+        "el": "<input#jsinline.styled>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.45,
+        "image": false
+      },
+      "caret": "rgb(235, 235, 235)",
+      "outline": "auto rgb(235, 235, 235)"
+    },
+    {
+      "id": "jsclass",
+      "text": {
+        "el": "<input#jsclass.styled.has-value>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.32,
+        "image": false
+      },
+      "caret": "rgb(235, 235, 235)",
+      "outline": "auto rgb(235, 235, 235)"
+    },
+    {
+      "id": "rich",
+      "text": {
+        "el": "<span>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.45,
+        "image": false
+      },
+      "caret": "rgb(235, 235, 235)",
+      "outline": "none rgb(235, 235, 235)"
+    },
+    {
+      "id": "ce",
+      "text": {
+        "el": "<div#ce>",
+        "text": "Typed text",
+        "color": "rgb(217, 217, 217)",
+        "ratio": 13.05,
+        "image": false
+      },
+      "caret": "rgb(217, 217, 217)",
+      "outline": "auto rgb(217, 217, 217)"
+    }
+  ],
+  "blurred": [
+    {
+      "id": "plain",
+      "text": {
+        "el": "<input#plain.plain>",
+        "text": "Typed text",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 16.67,
+        "image": false
+      }
+    },
+    {
+      "id": "styled",
+      "text": {
+        "el": "<input#styled.styled>",
+        "text": "Typed text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.57,
+        "image": false
+      }
+    },
+    {
+      "id": "inherit",
+      "text": {
+        "el": "<input#inherit.inherit>",
+        "text": "Typed text",
+        "color": "rgb(217, 217, 217)",
+        "ratio": 13.05,
+        "image": false
+      }
+    },
+    {
+      "id": "fill",
+      "text": {
+        "el": "<input#fill.fill.styled>",
+        "text": "Typed text",
+        "color": "rgb(212, 212, 212)",
+        "ratio": 12.32,
+        "image": false
+      }
+    },
+    {
+      "id": "var",
+      "text": {
+        "el": "<input#var.var>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.45,
+        "image": false
+      }
+    },
+    {
+      "id": "imp",
+      "text": {
+        "el": "<input#imp.imp>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.45,
+        "image": false
+      }
+    },
+    {
+      "id": "err",
+      "text": {
+        "el": "<input#err.err.styled>",
+        "text": "not-an-emailTyped text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.4,
+        "image": false
+      }
+    },
+    {
+      "id": "caret",
+      "text": {
+        "el": "<input#caret.caret.styled>",
+        "text": "Typed text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.57,
+        "image": false
+      }
+    },
+    {
+      "id": "grad",
+      "text": {
+        "el": "<input#grad.grad>",
+        "text": "Typed text",
+        "color": "rgb(217, 217, 217)",
+        "ratio": 13.05,
+        "image": true
+      }
+    },
+    {
+      "id": "scheme",
+      "text": {
+        "el": "<input#scheme.scheme>",
+        "text": "Typed text",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 16.67,
+        "image": false
+      }
+    },
+    {
+      "id": "search",
+      "text": {
+        "el": "<input#search>",
+        "text": "Typed text",
+        "color": "rgb(255, 255, 255)",
+        "ratio": 16.67,
+        "image": false
+      }
+    },
+    {
+      "id": "ta",
+      "text": {
+        "el": "<textarea#ta.styled>",
+        "text": "Typed text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.57,
+        "image": false
+      }
+    },
+    {
+      "id": "focus",
+      "text": {
+        "el": "<input#focus.focus-white.styled>",
+        "text": "Typed text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.57,
+        "image": false
+      }
+    },
+    {
+      "id": "filled",
+      "text": {
+        "el": "<input#filled.filled.styled>",
+        "text": "Typed text",
+        "color": "rgb(222, 222, 222)",
+        "ratio": 13.69,
+        "image": false
+      }
+    },
+    {
+      "id": "jsinline",
+      "text": {
+        "el": "<input#jsinline.styled>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.45,
+        "image": false
+      }
+    },
+    {
+      "id": "jsclass",
+      "text": {
+        "el": "<input#jsclass.styled.has-value>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.32,
+        "image": false
+      }
+    },
+    {
+      "id": "rich",
+      "text": {
+        "el": "<span>",
+        "text": "Typed text",
+        "color": "rgb(235, 235, 235)",
+        "ratio": 15.45,
+        "image": false
+      }
+    },
+    {
+      "id": "ce",
+      "text": {
+        "el": "<div#ce>",
+        "text": "Typed text",
+        "color": "rgb(217, 217, 217)",
+        "ratio": 13.05,
+        "image": false
+      }
+    }
+  ],
+  "submitted": 1
+}
