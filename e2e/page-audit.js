@@ -162,3 +162,60 @@ export function audit({ minContrast = 4.5, maxTextBgLuminance = 0.2 } = {}) {
     checked, minRatio: +minRatio.toFixed(2), maxTextBgLuminance: +maxLum.toFixed(3), failures,
   };
 }
+
+/**
+ * Computed look and layout of every page element (open shadow roots
+ * included), keyed by its tree path, for before/after comparison. Ours and
+ * the attributes the engine writes are left out.
+ */
+export function styles() {
+  const out = {};
+  const visit = (root, prefix) => {
+    let i = 0;
+    for (const el of root.children) {
+      if (isOurs(el) || SKIP_TAGS.has(el.localName) || el.localName === 'link' || el.localName === 'meta') continue;
+      const key = `${prefix}/${el.localName}[${i++}]${el.id ? `#${el.id}` : ''}`;
+      const cs = getComputedStyle(el);
+      const r = el.getBoundingClientRect();
+      out[key] = {
+        bg: cs.backgroundColor, bgImage: cs.backgroundImage, color: cs.color, fill: cs.webkitTextFillColor,
+        display: cs.display, visibility: cs.visibility, opacity: cs.opacity, filter: cs.filter,
+        rect: [r.x, r.y, r.width, r.height].map((v) => Math.round(v * 10) / 10).join(','),
+      };
+      if (el.shadowRoot) visit(el.shadowRoot, `${key}::shadow`);
+      visit(el, key);
+    }
+  };
+  visit(document, '');
+  return out;
+}
+
+/**
+ * Text contrast inside `el` (it and everything below it, open shadow roots
+ * included): every visible text-bearing element with its color, the
+ * background composited up the flat tree, and whether a background image
+ * sits in that stack (then the composited color is not the whole story).
+ */
+export function textContrast(el) {
+  const list = [];
+  for (const e of [el, ...walk(el.shadowRoot ?? el), ...(el.shadowRoot ? walk(el) : [])]) {
+    if (isOurs(e) || SKIP_TAGS.has(e.localName)) continue;
+    const field = e.matches('input,textarea');
+    const text = field ? (e.value || e.placeholder || '') : [...e.childNodes].filter((n) => n.nodeType === 3).map((n) => n.data).join('').trim();
+    if (!text) continue;
+    const cs = getComputedStyle(e);
+    if (!visible(e, cs)) continue;
+    const fg = parseColor(cs.webkitTextFillColor || cs.color);
+    if (!fg || fg.alpha === 0) continue;
+    let image = false;
+    for (let p = e; p; p = paintParent(p)) {
+      const pcs = getComputedStyle(p);
+      if (pcs.backgroundImage && pcs.backgroundImage !== 'none') { image = true; break; }
+      const c = parseColor(pcs.backgroundColor);
+      if (c && c.alpha >= 1) break;
+    }
+    const bg = effectiveBackground(e);
+    list.push({ el: describe(e), text: text.slice(0, 30), color: cs.webkitTextFillColor || cs.color, ratio: +contrastRatio(fg, bg).toFixed(2), image });
+  }
+  return list;
+}

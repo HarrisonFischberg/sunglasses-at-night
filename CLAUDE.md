@@ -29,6 +29,7 @@ loop. Verify each before claiming use: `docs/tool-environment.md`.
 | Swift tests | `xcodebuild test -scheme "Sunglasses at Night (macOS)" -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO` |
 | Swift (inside Ralph) | run by the runner: `ralph/verify-swift.sh` → `ralph/evidence/swift-build-latest.md` |
 | e2e (WebKit fixtures) | `npm run e2e` (Playwright 1.64.1, approved) |
+| regression (forms, layers, picker; WebKit) | `npm run regression`, real Safari `node qa/safari-regression.mjs`: `e2e/REGRESSION.md` |
 
 Update this table if the scheme names change.
 

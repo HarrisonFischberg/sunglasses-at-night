@@ -3007,6 +3007,7 @@ function rewriteDeclarations(style, look, opts = {}) {
     // rule can't beat a later page rule that resets the color.
     out.push(`${prop}:${v ?? value}${bangFor(prop)}`);
   }
+  raiseSurface(style, look, out, bangFor);
   if (!pendingVar) return out;
   for (const [sh, role] of Object.entries(SHORTHAND_ROLES)) {
     const value = style.getPropertyValue?.(sh);
@@ -3015,6 +3016,26 @@ function rewriteDeclarations(style, look, opts = {}) {
     if (v !== null) out.push(`${sh}:${v}${bangFor(sh)}`);
   }
   return out;
+}
+
+// A light surface that casts a shadow floats over the page: a menu, popover,
+// modal or card. Mapped like the page it becomes the same dark, and a dark
+// shadow on a dark page disappears, so it melts into the page (owner report
+// 2026-10-28). It gets a lighter dark instead, as dark interfaces show
+// elevation. Only a plain color declared in the same rule as the shadow;
+// shortcut: var() surfaces stay flat, until a site needs them.
+const ELEVATION = 0.08; // white over the mapped color: about #141414 → #272727
+function raisedBg(color, look) {
+  const c = transformColor(color, 'bg', look);
+  return c && quantize(composite({ r: 1, g: 1, b: 1, alpha: ELEVATION }, { ...c, alpha: 1 }));
+}
+function raiseSurface(style, look, out, bangFor) {
+  const shadow = style.getPropertyValue?.('box-shadow') ?? '';
+  if (!shadow || shadow === 'none' || /^\s*inset\b/.test(shadow)) return;
+  const i = out.findIndex((d) => d.startsWith('background-color:'));
+  const src = parseColor(style.getPropertyValue('background-color'));
+  if (i < 0 || !src || src.alpha < 1 || relativeLuminance(src) < 0.5) return;
+  out[i] = `background-color:${formatRgb(raisedBg(src, look))}${bangFor('background-color')}`;
 }
 
 // ------------------------------------------------------------ rule rewrite
@@ -3092,6 +3113,8 @@ function baseCss(look) {
   const f = (hex) => formatRgb(ensureContrast(transformColor(hex, 'fg', look), bg));
   return (
     `:where(:root){color-scheme:dark;background-color:${formatRgb(bg)};color:${f('#000000')}}` +
+    // The browser's own dialog and popover surface, raised like raiseSurface.
+    `:where(dialog,[popover]){background-color:${formatRgb(raisedBg('#ffffff', look))}}` +
     `:where(a:link){color:${f('#0000ee')}}:where(a:visited){color:${f('#551a8b')}}`
   );
 }
@@ -4303,7 +4326,7 @@ function startDynamic({
 
   return { stop, refresh, settle, setSiteCss, cssSnapshot };
 }
-return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, BLEND_MARK, PENDING_ATTR, PROP_ROLES, rewriteTriplet, withoutImages, rewriteValue, rewriteDeclarations, rewriteRules, baseCss, pendingCss, SLICE_MS, CONTRAST_DELAY_MS, READY_CAP_MS, HOST_WATCH_MS, startDynamic };
+return { MARK, INLINE_ATTR, FIX_ATTR, VAR_PREFIX, BLEND_MARK, PENDING_ATTR, PROP_ROLES, rewriteTriplet, withoutImages, rewriteValue, rewriteDeclarations, raisedBg, rewriteRules, baseCss, pendingCss, SLICE_MS, CONTRAST_DELAY_MS, READY_CAP_MS, HOST_WATCH_MS, startDynamic };
 })();
 
 // ---- engine/src/messages.js
@@ -4847,7 +4870,18 @@ function run(settings) {
   let engine = null, cancelled = false, fixStyle = null, mirror = null;
   // Fix sheet = built-in + your own fixes (siteCss), then the parts you set
   // to "Remove dark mode" (keepCss, re-read whenever the engine settles).
-  let siteCss = '', keepCss = '', keepSelectors = [];
+  let siteCss = '', keepCss = '', keepSelectors = [], builtInCss = '', ownFixes = [], ownSite = null;
+  // A fix names one element. One whose selector now finds several (the page
+  // changed since it was picked) is left out until it is unique again, rather
+  // than applied to all of them. Checked at start and whenever the engine settles.
+  const unique = (fix) => { try { return document.querySelectorAll(fix.selector).length <= 1; } catch { return false; } };
+  function buildFixCss() {
+    const fixes = ownFixes.filter(unique);
+    let own = '';
+    try { own = userFixCss(fixes, ownSite.look, ownSite.engine); } catch { /* no fix */ }
+    siteCss = [builtInCss, own].filter(Boolean).join('\n');
+    keepSelectors = ownSite.engine !== 'filter' ? fixes.filter((f) => f.action === 'original').map((f) => f.selector) : [];
+  }
   function pushSiteCss() {
     const css = [siteCss, keepCss].filter(Boolean).join('\n');
     if (engine?.setSiteCss) { engine.setSiteCss(css); return; }
@@ -4860,7 +4894,8 @@ function run(settings) {
     fixStyle.textContent = css;
   }
   function refreshKeep() {
-    if (!keepSelectors.length || !engine || cancelled) return;
+    if (!ownFixes.length || !engine || cancelled) return;
+    buildFixCss();
     try {
       keepCss = keepOriginalCss({ document, getComputedStyle: (el) => getComputedStyle(el), selectors: keepSelectors });
     } catch { keepCss = ''; }
@@ -4906,14 +4941,10 @@ function run(settings) {
     // in the same task without waking the background script; the engine keeps
     // them after its override sheet so they win. Your own fixes (picked with
     // "Fix something on this page") come last, so they win over both.
-    let css = '';
-    try { css = fixCss(fixesFor(location.href, siteFixesFor(location.href)), site.look); } catch { /* no fix */ }
-    try {
-      const own = userFixCss(site.fixes, site.look, site.engine);
-      if (own) css += (css ? '\n' : '') + own;
-    } catch { /* no fix */ }
-    siteCss = css;
-    if (site.engine !== 'filter') keepSelectors = site.fixes.filter((f) => f.action === 'original').map((f) => f.selector);
+    try { builtInCss = fixCss(fixesFor(location.href, siteFixesFor(location.href)), site.look); } catch { /* no fix */ }
+    ownFixes = site.fixes;
+    ownSite = site;
+    buildFixCss();
     if (siteCss) pushSiteCss();
     if (document.documentElement.hasAttribute(READY_ATTRIBUTE)) refreshKeep();
   });
