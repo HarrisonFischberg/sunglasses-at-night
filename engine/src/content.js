@@ -124,7 +124,18 @@ function run(settings) {
   let engine = null, cancelled = false, fixStyle = null, mirror = null;
   // Fix sheet = built-in + your own fixes (siteCss), then the parts you set
   // to "Remove dark mode" (keepCss, re-read whenever the engine settles).
-  let siteCss = '', keepCss = '', keepSelectors = [];
+  let siteCss = '', keepCss = '', keepSelectors = [], builtInCss = '', ownFixes = [], ownSite = null;
+  // A fix names one element. One whose selector now finds several (the page
+  // changed since it was picked) is left out until it is unique again, rather
+  // than applied to all of them. Checked at start and whenever the engine settles.
+  const unique = (fix) => { try { return document.querySelectorAll(fix.selector).length <= 1; } catch { return false; } };
+  function buildFixCss() {
+    const fixes = ownFixes.filter(unique);
+    let own = '';
+    try { own = userFixCss(fixes, ownSite.look, ownSite.engine); } catch { /* no fix */ }
+    siteCss = [builtInCss, own].filter(Boolean).join('\n');
+    keepSelectors = ownSite.engine !== 'filter' ? fixes.filter((f) => f.action === 'original').map((f) => f.selector) : [];
+  }
   function pushSiteCss() {
     const css = [siteCss, keepCss].filter(Boolean).join('\n');
     if (engine?.setSiteCss) { engine.setSiteCss(css); return; }
@@ -137,7 +148,8 @@ function run(settings) {
     fixStyle.textContent = css;
   }
   function refreshKeep() {
-    if (!keepSelectors.length || !engine || cancelled) return;
+    if (!ownFixes.length || !engine || cancelled) return;
+    buildFixCss();
     try {
       keepCss = keepOriginalCss({ document, getComputedStyle: (el) => getComputedStyle(el), selectors: keepSelectors });
     } catch { keepCss = ''; }
@@ -183,14 +195,10 @@ function run(settings) {
     // in the same task without waking the background script; the engine keeps
     // them after its override sheet so they win. Your own fixes (picked with
     // "Fix something on this page") come last, so they win over both.
-    let css = '';
-    try { css = fixCss(fixesFor(location.href, siteFixesFor(location.href)), site.look); } catch { /* no fix */ }
-    try {
-      const own = userFixCss(site.fixes, site.look, site.engine);
-      if (own) css += (css ? '\n' : '') + own;
-    } catch { /* no fix */ }
-    siteCss = css;
-    if (site.engine !== 'filter') keepSelectors = site.fixes.filter((f) => f.action === 'original').map((f) => f.selector);
+    try { builtInCss = fixCss(fixesFor(location.href, siteFixesFor(location.href)), site.look); } catch { /* no fix */ }
+    ownFixes = site.fixes;
+    ownSite = site;
+    buildFixCss();
     if (siteCss) pushSiteCss();
     if (document.documentElement.hasAttribute(READY_ATTRIBUTE)) refreshKeep();
   });

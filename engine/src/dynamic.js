@@ -365,6 +365,7 @@ export function rewriteDeclarations(style, look, opts = {}) {
     // rule can't beat a later page rule that resets the color.
     out.push(`${prop}:${v ?? value}${bangFor(prop)}`);
   }
+  raiseSurface(style, look, out, bangFor);
   if (!pendingVar) return out;
   for (const [sh, role] of Object.entries(SHORTHAND_ROLES)) {
     const value = style.getPropertyValue?.(sh);
@@ -373,6 +374,26 @@ export function rewriteDeclarations(style, look, opts = {}) {
     if (v !== null) out.push(`${sh}:${v}${bangFor(sh)}`);
   }
   return out;
+}
+
+// A light surface that casts a shadow floats over the page: a menu, popover,
+// modal or card. Mapped like the page it becomes the same dark, and a dark
+// shadow on a dark page disappears, so it melts into the page (owner report
+// 2026-10-28). It gets a lighter dark instead, as dark interfaces show
+// elevation. Only a plain color declared in the same rule as the shadow;
+// shortcut: var() surfaces stay flat, until a site needs them.
+const ELEVATION = 0.08; // white over the mapped color: about #141414 → #272727
+export function raisedBg(color, look) {
+  const c = transformColor(color, 'bg', look);
+  return c && quantize(composite({ r: 1, g: 1, b: 1, alpha: ELEVATION }, { ...c, alpha: 1 }));
+}
+function raiseSurface(style, look, out, bangFor) {
+  const shadow = style.getPropertyValue?.('box-shadow') ?? '';
+  if (!shadow || shadow === 'none' || /^\s*inset\b/.test(shadow)) return;
+  const i = out.findIndex((d) => d.startsWith('background-color:'));
+  const src = parseColor(style.getPropertyValue('background-color'));
+  if (i < 0 || !src || src.alpha < 1 || relativeLuminance(src) < 0.5) return;
+  out[i] = `background-color:${formatRgb(raisedBg(src, look))}${bangFor('background-color')}`;
 }
 
 // ------------------------------------------------------------ rule rewrite
@@ -450,6 +471,8 @@ export function baseCss(look) {
   const f = (hex) => formatRgb(ensureContrast(transformColor(hex, 'fg', look), bg));
   return (
     `:where(:root){color-scheme:dark;background-color:${formatRgb(bg)};color:${f('#000000')}}` +
+    // The browser's own dialog and popover surface, raised like raiseSurface.
+    `:where(dialog,[popover]){background-color:${formatRgb(raisedBg('#ffffff', look))}}` +
     `:where(a:link){color:${f('#0000ee')}}:where(a:visited){color:${f('#551a8b')}}`
   );
 }
