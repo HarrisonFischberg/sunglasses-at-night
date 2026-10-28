@@ -29,7 +29,7 @@ const TYPES = {
 // `?stall=<ms>` on an HTML page sends everything up to and including the
 // <body> tag, then holds the rest for <ms>: the browser paints the page
 // before any body content exists, which is when a white flash would show.
-function serve(dir, vars) {
+function serve(dir, vars, port = 0) {
   const server = createServer((req, res) => {
     const url = new URL(req.url, 'http://x');
     const path = decodeURIComponent(url.pathname);
@@ -63,12 +63,14 @@ function serve(dir, vars) {
     }
     res.end(body);
   });
-  return new Promise((r) => server.listen(0, '127.0.0.1', () => r(server)));
+  return new Promise((r) => server.listen(port, '127.0.0.1', () => r(server)));
 }
 
-export async function startServers() {
+// `sitePort`: a fixed port for the site origin (Safari grants an extension
+// access per host and port, so a real-Safari run needs the same one each time).
+export async function startServers({ sitePort = 0 } = {}) {
   let urls = {};
-  const site = await serve(FIXTURES, () => urls);
+  const site = await serve(FIXTURES, () => urls, sitePort);
   const cdn = await serve(resolve(FIXTURES, 'cdn'), () => urls);
   urls = {
     SITE: `http://127.0.0.1:${site.address().port}`,

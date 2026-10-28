@@ -8,8 +8,10 @@
 //
 // Same one-time setup as qa/run-mac.mjs (qa/README.md): the build installed
 // and re-ticked in Safari, "Allow JavaScript from Apple Events", Screen
-// Recording and Accessibility for the calling app, Safari's HTTPS-Only mode
-// off for http://localhost. First proves the extension is enabled and
+// Recording and Accessibility for the calling app, and Safari ▸ Settings ▸
+// Security ▸ "Warn before connecting to a website over HTTP" off for the run
+// (it refuses the http://localhost pages). Pages are served on port 8767
+// ($QA_REGRESSION_PORT): Safari grants the extension access per host and port. First proves the extension is enabled and
 // affecting a fixture page (its ready mark on <html>, a dark canvas); stops if
 // not. Then, per page: window screenshot, text contrast (e2e/page-audit.js,
 // read-only), and for the forms/layers pages typed text and opened layers.
@@ -50,7 +52,9 @@ async function waitReady(ms = 10000) {
 
 function shot(name) {
   const file = join(OUT, `${name}.png`);
-  execFileSync(MAC, ['shot', String(WIN.cgId), file], { encoding: 'utf8', timeout: 30000 });
+  // The ScreenCaptureKit helper can fail (-3811 seen 2026-10-28): fall back to macOS screencapture.
+  try { execFileSync(MAC, ['shot', String(WIN.cgId), file], { encoding: 'utf8', timeout: 30000 }); }
+  catch { execFileSync('screencapture', ['-x', '-o', `-l${WIN.cgId}`, file], { timeout: 30000 }); }
   return file;
 }
 
@@ -66,7 +70,7 @@ function pixelAt(file, x, y) {
 async function main() {
   mkdirSync(OUT, { recursive: true });
   execFileSync('swiftc', ['-O', join(ROOT, 'qa/tools/qa-mac.swift'), '-o', MAC], { stdio: 'inherit' });
-  const servers = await startServers();
+  const servers = await startServers({ sitePort: Number(process.env.QA_REGRESSION_PORT || 8767) });
   const base = servers.SITE.replace('127.0.0.1', 'localhost');
   const report = { safari: execFileSync('defaults', ['read', '/Applications/Safari.app/Contents/Info', 'CFBundleShortVersionString'], { encoding: 'utf8' }).trim(), pages: {} };
   try {
