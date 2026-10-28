@@ -33,7 +33,7 @@ const CSS = `
   background: rgb(95 215 201 / 0.16); box-shadow: 0 0 0 9999px rgb(2 6 8 / 0.28);
   transition: top 80ms, left 80ms, width 80ms, height 80ms;
 }
-.box[hidden], .menu[hidden], .bar[hidden], .toast[hidden] { display: none; }
+.box[hidden], .menu[hidden], .bar[hidden], .toast[hidden], .grid[hidden] { display: none; }
 .bar, .menu, .toast {
   background: #111b21; border: 1px solid #2b3f49; border-radius: 14px;
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
@@ -153,7 +153,9 @@ export function startPicker({ document: doc, window: win, store, hostname, touch
     what.textContent = sealed
       ? 'This part is inside a self-contained component, so it can’t be fixed on its own. Bigger area picks the whole component.'
       : describeElement(target);
+    // Not offered at all: disabled buttons looked pressable (owner, 2026-10-28).
     for (const b of fixButtons) b.disabled = sealed;
+    fixButtons[0].parentElement.hidden = sealed;
     smaller.hidden = trail.length === 0;
     const parent = outerOf(target);
     bigger.disabled = !parent || parent === doc.body || parent === doc.documentElement;
