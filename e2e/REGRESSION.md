@@ -23,6 +23,16 @@ Two separate results, never mixed:
 | WebKit harness, whole e2e suite (includes these) | `npm run e2e` |
 | one file | `node --test e2e/regression-picker.test.js` (after `npm run pree2e`) |
 | real Safari (Mac, setup in `qa/README.md`) | `scripts/build-mac.sh`, re-tick the extension, then `node qa/safari-regression.mjs` |
+
+Real-Safari setup that bit on 2026-10-28 (Safari 27.0.1):
+- A branch build has the same bundle ID as the /Applications copy, so
+  Safari lists two "Sunglasses at Night" entries; take one off the list
+  for the run (`pluginkit`) and restore it after.
+- Safari ▸ Settings ▸ Extensions ▸ Edit Websites… crashes Safari 27.0.1:
+  grant access from the toolbar icon on the test page instead
+  (http://localhost:8767, "Always Allow on This Website").
+- Safari ▸ Settings ▸ Security ▸ "Warn before connecting to a website over
+  HTTP" refuses the http://localhost pages: off for the run, back on after.
 | Chromium stand-in (only where WebKit can't be installed) | `E2E_BROWSER=chromium E2E_CHROMIUM_PATH=<chromium binary> npm run regression` |
 
 Chromium results are labelled `chromium-…` and are not WebKit results.

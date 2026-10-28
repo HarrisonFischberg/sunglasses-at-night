@@ -50,6 +50,7 @@ drives Safari in it. An iPad run: create "Sunglasses QA iPad" and pass
 2. Safari ▸ Settings ▸ Developer: tick **Allow JavaScript from Apple Events**.
 3. System Settings ▸ Privacy & Security ▸ **Screen & System Audio Recording**: allow the app that runs the command (Terminal, or Claude).
 4. System Settings ▸ Privacy & Security ▸ **Accessibility**: allow the same app (it presses Option+Shift+N).
+5. For http://localhost fixtures: Safari ▸ Settings ▸ Security ▸ untick **Warn before connecting to a website over HTTP** for the run (it refuses them otherwise), and tick it again afterwards.
 
 The Mac run brings Safari to the front for each shortcut press: don't use
 the Mac while it runs.
