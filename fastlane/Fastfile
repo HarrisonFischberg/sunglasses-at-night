@@ -48,12 +48,6 @@ platform :ios do
         screenshots_path: "#{STORE}/#{shots}",
         overwrite_screenshots: true,
         app_rating_config_path: "#{STORE}/age-rating.json",
-        # Contact name and phone stay out of git; email and notes are in metadata/review_information/.
-        app_review_information: {
-          first_name: ENV.fetch("REVIEW_FIRST_NAME"),
-          last_name: ENV.fetch("REVIEW_LAST_NAME"),
-          phone_number: ENV.fetch("REVIEW_PHONE")
-        },
         submission_information: {
           add_id_info_uses_idfa: false,
           export_compliance_uses_encryption: false,

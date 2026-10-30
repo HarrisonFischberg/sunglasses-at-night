@@ -24,7 +24,8 @@ TestFlight only: `bundle exec fastlane ios beta` (see `fastlane/README.md`).
 Everything a listing needs lives in `store/`, one folder per store:
 
 - `store/ios/metadata/`: name, subtitle, description, keywords, promotional
-  text, URLs, copyright, categories, review contact email and review notes
+  text, URLs, copyright, categories, App Review contact (name, phone, email;
+  seen only by Apple's reviewers, not shown on the App Store) and review notes
   (fastlane `deliver` layout).
 - `store/ios/age-rating.json`: age rating answers (all "None"/"No", 4+).
 - `store/ios/screenshots/en-US/`: iPhone 6.9" (1320 × 2868), iPhone 6.3"
@@ -51,7 +52,6 @@ already ignores `.env*` and `*.p8`.
 | `ASC_KEY_ID` | ios | App Store Connect API key ID |
 | `ASC_ISSUER_ID` | ios | App Store Connect issuer ID |
 | `ASC_KEY_PATH` | ios | absolute path to the `AuthKey_<id>.p8` file, kept outside the repo |
-| `REVIEW_FIRST_NAME`, `REVIEW_LAST_NAME`, `REVIEW_PHONE` | ios `--live` | App Review contact (not public, kept out of git) |
 | `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` | chrome | Google OAuth client and refresh token for the Chrome Web Store API |
 | `CWS_PUBLISHER_ID` | chrome | your Chrome Web Store publisher ID (the API's v2 needs it) |
 | `CWS_EXTENSION_ID` | chrome | the item ID, shown after the first manual upload |
