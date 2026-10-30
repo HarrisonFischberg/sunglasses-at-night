@@ -59,9 +59,9 @@ English
 - Host permission `<all_urls>`: needed so any website the user opens can be darkened.
 - Remote code: No.
 - Data usage: collects no user data. Tick the three certifications (no sale, no unrelated use, no creditworthiness).
-- Privacy policy URL: https://rarecreatures.app/sunglasses-at-night/privacy
+- Privacy policy URL: https://rarecreatures.app/apps/sunglasses-at-night/privacy
 
 ## Support
 
 - Email: hello@rarecreatures.app
-- Homepage: https://rarecreatures.app/sunglasses-at-night
+- Homepage: https://rarecreatures.app/apps/sunglasses-at-night
