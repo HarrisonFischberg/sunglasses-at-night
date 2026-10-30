@@ -24,7 +24,7 @@ ios() {
     echo "ios: skipped (needs a Mac with Xcode)"; return
   fi
   if [ $live = 1 ]; then
-    need ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_PATH REVIEW_FIRST_NAME REVIEW_LAST_NAME REVIEW_PHONE
+    need ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_PATH
     bundle exec fastlane ios release
   else
     bundle exec fastlane ios release dry_run:true
