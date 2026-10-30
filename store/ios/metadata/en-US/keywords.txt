@@ -1,0 +1,1 @@
+extension,eye strain,black,theme,invert,contrast,dim,low light,reading,browser,screen,bedtime,sepia
