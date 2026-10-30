@@ -12,6 +12,8 @@
 # (20261026.0734). Version: MARKETING_VERSION in the project. SAN_PLATFORMS="macOS iOS"
 # (default both) picks platforms; --no-upload stops after the archive.
 # Team: SAN_TEAM (default KTV2G3Z883).
+# Auth: Xcode's signed-in account, or an App Store Connect API key when
+# ASC_KEY_ID, ASC_ISSUER_ID and ASC_KEY_PATH (absolute path to the .p8) are set.
 # App Group: like scripts/build-ios.sh and build-mac.sh, the archive leaves
 # the App Group entitlement out by default (the team's profiles don't carry
 # it; settings still work, they live in Safari's extension store). Once the
@@ -21,6 +23,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 TEAM="${SAN_TEAM:-KTV2G3Z883}"
 N="${SAN_BUILD_NUMBER:-$(cat BUILD_NUMBER)}"
+auth=()
+[ -n "${ASC_KEY_PATH:-}" ] && auth=(-authenticationKeyPath "$ASC_KEY_PATH" \
+  -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID")
 UPLOAD=1; [ "${1:-}" = "--no-upload" ] && UPLOAD=0
 npm run --silent privacy-check
 node engine/scripts/site-data.js
@@ -49,7 +54,7 @@ for platform in ${SAN_PLATFORMS:-macOS iOS}; do
   echo "archiving $platform build $BUILD"
   xcodebuild -project SunglassesAtNight.xcodeproj -scheme "Sunglasses at Night ($platform)" \
     -configuration Release -destination "$dest" -archivePath "$archive" \
-    -allowProvisioningUpdates DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic \
+    -allowProvisioningUpdates ${auth[@]+"${auth[@]}"} DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic \
     CODE_SIGN_IDENTITY="Apple Development" ${ent[@]+"${ent[@]}"} \
     CURRENT_PROJECT_VERSION="$BUILD" archive > "$tmp/archive.log" 2>&1 || {
     grep -E ' error:' "$tmp/archive.log" >&2 || tail -n 30 "$tmp/archive.log" >&2
@@ -60,7 +65,7 @@ for platform in ${SAN_PLATFORMS:-macOS iOS}; do
   if [ "$UPLOAD" = 1 ]; then
     echo "uploading $platform build $BUILD"
     xcodebuild -exportArchive -archivePath "$archive" -exportPath "build/archives/export-$platform-$BUILD" \
-      -exportOptionsPlist scripts/ExportOptions-testflight.plist -allowProvisioningUpdates \
+      -exportOptionsPlist scripts/ExportOptions-testflight.plist -allowProvisioningUpdates ${auth[@]+"${auth[@]}"} \
       > "$tmp/export.log" 2>&1 || {
       grep -E ' error:|Error' "$tmp/export.log" >&2 || tail -n 30 "$tmp/export.log" >&2
       echo "$platform upload failed." >&2

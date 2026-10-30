@@ -1,0 +1,27 @@
+{
+  "categories": [
+    "appearance"
+  ],
+  "summary": {
+    "en-US": "Turn bright websites dark and tune the look for each site. No account, no tracking: your settings stay on your device."
+  },
+  "description": {
+    "en-US": "You open a link late at night and a bright white page lights up the room. Sunglasses at Night turns bright websites dark, so late reading is easier on the eyes.\n\nDARK WHEN YOU WANT IT\n• Match your system's appearance, stay dark all the time, or set a schedule that can run overnight.\n• Turn it on or off from the toolbar button, or with Alt-Shift-N.\n\nEVERY SITE, YOUR WAY\n• Set a site to always dark, never dark, or follow your main setting.\n• Give a site its own look with brightness, contrast, sepia and grayscale, or start from the Standard, Soft, Warm and Mono presets.\n• If one part of a page looks wrong, point at it and pick a fix. It stays fixed on that site.\n\nMADE FOR READING\n• Page colors are rewritten rather than simply flipped, with text contrast in mind.\n• Photos and videos are left as they are by default. You can dim them, or tell the extension never to invert them.\n• Pages that are already dark are left alone, unless you ask for them to be darkened anyway.\n• A second engine, Filter, is there for the odd site that looks broken. Switch per site, no reload needed.\n\nPRIVATE BY DESIGN\n• No account, no analytics, no ads, no tracking.\n• Your settings and site rules stay on your device.\n• Report a problem opens a draft in your email app. Nothing is sent unless you press Send.\n\nFREE\nFree, with no in-app purchases or subscriptions. Also available for Safari on iPhone, iPad and Mac.\n\nSome pages may not look perfect in dark mode. If one doesn't, try the Filter engine or Never dark for that site, or use Report a problem."
+  },
+  "homepage": {
+    "en-US": "https://rarecreatures.app/apps/sunglasses-at-night"
+  },
+  "support_email": {
+    "en-US": "hello@rarecreatures.app"
+  },
+  "support_url": {
+    "en-US": "https://rarecreatures.app/apps/sunglasses-at-night/support"
+  },
+  "version": {
+    "license": "all-rights-reserved",
+    "release_notes": {
+      "en-US": "First release."
+    },
+    "approval_notes": "No build step beyond copying files: the package is Extension/Resources from the source repository with a Firefox manifest. engine.js is a plain concatenation of readable source files, not minified. No account is needed. The extension makes no network requests."
+  }
+}
