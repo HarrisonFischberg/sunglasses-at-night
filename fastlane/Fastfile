@@ -29,8 +29,9 @@ platform :ios do
 
   desc "beta, then upload metadata, age rating and screenshots and submit both platforms for review"
   desc "dry_run:true archives only and lists what would be uploaded"
+  desc "build:N submits already-uploaded build N instead of archiving a new one"
   lane :release do |options|
-    n = beta(options)
+    n = options[:build] || beta(options)
     { "ios" => ["screenshots", n], "osx" => ["screenshots-mac", "20261027.#{n}"] }.each do |platform, (shots, build)|
       if options[:dry_run]
         UI.message("would submit #{platform} #{VERSION} (#{build}) with #{Dir["#{STORE}/#{shots}/*/*.png"].size} screenshots")
@@ -38,7 +39,8 @@ platform :ios do
       end
       app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
       FastlaneCore::BuildWatcher.wait_for_build_processing_to_be_complete(
-        app_id: app.id, platform: platform, app_version: VERSION, build_version: build, poll_interval: 30
+        app_id: app.id, platform: platform, app_version: VERSION, build_version: build, poll_interval: 30,
+        return_spaceship_testflight_build: false # the legacy TestFlight object needs an Apple ID login, not an API key
       )
       deliver(
         platform: platform,
