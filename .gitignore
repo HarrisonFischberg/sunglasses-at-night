@@ -24,3 +24,7 @@ ralph/evidence/amazon/video2/
 ralph/evidence/quiettown-*.png
 ralph/evidence/quiettown-*.png
 e2e/regression-out/
+
+# release tooling: store API keys and fastlane output never go in git
+*.p8
+fastlane/report.xml

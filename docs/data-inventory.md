@@ -29,6 +29,11 @@ None in the app. Apple (App Store distribution, Safari) is the platform. Uploads
 (`scripts/archive-testflight.sh`, 2026-10-22) send only the signed app build
 from the owner's Mac to Apple; no user data. The app and extension ship a
 privacy manifest (`App/PrivacyInfo.xcprivacy`): no tracking, nothing collected,
-UserDefaults read for the App Group settings mirror only. The
+UserDefaults read for the App Group settings mirror only. Release tooling
+(`./release.sh`, 2026-10-30; owner-run only) sends the app builds, store listing
+text, screenshots and review contact to Apple (fastlane, App Store Connect API),
+the extension zip to Google (Chrome Web Store API) and to Mozilla
+(addons.mozilla.org API); no user data. fastlane's usage analytics are off
+(`opt_out_usage`). Store keys come from env vars and never enter git. The
 owner's email provider for hello@ and support@rarecreatures.app is UNKNOWN; it only
 receives voluntary user emails.
