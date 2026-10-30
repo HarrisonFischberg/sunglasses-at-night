@@ -1,0 +1,12 @@
+Sunglasses at Night is a Safari Web Extension. The app itself only shows how to turn the extension on; the feature runs inside Safari.
+
+To test on iPhone or iPad:
+1. Open the app once, then go to Settings > Apps > Safari > Extensions > Sunglasses at Night, turn it on and set All Websites to Allow.
+2. Open any light website in Safari (for example https://en.wikipedia.org). It turns dark.
+3. Tap the page menu in the address bar, then Sunglasses at Night, to change the mode, give a site its own look, or turn a site off.
+
+To test on Mac:
+1. Open the app once, then Safari > Settings > Extensions, tick Sunglasses at Night and allow it on all websites.
+2. Open any light website. Click the sunglasses button in the toolbar for settings. Option-Shift-N toggles dark mode.
+
+No account or sign-in is needed. The extension makes no network requests and collects no data. "Report a problem" only opens a draft in the Mail app; nothing is sent unless the user presses Send.

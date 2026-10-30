@@ -1,0 +1,29 @@
+You open a link in bed and a bright white page lights up the room. Sunglasses at Night is a Safari extension that turns bright websites dark, so late reading is easier on the eyes.
+
+DARK WHEN YOU WANT IT
+• Match your device's appearance, stay dark all the time, or set a schedule that can run overnight.
+• Turn it on or off from the extension's button in Safari. On Mac, Option-Shift-N toggles it too.
+
+EVERY SITE, YOUR WAY
+• Set a site to always dark, never dark, or follow your main setting.
+• Give a site its own look with brightness, contrast, sepia and grayscale, or start from the Standard, Soft, Warm and Mono presets.
+• If one part of a page looks wrong, point at it and pick a fix. It stays fixed on that site.
+
+MADE FOR READING
+• Page colors are rewritten rather than simply flipped, with text contrast in mind.
+• Photos and videos are left as they are by default. You can dim them, or tell the extension never to invert them.
+• Pages that are already dark are left alone, unless you ask for them to be darkened anyway.
+• A second engine, Filter, is there for the odd site that looks broken. Switch per site, no reload needed.
+
+PRIVATE BY DESIGN
+• No account, no analytics, no ads, no tracking.
+• Your settings and site rules stay on your device.
+• Report a problem opens a draft in your Mail app. Nothing is sent unless you press Send.
+
+FREE
+Free on iPhone, iPad and Mac, with no in-app purchases or subscriptions.
+
+GETTING STARTED
+Open the app once and follow the steps to turn on the extension in Safari settings. Then allow it on the websites you want darkened.
+
+Some pages may not look perfect in dark mode. If one doesn't, try the Filter engine or Never dark for that site, or use Report a problem in the extension.
