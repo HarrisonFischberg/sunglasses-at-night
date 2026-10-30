@@ -29,7 +29,7 @@ platform :ios do
 
   desc "beta, then upload metadata, age rating and screenshots and submit both platforms for review"
   desc "dry_run:true archives only and lists what would be uploaded"
-  desc "build:N submits already-uploaded build N instead of archiving a new one"
+  desc "build:N submits already-uploaded build N instead of archiving a new one; submit:false uploads without submitting"
   lane :release do |options|
     n = options[:build] || beta(options)
     { "ios" => ["screenshots", n], "osx" => ["screenshots-mac", "20261027.#{n}"] }.each do |platform, (shots, build)|
@@ -55,7 +55,7 @@ platform :ios do
           export_compliance_uses_encryption: false,
           content_rights_contains_third_party_content: false
         },
-        submit_for_review: true,
+        submit_for_review: options[:submit] != false,
         automatic_release: false,
         precheck_include_in_app_purchases: false,
         force: true # no HTML preview prompt
