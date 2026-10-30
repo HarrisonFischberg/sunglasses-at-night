@@ -15,7 +15,8 @@
     "preregression": "node engine/scripts/site-data.js && node engine/scripts/bundle.js && node engine/scripts/base-css.js && node design/icons/generate.js",
     "regression": "node --test --test-concurrency=1 'e2e/regression-*.test.js'",
     "perf": "node engine/scripts/perf.js",
-    "privacy-check": "node --test 'privacy/**/*.test.js'"
+    "privacy-check": "node --test 'privacy/**/*.test.js'",
+    "package:web": "node scripts/package-web.mjs"
   },
   "devDependencies": {
     "playwright": "1.64.1"
