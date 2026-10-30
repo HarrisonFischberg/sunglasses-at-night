@@ -14,6 +14,9 @@ One command, dry run by default:
 | `firefox` | Firefox Add-ons (AMO) | builds `dist/firefox`, runs `web-ext lint` | submits it as a listed add-on for review, with the listing in `store/firefox/amo-metadata.json` |
 | `all` | all three | | |
 
+Quit Safari before `./release.sh ios`: archiving registers a new copy of the
+extension, and Safari has crashed reloading it while open.
+
 There is no Android app in this repo, so there is no Android target. `ios`
 needs a Mac with Xcode; the other targets run anywhere with Node.
 
@@ -89,7 +92,9 @@ already ignores `.env*` and `*.p8`.
   product page.
 - **App Privacy answers** (App Store Connect ▸ App Privacy): choose "No, we do
   not collect data from this app", then Publish. The App Store Connect API
-  can't set this.
+  can't set this. Done once (2026-10-30).
+- **Pricing and Availability**: set to Free with all countries before the first
+  submission (done 2026-10-30).
 - **Age rating**: the answers are uploaded from `store/ios/age-rating.json`;
   check the result reads 4+ the first time.
 - **Content rights and export compliance** are answered by the lane: no
