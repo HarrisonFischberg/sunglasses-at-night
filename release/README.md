@@ -93,8 +93,10 @@ already ignores `.env*` and `*.p8`.
 - **App Privacy answers** (App Store Connect ▸ App Privacy): choose "No, we do
   not collect data from this app", then Publish. The App Store Connect API
   can't set this. Done once (2026-10-30).
-- **Pricing and Availability**: set to Free with all countries before the first
-  submission (done 2026-10-30).
+- **Pricing and Availability**: set the price to Free and Country or Region
+  Availability to all countries before the first release. They are saved
+  separately: if availability is never saved, a released app shows "Removed from
+  App Store". (Price set 2026-10-30, availability 2026-11-08.)
 - **Age rating**: the answers are uploaded from `store/ios/age-rating.json`;
   check the result reads 4+ the first time.
 - **Content rights and export compliance** are answered by the lane: no
