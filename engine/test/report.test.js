@@ -60,3 +60,11 @@ test('nothing is transmitted: report.js has no network API and the popup uses a 
   const html = readFileSync(new URL('../../Extension/Resources/popup/popup.html', import.meta.url), 'utf8');
   assert.match(html, /<a id="report"/);
 });
+
+test('Send Debug Logs: what the user typed replaces the prompt line', () => {
+  const { body } = parse(buildReportUrl({ ...info, host: undefined, problem: '  Pages flash white  ' }));
+  assert.equal(body.split('\n')[0], 'Pages flash white');
+  assert.doesNotMatch(body, /please describe/);
+  assert.match(body, /^Site: \(none\)$/m);
+  assert.doesNotMatch(body, /secret\.example/);
+});

@@ -6,6 +6,7 @@
 import { createSettingsStore, extensionArea, LOOK_RANGES, isValidTime } from './settings.js';
 import { matchPreset, presetLook, siteRows, scheduleHint } from './ui-core.js';
 import { RESET_ALL } from './messages.js';
+import { buildReportBody, buildReportUrl, REPORT_ADDRESS } from './report.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
@@ -112,6 +113,18 @@ dialog.addEventListener('close', async () => {
   ({ settings } = await store.load());
   render();
   $('reset-done').textContent = ok ? 'All settings were reset.' : 'Reset didn’t finish. Try again.';
+});
+
+// Send Debug Logs: a draft in the user's own email app, the same report as the
+// popup's "Report a problem" with their note first. The extension sends nothing.
+$('problem').addEventListener('input', (e) => { $('send-logs').disabled = !e.target.value.trim(); });
+$('send-logs').addEventListener('click', () => {
+  const info = { version: api.runtime.getManifest().version, system: navigator.userAgent, settings, problem: $('problem').value };
+  navigator.clipboard?.writeText(buildReportBody(info)).catch(() => {});
+  const link = document.createElement('a');
+  link.href = buildReportUrl(info);
+  link.click();
+  $('send-logs-status').textContent = `Your email app is opening with the report filled in: press Send there. It is also copied, so if no email app opens, paste it into an email to ${REPORT_ADDRESS}.`;
 });
 
 async function main() {

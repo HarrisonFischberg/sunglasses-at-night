@@ -19,6 +19,7 @@
   <a href="#h-look">Look</a>
   <a href="#h-pages">Images and pages</a>
   <a href="#h-sites">Sites</a>
+  <a href="#h-support">Debug logs</a>
   <a href="#h-reset">Reset</a>
 </nav>
 <main>
@@ -121,6 +122,17 @@
         </button>
       </li>
     </template>
+  </section>
+
+  <section aria-labelledby="h-support">
+    <h2 id="h-support">Send Debug Logs to support@rarecreatures.app</h2>
+    <div class="support">
+      <label for="problem">What went wrong?</label>
+      <textarea id="problem" rows="4" aria-describedby="send-logs-note"></textarea>
+      <button type="button" id="send-logs" class="primary" disabled>Send Debug Logs</button>
+      <p id="send-logs-note" class="muted">Opens your email app with what you wrote, the version, your system and your settings (of your site rules, only how many there are). Nothing is sent until you press Send.</p>
+      <p id="send-logs-status" role="status" class="muted"></p>
+    </div>
   </section>
 
   <section aria-labelledby="h-reset">
