@@ -23,9 +23,10 @@ export function reportSettings(settings, host) {
   return out;
 }
 
-export function buildReportBody({ host, version, system, settings }) {
+// problem: what the user typed in Settings → Send Debug Logs; without it the draft asks.
+export function buildReportBody({ host, version, system, settings, problem }) {
   return [
-    'What went wrong? (please describe, then press Send)',
+    problem?.trim() || 'What went wrong? (please describe, then press Send)',
     '',
     '',
     '--- Sent only if you press Send. You can edit or delete anything below. ---',

@@ -1878,6 +1878,53 @@ function scheduleHint(schedule) {
 return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENGINE_LABELS, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withFix, withoutFix, fixRows, matchPreset, presetLook, popupView, siteRows, scheduleHint };
 })();
 
+// ---- engine/src/report.js
+const __m_engine_src_report_js = (() => {
+// Sunglasses at Night: "Report a problem" (T011). Builds a mailto: URL for a
+// draft in the user's own Mail app. The extension sends nothing: the popup
+// shows a plain link and the user presses Send in Mail, after reading and
+// editing the draft. Fields: site hostname, extension version, system
+// (user agent string) and settings. Only the current site's rule is included,
+// never the other sites the user has set rules for, and of your own fixes only
+// how many there are. Pure; no network.
+
+const REPORT_ADDRESS = 'support@rarecreatures.app';
+const REPORT_SUBJECT = 'Sunglasses at Night: problem report';
+
+function reportSettings(settings, host) {
+  const { sites = {}, ...rest } = settings ?? {};
+  const out = { ...rest };
+  const entry = host ? sites[host] : undefined;
+  // Your fixes name parts of the page (and a few words of its text), so the
+  // draft only says how many there are.
+  if (entry) {
+    const { fixes, ...rule } = entry;
+    out.thisSite = fixes ? { ...rule, fixes: fixes.length } : rule;
+  }
+  out.otherSiteRules = Object.keys(sites).filter((h) => h !== host).length;
+  return out;
+}
+
+// problem: what the user typed in Settings → Send Debug Logs; without it the draft asks.
+function buildReportBody({ host, version, system, settings, problem }) {
+  return [
+    problem?.trim() || 'What went wrong? (please describe, then press Send)',
+    '',
+    '',
+    '--- Sent only if you press Send. You can edit or delete anything below. ---',
+    `Site: ${host || '(none)'}`,
+    `Version: ${version || '(unknown)'}`,
+    `System: ${system || '(unknown)'}`,
+    `Settings: ${JSON.stringify(reportSettings(settings, host))}`,
+  ].join('\n');
+}
+
+function buildReportUrl(info) {
+  return `mailto:${REPORT_ADDRESS}?subject=${encodeURIComponent(REPORT_SUBJECT)}&body=${encodeURIComponent(buildReportBody(info))}`;
+}
+return { REPORT_ADDRESS, REPORT_SUBJECT, reportSettings, buildReportBody, buildReportUrl };
+})();
+
 // ---- engine/src/options.js
 const __m_engine_src_options_js = (() => {
 // Sunglasses at Night: options page (S06) entry, bundled to
@@ -1888,6 +1935,7 @@ const __m_engine_src_options_js = (() => {
 const { createSettingsStore, extensionArea, LOOK_RANGES, isValidTime } = __m_engine_src_settings_js;
 const { matchPreset, presetLook, siteRows, scheduleHint } = __m_engine_src_ui_core_js;
 const { RESET_ALL } = __m_engine_src_messages_js;
+const { buildReportBody, buildReportUrl, REPORT_ADDRESS } = __m_engine_src_report_js;
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
@@ -1994,6 +2042,18 @@ dialog.addEventListener('close', async () => {
   ({ settings } = await store.load());
   render();
   $('reset-done').textContent = ok ? 'All settings were reset.' : 'Reset didn’t finish. Try again.';
+});
+
+// Send Debug Logs: a draft in the user's own email app, the same report as the
+// popup's "Report a problem" with their note first. The extension sends nothing.
+$('problem').addEventListener('input', (e) => { $('send-logs').disabled = !e.target.value.trim(); });
+$('send-logs').addEventListener('click', () => {
+  const info = { version: api.runtime.getManifest().version, system: navigator.userAgent, settings, problem: $('problem').value };
+  navigator.clipboard?.writeText(buildReportBody(info)).catch(() => {});
+  const link = document.createElement('a');
+  link.href = buildReportUrl(info);
+  link.click();
+  $('send-logs-status').textContent = `Your email app is opening with the report filled in: press Send there. It is also copied, so if no email app opens, paste it into an email to ${REPORT_ADDRESS}.`;
 });
 
 async function main() {

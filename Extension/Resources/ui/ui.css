@@ -176,7 +176,7 @@ output { color: var(--muted); font-family: var(--mono); font-variant-numeric: ta
 
 /* ---------------------------------------------- select, time, buttons */
 
-select, input[type="time"], button {
+select, input[type="time"], button, textarea {
   font: inherit;
   color: inherit;
   min-height: var(--target);
@@ -459,6 +459,8 @@ body.options { padding: var(--s-4); }
 .options h1 { font-size: var(--text-2xl); letter-spacing: -0.01em; margin-bottom: var(--s-1); }
 .options section { margin: 0 0 var(--s-5); scroll-margin-top: var(--s-5); }
 .options section > h2 { margin: 0 var(--s-1) var(--s-2); font-size: var(--text-sm); color: var(--muted); }
+.options .support { display: grid; gap: var(--s-2); justify-items: start; padding: 0 var(--s-1); }
+.options .support textarea { width: 100%; box-sizing: border-box; min-height: calc(var(--target) * 2); padding: var(--s-2) var(--s-3); background: var(--raised); border: 0; border-radius: var(--r-sm); resize: vertical; }
 
 .rail { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-4); }
 .rail a {
