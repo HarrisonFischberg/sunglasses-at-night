@@ -9,7 +9,7 @@ One command, dry run by default:
 
 | Target | Store | Dry run | `--live` |
 | --- | --- | --- | --- |
-| `ios` | App Store (iPhone, iPad and Mac: one App Store Connect record) | archives both apps, lists what would be submitted | archives, uploads to TestFlight, commits the bumped `BUILD_NUMBER`, waits for processing, uploads listing, age rating and screenshots, submits both platforms for review (manual release after approval) |
+| `ios` | App Store (iPhone, iPad and Mac: one App Store Connect record) | archives both apps, lists what would be submitted | archives, uploads to TestFlight, commits the bumped `BUILD_NUMBER`, waits for processing, uploads listing, age rating and screenshots, submits both platforms for review (released automatically once approved) |
 | `chrome` | Chrome Web Store | builds `dist/sunglasses-at-night-chrome-<version>.zip` | uploads and publishes it |
 | `firefox` | Firefox Add-ons (AMO) | builds `dist/firefox`, runs `web-ext lint` | submits it as a listed add-on for review, with the listing in `store/firefox/amo-metadata.json` |
 | `all` | all three | | |
@@ -100,8 +100,8 @@ already ignores `.env*` and `*.p8`.
 - **Content rights and export compliance** are answered by the lane: no
   third-party content, no non-exempt encryption (also set in the app's
   Info.plist as `ITSAppUsesNonExemptEncryption = NO`).
-- **Release after approval**: the lane submits with manual release. Press
-  "Release this version" in App Store Connect when ready.
+- **Release after approval**: the lane submits with automatic release, so each
+  version goes live as soon as Apple approves it (1.1 was released by hand).
 - **Chrome Web Store Privacy tab** (single purpose, permission reasons, data
   use certification): filled once by hand from `store/chrome/listing.md`.
 - **Firefox data collection**: declared in the manifest

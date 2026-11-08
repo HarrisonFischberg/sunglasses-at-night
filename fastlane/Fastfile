@@ -56,7 +56,7 @@ platform :ios do
           content_rights_contains_third_party_content: false
         },
         submit_for_review: options[:submit] != false,
-        automatic_release: false,
+        automatic_release: true,
         precheck_include_in_app_purchases: false,
         force: true # no HTML preview prompt
       )
