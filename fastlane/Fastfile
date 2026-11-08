@@ -60,6 +60,7 @@ platform :ios do
         precheck_include_in_app_purchases: false,
         force: true # no HTML preview prompt
       )
+      UI.success("#{platform} #{VERSION} (#{build}) submitted: https://appstoreconnect.apple.com/apps/#{app.id}/distribution, live at https://apps.apple.com/app/id#{app.id} once approved")
     end
   end
 end

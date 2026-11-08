@@ -5,6 +5,7 @@ One command, dry run by default:
 ```sh
 ./release.sh [ios|chrome|firefox|all]          # dry run: build and check, publish nothing
 ./release.sh [ios|chrome|firefox|all] --live   # publish
+./release.sh ios --live --version 1.2          # set MARKETING_VERSION first, then publish
 ```
 
 | Target | Store | Dry run | `--live` |
