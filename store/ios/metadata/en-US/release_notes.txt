@@ -1,0 +1,1 @@
+- Send Debug Logs: if something goes wrong, open the extension's settings, say what happened, and Sunglasses at Night starts an email to support with the details needed to fix it. You see the whole email and send it yourself.
