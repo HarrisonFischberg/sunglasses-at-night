@@ -1387,23 +1387,10 @@ export function startDynamic({
   // off for one synchronous style read (no paint in between, as early.js does
   // in readPageColors), then back on; a fix rule restores what was read.
   function authoredColors(keeps) {
-    const sheets = [];
-    for (const scope of scopes.values()) sheets.push(scope.baseEl, scope.overrideEl, scope.dynEl);
-    const live = sheets.filter(Boolean);
-    const prior = live.map((st) => st.media);
-    const read = [];
-    for (const st of live) st.media = 'not all';
-    try {
-      for (const k of keeps) {
-        const cs = getCS(k.el);
-        read.push({ color: cs.color, fill: cs.webkitTextFillColor });
-      }
-    } finally {
-      live.forEach((st, i) => {
-        if (prior[i]) st.media = prior[i];
-        else st.removeAttribute('media');
-      });
-    }
+    const read = readAuthored(() => keeps.map((k) => {
+      const cs = getCS(k.el);
+      return { color: cs.color, fill: cs.webkitTextFillColor };
+    }));
     const out = [];
     keeps.forEach((k, i) => {
       const important = k.el.style?.getPropertyPriority('color') === 'important';
