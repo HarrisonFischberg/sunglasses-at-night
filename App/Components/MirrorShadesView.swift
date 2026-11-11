@@ -10,6 +10,7 @@ struct MirrorShadesView: View {
     let action: () -> Void
 
     @ScaledMetric(relativeTo: .largeTitle) private var width: CGFloat = 220
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: 12) {
@@ -21,9 +22,9 @@ struct MirrorShadesView: View {
                 }
                 .frame(width: width, height: width * Lenses.aspect)
                 .modifier(GlassLenses())
-                .animation(.spring(response: 0.28, dampingFraction: 0.8), value: isOn)
+                .animation(reduceMotion ? nil : .spring(response: 0.28, dampingFraction: 0.8), value: isOn)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(LensPressStyle())
             .accessibilityLabel("Try it on a white page")
             .padding(.bottom, 8)
             Text(title)
@@ -44,6 +45,23 @@ struct MirrorShadesView: View {
         .init(color: Color(red: 0.05, green: 0.16, blue: 0.18), location: 0.55),
         .init(color: Color(red: 0.09, green: 0.25, blue: 0.25), location: 1),
     ], startPoint: .top, endPoint: .bottom)
+}
+
+/// Before Liquid Glass the lenses answer a press themselves: they dim at once
+/// and, unless Reduce Motion is on, sink a little (0.97, as the popup's buttons do).
+private struct LensPressStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func makeBody(configuration: Configuration) -> some View {
+        if #available(iOS 26, macOS 26, *) {
+            configuration.label
+        } else {
+            configuration.label
+                .opacity(configuration.isPressed ? 0.7 : 1)
+                .scaleEffect(configuration.isPressed && !reduceMotion ? 0.97 : 1)
+                .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+        }
+    }
 }
 
 /// Liquid Glass on the lenses where the OS has it, so they answer a press.

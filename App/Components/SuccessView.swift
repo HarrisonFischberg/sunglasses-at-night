@@ -14,6 +14,13 @@ enum Haptics {
         NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
         #endif
     }
+
+    /// Something asked for didn't happen. The Mac has no error pattern, so it stays quiet there.
+    static func error() {
+        #if os(iOS)
+        UINotificationFeedbackGenerator().notificationOccurred(.error)
+        #endif
+    }
 }
 
 /// The end of a flow: a big symbol with a check, a title, one line and the
