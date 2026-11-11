@@ -1685,6 +1685,16 @@ const RULE_LABELS = Object.freeze({
 });
 
 /**
+ * [head, tail] of a hostname for a narrow space: CSS shortens the head with an
+ * ellipsis and always shows the tail, so a long name is cut in the middle and
+ * its ending (the part that tells sites apart) stays readable.
+ */
+function splitHost(host, tail = 9) {
+  const cut = host.length > tail * 2 ? host.length - tail : host.length;
+  return [host.slice(0, cut), host.slice(cut)];
+}
+
+/**
  * The hostname the extension can act on for a tab URL, or null for pages it
  * can't run on: browser and extension pages, about:, file:, data:, blank tabs.
  */
@@ -1846,7 +1856,7 @@ function scheduleHint(schedule) {
   if (schedule.start > schedule.end) return `Runs overnight, from ${schedule.start} until ${schedule.end} the next morning.`;
   return '';
 }
-return { RULE_LABELS, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withFix, withoutFix, fixRows, matchPreset, presetLook, popupView, siteRows, scheduleHint };
+return { RULE_LABELS, splitHost, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withFix, withoutFix, fixRows, matchPreset, presetLook, popupView, siteRows, scheduleHint };
 })();
 
 // ---- engine/src/report.js
@@ -1908,7 +1918,7 @@ const __m_engine_src_popup_js = (() => {
 // No network.
 
 const { createSettingsStore, extensionArea, LOOK_RANGES, MODES, isValidTime } = __m_engine_src_settings_js;
-const { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } = __m_engine_src_ui_core_js;
+const { popupView, splitHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } = __m_engine_src_ui_core_js;
 const { GET_TAB_STATE, RESET_ALL, RESTORE_KEY } = __m_engine_src_messages_js;
 const { buildReportUrl } = __m_engine_src_report_js;
 
@@ -1945,9 +1955,13 @@ function render() {
   document.body.dataset.on = String(report?.on === true);
   for (const r of document.querySelectorAll('input[name="mode"]')) r.checked = r.value === view.mode;
   $('site').hidden = view.restricted;
+  $('site-more').hidden = view.restricted;
   $('custom-look-row').hidden = view.restricted;
   if (!view.restricted) {
-    $('host').textContent = view.host;
+    const [head, tail] = splitHost(view.host);
+    $('host').firstElementChild.textContent = head;
+    $('host').lastElementChild.textContent = tail;
+    $('host').title = view.host;
     for (const r of document.querySelectorAll('input[name="rule"]')) r.checked = r.value === view.rule;
     $('already-dark').hidden = !view.alreadyDark;
     $('force-dark').checked = view.forcedDark;

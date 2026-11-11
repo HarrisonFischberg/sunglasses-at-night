@@ -1685,6 +1685,16 @@ const RULE_LABELS = Object.freeze({
 });
 
 /**
+ * [head, tail] of a hostname for a narrow space: CSS shortens the head with an
+ * ellipsis and always shows the tail, so a long name is cut in the middle and
+ * its ending (the part that tells sites apart) stays readable.
+ */
+function splitHost(host, tail = 9) {
+  const cut = host.length > tail * 2 ? host.length - tail : host.length;
+  return [host.slice(0, cut), host.slice(cut)];
+}
+
+/**
  * The hostname the extension can act on for a tab URL, or null for pages it
  * can't run on: browser and extension pages, about:, file:, data:, blank tabs.
  */
@@ -1846,7 +1856,7 @@ function scheduleHint(schedule) {
   if (schedule.start > schedule.end) return `Runs overnight, from ${schedule.start} until ${schedule.end} the next morning.`;
   return '';
 }
-return { RULE_LABELS, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withFix, withoutFix, fixRows, matchPreset, presetLook, popupView, siteRows, scheduleHint };
+return { RULE_LABELS, splitHost, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withFix, withoutFix, fixRows, matchPreset, presetLook, popupView, siteRows, scheduleHint };
 })();
 
 // ---- engine/src/report.js

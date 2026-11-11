@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  pageHost, popupView, siteEntry, withRule, withLook, withDetectDark, matchPreset, presetLook, siteRows, scheduleHint,
+  pageHost, popupView, splitHost, siteEntry, withRule, withLook, withDetectDark, matchPreset, presetLook, siteRows, scheduleHint,
 } from '../src/ui-core.js';
 import { createBackground } from '../src/background-core.js';
 import { createMemoryArea, createSettingsStore, defaultSettings, validateSettings } from '../src/settings.js';
@@ -29,6 +29,12 @@ test('pageHost: restricted pages give null', () => {
     undefined, null, '', 'not a url', 'about:blank', 'about:srcdoc', 'file:///Users/x/a.html', 'data:text/html,hi',
     'safari-web-extension://abc/popup/popup.html', 'favorites://', 'blob:https://example.com/123', 'javascript:void 0',
   ]) assert.equal(pageHost(url), null, String(url));
+});
+
+test('splitHost: short names stay whole, long ones keep their ending apart', () => {
+  assert.deepEqual(splitHost('example.com'), ['example.com', '']);
+  assert.deepEqual(splitHost('night-shift-notes.example'), ['night-shift-note', 's.example']);
+  for (const h of ['a', 'example.com', 'a-very-long-subdomain.of.some-site.example']) assert.equal(splitHost(h).join(''), h);
 });
 
 // --------------------------------------------------------------- popupView
@@ -283,7 +289,7 @@ test('ui.css (Dusk) tokens meet contrast, and focus stays visible', () => {
   const css = read('Extension/Resources/ui/ui.css');
   const root = css.slice(css.indexOf(':root {'), css.indexOf('* {'));
   const t = Object.fromEntries([...root.matchAll(/--([\w-]+):\s*(#[0-9A-Fa-f]{6})/g)].map((m) => [m[1], parseColor(m[2])]));
-  for (const surface of ['bg', 'group', 'raised']) {
+  for (const surface of ['bg', 'group', 'raised', 'lens-lit']) {
     for (const fg of ['fg', 'muted', 'accent', 'warning', 'danger']) {
       const r = contrastRatio(t[fg], t[surface]);
       assert.ok(r >= 4.5, `--${fg} on --${surface} is ${r.toFixed(2)}:1`);

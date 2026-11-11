@@ -8,7 +8,7 @@
 // No network.
 
 import { createSettingsStore, extensionArea, LOOK_RANGES, MODES, isValidTime } from './settings.js';
-import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } from './ui-core.js';
+import { popupView, splitHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } from './ui-core.js';
 import { GET_TAB_STATE, RESET_ALL, RESTORE_KEY } from './messages.js';
 import { buildReportUrl } from './report.js';
 
@@ -45,9 +45,13 @@ function render() {
   document.body.dataset.on = String(report?.on === true);
   for (const r of document.querySelectorAll('input[name="mode"]')) r.checked = r.value === view.mode;
   $('site').hidden = view.restricted;
+  $('site-more').hidden = view.restricted;
   $('custom-look-row').hidden = view.restricted;
   if (!view.restricted) {
-    $('host').textContent = view.host;
+    const [head, tail] = splitHost(view.host);
+    $('host').firstElementChild.textContent = head;
+    $('host').lastElementChild.textContent = tail;
+    $('host').title = view.host;
     for (const r of document.querySelectorAll('input[name="rule"]')) r.checked = r.value === view.rule;
     $('already-dark').hidden = !view.alreadyDark;
     $('force-dark').checked = view.forcedDark;

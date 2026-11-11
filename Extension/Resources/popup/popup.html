@@ -16,6 +16,11 @@
 
   <main class="popup-scroll" id="scroll">
   <section class="hero" aria-label="Status">
+    <label class="switch">
+      <span class="switch-label">Dark mode</span>
+      <input type="checkbox" id="power" class="switch-input">
+      <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+    </label>
     <div class="hero-text">
       <svg class="mark" viewBox="0 0 56 56" aria-hidden="true" focusable="false">
         <path class="lens" d="M6 20h18c1 0 2 1 2 2v6c0 5-4 9-9 9h-1c-5 0-9-4-9-9v-6c0-1 0-2 0-2z"/>
@@ -24,41 +29,43 @@
       </svg>
       <p id="status" role="status">Loading…</p>
     </div>
-    <label class="switch">
-      <span class="switch-label">Dark mode</span>
-      <input type="checkbox" id="power" class="switch-input">
-      <span class="track" aria-hidden="true"><span class="thumb"></span></span>
-    </label>
   </section>
 
-  <fieldset id="mode-set">
-    <legend>When</legend>
-    <div class="tiles" id="mode-tiles">
-      <label class="tile"><input type="radio" name="mode" value="system"><span>Match system</span></label>
-      <label class="tile"><input type="radio" name="mode" value="always"><span>Always</span></label>
-      <label class="tile"><input type="radio" name="mode" value="schedule"><span>On a schedule</span></label>
-    </div>
-    <div id="schedule" hidden>
-      <div class="field">
-        <label for="start">From</label>
-        <input type="time" id="start" required aria-describedby="schedule-hint">
+  <!-- Two Lenses: every site on the left, this site on the right. -->
+  <div class="lenses">
+    <fieldset id="mode-set">
+      <legend>When</legend>
+      <div class="tiles" id="mode-tiles">
+        <label class="tile"><input type="radio" name="mode" value="system"><span>Match system</span></label>
+        <label class="tile"><input type="radio" name="mode" value="always"><span>Always</span></label>
+        <label class="tile"><input type="radio" name="mode" value="schedule"><span>On a schedule</span></label>
       </div>
-      <div class="field">
-        <label for="end">Until</label>
-        <input type="time" id="end" required aria-describedby="schedule-hint">
+      <div id="schedule" hidden>
+        <div class="field">
+          <label for="start">From</label>
+          <input type="time" id="start" required aria-describedby="schedule-hint">
+        </div>
+        <div class="field">
+          <label for="end">Until</label>
+          <input type="time" id="end" required aria-describedby="schedule-hint">
+        </div>
+        <p id="schedule-hint" class="hint" aria-live="polite"></p>
       </div>
-      <p id="schedule-hint" class="hint" aria-live="polite"></p>
-    </div>
-  </fieldset>
+    </fieldset>
 
-  <fieldset id="site" hidden>
-    <legend>This site</legend>
-    <p class="host" id="host"></p>
-    <div class="segment" id="rule-segment">
-      <label><input type="radio" name="rule" value="default"><span>Default</span></label>
-      <label><input type="radio" name="rule" value="always"><span>Always dark</span></label>
-      <label><input type="radio" name="rule" value="never"><span>Never dark</span></label>
-    </div>
+    <fieldset id="site" hidden>
+      <legend>This site</legend>
+      <div class="segment" id="rule-segment">
+        <label><input type="radio" name="rule" value="default"><span>Default</span></label>
+        <label><input type="radio" name="rule" value="always"><span>Always dark</span></label>
+        <label><input type="radio" name="rule" value="never"><span>Never dark</span></label>
+      </div>
+      <p class="host" id="host"><span class="host-head"></span><span class="host-tail"></span></p>
+    </fieldset>
+  </div>
+
+  <fieldset id="site-more" class="plain" hidden>
+    <legend class="sr-only">This site</legend>
     <p id="already-dark" class="warning hint" hidden>This page looks dark already, so it was left as is.</p>
     <label class="check"><input type="checkbox" id="force-dark"> Darken even if the page looks dark already</label>
     <div class="field">
