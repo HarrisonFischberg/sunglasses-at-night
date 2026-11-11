@@ -67,8 +67,14 @@
   --sheen: inset 0 1px 0 rgb(255 255 255 / 0.14), inset 0 -1px 0 rgb(0 0 0 / 0.3);
 
   /* motion */
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1); /* ease-out: enter promptly, settle gently */
   --dur: 180ms;
+  --dur-press: 100ms; /* pressed feedback */
+  --dur-exit: 140ms; /* exits are about 20% shorter than entrances */
+  --stagger: 30ms;
+  --press: 0.97; /* pressed button scale */
+  --pop: 0.95; /* a dialog starts at this scale */
+  --stretch: 4px; /* the held switch thumb grows about 12% along its travel */
 }
 
 * { box-sizing: border-box; }
@@ -224,11 +230,11 @@ button {
   border-radius: var(--r-full);
   padding: 0 var(--s-4);
   cursor: pointer;
-  transition: background-color var(--dur) var(--ease);
+  transition: background-color var(--dur) var(--ease), transform var(--dur-press) var(--ease);
 }
-button:hover { background: var(--line); }
-button:active { transform: scale(0.98); }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
+@media (hover: hover) { button:hover { background: var(--line); } }
+button:active { transform: scale(var(--press)); }
+button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 button.loading { cursor: progress; opacity: 0.7; }
 
 button.primary {
@@ -236,10 +242,10 @@ button.primary {
   color: var(--on-accent);
   font-weight: var(--weight-medium);
 }
-button.primary:hover { background: var(--accent); filter: brightness(1.08); }
+@media (hover: hover) { button.primary:hover { background: var(--accent); filter: brightness(1.08); } }
 
 button.danger { color: var(--danger); background: transparent; box-shadow: inset 0 0 0 1px var(--danger); }
-button.danger:hover { background: var(--raised); }
+@media (hover: hover) { button.danger:hover { background: var(--raised); } }
 
 .icon-button {
   display: inline-flex;
@@ -282,10 +288,12 @@ button.danger:hover { background: var(--raised); }
   text-align: center;
   transition: background-color var(--dur) var(--ease);
 }
-.segment label:hover span { background: var(--group); }
+@media (hover: hover) { .segment label:hover span { background: var(--group); } }
 .segment input:checked + span { background: var(--accent); color: var(--on-accent); box-shadow: var(--lift); }
 .segment input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
 .segment input:disabled + span { opacity: 0.5; }
+/* pressed: the row answers before the choice is saved */
+.segment input:not(:checked):active + span, .tile input:not(:checked):active + span { background: var(--line); }
 
 /* ------------------------------------------------------------ tiles */
 
@@ -304,7 +312,7 @@ button.danger:hover { background: var(--raised); }
   box-shadow: inset 0 0 0 2px transparent;
   transition: box-shadow var(--dur) var(--ease), background-color var(--dur) var(--ease);
 }
-.tile:hover span { background: var(--line); }
+@media (hover: hover) { .tile:hover span { background: var(--line); } }
 .tile input:checked + span { box-shadow: inset 0 0 0 2px var(--accent); color: var(--accent); }
 .tile input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
 .tile input:disabled + span { opacity: 0.5; }
@@ -323,8 +331,9 @@ button.danger:hover { background: var(--raised); }
   box-shadow: inset 0 0 0 2px var(--line);
   overflow: hidden;
   color: var(--fg);
-  transition: box-shadow var(--dur) var(--ease);
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur-press) var(--ease);
 }
+.preset:active .swatch { transform: scale(var(--press)); }
 .swatch b { display: block; width: 60%; height: 6px; margin-bottom: 4px; border-radius: var(--r-full); background: var(--accent); }
 .swatch i { display: block; height: 3px; margin-bottom: 3px; border-radius: var(--r-full); background: currentColor; opacity: 0.8; }
 .swatch i:nth-of-type(2) { width: 85%; }
@@ -333,7 +342,7 @@ button.danger:hover { background: var(--raised); }
 .preset[data-preset="warm"] .swatch { filter: brightness(0.95) contrast(0.95) sepia(0.4); }
 .preset[data-preset="mono"] .swatch { filter: brightness(1) contrast(1.05) grayscale(1); }
 .preset .name { font-size: var(--text-sm); font-weight: var(--weight-medium); }
-.preset:hover .swatch { box-shadow: inset 0 0 0 2px var(--edge); }
+@media (hover: hover) { .preset:hover .swatch { box-shadow: inset 0 0 0 2px var(--edge); } }
 .preset input:checked ~ .swatch { box-shadow: inset 0 0 0 2px var(--accent); }
 .preset input:checked ~ .name { color: var(--accent); }
 .preset input:focus-visible ~ .swatch { outline: 3px solid var(--focus); outline-offset: 2px; }
@@ -369,12 +378,15 @@ button.danger:hover { background: var(--raised); }
   height: 32px;
   border-radius: var(--r-full);
   background: var(--edge);
-  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease), width var(--dur-press) var(--ease);
 }
 .switch-input:checked ~ .track { background: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
 .switch-input:checked ~ .track .thumb { transform: translateX(32px); background: var(--on-accent); }
 .switch-input:focus-visible ~ .track { outline: 3px solid var(--focus); outline-offset: 3px; }
 .switch-input:disabled ~ .track { opacity: 0.5; }
+/* held: the thumb stretches toward where it is about to go */
+.switch-input:active ~ .track .thumb { width: calc(32px + var(--stretch)); }
+.switch-input:checked:active ~ .track .thumb { transform: translateX(calc(32px - var(--stretch))); }
 
 /* --------------------------------------------- sunglasses status mark */
 
@@ -481,7 +493,7 @@ body.popup {
   box-shadow: none;
   transition: none; /* a choice fills at once, also on first render */
 }
-.popup .tile:hover span, .popup .segment label:hover span { background: var(--line); }
+@media (hover: hover) { .popup .tile:hover span, .popup .segment label:hover span { background: var(--line); } }
 .popup .tile input:checked + span, .popup .segment input:checked + span { background: var(--accent); color: var(--on-accent); box-shadow: none; }
 
 /* Large text: when the popup is under 20 rem wide the lenses stack and the
@@ -539,7 +551,8 @@ body.options { padding: var(--s-4); }
   text-decoration: none;
   transition: background-color var(--dur) var(--ease);
 }
-.rail a:hover { background: var(--raised); }
+@media (hover: hover) { .rail a:hover { background: var(--raised); } }
+.rail a:active { background: var(--line); }
 
 @media (min-width: 900px) {
   .options main { columns: 2; column-gap: var(--s-4); }
@@ -572,12 +585,45 @@ dialog {
   padding: var(--s-5) var(--s-5) var(--s-6);
 }
 dialog::backdrop { background: var(--scrim); }
+dialog[open] { animation: pop var(--dur) var(--ease); }
+dialog[open]::backdrop { animation: reveal var(--dur) var(--ease); }
+@keyframes reveal { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(var(--pop)); } }
 dialog h2 { margin-bottom: var(--s-2); }
 dialog .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--s-2); margin-top: var(--s-4); }
 
+/* ------------------------------------------------------- undo toast */
+
+/* "Removed … / Undo" after a removal (undo-toast.js). Fades in, leaves a
+   little faster; while hidden it is out of the tab order. */
+.toast {
+  position: fixed;
+  z-index: 1;
+  left: var(--s-3);
+  right: var(--s-3);
+  bottom: max(var(--s-3), env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  max-width: 420px;
+  margin: 0 auto;
+  padding: var(--s-2) var(--s-2) var(--s-2) var(--s-4);
+  border-radius: var(--r-lg);
+  background: var(--raised);
+  box-shadow: var(--float), inset 0 0 0 1px var(--line);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-exit) var(--ease), visibility var(--dur-exit) step-end;
+}
+.toast.show { opacity: 1; visibility: visible; transition: opacity var(--dur) var(--ease); }
+.toast p { flex: 1; min-width: 0; font-size: var(--text-sm); overflow-wrap: anywhere; }
+.toast button { flex: none; background: transparent; color: var(--accent); font-weight: var(--weight-bold); }
+
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
-  button:active { transform: none; }
+  *, *::before, *::after, ::backdrop { transition: none !important; animation: none !important; }
+  button:active, .preset:active .swatch { transform: none; }
+  .switch-input:active ~ .track .thumb { width: 32px; }
+  .switch-input:checked:active ~ .track .thumb { transform: translateX(32px); }
 }
 
 .popup .report {
@@ -614,10 +660,16 @@ dialog .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap
   cursor: pointer;
   list-style: none;
 }
+.popup details.more > summary:active { background: var(--line); }
 .popup details.more > summary::-webkit-details-marker { display: none; }
 .popup details.more > summary::after { content: "›"; margin-left: auto; color: var(--muted); transition: transform var(--dur); }
 .popup details.more[open] > summary::after { transform: rotate(90deg); }
 .popup details.more > fieldset { margin-top: var(--s-3); }
+/* opened by the person, so it may fade in: sections follow each other, the
+   whole reveal is over in 240 ms. Nothing animates when the popup opens. */
+.popup details.more[open] > fieldset, .popup #reset-confirm { animation: reveal var(--dur) var(--ease) backwards; }
+.popup details.more[open] > fieldset:nth-of-type(2) { animation-delay: var(--stagger); }
+.popup details.more[open] > fieldset:nth-of-type(3) { animation-delay: calc(2 * var(--stagger)); }
 .popup #reset-confirm { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--s-2); margin-top: var(--s-2); }
 .popup #reset-confirm[hidden] { display: none; }
 .popup #reset-confirm p { flex: 1 0 100%; margin: 0; }
