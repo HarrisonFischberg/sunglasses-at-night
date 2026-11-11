@@ -472,16 +472,25 @@ body.popup {
 .popup .tile span, .popup .segment span {
   justify-content: flex-start;
   min-height: var(--target);
-  padding: 0 var(--s-3);
+  padding: var(--s-1) var(--s-3);
   background: transparent;
   border-radius: var(--r-full);
   font-size: var(--text-sm);
-  line-height: 1.15;
+  line-height: 1.2;
   text-align: left;
   box-shadow: none;
 }
 .popup .tile:hover span, .popup .segment label:hover span { background: var(--line); }
 .popup .tile input:checked + span, .popup .segment input:checked + span { background: var(--accent); color: var(--on-accent); box-shadow: none; }
+
+/* Large text: when the popup is under 20 rem wide the lenses stack and the
+   bridge goes. shortcut: needs container queries (Safari 16); older Safari
+   keeps the pair side by side, where long labels wrap. */
+.popup-scroll { container-type: inline-size; }
+@container (max-width: 20rem) {
+  .lenses { grid-auto-flow: row; gap: var(--s-3); }
+  #site::before { display: none; }
+}
 
 /* the hostname is cut in the middle (popup.js splits it), never at the end */
 #host { display: flex; margin: var(--s-2) 0 0; padding: 0 var(--s-3); font-size: var(--text-xs); color: var(--muted); white-space: nowrap; }
