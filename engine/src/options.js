@@ -7,11 +7,13 @@ import { createSettingsStore, extensionArea, LOOK_RANGES, isValidTime } from './
 import { matchPreset, presetLook, siteRows, scheduleHint } from './ui-core.js';
 import { RESET_ALL } from './messages.js';
 import { buildReportBody, buildReportUrl, REPORT_ADDRESS } from './report.js';
+import { createUndoToast } from './undo-toast.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
 const store = createSettingsStore(extensionArea(api));
+const toast = createUndoToast(document);
 
 let settings = null;
 
@@ -20,6 +22,7 @@ function renderSites() {
   const list = $('sites');
   // Keep focus in the list when a row it was on goes away.
   const hadFocus = list.contains(document.activeElement);
+  const was = document.activeElement?.dataset?.host;
   list.replaceChildren();
   const tpl = $('site-row');
   for (const { host, summary } of rows) {
@@ -33,7 +36,7 @@ function renderSites() {
     list.append(li);
   }
   $('sites-empty').hidden = rows.length > 0;
-  if (hadFocus) (list.querySelector('.remove') ?? $('h-sites')).focus?.();
+  if (hadFocus) ([...list.querySelectorAll('.remove')].find((b) => b.dataset.host === was) ?? list.querySelector('.remove') ?? $('h-sites')).focus?.();
 }
 
 function render() {
@@ -57,6 +60,7 @@ function render() {
 }
 
 async function commit(write) {
+  toast.hide(); // an older Undo must not overwrite this change
   ({ settings } = await write);
   render();
 }
@@ -91,7 +95,14 @@ $('engine').addEventListener('change', (e) => commit(store.update({ engine: e.ta
 
 $('sites').addEventListener('click', (e) => {
   const btn = e.target.closest?.('button.remove');
-  if (btn?.dataset.host) commit(store.setSite(btn.dataset.host, null));
+  if (!btn?.dataset.host) return;
+  const { host } = btn.dataset;
+  const before = settings.sites[host];
+  commit(store.setSite(host, null));
+  toast.show(`Removed rule for ${host}`, async () => {
+    await commit(store.setSite(host, before));
+    [...$('sites').querySelectorAll('.remove')].find((b) => b.dataset.host === host)?.focus();
+  });
 });
 
 // Reset all: native modal dialog (focus trapped, Escape cancels); focus
@@ -104,6 +115,7 @@ $('reset').addEventListener('click', () => {
 dialog.addEventListener('close', async () => {
   $('reset').focus();
   if (dialog.returnValue !== 'reset') return;
+  $('reset').disabled = true; // pending: no second reset
   let ok = false;
   try {
     ok = (await api.runtime.sendMessage({ type: RESET_ALL }))?.ok === true;
@@ -111,7 +123,10 @@ dialog.addEventListener('close', async () => {
     ok = false;
   }
   ({ settings } = await store.load());
+  $('reset').disabled = false;
+  toast.hide(); // nothing left to put back
   render();
+  $('reset').focus();
   $('reset-done').textContent = ok ? 'All settings were reset.' : 'Reset didn’t finish. Try again.';
 });
 
