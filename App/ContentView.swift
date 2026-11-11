@@ -182,9 +182,9 @@ struct ContentView: View {
 
     #if os(iOS)
     private func shadesMessage(isOn: Bool) -> String {
-        guard isOn, let summary = mirror.summary else {
-            return "Turn them on from the sunglasses button in Safari."
-        }
+        guard isOn else { return "Turn them on from the sunglasses button in Safari." }
+        // No mirror (settings sharing is off in this build, or the extension hasn't run yet): don't guess when.
+        guard let summary = mirror.summary else { return "Tap the shades to try them on a white page." }
         let when: String
         switch summary.mode {
         case "Always on": when = "Every page, all the time."
