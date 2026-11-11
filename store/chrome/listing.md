@@ -58,7 +58,7 @@ English
 - `scripting`: applies the dark style to pages the user visits.
 - Host permission `<all_urls>`: needed so any website the user opens can be darkened.
 - Remote code: No.
-- Data usage: collects no user data. Tick the three certifications (no sale, no unrelated use, no creditworthiness).
+- Data usage: collects no user data. The extension reads page content on the sites you visit, on your device, to restyle it, and re-downloads a site's own stylesheets when needed. None of this is sent to the developer. Tick the three certifications (no sale, no unrelated use, no creditworthiness).
 - Privacy policy URL: https://rarecreatures.app/apps/sunglasses-at-night/privacy
 
 ## Support
