@@ -1,0 +1,89 @@
+/* Direction B, "Last Light": the status is a sentence you read, set in the
+   system serif; settings are open rows under hairlines, no panels. Signature:
+   a horizon line under the status that glows teal while dark mode is on.
+   Loaded after ui.css by design/explore/render.mjs. Exploration only. */
+
+:root {
+  --font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --serif: ui-serif, "New York", Georgia, serif;
+  --mono: var(--font); /* readouts: tabular figures in the text face */
+  --bg: #0a0f12;
+  --weight-bold: 600;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+  --gutter: 20px;
+}
+@media (pointer: fine) {
+  :root { --target: 32px; --row: 40px; }
+}
+
+.popup .top { padding: var(--s-3) var(--gutter) 0; margin-bottom: 0; }
+.popup .top h1 { font-size: var(--text-sm); font-weight: 400; }
+.popup .app-mark { display: none; } /* the lit mark below is the only pair of glasses */
+.popup .popup-scroll { padding: 0 var(--gutter) var(--gutter); }
+
+/* status sentence above the horizon, power row below it */
+.popup .hero { gap: 0; margin: 0 calc(-1 * var(--gutter)) var(--s-2); padding: 0; border-radius: 0; background: none; box-shadow: none; }
+.popup .hero-text { flex-direction: column; align-items: flex-start; gap: var(--s-2); padding: var(--s-3) var(--gutter) var(--s-4); }
+.popup .mark { width: 56px; height: 56px; margin: -18px 0 -16px -5px; }
+.popup #status { font-family: var(--serif); font-size: max(22px, 1.5rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.01em; }
+[data-on="true"] .hero-text { background: linear-gradient(to top, rgb(95 215 201 / 0.13), rgb(95 215 201 / 0) 80%); }
+.popup .switch { min-height: var(--row); margin: 0 var(--gutter); padding: var(--s-1) 0; border-top: 1px solid var(--line); font-size: var(--text-base); font-weight: 600; }
+.popup .switch::before { content: ""; position: absolute; left: calc(-1 * var(--gutter)); right: calc(-1 * var(--gutter)); top: -1px; height: 1px; background: var(--line); }
+[data-on="true"] .switch::before { top: -2px; height: 2px; background: linear-gradient(90deg, rgb(95 215 201 / 0.25), var(--accent) 30%, var(--accent) 70%, rgb(95 215 201 / 0.25)); }
+.track { width: 48px; height: 28px; padding: 5px; background: transparent; box-shadow: inset 0 0 0 1.5px var(--edge); }
+.thumb { width: 18px; height: 18px; }
+.switch-input:checked ~ .track .thumb { transform: translateX(20px); }
+
+/* sections: a serif heading and open rows */
+fieldset { margin: var(--s-5) 0 0; padding: 0; border-radius: 0; background: none; }
+.popup legend, .options section > h2 { font-family: var(--serif); font-size: max(17px, 1.125rem); font-weight: 600; color: var(--fg); }
+.popup legend { margin-bottom: var(--s-1); }
+
+/* choices are tabs on a hairline; the chosen one is underlined in teal */
+.popup .tiles, .popup .segment { gap: 0; padding: 0; background: none; border-radius: 0; box-shadow: inset 0 -1px 0 var(--line); }
+.popup .tile span, .popup .segment span { border-radius: 0; color: var(--muted); font-weight: 400; }
+.popup .tile:hover span, .popup .segment label:hover span { background: none; color: var(--fg); }
+.popup .tile input:checked + span, .popup .segment input:checked + span { background: none; color: var(--fg); font-weight: 600; box-shadow: inset 0 -2px 0 var(--accent); }
+
+.popup #schedule { gap: 0 var(--s-5); margin-top: var(--s-1); }
+.popup #schedule .field + .field { border-top: 0; }
+.host { margin: 0 0 var(--s-1); font-weight: 400; color: var(--muted); }
+output { font-size: var(--text-sm); }
+
+select, input[type="time"], .options .support textarea { background-color: transparent; box-shadow: inset 0 0 0 1px var(--line); border-radius: var(--r-md); }
+input[type="time"] { font-variant-numeric: tabular-nums; }
+button { background: transparent; box-shadow: inset 0 0 0 1px var(--edge); border-radius: var(--r-md); }
+button:hover { background: var(--raised); }
+button.primary { box-shadow: none; }
+input[type="checkbox"]:not(.switch-input) { width: 1.25rem; height: 1.25rem; border-width: 1.5px; border-radius: var(--r-sm); }
+input[type="checkbox"]:not(.switch-input)::after { width: 0.6rem; height: 0.32rem; border-width: 0 0 2px 2px; }
+.icon-button { background: transparent; box-shadow: none; border-radius: var(--r-md); color: var(--muted); }
+.swatch { border-radius: var(--r-sm); box-shadow: inset 0 0 0 1px var(--line); }
+.preset input:checked ~ .swatch { box-shadow: inset 0 0 0 2px var(--accent); }
+.presets { margin-top: var(--s-2); }
+.slider .field { min-height: 0; padding-bottom: 0; }
+
+.popup details.more { margin-top: var(--s-5); border-top: 1px solid var(--line); }
+.popup details.more > summary { padding: 0; border-radius: 0; background: none; border-bottom: 1px solid var(--line); font-family: var(--serif); font-size: max(17px, 1.125rem); }
+.popup details.more > fieldset { margin-top: var(--s-4); }
+dialog { background: #111b21; }
+
+/* settings page: one reading column, contents line under the title */
+body.options { padding: 0 var(--s-5); }
+.options .shell { max-width: 620px; gap: var(--s-4); padding-top: var(--s-7); }
+.options h1 { font-family: var(--serif); font-size: 2.5rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: var(--s-2); }
+.options section { margin-bottom: var(--s-7); }
+.options section > h2 { margin: 0 0 var(--s-2); font-size: 1.375rem; }
+.options fieldset { margin: 0; }
+.options legend { margin-bottom: 0; }
+.options section > p { margin-bottom: var(--s-3); }
+.options .support { padding: 0; }
+.options #sites li:first-child { border-top: 1px solid var(--line); }
+.options #sites li:last-child { border-bottom: 1px solid var(--line); }
+.rail { gap: 0 var(--s-5); padding-bottom: var(--s-1); border-bottom: 1px solid var(--line); }
+@media (min-width: 900px) {
+  .options .shell { grid-template-columns: minmax(0, 1fr); gap: var(--s-5); }
+  .rail { display: flex; position: static; }
+}

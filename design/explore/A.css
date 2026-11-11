@@ -1,0 +1,92 @@
+/* Direction A, "Clip-on": the popup as a compact native Safari panel.
+   System face, tighter rows, neutral selection; teal only where something is
+   on. Signature: lens-shaped switch (flat top, round bottom, like the mark).
+   Loaded after ui.css by design/explore/render.mjs. Exploration only. */
+
+:root {
+  --font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --weight-bold: 600;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --lens: 9px 9px 15px 15px;
+  --sw-w: 52px; --sw-h: 32px; --sw-thumb: 24px;
+}
+@media (pointer: fine) {
+  :root { --target: 28px; --row: 36px; --sw-w: 42px; --sw-h: 26px; --sw-thumb: 18px; }
+}
+
+/* popup: the mark carries the name, so the title row is only read aloud */
+.popup .top { position: absolute; width: 1px; height: 1px; min-height: 0; margin: 0; padding: 0; overflow: hidden; clip-path: inset(50%); }
+.popup .popup-scroll { padding-top: var(--s-3); }
+
+/* status + power in one row; the whole row is the switch */
+.popup .hero {
+  position: relative;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "mark label track" "mark status track";
+  align-items: center;
+  gap: 2px var(--s-3);
+  margin-bottom: var(--s-2);
+  padding: var(--s-3) var(--s-4) var(--s-3) var(--s-3);
+  border-radius: var(--r-lg);
+  background: var(--group);
+  box-shadow: none;
+}
+.popup .hero-text, .popup .switch { display: contents; }
+.popup .mark { grid-area: mark; width: 44px; height: 44px; margin: -4px 0; }
+.popup .switch-label { grid-area: label; align-self: end; font-size: var(--text-base); font-weight: 600; }
+.popup #status { grid-area: status; align-self: start; font-size: var(--text-sm); color: var(--muted); text-wrap: wrap; }
+.track { grid-area: track; width: var(--sw-w); height: var(--sw-h); padding: 4px; border-radius: var(--lens); box-shadow: inset 0 0 0 1.5px var(--edge); }
+.thumb { width: var(--sw-thumb); height: var(--sw-thumb); border-radius: 5px 5px 11px 11px; }
+.switch-input:checked ~ .track { box-shadow: none; }
+.switch-input:checked ~ .track .thumb { transform: translateX(calc(var(--sw-w) - var(--sw-thumb) - 8px)); }
+
+/* grouped lists */
+fieldset { margin-bottom: var(--s-2); padding: var(--s-2) var(--s-3) var(--s-2); border-radius: var(--r-lg); }
+legend { margin-bottom: var(--s-1); font-size: 0.8125rem; font-weight: 600; }
+.hint { margin-top: var(--s-1); font-size: 0.8125rem; }
+
+/* segmented controls: neutral track, raised thumb, teal label */
+.popup .tiles, .popup .segment { gap: 2px; padding: 2px; margin-bottom: var(--s-1); background: var(--bg); border-radius: var(--r-md); box-shadow: none; }
+.popup .tile span, .popup .segment span { border-radius: var(--r-sm); font-weight: 400; }
+.popup .tile:hover span, .popup .segment label:hover span { background: var(--group); }
+.popup .tile input:checked + span, .popup .segment input:checked + span { background: var(--line); color: var(--accent); font-weight: 600; box-shadow: none; }
+
+.popup #schedule { gap: 0 var(--s-4); margin-top: 0; }
+.popup #schedule .field + .field { border-top: 0; }
+.popup #schedule .hint { margin-bottom: var(--s-1); }
+.host { margin-bottom: var(--s-1); font-size: var(--text-sm); }
+
+/* sliders: label, track and value on one line */
+.slider { display: grid; grid-template-columns: 5.75rem minmax(0, 1fr) 2.75rem; align-items: center; column-gap: var(--s-3); min-height: var(--row); padding: 0; }
+.slider .field { display: contents; }
+.slider label { grid-area: 1 / 1; }
+.slider input[type="range"] { grid-area: 1 / 2; }
+.slider output { grid-area: 1 / 3; text-align: right; font-size: var(--text-sm); }
+.presets { margin: var(--s-1) 0 var(--s-2); }
+.swatch { border-radius: var(--r-sm); }
+
+.popup details.more { margin-top: var(--s-2); }
+.popup details.more > summary { min-height: var(--row); border-radius: var(--r-lg); font-weight: 400; }
+.popup details.more > fieldset { margin-top: var(--s-2); }
+.popup .report { margin-top: var(--s-1); }
+.icon-button { border-radius: var(--r-md); background: transparent; }
+.icon-button svg { width: 18px; height: 18px; }
+
+/* settings page: a sidebar and grouped panels, like a system settings window */
+body.options { padding: 0 var(--s-5); }
+.options .shell { max-width: 860px; gap: var(--s-4); padding-top: var(--s-6); }
+.options h1 { font-size: var(--text-xl); letter-spacing: 0; }
+.options section { margin-bottom: var(--s-5); }
+.options section > h2 { margin: 0 0 var(--s-2); font-size: var(--text-base); color: var(--fg); }
+.options section > p { margin-bottom: var(--s-2); }
+.options .support { gap: var(--s-2); padding: var(--s-3); border-radius: var(--r-lg); background: var(--group); }
+.options #sites:not(:empty) { padding: 0 var(--s-1) 0 var(--s-3); border-radius: var(--r-lg); background: var(--group); }
+.rail a { padding: 0 var(--s-3); border-radius: var(--r-sm); color: var(--fg); }
+.rail a:hover { background: var(--raised); text-decoration: none; }
+@media (min-width: 900px) {
+  .options .shell { grid-template-columns: 190px minmax(0, 1fr); gap: var(--s-5) var(--s-6); }
+  .rail { gap: 2px; padding: var(--s-1); border-radius: var(--r-lg); background: var(--group); }
+  .rail a { min-height: 32px; }
+}

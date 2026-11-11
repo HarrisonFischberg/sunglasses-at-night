@@ -1,0 +1,29 @@
+/* Stage for the design-exploration previews (render.mjs). The Safari chrome
+   is drawn; the popup and settings page inside it are the real extension. */
+html, body { margin: 0; height: 100%; overflow: hidden; background: #141414; color: #e7f2f3; font-family: -apple-system, "Helvetica Neue", sans-serif; }
+iframe { border: 0; display: block; }
+.page { position: absolute; inset: 0; width: 100%; height: 100%; }
+.scrim { position: absolute; inset: 0; background: rgb(2 6 8 / 0.5); }
+.bar { position: absolute; left: 0; right: 0; display: flex; align-items: center; background: #141c21; z-index: 2; }
+.url { display: flex; align-items: center; justify-content: center; gap: 8px; background: #263138; }
+.url img, .ext img { display: block; height: 20px; }
+
+/* iPhone 402 x 874 */
+.phone .status { top: 0; height: 54px; justify-content: space-between; padding: 0 34px 0 44px; box-sizing: border-box; font-weight: 600; font-size: 16px; background: #0d0f10; }
+.phone .status::after { content: ""; position: absolute; left: 50%; top: 12px; width: 116px; height: 32px; margin-left: -58px; border-radius: 16px; background: #000; }
+.batt { width: 25px; height: 12px; border: 1.5px solid currentColor; border-radius: 4px; box-sizing: border-box; padding: 1px; }
+.batt::before { content: ""; display: block; width: 75%; height: 100%; border-radius: 1.5px; background: currentColor; }
+.phone .page { top: 54px; height: 300px; }
+.phone .pop { position: absolute; left: 0; right: 0; bottom: 0; height: 664px; border-radius: 26px 26px 0 0; overflow: hidden; box-shadow: 0 -10px 40px rgb(0 0 0 / 0.5); z-index: 3; }
+.phone .pop iframe { width: 100%; height: 100%; }
+
+/* Mac window 1000 x 680 */
+.mac .tool { top: 0; height: 52px; padding: 0 20px; box-sizing: border-box; border-bottom: 1px solid #2b3f49; }
+.lights { display: flex; gap: 8px; }
+.lights b { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.lights b:nth-child(2) { background: #febc2e; }
+.lights b:nth-child(3) { background: #28c840; }
+.mac .url { position: absolute; left: 50%; transform: translateX(-50%); width: 380px; height: 30px; font-size: 13px; border-radius: 8px; }
+.mac .ext { margin-left: auto; margin-right: 150px; width: 32px; height: 30px; display: grid; place-items: center; border-radius: 8px; background: #33454e; }
+.mac .page { top: 53px; height: calc(100% - 53px); }
+.mac .pop { position: absolute; top: 60px; right: 26px; width: 360px; height: 560px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px #2b3f49, 0 20px 60px rgb(0 0 0 / 0.6); z-index: 3; }
