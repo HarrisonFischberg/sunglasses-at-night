@@ -1651,6 +1651,9 @@ const TAB_STATE = 'sunglasses-at-night/tab-state';
 const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
 // options page → background: { type } → Reset all (extension store + App Group).
 const RESET_ALL = 'sunglasses-at-night/reset-all';
+// storage.local key: the mode the off switch (shortcut or popup) replaced.
+// Separate from the settings key, so the settings schema stays unchanged.
+const RESTORE_KEY = 'shortcutRestoreMode';
 
 // Why a page was left light, keyed by the decision's `reason`.
 const OFF_TEXT = Object.freeze({
@@ -1661,7 +1664,7 @@ const OFF_TEXT = Object.freeze({
   'already-dark': 'page is already dark',
   'csp-blocked': "this site's security policy blocks it",
 });
-return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT };
+return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, RESTORE_KEY, OFF_TEXT };
 })();
 
 // ---- engine/src/ui-core.js

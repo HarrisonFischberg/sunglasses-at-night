@@ -1651,6 +1651,9 @@ const TAB_STATE = 'sunglasses-at-night/tab-state';
 const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
 // options page → background: { type } → Reset all (extension store + App Group).
 const RESET_ALL = 'sunglasses-at-night/reset-all';
+// storage.local key: the mode the off switch (shortcut or popup) replaced.
+// Separate from the settings key, so the settings schema stays unchanged.
+const RESTORE_KEY = 'shortcutRestoreMode';
 
 // Why a page was left light, keyed by the decision's `reason`.
 const OFF_TEXT = Object.freeze({
@@ -1661,7 +1664,7 @@ const OFF_TEXT = Object.freeze({
   'already-dark': 'page is already dark',
   'csp-blocked': "this site's security policy blocks it",
 });
-return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT };
+return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, RESTORE_KEY, OFF_TEXT };
 })();
 
 // ---- engine/src/ui-core.js
@@ -1936,9 +1939,9 @@ const __m_engine_src_popup_js = (() => {
 // extension can't run on (restricted), only the global controls show.
 // No network.
 
-const { createSettingsStore, extensionArea, LOOK_RANGES, isValidTime } = __m_engine_src_settings_js;
+const { createSettingsStore, extensionArea, LOOK_RANGES, MODES, isValidTime } = __m_engine_src_settings_js;
 const { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } = __m_engine_src_ui_core_js;
-const { GET_TAB_STATE, RESET_ALL } = __m_engine_src_messages_js;
+const { GET_TAB_STATE, RESET_ALL, RESTORE_KEY } = __m_engine_src_messages_js;
 const { buildReportUrl } = __m_engine_src_report_js;
 
 const api = globalThis.browser ?? globalThis.chrome;
@@ -1952,7 +1955,8 @@ let report = null;
 let view = null;
 
 let focused = null;
-// The mode the switch returns to when turned back on within this popup session.
+// The mode the switch returns to when turned back on. Stored (RESTORE_KEY, as
+// the shortcut does) when it turns dark mode off, so it outlives this popup.
 let lastMode = 'system';
 
 async function fetchReport() {
@@ -2023,7 +2027,10 @@ function saveLook(look) {
   return commit(store.update({ look }));
 }
 
-$('power').addEventListener('change', (e) => commit(store.update({ mode: e.target.checked ? lastMode : 'off' })));
+$('power').addEventListener('change', (e) => {
+  if (!e.target.checked) Promise.resolve(api.storage.local.set({ [RESTORE_KEY]: lastMode })).catch(() => {});
+  commit(store.update({ mode: e.target.checked ? lastMode : 'off' }));
+});
 
 for (const radio of document.querySelectorAll('input[name="mode"]')) {
   radio.addEventListener('change', (e) => { if (e.target.checked) commit(store.update({ mode: e.target.value })); });
@@ -2158,6 +2165,8 @@ $('reset-go').addEventListener('click', async () => {
 async function main() {
   [tab] = await api.tabs.query({ active: true, currentWindow: true });
   ({ settings } = await store.load());
+  const restore = (await api.storage.local.get(RESTORE_KEY))?.[RESTORE_KEY];
+  if (MODES.includes(restore) && restore !== 'off') lastMode = restore;
   report = await fetchReport();
   // Safari can hide tab.url, or return no tab, for the popup's own window.
   if (!tab?.url && !report?.host) {

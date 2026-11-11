@@ -4,9 +4,10 @@
 
 import { defaultSettings } from '../engine/src/settings.js';
 
-export function shim({ settings, tabUrl, report }) {
+// `stored`: other storage.local keys to start with.
+export function shim({ settings, tabUrl, report, stored = {} }) {
   return `(() => {
-  const data = { settings: ${JSON.stringify(settings)} };
+  const data = ${JSON.stringify({ ...stored, settings })};
   const listeners = new Set();
   const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
   globalThis.__sent = [];

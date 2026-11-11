@@ -519,6 +519,9 @@ const TAB_STATE = 'sunglasses-at-night/tab-state';
 const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
 // options page → background: { type } → Reset all (extension store + App Group).
 const RESET_ALL = 'sunglasses-at-night/reset-all';
+// storage.local key: the mode the off switch (shortcut or popup) replaced.
+// Separate from the settings key, so the settings schema stays unchanged.
+const RESTORE_KEY = 'shortcutRestoreMode';
 
 // Why a page was left light, keyed by the decision's `reason`.
 const OFF_TEXT = Object.freeze({
@@ -529,7 +532,7 @@ const OFF_TEXT = Object.freeze({
   'already-dark': 'page is already dark',
   'csp-blocked': "this site's security policy blocks it",
 });
-return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT };
+return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, RESTORE_KEY, OFF_TEXT };
 })();
 
 // ---- engine/src/sheet-fetch.js
@@ -817,12 +820,10 @@ const __m_engine_src_background_core_js = (() => {
 
 const { createSettingsStore, extensionArea, migrate, STORAGE_KEY, MODES } = __m_engine_src_settings_js;
 const { createSheetMessageHandler } = __m_engine_src_sheet_fetch_js;
-const { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT } = __m_engine_src_messages_js;
+const { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT, RESTORE_KEY } = __m_engine_src_messages_js;
 const { firstPaintPlan, minutesToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } = __m_engine_src_first_paint_js;
 
 const TOGGLE_COMMAND = 'toggle-dark-mode';
-// Separate storage key, so the settings schema stays unchanged.
-const RESTORE_KEY = 'shortcutRestoreMode';
 // Last App Group reset generation this extension has applied (T014).
 const RESET_GENERATION_KEY = 'nativeResetGeneration';
 // Safari ignores the application id and routes to the containing app's handler.
@@ -1016,7 +1017,7 @@ function createBackground({ api, fetch }) {
 
   return { broadcast, toggle, tabStates, store, syncNative, resetAll, syncFirstPaint, ready };
 }
-return { TOGGLE_COMMAND, RESTORE_KEY, RESET_GENERATION_KEY, NATIVE_APP_ID, toggleMode, toolbarState, createBackground };
+return { TOGGLE_COMMAND, RESET_GENERATION_KEY, NATIVE_APP_ID, toggleMode, toolbarState, createBackground };
 })();
 
 // ---- engine/src/background.js

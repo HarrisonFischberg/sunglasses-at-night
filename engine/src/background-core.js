@@ -18,12 +18,10 @@
 
 import { createSettingsStore, extensionArea, migrate, STORAGE_KEY, MODES } from './settings.js';
 import { createSheetMessageHandler } from './sheet-fetch.js';
-import { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT } from './messages.js';
+import { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT, RESTORE_KEY } from './messages.js';
 import { firstPaintPlan, minutesToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } from './first-paint.js';
 
 export const TOGGLE_COMMAND = 'toggle-dark-mode';
-// Separate storage key, so the settings schema stays unchanged.
-export const RESTORE_KEY = 'shortcutRestoreMode';
 // Last App Group reset generation this extension has applied (T014).
 export const RESET_GENERATION_KEY = 'nativeResetGeneration';
 // Safari ignores the application id and routes to the containing app's handler.
