@@ -1569,8 +1569,37 @@ export function startDynamic({
   }
 
   // ---- lifecycle
+  // Take our attributes and inline writes off `el` again.
+  function untouch(el) {
+    el.removeAttribute(INLINE_ATTR);
+    el.removeAttribute(FIX_ATTR);
+    for (const [prop, { value, written }] of inlineOriginals.get(el) ?? []) {
+      if (el.style.getPropertyValue(prop) !== written) continue; // the page changed it since
+      if (value) el.style.setProperty(prop, value, 'important');
+      else el.style.removeProperty(prop);
+    }
+    inlineOriginals.delete(el);
+  }
+
+  function dropFrame(el) {
+    const entry = frames.get(el);
+    el.removeEventListener('load', entry.start);
+    entry.engine?.stop();
+    frames.delete(el);
+  }
+
+  // What the page removed is forgotten, or a page open all day (a feed, a mail
+  // client) keeps every element it ever showed alive. One that comes back is
+  // an added node again and is scanned from scratch.
+  function forgetRemoved() {
+    for (const el of touched) if (!el.isConnected) { untouch(el); touched.delete(el); }
+    for (const el of keptColor.keys()) if (!el.isConnected) keptColor.delete(el);
+    for (const el of frames.keys()) if (!el.isConnected) dropFrame(el);
+  }
+
   function refresh(forceContrast = false) {
     if (stopped) return;
+    forgetRemoved();
     const t = now();
     for (const [el, at] of [...pendingTags]) {
       if (el.isConnected && t - at <= READY_CAP_MS) continue;
@@ -1633,21 +1662,8 @@ export function startDynamic({
     }
     siteEl?.remove();
     siteEl = null;
-    for (const el of touched) {
-      el.removeAttribute(INLINE_ATTR);
-      el.removeAttribute(FIX_ATTR);
-      for (const [prop, { value, written }] of inlineOriginals.get(el) ?? []) {
-        if (el.style.getPropertyValue(prop) !== written) continue; // the page changed it since
-        if (value) el.style.setProperty(prop, value, 'important');
-        else el.style.removeProperty(prop);
-      }
-      inlineOriginals.delete(el);
-    }
-    for (const [el, entry] of frames) {
-      el.removeEventListener('load', entry.start);
-      entry.engine?.stop();
-    }
-    frames.clear();
+    for (const el of touched) untouch(el);
+    for (const el of frames.keys()) dropFrame(el);
     scopes.clear();
     touched.clear();
     pendingHosts.clear();

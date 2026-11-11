@@ -125,3 +125,22 @@ for (const fx of FIXTURES) {
     await dark.context.close();
   });
 }
+
+test('an element the page removed is forgotten, and darkened again when it comes back', { timeout: 60000 }, async () => {
+  const { page, context } = await openPage(browser, servers, '/light.html', { extension: true });
+  const marked = () => window.__gone.hasAttribute('data-san-inline');
+  await page.evaluate(() => {
+    const el = document.createElement('p');
+    el.style.backgroundColor = '#ffffff';
+    el.textContent = 'here, then gone';
+    document.body.appendChild(el);
+    window.__gone = el;
+  });
+  await page.waitForFunction(marked);
+  await page.evaluate(() => window.__gone.remove());
+  // The engine's 1 s poll takes its attribute off again: it no longer holds the element.
+  await page.waitForFunction(() => !window.__gone.hasAttribute('data-san-inline'), null, { timeout: 5000 });
+  await page.evaluate(() => document.body.appendChild(window.__gone));
+  await page.waitForFunction(marked);
+  await context.close();
+});
