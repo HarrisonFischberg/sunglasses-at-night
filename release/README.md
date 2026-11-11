@@ -33,8 +33,8 @@ Everything a listing needs lives in `store/`, one folder per store:
 - `store/ios/age-rating.json`: age rating answers (all "None"/"No", 4+).
 - `store/ios/screenshots/en-US/`: iPhone 6.9" (1320 × 2868), iPhone 6.3"
   (1206 × 2622) and iPad 13" (2064 × 2752). `store/ios/screenshots-mac/en-US/`:
-  Mac (2880 × 1800). Re-render with the App Store kit (`app-store/source/` in the
-  project files) and copy them in.
+  Mac (2880 × 1800). Re-render all 20 with `node store/ios/shots/render.mjs`;
+  the captions are at the top of that file and the demo pages sit next to it.
 - `store/chrome/listing.md` and `screenshots/` (1280 × 800): pasted by hand
   once; the Chrome Web Store API can't set listing text.
 - `store/firefox/amo-metadata.json` (summary, description, categories, license,

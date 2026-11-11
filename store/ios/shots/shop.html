@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fernwood</title>
+<style>
+  body { margin: 0; background: #f7f6f2; color: #1d1d1b; font: 15px/1.4 -apple-system, "Helvetica Neue", sans-serif; }
+  .bar { display: flex; align-items: center; gap: 14px; padding: 12px 18px; background: #ffffff; border-bottom: 1px solid #e2e0d8; }
+  .bar b { font-size: 20px; color: #2f6b4a; }
+  .bar input { flex: 1; min-width: 0; font: inherit; padding: 10px 12px; background: #fbfaf6; color: #333333; border: 1px solid #cfccc0; border-radius: 8px; }
+  .bag { background: #2f6b4a; color: #ffffff; font-weight: 600; padding: 9px 13px; border-radius: 8px; white-space: nowrap; }
+  main { padding: 14px 18px 40px; }
+  .crumb { color: #6a6a66; font-size: 13px; margin: 0; }
+  h1 { font-size: 24px; margin: 6px 0 14px; }
+  .chips { display: flex; gap: 8px; margin-bottom: 16px; }
+  .chips span { border: 1px solid #cfccc0; border-radius: 99px; padding: 5px 12px; background: #ffffff; font-size: 13px; }
+  .chips .on { border-color: #2f6b4a; color: #2f6b4a; background: #e9f3ec; font-weight: 600; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .card { background: #ffffff; border: 1px solid #e2e0d8; border-radius: 12px; padding: 12px; min-height: 252px; }
+  .card img { display: block; width: 100%; height: 150px; }
+  .card h2 { font-size: 15px; margin: 8px 0 2px; }
+  .stars { color: #c9781f; font-size: 13px; letter-spacing: 1px; }
+  .price { font-weight: 700; font-size: 17px; margin: 4px 0; }
+  .tag { display: inline-block; background: #fbe6c2; color: #6b4300; font-size: 12px; font-weight: 600; padding: 2px 7px; border-radius: 5px; }
+</style>
+</head>
+<body>
+<div class="bar"><b>Fernwood</b><input type="search" placeholder="Search the shop" aria-label="Search the shop"><span class="bag">Bag · 2</span></div>
+<main>
+  <p class="crumb">Home › For the evening</p>
+  <h1>For the evening</h1>
+  <div class="chips"><span class="on">All</span><span>Lighting</span><span>Blankets</span><span>Kitchen</span><span>Books</span></div>
+  <div class="grid" id="grid"></div>
+</main>
+<script>
+  const art = {
+    lamp: '<path d="M40 20h20l12 36H28z" fill="#e8b04c"/><rect x="48" y="56" width="4" height="26" fill="#7a7a72"/><rect x="36" y="82" width="28" height="4" rx="2" fill="#7a7a72"/>',
+    mug: '<rect x="30" y="38" width="32" height="40" rx="5" fill="#3f7d68"/><path d="M62 46h6a9 9 0 0 1 0 18h-6" fill="none" stroke="#3f7d68" stroke-width="6"/><path d="M40 16q5 7 0 14M50 16q5 7 0 14" fill="none" stroke="#b9b6aa" stroke-width="3" stroke-linecap="round"/>',
+    throw: '<rect x="24" y="30" width="52" height="46" rx="6" fill="#c75f4a"/><path d="M24 42h52M24 54h52M24 66h52" stroke="#f0a898" stroke-width="3"/>',
+    book: '<rect x="30" y="24" width="40" height="54" rx="4" fill="#2f4f8a"/><rect x="30" y="24" width="7" height="54" fill="#233c6c"/><rect x="43" y="36" width="20" height="4" rx="2" fill="#dfe6f5"/>',
+    candle: '<rect x="40" y="40" width="20" height="38" rx="4" fill="#efe3c6"/><path d="M50 24q7 9 0 15q-7-6 0-15z" fill="#f09a2e"/>',
+    sock: '<path d="M38 22h16v30l16 12a8 8 0 0 1-9 13L38 62z" fill="#7d5aa8"/><rect x="38" y="22" width="16" height="7" fill="#c9b6e4"/>',
+    tea: '<rect x="34" y="30" width="32" height="46" rx="4" fill="#9dbb6a"/><rect x="34" y="30" width="32" height="9" rx="3" fill="#6f9145"/><circle cx="50" cy="56" r="7" fill="#e6efd3"/>',
+    clock: '<circle cx="50" cy="52" r="26" fill="#f3f3ec" stroke="#c9c9c2" stroke-width="4"/><path d="M50 38v15l11 7" fill="none" stroke="#c9c9c2" stroke-width="4" stroke-linecap="round"/>',
+  };
+  const items = [
+    ['Arc reading lamp', 'lamp', 5, 48, 'Bestseller'], ['Stoneware mug', 'mug', 4, 16], ['Wool throw', 'throw', 5, 64],
+    ['Notebook, lined', 'book', 4, 12, 'New'], ['Cedar candle', 'candle', 5, 22], ['House socks', 'sock', 4, 14],
+    ['Evening herbal tea', 'tea', 5, 9], ['Quiet desk clock', 'clock', 4, 28], ['Tea cup, sage', 'mug', 4, 15],
+    ['Clip-on book light', 'lamp', 5, 19, 'Bestseller'], ['Knit throw', 'throw', 4, 58], ['Pocket journal', 'book', 5, 10],
+  ];
+  document.getElementById('grid').innerHTML = items.map(([name, pic, stars, price, tag]) =>
+    `<div class="card"><img alt="${name}" src="data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${art[pic]}</svg>`)}"><h2>${name}</h2>` +
+    `<div class="stars" aria-label="${stars} out of 5">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}</div>` +
+    `<p class="price">$${price}</p>${tag ? `<span class="tag">${tag}</span>` : ''}</div>`).join('');
+</script>
+</body>
+</html>
