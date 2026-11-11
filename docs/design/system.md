@@ -7,6 +7,18 @@ it was produced, the component states, and the verification. The tokens live in
 else (enforced by `engine/test/ui.test.js`, "colors, type sizes, radii and
 durations come from :root tokens only").
 
+## Two Lenses (2026-11-10)
+
+The owner chose the "Two Lenses" direction from a three-way exploration. `DESIGN.md` describes what ships. What changed against the tables below:
+
+- Tokens added: `lens-lit #192e32`, `--text-xs` (max(0.8125rem, 12px)), `--r-lens` 14/14/34/34, `--r-lens-sm` 8/8/16/16, `--r-bridge`. Buttons and the More settings row use `--r-full`; panels use `--r-lens`.
+- Mode tiles and the segmented control are now vertical option lists inside the two lenses (44 px rows, selected = filled `accent` pill, hover = `line` fill, focus ring unchanged). The schedule rows moved into the When lens.
+- Lens frame: 2 px inset, `edge` when dark mode is off, `accent` when on, 180 ms fade; off under Reduce Motion.
+- Slider row: label, track and value share one 52 px line.
+- Status mark: 40 px, beside the status line; still outline when off, filled when on.
+- Settings page: sections are lens panels (2 px `line` frame), two columns from 900 px.
+- Contrast: `lens-lit` joined the surfaces checked by `engine/test/ui.test.js`.
+
 ## How it was made (Impeccable, this session)
 
 - Skill loaded and `impeccable context` run (PRODUCT.md loaded; no DESIGN.md existed).
