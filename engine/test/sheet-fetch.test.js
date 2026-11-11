@@ -16,6 +16,7 @@ function fakeFetch(responses) {
       status: r.status ?? 200,
       headers: { get: (k) => ({ 'content-type': r.type ?? 'text/css', 'content-length': r.length ?? null })[k.toLowerCase()] ?? null },
       text: async () => r.body ?? '',
+      url: r.url,
     };
   };
   fn.calls = calls;
@@ -87,6 +88,15 @@ test('fetcher: rejects non-CSS, HTTP errors and oversized sheets without throwin
   assert.match((await get('https://x.example/down.css')).error, /network down/);
   assert.match((await get('ftp://x.example/a.css')).error, /scheme/);
   assert.equal(fetch.calls.some((c) => c.url.startsWith('ftp:')), false);
+});
+
+test('fetcher: a public sheet that redirects to the local network is refused for public pages', async () => {
+  const fetch = fakeFetch({ 'https://cdn.example/r.css': { body: 'a{}', url: 'http://192.168.1.1/admin.css' } });
+  const get = createSheetFetcher({ fetch });
+  assert.match((await get('https://cdn.example/r.css', 'https://evil.example/')).error, /local network/);
+  assert.equal((await get('https://cdn.example/r.css', 'http://192.168.1.5/')).ok, true);
+  // The answer cached for the local page is still refused for a public one.
+  assert.match((await get('https://cdn.example/r.css', 'https://evil.example/')).error, /local network/);
 });
 
 test('message handler: answers only FETCH_SHEET from our content scripts', async () => {

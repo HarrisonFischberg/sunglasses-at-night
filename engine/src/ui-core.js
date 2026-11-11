@@ -7,42 +7,10 @@ import { PRESETS } from './transform.js';
 import { OFF_TEXT } from './messages.js';
 import { FIX_LABELS } from './fix-rules.js';
 
-export const MODE_LABELS = Object.freeze({
-  system: 'Match system appearance',
-  always: 'Always',
-  schedule: 'On a schedule',
-  off: 'Off',
-});
-
 export const RULE_LABELS = Object.freeze({
   default: 'Default',
   always: 'Always dark',
   never: 'Never dark',
-});
-
-export const LOOK_LABELS = Object.freeze({
-  brightness: 'Brightness',
-  contrast: 'Contrast',
-  sepia: 'Sepia',
-  grayscale: 'Grayscale',
-});
-
-export const PRESET_LABELS = Object.freeze({
-  standard: 'Standard',
-  soft: 'Soft',
-  warm: 'Warm',
-  mono: 'Mono',
-});
-
-export const IMAGE_LABELS = Object.freeze({
-  leave: 'Leave as they are',
-  dim: 'Dim',
-  'no-invert': 'Never invert',
-});
-
-export const ENGINE_LABELS = Object.freeze({
-  dynamic: 'Dynamic (rewrites page colors)',
-  filter: 'Filter (for pages the dynamic engine breaks)',
 });
 
 /**

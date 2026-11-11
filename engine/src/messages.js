@@ -11,6 +11,9 @@ export const TAB_STATE = 'sunglasses-at-night/tab-state';
 export const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
 // options page → background: { type } → Reset all (extension store + App Group).
 export const RESET_ALL = 'sunglasses-at-night/reset-all';
+// storage.local key: the mode the off switch (shortcut or popup) replaced.
+// Separate from the settings key, so the settings schema stays unchanged.
+export const RESTORE_KEY = 'shortcutRestoreMode';
 
 // Why a page was left light, keyed by the decision's `reason`.
 export const OFF_TEXT = Object.freeze({

@@ -29,14 +29,13 @@ The toolbar popup and the settings page, shown with made-up demo sites.
 
 ## Install
 
-Sunglasses at Night isn't on the App Store yet, so for now you build it yourself. The app code lives on the `build/v1` branch.
+Sunglasses at Night isn't on the App Store yet, so for now you build it yourself.
 
 You need a Mac with Xcode (macOS 13 or later for the Mac app, iOS or iPadOS 16 or later for iPhone and iPad) and Node.js 22 for the build scripts.
 
 ```bash
 git clone https://github.com/HarrisonFischberg/sunglasses-at-night.git
 cd sunglasses-at-night
-git checkout build/v1
 node engine/scripts/bundle.js   # builds the extension files from engine/src
 ```
 
@@ -67,8 +66,6 @@ The popup and settings page are dark on purpose, even when Safari is light, beca
 No analytics, no account, no servers and no tracking. Settings stay on your device. The only network request the extension makes is re-reading style files a page has already loaded, so it can darken them. `npm run privacy-check` guards this.
 
 ## Development
-
-On the `build/v1` branch:
 
 | Check | Command |
 | --- | --- |

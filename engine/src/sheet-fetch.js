@@ -62,24 +62,27 @@ export function createSheetFetcher({ fetch }) {
     if (declared > MAX_SHEET_BYTES) return { ok: false, error: 'sheet too large' };
     const text = await res.text();
     if (text.length > MAX_SHEET_BYTES) return { ok: false, error: 'sheet too large' };
-    return { ok: true, text };
+    // A public URL can redirect to the local network: note where it ended up.
+    return isLocalUrl(res.url) ? { ok: true, text, local: true } : { ok: true, text };
   }
 
   return async function fetchSheetText(url, pageUrl) {
     const reason = rejectSheetUrl(url, pageUrl);
     if (reason) return { ok: false, error: reason };
     const key = new URL(url).href;
-    if (cache.has(key)) {
-      const hit = cache.get(key);
+    let p = cache.get(key);
+    if (p) {
       cache.delete(key);
-      cache.set(key, hit);
-      return hit;
+      cache.set(key, p);
+    } else {
+      p = load(key).catch((e) => ({ ok: false, error: String(e?.message ?? e) }));
+      cache.set(key, p);
+      if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value);
     }
-    const p = load(key).catch((e) => ({ ok: false, error: String(e?.message ?? e) }));
-    cache.set(key, p);
-    if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value);
     const result = await p;
-    if (!result.ok) cache.delete(key);
+    if (!result.ok && cache.get(key) === p) cache.delete(key);
+    // Checked for every asker: the cached answer may have come from a local page.
+    if (result.local && !isLocalUrl(pageUrl)) return { ok: false, error: 'local network sheet from a public page' };
     return result;
   };
 }

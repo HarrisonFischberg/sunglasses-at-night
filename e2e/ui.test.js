@@ -38,12 +38,12 @@ after(async () => {
   await new Promise((r) => server.close(r));
 });
 
-async function open(page, { scheme = 'light', settings = defaultSettings(), tabUrl = 'https://example.com/', report } = {}) {
+async function open(page, { scheme = 'light', settings = defaultSettings(), tabUrl = 'https://example.com/', report, stored } = {}) {
   const context = await browser.newContext({ colorScheme: scheme, viewport: { width: page === 'popup' ? 340 : 760, height: 760 } });
   const p = await context.newPage();
   const errors = [];
   p.on('pageerror', (e) => errors.push(String(e)));
-  await p.addInitScript({ content: shim({ settings, tabUrl, report }) });
+  await p.addInitScript({ content: shim({ settings, tabUrl, report, stored }) });
   await p.goto(`${base}/${page}/${page}.html`, { waitUntil: 'load' });
   await p.waitForFunction(() => document.getElementById('status')?.textContent !== 'Loading…' || !document.getElementById('status'));
   return { p, context, errors };
@@ -133,6 +133,20 @@ test('popup with no tab.url and no stored host is restricted', async () => {
   assert.equal(await p.isVisible('#site'), false);
   assert.match(await p.textContent('#status'), /can’t change this page/);
   await context.close();
+});
+
+test('popup: the power switch comes back to the mode it turned off, also in a later popup', async () => {
+  const always = { ...defaultSettings(), mode: 'always' };
+  const first = await open('popup', { settings: always, report: { on: true, reason: 'mode-always' } });
+  await first.p.locator('#power').uncheck({ force: true });
+  await first.p.waitForFunction(() => __data.settings.mode === 'off');
+  assert.equal(await first.p.evaluate(() => __data.shortcutRestoreMode), 'always');
+  await first.context.close();
+  const later = await open('popup', { settings: { ...always, mode: 'off' }, stored: { shortcutRestoreMode: 'always' }, report: { on: false, reason: 'mode-off' } });
+  await later.p.locator('#power').check({ force: true });
+  await later.p.waitForFunction(() => __data.settings.mode !== 'off');
+  assert.equal(await later.p.evaluate(() => __data.settings.mode), 'always');
+  await later.context.close();
 });
 
 test('popup on an already-dark page shows the note and the override', async () => {

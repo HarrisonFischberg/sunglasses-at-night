@@ -1651,6 +1651,9 @@ const TAB_STATE = 'sunglasses-at-night/tab-state';
 const GET_TAB_STATE = 'sunglasses-at-night/get-tab-state';
 // options page → background: { type } → Reset all (extension store + App Group).
 const RESET_ALL = 'sunglasses-at-night/reset-all';
+// storage.local key: the mode the off switch (shortcut or popup) replaced.
+// Separate from the settings key, so the settings schema stays unchanged.
+const RESTORE_KEY = 'shortcutRestoreMode';
 
 // Why a page was left light, keyed by the decision's `reason`.
 const OFF_TEXT = Object.freeze({
@@ -1661,7 +1664,7 @@ const OFF_TEXT = Object.freeze({
   'already-dark': 'page is already dark',
   'csp-blocked': "this site's security policy blocks it",
 });
-return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT };
+return { FETCH_SHEET, SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, RESTORE_KEY, OFF_TEXT };
 })();
 
 // ---- engine/src/ui-core.js
@@ -1675,42 +1678,10 @@ const { PRESETS } = __m_engine_src_transform_js;
 const { OFF_TEXT } = __m_engine_src_messages_js;
 const { FIX_LABELS } = __m_engine_src_fix_rules_js;
 
-const MODE_LABELS = Object.freeze({
-  system: 'Match system appearance',
-  always: 'Always',
-  schedule: 'On a schedule',
-  off: 'Off',
-});
-
 const RULE_LABELS = Object.freeze({
   default: 'Default',
   always: 'Always dark',
   never: 'Never dark',
-});
-
-const LOOK_LABELS = Object.freeze({
-  brightness: 'Brightness',
-  contrast: 'Contrast',
-  sepia: 'Sepia',
-  grayscale: 'Grayscale',
-});
-
-const PRESET_LABELS = Object.freeze({
-  standard: 'Standard',
-  soft: 'Soft',
-  warm: 'Warm',
-  mono: 'Mono',
-});
-
-const IMAGE_LABELS = Object.freeze({
-  leave: 'Leave as they are',
-  dim: 'Dim',
-  'no-invert': 'Never invert',
-});
-
-const ENGINE_LABELS = Object.freeze({
-  dynamic: 'Dynamic (rewrites page colors)',
-  filter: 'Filter (for pages the dynamic engine breaks)',
 });
 
 /**
@@ -1875,7 +1846,7 @@ function scheduleHint(schedule) {
   if (schedule.start > schedule.end) return `Runs overnight, from ${schedule.start} until ${schedule.end} the next morning.`;
   return '';
 }
-return { MODE_LABELS, RULE_LABELS, LOOK_LABELS, PRESET_LABELS, IMAGE_LABELS, ENGINE_LABELS, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withFix, withoutFix, fixRows, matchPreset, presetLook, popupView, siteRows, scheduleHint };
+return { RULE_LABELS, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withFix, withoutFix, fixRows, matchPreset, presetLook, popupView, siteRows, scheduleHint };
 })();
 
 // ---- engine/src/picker-core.js

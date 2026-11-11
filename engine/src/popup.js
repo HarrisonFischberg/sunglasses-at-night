@@ -7,9 +7,9 @@
 // extension can't run on (restricted), only the global controls show.
 // No network.
 
-import { createSettingsStore, extensionArea, LOOK_RANGES, isValidTime } from './settings.js';
+import { createSettingsStore, extensionArea, LOOK_RANGES, MODES, isValidTime } from './settings.js';
 import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } from './ui-core.js';
-import { GET_TAB_STATE, RESET_ALL } from './messages.js';
+import { GET_TAB_STATE, RESET_ALL, RESTORE_KEY } from './messages.js';
 import { buildReportUrl } from './report.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
@@ -23,7 +23,8 @@ let report = null;
 let view = null;
 
 let focused = null;
-// The mode the switch returns to when turned back on within this popup session.
+// The mode the switch returns to when turned back on. Stored (RESTORE_KEY, as
+// the shortcut does) when it turns dark mode off, so it outlives this popup.
 let lastMode = 'system';
 
 async function fetchReport() {
@@ -94,7 +95,10 @@ function saveLook(look) {
   return commit(store.update({ look }));
 }
 
-$('power').addEventListener('change', (e) => commit(store.update({ mode: e.target.checked ? lastMode : 'off' })));
+$('power').addEventListener('change', (e) => {
+  if (!e.target.checked) Promise.resolve(api.storage.local.set({ [RESTORE_KEY]: lastMode })).catch(() => {});
+  commit(store.update({ mode: e.target.checked ? lastMode : 'off' }));
+});
 
 for (const radio of document.querySelectorAll('input[name="mode"]')) {
   radio.addEventListener('change', (e) => { if (e.target.checked) commit(store.update({ mode: e.target.value })); });
@@ -229,6 +233,8 @@ $('reset-go').addEventListener('click', async () => {
 async function main() {
   [tab] = await api.tabs.query({ active: true, currentWindow: true });
   ({ settings } = await store.load());
+  const restore = (await api.storage.local.get(RESTORE_KEY))?.[RESTORE_KEY];
+  if (MODES.includes(restore) && restore !== 'off') lastMode = restore;
   report = await fetchReport();
   // Safari can hide tab.url, or return no tab, for the popup's own window.
   if (!tab?.url && !report?.host) {

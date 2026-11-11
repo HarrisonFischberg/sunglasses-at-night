@@ -2,10 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { performance } from 'node:perf_hooks';
 import {
-  createBackground, toggleMode, toolbarState, TOGGLE_COMMAND, RESTORE_KEY, RESET_GENERATION_KEY, NATIVE_APP_ID,
+  createBackground, toggleMode, toolbarState, TOGGLE_COMMAND, RESET_GENERATION_KEY, NATIVE_APP_ID,
 } from '../src/background-core.js';
 import { createMemoryArea, createSettingsStore, defaultSettings, STORAGE_KEY } from '../src/settings.js';
-import { SETTINGS_CHANGED, TAB_STATE, FETCH_SHEET } from '../src/messages.js';
+import { SETTINGS_CHANGED, TAB_STATE, FETCH_SHEET, RESTORE_KEY } from '../src/messages.js';
 
 const event = () => {
   const ls = new Set();
