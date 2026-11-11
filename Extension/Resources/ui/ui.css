@@ -479,6 +479,7 @@ body.popup {
   line-height: 1.2;
   text-align: left;
   box-shadow: none;
+  transition: none; /* a choice fills at once, also on first render */
 }
 .popup .tile:hover span, .popup .segment label:hover span { background: var(--line); }
 .popup .tile input:checked + span, .popup .segment input:checked + span { background: var(--accent); color: var(--on-accent); box-shadow: none; }

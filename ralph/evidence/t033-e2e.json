@@ -1,7 +1,7 @@
 [
   {
     "name": "normal page (all sections)",
-    "range": 897,
+    "range": 572,
     "cls": 0,
     "first": {
       "docHeight": 560,
@@ -132,206 +132,206 @@
         "dir": 1,
         "step": 14,
         "before": 560,
-        "after": 600,
+        "after": 572,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 15,
-        "before": 600,
-        "after": 640,
+        "before": 572,
+        "after": 572,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 16,
-        "before": 640,
-        "after": 680,
+        "before": 572,
+        "after": 572,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 17,
-        "before": 680,
-        "after": 720,
+        "before": 572,
+        "after": 572,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 18,
-        "before": 720,
-        "after": 760,
+        "before": 572,
+        "after": 572,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 19,
-        "before": 760,
-        "after": 800,
+        "before": 572,
+        "after": 572,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 0,
-        "before": 800,
-        "after": 760,
+        "before": 572,
+        "after": 532,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 1,
-        "before": 760,
-        "after": 720,
+        "before": 532,
+        "after": 492,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 2,
-        "before": 720,
-        "after": 680,
+        "before": 492,
+        "after": 452,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 3,
-        "before": 680,
-        "after": 640,
+        "before": 452,
+        "after": 412,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 4,
-        "before": 640,
-        "after": 600,
+        "before": 412,
+        "after": 372,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 5,
-        "before": 600,
-        "after": 560,
+        "before": 372,
+        "after": 332,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 6,
-        "before": 560,
-        "after": 520,
+        "before": 332,
+        "after": 292,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 7,
-        "before": 520,
-        "after": 480,
+        "before": 292,
+        "after": 252,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 8,
-        "before": 480,
-        "after": 440,
+        "before": 252,
+        "after": 212,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 9,
-        "before": 440,
-        "after": 400,
+        "before": 212,
+        "after": 172,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 10,
-        "before": 400,
-        "after": 360,
+        "before": 172,
+        "after": 132,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 11,
-        "before": 360,
-        "after": 320,
+        "before": 132,
+        "after": 92,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 12,
-        "before": 320,
-        "after": 280,
+        "before": 92,
+        "after": 52,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 13,
-        "before": 280,
-        "after": 240,
+        "before": 52,
+        "after": 12,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 14,
-        "before": 240,
-        "after": 200,
+        "before": 12,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 15,
-        "before": 200,
-        "after": 160,
+        "before": 0,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 16,
-        "before": 160,
-        "after": 120,
+        "before": 0,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 17,
-        "before": 120,
-        "after": 80,
+        "before": 0,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 18,
-        "before": 80,
-        "after": 40,
+        "before": 0,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 19,
-        "before": 40,
+        "before": 0,
         "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
@@ -340,7 +340,7 @@
   },
   {
     "name": "restricted page (fewer sections)",
-    "range": 462,
+    "range": 255,
     "cls": 0,
     "first": {
       "docHeight": 560,
@@ -407,206 +407,206 @@
         "dir": 1,
         "step": 6,
         "before": 240,
-        "after": 280,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 7,
-        "before": 280,
-        "after": 320,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 8,
-        "before": 320,
-        "after": 360,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 9,
-        "before": 360,
-        "after": 400,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 10,
-        "before": 400,
-        "after": 440,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 11,
-        "before": 440,
-        "after": 462,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 12,
-        "before": 462,
-        "after": 462,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 13,
-        "before": 462,
-        "after": 462,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 14,
-        "before": 462,
-        "after": 462,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 15,
-        "before": 462,
-        "after": 462,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 16,
-        "before": 462,
-        "after": 462,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 17,
-        "before": 462,
-        "after": 462,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 18,
-        "before": 462,
-        "after": 462,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": 1,
         "step": 19,
-        "before": 462,
-        "after": 462,
+        "before": 255,
+        "after": 255,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 0,
-        "before": 462,
-        "after": 422,
+        "before": 255,
+        "after": 215,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 1,
-        "before": 422,
-        "after": 382,
+        "before": 215,
+        "after": 175,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 2,
-        "before": 382,
-        "after": 342,
+        "before": 175,
+        "after": 135,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 3,
-        "before": 342,
-        "after": 302,
+        "before": 135,
+        "after": 95,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 4,
-        "before": 302,
-        "after": 262,
+        "before": 95,
+        "after": 55,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 5,
-        "before": 262,
-        "after": 222,
+        "before": 55,
+        "after": 15,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 6,
-        "before": 222,
-        "after": 182,
+        "before": 15,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 7,
-        "before": 182,
-        "after": 142,
+        "before": 0,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 8,
-        "before": 142,
-        "after": 102,
+        "before": 0,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 9,
-        "before": 102,
-        "after": 62,
+        "before": 0,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 10,
-        "before": 62,
-        "after": 22,
+        "before": 0,
+        "after": 0,
         "docHeight": 560,
         "bodyHeight": 560
       },
       {
         "dir": -1,
         "step": 11,
-        "before": 22,
+        "before": 0,
         "after": 0,
         "docHeight": 560,
         "bodyHeight": 560

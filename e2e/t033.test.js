@@ -106,7 +106,8 @@ for (const [name, tabUrl, report] of [
       const moved = samples.filter((s) => s.after !== s.before);
       const stuck = samples.filter((s) => s.after === s.before && !((s.dir === 1 && s.before >= range) || (s.dir === -1 && s.before <= 0)));
       assert.deepEqual(stuck, [], 'scrollTop changes on every step that is not at an end');
-      assert.ok(moved.length >= 20, 'scroll moved down and back up');
+      // 40 px wheel steps: a short page (restricted, Two Lenses) has fewer steps to give.
+      assert.ok(moved.length >= Math.min(20, 2 * Math.floor(range / 40)), `scroll moved down and back up (range ${range})`);
     }
     await context.close();
   });
