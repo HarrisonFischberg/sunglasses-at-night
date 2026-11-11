@@ -149,7 +149,7 @@ Switch, lens pair with bridge, lens option list (mode and site rule), slider row
 
 ## Motion
 
-One duration and ease (`--dur` 180 ms, `--ease`). The lens frames and bridge fade between `edge` and `accent` when dark mode flips; the switch thumb slides; fills cross-fade. Nothing travels or scales besides the thumb and the pressed button. With Reduce Motion every transition is off and states change at once.
+One ease (`--ease`, ease-out, no bounce) and three durations: `--dur` 180 ms for state changes, `--dur-press` 100 ms for pressed feedback, `--dur-exit` 140 ms for things leaving. The lens frames and bridge fade between `edge` and `accent` when dark mode flips; the switch thumb slides, and grows 4 px toward its travel while held; fills cross-fade. Nothing travels or scales besides the thumb, a pressed button or preset (0.97), and the reset dialog (from 0.95). Nothing animates when the popup opens; "More settings" fades in when the person opens it. Removing a row shows an Undo toast for 6 s. Hover fills apply only where a pointer can hover. With Reduce Motion every transition and animation is off and states change at once. The full list is `docs/interaction-matrix.md`.
 
 ## Host app
 
