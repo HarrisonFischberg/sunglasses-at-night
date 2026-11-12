@@ -408,7 +408,11 @@ body.popup {
   overflow: hidden;
   padding: 0;
 }
-@media (pointer: coarse) {
+/* iPhone shows the popup as a sheet Safari sizes, so fill it. iPad shows a
+   popover sized to the document, where 100vh would collapse it to the
+   header, so iPad keeps the fixed box. device-width is the screen, not the
+   popover, and on iOS it does not change with rotation. */
+@media (pointer: coarse) and (max-device-width: 600px) {
   body.popup { width: auto; min-width: 300px; height: 100vh; }
 }
 .popup-scroll {

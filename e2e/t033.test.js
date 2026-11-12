@@ -112,3 +112,21 @@ for (const [name, tabUrl, report] of [
     await context.close();
   });
 }
+
+// iPad shows the popup as a popover that Safari sizes to the document, so the
+// viewport starts short. The popup must keep its 560 box there instead of
+// filling that short viewport (customer report 2026-11-12: collapsed to the
+// header on an 11 inch iPad).
+test('iPad popover keeps the 560 box when the viewport starts short', async () => {
+  const context = await browser.newContext({
+    colorScheme: 'dark', viewport: { width: 360, height: 60 }, screen: { width: 834, height: 1194 }, isMobile: true, hasTouch: true,
+  });
+  const page = await context.newPage();
+  await page.addInitScript({ content: shim({ settings: defaultSettings(), tabUrl: 'https://example.com/', report: { on: true, reason: 'mode-always' } }) });
+  await page.goto(`${base}/popup/popup.html`, { waitUntil: 'load' });
+  const m = await page.evaluate(() => ({ coarse: matchMedia('(pointer: coarse)').matches, body: document.body.getBoundingClientRect().height }));
+  results.push({ name: 'ipad-popover', ...m });
+  assert.ok(m.coarse, 'emulated iPad has a coarse pointer');
+  assert.equal(m.body, 560);
+  await context.close();
+});
