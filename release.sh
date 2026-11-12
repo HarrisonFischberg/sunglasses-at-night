@@ -1,20 +1,27 @@
 #!/bin/bash
 # One-command release for Sunglasses at Night. Dry run unless --live.
-# Usage: ./release.sh [ios|chrome|firefox|all] [--live]
+# Usage: ./release.sh [ios|chrome|firefox|all] [--live] [--version X.Y]
+# --version sets MARKETING_VERSION in the Xcode project first.
 # ios covers the iPhone, iPad and Mac apps (one App Store Connect record) and
 # needs a Mac with Xcode. No Android app exists in this repo.
 # Env vars, one-time setup and manual steps: release/README.md.
 set -euo pipefail
 cd "$(dirname "$0")"
-target=all live=0
-for a in "$@"; do
-  case "$a" in
+target=all live=0 version_arg=
+while [ $# -gt 0 ]; do
+  case "$1" in
     --live) live=1 ;;
-    ios|chrome|firefox|all) target=$a ;;
+    --version) version_arg=${2:-}; shift ;;
+    ios|chrome|firefox|all) target=$1 ;;
     android) echo "This repo has no Android app." >&2; exit 1 ;;
-    *) echo "usage: ./release.sh [ios|chrome|firefox|all] [--live]" >&2; exit 1 ;;
+    *) echo "usage: ./release.sh [ios|chrome|firefox|all] [--live] [--version X.Y]" >&2; exit 1 ;;
   esac
+  shift
 done
+if [ -n "$version_arg" ]; then
+  [[ "$version_arg" =~ ^[0-9]+(\.[0-9]+){1,2}$ ]] || { echo "--version wants X.Y or X.Y.Z" >&2; exit 1; }
+  sed -i '' -E "s/MARKETING_VERSION = [0-9.]+;/MARKETING_VERSION = $version_arg;/" SunglassesAtNight.xcodeproj/project.pbxproj
+fi
 need() { for v; do [ -n "${!v:-}" ] || { echo "missing env var $v (see release/README.md)" >&2; exit 1; }; done; }
 version=$(node -p "require('./Extension/Resources/manifest.json').version")
 
