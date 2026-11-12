@@ -51,6 +51,33 @@ and source headers of code adapted from it.
 
 Gate A (engineering complete) is not Gate B (ready for release).
 
+## Releasing to the App Store
+
+When Harold says Sunglasses at Night is good for release ("push it to Apple", "ship it",
+"release it"), that message is his approval for the whole release (iPhone, iPad and Mac, one
+App Store Connect record). Do it end to end without asking:
+
+1. Merge the open PRs he named into main (only the ones he named), and work in a fresh worktree off origin/main.
+2. Pick the next version from `MARKETING_VERSION` (minor for features, patch for fixes) and
+   write `store/ios/metadata/en-US/release_notes.txt` from the PRs merged since the last
+   version. Update `description.txt` if a feature in the description changed.
+3. The App Privacy answer is "Data Not Collected". Check `docs/data-inventory.md` and the
+   published privacy policy still hold for any new data flow; if not, stop and tell him,
+   because the policy and App Privacy answers need his OK.
+4. Quit Safari (`osascript -e 'quit app "Safari"'`): archiving registers a new copy of the
+   extension, and Safari has crashed reloading it while open.
+5. `zsh -ic 'cd <worktree> && ./release.sh ios --live --version X.Y'` sets the version,
+   archives both apps, uploads them, commits the bumped `BUILD_NUMBER`, waits for processing,
+   pushes the listing and screenshots from `store/ios/`, and submits both platforms for
+   review with automatic release. If it fails after the upload, don't archive again:
+   `bundle exec fastlane ios release build:N` resubmits build N.
+   Chrome and Firefox go only when he names them (the popup still says "Safari" in two
+   places, see `release/README.md`; Chrome also needs `CWS_EXTENSION_ID`).
+6. Commit the version and notes, open a PR and merge it. Tell him one line: the version, the
+   build (iOS N, Mac 20261027.N), and that it's waiting for review. Mention it if the UI
+   changed since the screenshots in `store/ios/` (they are re-rendered by hand from the App
+   Store kit).
+
 ## Model Routing and Sub-Agents
 
 The main session is the orchestrator. It plans, makes judgment calls, edits small things itself, and merges results. Sub-agents live in `.claude/agents/`.
