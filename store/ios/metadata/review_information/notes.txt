@@ -9,4 +9,4 @@ To test on Mac:
 1. Open the app once, then Safari > Settings > Extensions, tick Sunglasses at Night and allow it on all websites.
 2. Open any light website. Click the sunglasses button in the toolbar for settings. Option-Shift-N toggles dark mode.
 
-No account or sign-in is needed. The extension makes no network requests and collects no data. "Report a problem" only opens a draft in the Mail app; nothing is sent unless the user presses Send.
+No account or sign-in is needed. The extension collects no data and sends nothing about the person to the developer. The one network request it makes is re-downloading a stylesheet that a page already loaded from another server, from that same address, so it can be darkened (no cookies, no referrer). "Report a problem" only opens a draft in the Mail app; nothing is sent unless the user presses Send.
