@@ -8,14 +8,16 @@
 // No network.
 
 import { createSettingsStore, extensionArea, LOOK_RANGES, MODES, isValidTime } from './settings.js';
-import { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } from './ui-core.js';
+import { popupView, splitHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } from './ui-core.js';
 import { GET_TAB_STATE, RESET_ALL, RESTORE_KEY } from './messages.js';
 import { buildReportUrl } from './report.js';
+import { createUndoToast } from './undo-toast.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
 const store = createSettingsStore(extensionArea(api));
+const toast = createUndoToast(document);
 
 let settings = null;
 let tab = null;
@@ -45,9 +47,13 @@ function render() {
   document.body.dataset.on = String(report?.on === true);
   for (const r of document.querySelectorAll('input[name="mode"]')) r.checked = r.value === view.mode;
   $('site').hidden = view.restricted;
+  $('site-more').hidden = view.restricted;
   $('custom-look-row').hidden = view.restricted;
   if (!view.restricted) {
-    $('host').textContent = view.host;
+    const [head, tail] = splitHost(view.host);
+    $('host').firstElementChild.textContent = head;
+    $('host').lastElementChild.textContent = tail;
+    $('host').title = view.host;
     for (const r of document.querySelectorAll('input[name="rule"]')) r.checked = r.value === view.rule;
     $('already-dark').hidden = !view.alreadyDark;
     $('force-dark').checked = view.forcedDark;
@@ -82,6 +88,7 @@ function render() {
 // Every write goes through the store (validated), then re-renders from the
 // result. The page's own report changes a moment later; ask again.
 async function commit(write) {
+  toast.hide(); // an older Undo must not overwrite this change
   const { settings: next } = await write;
   settings = next;
   render();
@@ -133,6 +140,7 @@ for (const k of Object.keys(LOOK_RANGES)) {
 function renderFixes() {
   const list = $('fixes');
   const hadFocus = list.contains(document.activeElement);
+  const was = document.activeElement?.dataset?.selector;
   list.replaceChildren();
   for (const { selector, title, action } of view.fixes) {
     const li = $('fix-row').content.firstElementChild.cloneNode(true);
@@ -145,24 +153,35 @@ function renderFixes() {
     list.append(li);
   }
   list.hidden = view.fixes.length === 0;
-  if (hadFocus) (list.querySelector('.remove') ?? $('pick')).focus?.();
+  // Focus stays on the same row through a re-render; if it is gone, nearby.
+  if (hadFocus) ([...list.querySelectorAll('.remove')].find((b) => b.dataset.selector === was) ?? list.querySelector('.remove') ?? $('pick')).focus?.();
 }
 
 $('pick').addEventListener('click', async () => {
   const tabId = tab?.id ?? focused?.id;
+  $('pick').disabled = true; // a second tap must not start a second picker
   try {
     await api.scripting.executeScript({ target: { tabId }, files: ['content/picker.js'] });
     // Out of the way, so the page is there to point at (on iPhone the popup
     // covers it).
     window.close();
   } catch {
+    $('pick').disabled = false;
     $('pick-hint').textContent = 'Sunglasses at Night can’t reach this page. Reload it and try again.';
   }
 });
 
 $('fixes').addEventListener('click', (e) => {
   const btn = e.target.closest?.('button.remove');
-  if (btn?.dataset.selector) editSite((s) => withoutFix(s, btn.dataset.selector));
+  if (!btn?.dataset.selector) return;
+  const { host } = view;
+  const { selector } = btn.dataset;
+  const before = siteEntry(settings, host);
+  editSite((s) => withoutFix(s, selector));
+  toast.show(`Removed fix: ${btn.closest('li').querySelector('.what').textContent}`, async () => {
+    await commit(store.setSite(host, before));
+    [...$('fixes').querySelectorAll('.remove')].find((b) => b.dataset.selector === selector)?.focus();
+  });
 });
 
 // ---- More settings (same controls and rules as the options page)
@@ -170,6 +189,7 @@ function renderSites() {
   const rows = siteRows(settings);
   const list = $('sites');
   const hadFocus = list.contains(document.activeElement);
+  const was = document.activeElement?.dataset?.host;
   list.replaceChildren();
   for (const { host, summary } of rows) {
     const li = $('site-row').content.firstElementChild.cloneNode(true);
@@ -182,7 +202,7 @@ function renderSites() {
     list.append(li);
   }
   $('sites-empty').hidden = rows.length > 0;
-  if (hadFocus) (list.querySelector('.remove') ?? $('more-settings').querySelector('summary')).focus?.();
+  if (hadFocus) ([...list.querySelectorAll('.remove')].find((b) => b.dataset.host === was) ?? list.querySelector('.remove') ?? $('more-settings').querySelector('summary')).focus?.();
 }
 
 for (const k of ['start', 'end']) {
@@ -201,7 +221,14 @@ $('detect-dark').addEventListener('change', (e) => commit(store.update({ detectD
 $('engine').addEventListener('change', (e) => commit(store.update({ engine: e.target.value })));
 $('sites').addEventListener('click', (e) => {
   const btn = e.target.closest?.('button.remove');
-  if (btn?.dataset.host) commit(store.setSite(btn.dataset.host, null));
+  if (!btn?.dataset.host) return;
+  const { host } = btn.dataset;
+  const before = settings.sites[host];
+  commit(store.setSite(host, null));
+  toast.show(`Removed rule for ${host}`, async () => {
+    await commit(store.setSite(host, before));
+    [...$('sites').querySelectorAll('.remove')].find((b) => b.dataset.host === host)?.focus();
+  });
 });
 
 // Reset all: an inline confirmation (a modal dialog is cramped in a popover).
@@ -216,6 +243,8 @@ $('reset-cancel').addEventListener('click', () => {
   $('reset').focus();
 });
 $('reset-go').addEventListener('click', async () => {
+  // Pending: no second reset, no cancel after it has started.
+  $('reset-go').disabled = $('reset-cancel').disabled = true;
   let ok = false;
   try {
     ok = (await api.runtime.sendMessage({ type: RESET_ALL }))?.ok === true;
@@ -223,6 +252,8 @@ $('reset-go').addEventListener('click', async () => {
     ok = false;
   }
   ({ settings } = await store.load());
+  $('reset-go').disabled = $('reset-cancel').disabled = false;
+  toast.hide(); // nothing left to put back
   $('reset-confirm').hidden = true;
   $('reset').hidden = false;
   render();

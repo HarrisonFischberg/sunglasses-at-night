@@ -1685,6 +1685,16 @@ const RULE_LABELS = Object.freeze({
 });
 
 /**
+ * [head, tail] of a hostname for a narrow space: CSS shortens the head with an
+ * ellipsis and always shows the tail, so a long name is cut in the middle and
+ * its ending (the part that tells sites apart) stays readable.
+ */
+function splitHost(host, tail = 9) {
+  const cut = host.length > tail * 2 ? host.length - tail : host.length;
+  return [host.slice(0, cut), host.slice(cut)];
+}
+
+/**
  * The hostname the extension can act on for a tab URL, or null for pages it
  * can't run on: browser and extension pages, about:, file:, data:, blank tabs.
  */
@@ -1846,7 +1856,7 @@ function scheduleHint(schedule) {
   if (schedule.start > schedule.end) return `Runs overnight, from ${schedule.start} until ${schedule.end} the next morning.`;
   return '';
 }
-return { RULE_LABELS, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withFix, withoutFix, fixRows, matchPreset, presetLook, popupView, siteRows, scheduleHint };
+return { RULE_LABELS, splitHost, pageHost, resolveHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withFix, withoutFix, fixRows, matchPreset, presetLook, popupView, siteRows, scheduleHint };
 })();
 
 // ---- engine/src/report.js
@@ -1896,6 +1906,55 @@ function buildReportUrl(info) {
 return { REPORT_ADDRESS, REPORT_SUBJECT, reportSettings, buildReportBody, buildReportUrl };
 })();
 
+// ---- engine/src/undo-toast.js
+const __m_engine_src_undo_toast_js = (() => {
+// Sunglasses at Night: the "Removed … / Undo" toast shared by the popup and
+// the options page (#toast in both, styled in ui.css). One at a time. The
+// removal is already saved when it shows; Undo (or Cmd/Ctrl+Z) puts it back.
+
+const UNDO_MS = 6000;
+
+function createUndoToast(doc, ms = UNDO_MS) {
+  const box = doc.getElementById('toast');
+  let undo = null;
+  let timer;
+  const hide = () => {
+    clearTimeout(timer);
+    undo = null;
+    box.classList.remove('show');
+  };
+  const arm = () => {
+    // Never take it away from under a pointer or the keyboard focus.
+    timer = setTimeout(() => (box.matches(':hover, :focus-within') ? arm() : hide()), ms);
+  };
+  const run = () => {
+    const fn = undo;
+    hide();
+    fn?.();
+  };
+  doc.getElementById('toast-undo').addEventListener('click', run);
+  doc.addEventListener('keydown', (e) => {
+    if (!undo || e.key !== 'z' || e.shiftKey || !(e.metaKey || e.ctrlKey)) return;
+    if (e.target.matches?.('textarea, input[type="time"]')) return; // their own undo
+    e.preventDefault();
+    run();
+  });
+  // iOS Safari only shows :active (the pressed states in ui.css) on pages with a touch listener.
+  doc.addEventListener('touchstart', () => {}, { passive: true });
+  return {
+    show(text, fn) {
+      hide();
+      doc.getElementById('toast-text').textContent = text;
+      undo = fn;
+      box.classList.add('show');
+      arm();
+    },
+    hide,
+  };
+}
+return { UNDO_MS, createUndoToast };
+})();
+
 // ---- engine/src/popup.js
 const __m_engine_src_popup_js = (() => {
 // Sunglasses at Night: toolbar popup (S05) entry, bundled to
@@ -1908,14 +1967,16 @@ const __m_engine_src_popup_js = (() => {
 // No network.
 
 const { createSettingsStore, extensionArea, LOOK_RANGES, MODES, isValidTime } = __m_engine_src_settings_js;
-const { popupView, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } = __m_engine_src_ui_core_js;
+const { popupView, splitHost, siteEntry, withRule, withLook, withDetectDark, withEngine, withoutFix, presetLook, siteRows, scheduleHint } = __m_engine_src_ui_core_js;
 const { GET_TAB_STATE, RESET_ALL, RESTORE_KEY } = __m_engine_src_messages_js;
 const { buildReportUrl } = __m_engine_src_report_js;
+const { createUndoToast } = __m_engine_src_undo_toast_js;
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
 const store = createSettingsStore(extensionArea(api));
+const toast = createUndoToast(document);
 
 let settings = null;
 let tab = null;
@@ -1945,9 +2006,13 @@ function render() {
   document.body.dataset.on = String(report?.on === true);
   for (const r of document.querySelectorAll('input[name="mode"]')) r.checked = r.value === view.mode;
   $('site').hidden = view.restricted;
+  $('site-more').hidden = view.restricted;
   $('custom-look-row').hidden = view.restricted;
   if (!view.restricted) {
-    $('host').textContent = view.host;
+    const [head, tail] = splitHost(view.host);
+    $('host').firstElementChild.textContent = head;
+    $('host').lastElementChild.textContent = tail;
+    $('host').title = view.host;
     for (const r of document.querySelectorAll('input[name="rule"]')) r.checked = r.value === view.rule;
     $('already-dark').hidden = !view.alreadyDark;
     $('force-dark').checked = view.forcedDark;
@@ -1982,6 +2047,7 @@ function render() {
 // Every write goes through the store (validated), then re-renders from the
 // result. The page's own report changes a moment later; ask again.
 async function commit(write) {
+  toast.hide(); // an older Undo must not overwrite this change
   const { settings: next } = await write;
   settings = next;
   render();
@@ -2033,6 +2099,7 @@ for (const k of Object.keys(LOOK_RANGES)) {
 function renderFixes() {
   const list = $('fixes');
   const hadFocus = list.contains(document.activeElement);
+  const was = document.activeElement?.dataset?.selector;
   list.replaceChildren();
   for (const { selector, title, action } of view.fixes) {
     const li = $('fix-row').content.firstElementChild.cloneNode(true);
@@ -2045,24 +2112,35 @@ function renderFixes() {
     list.append(li);
   }
   list.hidden = view.fixes.length === 0;
-  if (hadFocus) (list.querySelector('.remove') ?? $('pick')).focus?.();
+  // Focus stays on the same row through a re-render; if it is gone, nearby.
+  if (hadFocus) ([...list.querySelectorAll('.remove')].find((b) => b.dataset.selector === was) ?? list.querySelector('.remove') ?? $('pick')).focus?.();
 }
 
 $('pick').addEventListener('click', async () => {
   const tabId = tab?.id ?? focused?.id;
+  $('pick').disabled = true; // a second tap must not start a second picker
   try {
     await api.scripting.executeScript({ target: { tabId }, files: ['content/picker.js'] });
     // Out of the way, so the page is there to point at (on iPhone the popup
     // covers it).
     window.close();
   } catch {
+    $('pick').disabled = false;
     $('pick-hint').textContent = 'Sunglasses at Night can’t reach this page. Reload it and try again.';
   }
 });
 
 $('fixes').addEventListener('click', (e) => {
   const btn = e.target.closest?.('button.remove');
-  if (btn?.dataset.selector) editSite((s) => withoutFix(s, btn.dataset.selector));
+  if (!btn?.dataset.selector) return;
+  const { host } = view;
+  const { selector } = btn.dataset;
+  const before = siteEntry(settings, host);
+  editSite((s) => withoutFix(s, selector));
+  toast.show(`Removed fix: ${btn.closest('li').querySelector('.what').textContent}`, async () => {
+    await commit(store.setSite(host, before));
+    [...$('fixes').querySelectorAll('.remove')].find((b) => b.dataset.selector === selector)?.focus();
+  });
 });
 
 // ---- More settings (same controls and rules as the options page)
@@ -2070,6 +2148,7 @@ function renderSites() {
   const rows = siteRows(settings);
   const list = $('sites');
   const hadFocus = list.contains(document.activeElement);
+  const was = document.activeElement?.dataset?.host;
   list.replaceChildren();
   for (const { host, summary } of rows) {
     const li = $('site-row').content.firstElementChild.cloneNode(true);
@@ -2082,7 +2161,7 @@ function renderSites() {
     list.append(li);
   }
   $('sites-empty').hidden = rows.length > 0;
-  if (hadFocus) (list.querySelector('.remove') ?? $('more-settings').querySelector('summary')).focus?.();
+  if (hadFocus) ([...list.querySelectorAll('.remove')].find((b) => b.dataset.host === was) ?? list.querySelector('.remove') ?? $('more-settings').querySelector('summary')).focus?.();
 }
 
 for (const k of ['start', 'end']) {
@@ -2101,7 +2180,14 @@ $('detect-dark').addEventListener('change', (e) => commit(store.update({ detectD
 $('engine').addEventListener('change', (e) => commit(store.update({ engine: e.target.value })));
 $('sites').addEventListener('click', (e) => {
   const btn = e.target.closest?.('button.remove');
-  if (btn?.dataset.host) commit(store.setSite(btn.dataset.host, null));
+  if (!btn?.dataset.host) return;
+  const { host } = btn.dataset;
+  const before = settings.sites[host];
+  commit(store.setSite(host, null));
+  toast.show(`Removed rule for ${host}`, async () => {
+    await commit(store.setSite(host, before));
+    [...$('sites').querySelectorAll('.remove')].find((b) => b.dataset.host === host)?.focus();
+  });
 });
 
 // Reset all: an inline confirmation (a modal dialog is cramped in a popover).
@@ -2116,6 +2202,8 @@ $('reset-cancel').addEventListener('click', () => {
   $('reset').focus();
 });
 $('reset-go').addEventListener('click', async () => {
+  // Pending: no second reset, no cancel after it has started.
+  $('reset-go').disabled = $('reset-cancel').disabled = true;
   let ok = false;
   try {
     ok = (await api.runtime.sendMessage({ type: RESET_ALL }))?.ok === true;
@@ -2123,6 +2211,8 @@ $('reset-go').addEventListener('click', async () => {
     ok = false;
   }
   ({ settings } = await store.load());
+  $('reset-go').disabled = $('reset-cancel').disabled = false;
+  toast.hide(); // nothing left to put back
   $('reset-confirm').hidden = true;
   $('reset').hidden = false;
   render();

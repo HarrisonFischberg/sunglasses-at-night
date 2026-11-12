@@ -7,6 +7,18 @@ it was produced, the component states, and the verification. The tokens live in
 else (enforced by `engine/test/ui.test.js`, "colors, type sizes, radii and
 durations come from :root tokens only").
 
+## Two Lenses (2026-11-10)
+
+The owner chose the "Two Lenses" direction from a three-way exploration. `DESIGN.md` describes what ships. What changed against the tables below:
+
+- Tokens added: `lens-lit #192e32`, `--text-xs` (max(0.8125rem, 12px)), `--r-lens` 14/14/34/34, `--r-lens-sm` 8/8/16/16, `--r-bridge`. Buttons and the More settings row use `--r-full`; panels use `--r-lens`.
+- Mode tiles and the segmented control are now vertical option lists inside the two lenses (44 px rows, selected = filled `accent` pill, hover = `line` fill, focus ring unchanged). The schedule rows moved into the When lens.
+- Lens frame: 2 px inset, `edge` when dark mode is off, `accent` when on, 180 ms fade; off under Reduce Motion.
+- Slider row: label, track and value share one 52 px line.
+- Status mark: 40 px, beside the status line; still outline when off, filled when on.
+- Settings page: sections are lens panels (2 px `line` frame), two columns from 900 px.
+- Contrast: `lens-lit` joined the surfaces checked by `engine/test/ui.test.js`.
+
 ## How it was made (Impeccable, this session)
 
 - Skill loaded and `impeccable context` run (PRODUCT.md loaded; no DESIGN.md existed).
@@ -23,8 +35,8 @@ durations come from :root tokens only").
 | Type | `--font` (ui-rounded stack), `--mono` (ui-monospace, SF Mono) for `output`, `.host` and time inputs, `--text-sm` .9375rem, `--text-base` 1rem, `--text-lg` 1.25rem, `--text-xl` 1.5rem, `--text-2xl` clamp(1.75rem, 4vw, 2.5rem); weights 400/600/800; leading 1.4 |
 | Spacing | `--s-1`…`--s-7` = 4, 8, 12, 16, 24, 32, 48 px; `--target` 44 px; `--row` 52 px |
 | Radius | `--r-sm` 10, `--r-md` 14, `--r-lg` 22, `--r-full` pill |
-| Elevation | `--lift` (1 px line + 6 px soft shadow), `--float` (24 px soft shadow, dialog only) |
-| Motion | `--dur` 180 ms, `--ease` cubic-bezier(0.16, 1, 0.3, 1); all transitions off under `prefers-reduced-motion` |
+| Elevation | `--lift` (1 px line + 6 px soft shadow), `--float` (24 px soft shadow, dialog and Undo toast) |
+| Motion | `--dur` 180 ms, `--dur-press` 100 ms, `--dur-exit` 140 ms, `--stagger` 30 ms, `--ease` cubic-bezier(0.16, 1, 0.3, 1), `--press` 0.97, `--pop` 0.95, `--stretch` 4 px; all transitions and animations off under `prefers-reduced-motion` (`docs/interaction-matrix.md`) |
 
 ### Contrast checks (asserted in `engine/test/ui.test.js`)
 

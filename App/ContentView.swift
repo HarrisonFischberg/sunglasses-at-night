@@ -54,10 +54,12 @@ final class MirrorModel: ObservableObject {
     func resetAll() {
         guard let bridge = SettingsBridge.shared() else {
             resetMessage = "Couldn't reach the shared storage, so nothing was reset."
+            Haptics.error()
             return
         }
         bridge.resetAll()
         resetMessage = "Settings and per-site choices are erased. Safari applies this the next time the extension runs."
+        Haptics.success()
         refresh()
     }
 }

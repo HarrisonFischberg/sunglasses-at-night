@@ -293,6 +293,12 @@
         "name": "Engine"
       },
       {
+        "tag": "textarea",
+        "type": "textarea",
+        "id": "problem",
+        "name": "What went wrong?"
+      },
+      {
         "tag": "summary",
         "type": "",
         "id": "",
@@ -323,6 +329,12 @@
         "type": "",
         "id": "",
         "name": "Sites"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Debug logs"
       },
       {
         "tag": "a",
@@ -437,6 +449,12 @@
         "type": "button",
         "id": "",
         "name": "Remove rule for b.test"
+      },
+      {
+        "tag": "textarea",
+        "type": "textarea",
+        "id": "problem",
+        "name": "What went wrong?"
       },
       {
         "tag": "button",
@@ -516,6 +534,12 @@
         "name": "Engine"
       },
       {
+        "tag": "textarea",
+        "type": "textarea",
+        "id": "problem",
+        "name": "What went wrong?"
+      },
+      {
         "tag": "summary",
         "type": "",
         "id": "",
@@ -546,6 +570,12 @@
         "type": "",
         "id": "",
         "name": "Sites"
+      },
+      {
+        "tag": "a",
+        "type": "",
+        "id": "",
+        "name": "Debug logs"
       },
       {
         "tag": "a",
@@ -660,6 +690,12 @@
         "type": "button",
         "id": "",
         "name": "Remove rule for b.test"
+      },
+      {
+        "tag": "textarea",
+        "type": "textarea",
+        "id": "problem",
+        "name": "What went wrong?"
       },
       {
         "tag": "button",

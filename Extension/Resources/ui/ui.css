@@ -1,6 +1,8 @@
 /* Sunglasses at Night: popup (S05) and options page (S06) styles.
-   Design system "Dusk" (DESIGN.md, docs/design/system.md): B's layout, C's
-   look. Every color, size, radius, shadow and duration below :root comes from
+   Design system "Dusk", layout "Two Lenses" (DESIGN.md, docs/design/system.md):
+   the popup is the pair of sunglasses, left lens every site, right lens this
+   site. Shape rule: panels are lenses (--r-lens), actions are pills.
+   Every color, size, radius, shadow and duration below :root comes from
    a token defined in :root. Dark only: the product is for dim rooms, so the
    popup stays dusk even when Safari is light. Native controls underneath
    (checkbox, radio, range, select), restyled with appearance and sized to
@@ -23,10 +25,12 @@
   --danger: #ffa192;
   --focus: #e7f2f3;
   --scrim: rgb(2 6 8 / 0.6);
+  --lens-lit: #192e32; /* accent at 10% over --group: the lit corner of a lens */
 
   /* type */
   --font: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --text-xs: max(0.8125rem, 12px);
   --text-sm: 0.9375rem;
   --text-base: 1rem;
   --text-lg: 1.25rem;
@@ -53,6 +57,9 @@
   --r-md: 14px;
   --r-lg: 22px;
   --r-full: 999px;
+  --r-lens: 14px 14px 34px 34px; /* flat top, round bottom, like the mark */
+  --r-lens-sm: 8px 8px 16px 16px;
+  --r-bridge: 50% 50% 0 0 / 100% 100% 0 0;
 
   /* elevation */
   --lift: 0 1px 0 var(--line), 0 2px 6px rgb(0 0 0 / 0.3);
@@ -60,8 +67,14 @@
   --sheen: inset 0 1px 0 rgb(255 255 255 / 0.14), inset 0 -1px 0 rgb(0 0 0 / 0.3);
 
   /* motion */
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1); /* ease-out: enter promptly, settle gently */
   --dur: 180ms;
+  --dur-press: 100ms; /* pressed feedback */
+  --dur-exit: 140ms; /* exits are about 20% shorter than entrances */
+  --stagger: 30ms;
+  --press: 0.97; /* pressed button scale */
+  --pop: 0.95; /* a dialog starts at this scale */
+  --stretch: 4px; /* the held switch thumb grows about 12% along its travel */
 }
 
 * { box-sizing: border-box; }
@@ -91,17 +104,20 @@ h2 { font-size: var(--text-lg); font-weight: var(--weight-bold); }
 .hint { margin-top: var(--s-2); color: var(--muted); font-size: var(--text-sm); }
 
 [hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* ----------------------------------------------------- grouped surface */
 
 fieldset {
   margin: 0 0 var(--s-3);
-  padding: var(--s-3) var(--s-4) var(--s-4);
+  padding: var(--s-3) var(--s-4) var(--s-5);
   border: 0;
-  border-radius: var(--r-lg);
+  border-radius: var(--r-lens);
   background: var(--group);
   min-width: 0;
 }
+/* a labelled group with no panel of its own */
+fieldset.plain { padding: 0 var(--s-2); border-radius: 0; background: none; }
 
 legend {
   float: left;
@@ -169,9 +185,12 @@ input[type="checkbox"]:not(.switch-input):disabled { opacity: 0.5; cursor: not-a
 
 /* ------------------------------------------------------- slider row */
 
-.slider { padding: var(--s-1) 0; }
-.slider .field { min-height: var(--target); border-top: 0; }
-.slider input[type="range"] { width: 100%; min-height: var(--target); margin: 0; }
+/* label, track and value on one line; .field only groups label and value */
+.slider { display: grid; grid-template-columns: 5.75rem minmax(0, 1fr) 3rem; align-items: center; column-gap: var(--s-3); min-height: var(--row); }
+.slider .field { display: contents; }
+.slider label { grid-area: 1 / 1; }
+.slider input[type="range"] { grid-area: 1 / 2; width: 100%; min-height: var(--target); margin: 0; }
+.slider output { grid-area: 1 / 3; text-align: right; font-size: var(--text-sm); }
 output { color: var(--muted); font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
 /* ---------------------------------------------- select, time, buttons */
@@ -208,14 +227,14 @@ select:disabled, input[type="time"]:disabled { opacity: 0.5; }
 button {
   background: var(--raised);
   border: 0;
-  border-radius: var(--r-md);
+  border-radius: var(--r-full);
   padding: 0 var(--s-4);
   cursor: pointer;
-  transition: background-color var(--dur) var(--ease);
+  transition: background-color var(--dur) var(--ease), transform var(--dur-press) var(--ease);
 }
-button:hover { background: var(--line); }
-button:active { transform: scale(0.98); }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
+@media (hover: hover) { button:hover { background: var(--line); } }
+button:active { transform: scale(var(--press)); }
+button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 button.loading { cursor: progress; opacity: 0.7; }
 
 button.primary {
@@ -223,10 +242,10 @@ button.primary {
   color: var(--on-accent);
   font-weight: var(--weight-medium);
 }
-button.primary:hover { background: var(--accent); filter: brightness(1.08); }
+@media (hover: hover) { button.primary:hover { background: var(--accent); filter: brightness(1.08); } }
 
 button.danger { color: var(--danger); background: transparent; box-shadow: inset 0 0 0 1px var(--danger); }
-button.danger:hover { background: var(--raised); }
+@media (hover: hover) { button.danger:hover { background: var(--raised); } }
 
 .icon-button {
   display: inline-flex;
@@ -269,10 +288,12 @@ button.danger:hover { background: var(--raised); }
   text-align: center;
   transition: background-color var(--dur) var(--ease);
 }
-.segment label:hover span { background: var(--group); }
+@media (hover: hover) { .segment label:hover span { background: var(--group); } }
 .segment input:checked + span { background: var(--accent); color: var(--on-accent); box-shadow: var(--lift); }
 .segment input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
 .segment input:disabled + span { opacity: 0.5; }
+/* pressed: the row answers before the choice is saved */
+.segment input:not(:checked):active + span, .tile input:not(:checked):active + span { background: var(--line); }
 
 /* ------------------------------------------------------------ tiles */
 
@@ -291,7 +312,7 @@ button.danger:hover { background: var(--raised); }
   box-shadow: inset 0 0 0 2px transparent;
   transition: box-shadow var(--dur) var(--ease), background-color var(--dur) var(--ease);
 }
-.tile:hover span { background: var(--line); }
+@media (hover: hover) { .tile:hover span { background: var(--line); } }
 .tile input:checked + span { box-shadow: inset 0 0 0 2px var(--accent); color: var(--accent); }
 .tile input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
 .tile input:disabled + span { opacity: 0.5; }
@@ -305,13 +326,14 @@ button.danger:hover { background: var(--raised); }
   width: 100%;
   aspect-ratio: 4 / 3;
   padding: 7px;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-lens-sm);
   background: var(--bg);
   box-shadow: inset 0 0 0 2px var(--line);
   overflow: hidden;
   color: var(--fg);
-  transition: box-shadow var(--dur) var(--ease);
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur-press) var(--ease);
 }
+.preset:active .swatch { transform: scale(var(--press)); }
 .swatch b { display: block; width: 60%; height: 6px; margin-bottom: 4px; border-radius: var(--r-full); background: var(--accent); }
 .swatch i { display: block; height: 3px; margin-bottom: 3px; border-radius: var(--r-full); background: currentColor; opacity: 0.8; }
 .swatch i:nth-of-type(2) { width: 85%; }
@@ -320,7 +342,7 @@ button.danger:hover { background: var(--raised); }
 .preset[data-preset="warm"] .swatch { filter: brightness(0.95) contrast(0.95) sepia(0.4); }
 .preset[data-preset="mono"] .swatch { filter: brightness(1) contrast(1.05) grayscale(1); }
 .preset .name { font-size: var(--text-sm); font-weight: var(--weight-medium); }
-.preset:hover .swatch { box-shadow: inset 0 0 0 2px var(--edge); }
+@media (hover: hover) { .preset:hover .swatch { box-shadow: inset 0 0 0 2px var(--edge); } }
 .preset input:checked ~ .swatch { box-shadow: inset 0 0 0 2px var(--accent); }
 .preset input:checked ~ .name { color: var(--accent); }
 .preset input:focus-visible ~ .swatch { outline: 3px solid var(--focus); outline-offset: 2px; }
@@ -356,16 +378,19 @@ button.danger:hover { background: var(--raised); }
   height: 32px;
   border-radius: var(--r-full);
   background: var(--edge);
-  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease), width var(--dur-press) var(--ease);
 }
 .switch-input:checked ~ .track { background: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
 .switch-input:checked ~ .track .thumb { transform: translateX(32px); background: var(--on-accent); }
 .switch-input:focus-visible ~ .track { outline: 3px solid var(--focus); outline-offset: 3px; }
 .switch-input:disabled ~ .track { opacity: 0.5; }
+/* held: the thumb stretches toward where it is about to go */
+.switch-input:active ~ .track .thumb { width: calc(32px + var(--stretch)); }
+.switch-input:checked:active ~ .track .thumb { transform: translateX(calc(32px - var(--stretch))); }
 
 /* --------------------------------------------- sunglasses status mark */
 
-.mark { flex: none; width: 56px; height: 56px; color: var(--edge); }
+.mark { flex: none; width: 40px; height: 40px; margin: calc(-1 * var(--s-2)) 0; color: var(--edge); }
 .mark .lens { fill: transparent; stroke: currentColor; stroke-width: 2.5; transition: fill var(--dur) var(--ease); }
 .mark .bridge { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
 [data-on="true"] .mark { color: var(--accent); }
@@ -413,74 +438,128 @@ body.popup {
 .popup .top h1 { color: var(--muted); flex: 1; }
 .popup .app-mark { width: 28px; height: 28px; border-radius: var(--r-sm); flex: none; }
 
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--s-2);
-  margin-bottom: var(--s-3);
-  padding: var(--s-4);
-  border-radius: var(--r-lg);
-  background: var(--group);
-}
-.hero-text { display: flex; align-items: center; gap: var(--s-4); }
-/* Clear Lens (look 1): the popup borrows Liquid Glass shapes, not its blur
-   (nothing sits behind a popover to blur): a lit edge on the power card and
-   capsule controls. */
-.popup .hero { background: var(--raised); box-shadow: var(--sheen); }
-.popup .tiles, .popup .segment {
+/* power: one big labelled switch, the status line with the mark under it */
+.hero { display: grid; margin-bottom: var(--s-3); padding: 0 var(--s-1); }
+.hero-text { display: flex; align-items: center; gap: var(--s-2); min-height: var(--s-6); }
+.popup .switch { font-size: var(--text-xl); }
+
+/* Two Lenses: When (every site) and This site side by side, joined by a
+   bridge. The frames are --edge, and --accent while dark mode is on. With no
+   website (#site hidden) the When lens takes the whole row. */
+.lenses {
+  --frame: var(--edge);
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: var(--s-1);
-  padding: var(--s-1);
-  background: var(--raised);
-  border-radius: var(--r-full);
-  box-shadow: var(--sheen);
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+  margin-bottom: var(--s-3);
+}
+[data-on="true"] .lenses { --frame: var(--accent); }
+.lenses > fieldset {
+  position: relative;
+  margin: 0;
+  padding: var(--s-3) var(--s-2) var(--s-4);
+  box-shadow: inset 0 0 0 2px var(--frame);
+  transition: box-shadow var(--dur) var(--ease);
+}
+[data-on="true"] .lenses > fieldset { background-image: linear-gradient(160deg, var(--lens-lit), var(--group) 42%); }
+.lenses legend { padding: 0 var(--s-2); }
+#site::before {
+  content: "";
+  position: absolute;
+  right: calc(100% - 2px);
+  top: var(--s-4);
+  width: calc(var(--s-4) + 4px);
+  height: var(--s-3);
+  border-top: 2px solid var(--frame);
+  border-radius: var(--r-bridge);
+  transition: border-color var(--dur) var(--ease);
+}
+.popup .tiles, .popup .segment {
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  padding: 0;
+  background: none;
+  border-radius: 0;
 }
 .popup .tiles > :last-child:nth-child(odd) { grid-column: auto; }
 .popup .tile span, .popup .segment span {
-  justify-content: center;
+  justify-content: flex-start;
   min-height: var(--target);
-  padding: 0 var(--s-2);
+  padding: var(--s-1) var(--s-3);
   background: transparent;
   border-radius: var(--r-full);
   font-size: var(--text-sm);
-  line-height: 1.15;
-  text-align: center;
+  line-height: 1.2;
+  text-align: left;
   box-shadow: none;
+  transition: none; /* a choice fills at once, also on first render */
 }
-.popup .tile:hover span, .popup .segment label:hover span { background: var(--line); }
-.popup .tile input:checked + span, .popup .segment input:checked + span { background: var(--accent); color: var(--on-accent); box-shadow: var(--lift); }
+@media (hover: hover) { .popup .tile:hover span, .popup .segment label:hover span { background: var(--line); } }
+.popup .tile input:checked + span, .popup .segment input:checked + span { background: var(--accent); color: var(--on-accent); box-shadow: none; }
 
-#status { min-width: 0; overflow-wrap: anywhere; font-size: var(--text-base); line-height: 1.3; text-wrap: balance; }
+/* Large text: when the popup is under 20 rem wide the lenses stack and the
+   bridge goes. shortcut: needs container queries (Safari 16); older Safari
+   keeps the pair side by side, where long labels wrap. */
+.popup-scroll { container-type: inline-size; }
+@container (max-width: 20rem) {
+  .lenses { grid-auto-flow: row; gap: var(--s-3); }
+  #site::before { display: none; }
+}
+
+/* the hostname is cut in the middle (popup.js splits it), never at the end */
+#host { display: flex; margin: var(--s-2) 0 0; padding: 0 var(--s-3); font-size: var(--text-xs); color: var(--muted); white-space: nowrap; }
+.host-head { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.host-tail { flex: none; }
+
+#status { min-width: 0; overflow-wrap: anywhere; color: var(--muted); font-size: var(--text-sm); line-height: 1.3; }
 
 .host { font-family: var(--mono); font-weight: var(--weight-bold); margin-bottom: var(--s-2); overflow-wrap: anywhere; }
 
 /* ------------------------------------------------------------ options */
 
 body.options { padding: var(--s-4); }
-.options .shell { max-width: 960px; margin: 0 auto; padding: var(--s-5) 0 var(--s-7); display: grid; gap: var(--s-5); }
-.options h1 { font-size: var(--text-2xl); letter-spacing: -0.01em; margin-bottom: var(--s-1); }
-.options section { margin: 0 0 var(--s-5); scroll-margin-top: var(--s-5); }
-.options section > h2 { margin: 0 var(--s-1) var(--s-2); font-size: var(--text-sm); color: var(--muted); }
-.options .support { display: grid; gap: var(--s-2); justify-items: start; padding: 0 var(--s-1); }
+.options .shell { max-width: 1040px; margin: 0 auto; padding: var(--s-5) 0 var(--s-7); display: grid; gap: var(--s-5); }
+.options .head { display: flex; align-items: center; gap: var(--s-4); }
+.options .app-mark { flex: none; width: 64px; height: 64px; border-radius: var(--r-md); }
+.options h1 { font-size: var(--text-2xl); line-height: 1.1; letter-spacing: -0.01em; margin-bottom: var(--s-1); }
+/* every section is a lens panel; inline-block keeps one whole in a column */
+.options section {
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 var(--s-4);
+  padding: var(--s-4) var(--s-5) var(--s-6);
+  border-radius: var(--r-lens);
+  background: var(--group);
+  box-shadow: inset 0 0 0 2px var(--line);
+  scroll-margin-top: var(--s-5);
+}
+.options section > h2 { margin: 0 0 var(--s-2); overflow-wrap: anywhere; }
+.options section > p { margin-bottom: var(--s-3); }
+.options fieldset { margin: 0; padding: 0; border-radius: 0; background: none; }
+.options .icon-button { background: var(--raised); }
+.options .support { display: grid; gap: var(--s-2); justify-items: start; }
 .options .support textarea { width: 100%; box-sizing: border-box; min-height: calc(var(--target) * 2); padding: var(--s-2) var(--s-3); background: var(--raised); border: 0; border-radius: var(--r-sm); resize: vertical; }
 
-.rail { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-4); }
+.rail { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 .rail a {
   display: inline-flex;
   align-items: center;
   min-height: var(--target);
-  color: var(--muted);
+  padding: 0 var(--s-4);
+  border-radius: var(--r-full);
+  background: var(--group);
+  color: var(--fg);
   text-decoration: none;
-  text-underline-offset: 0.2em;
+  transition: background-color var(--dur) var(--ease);
 }
-.rail a:hover { color: var(--fg); text-decoration: underline; }
+@media (hover: hover) { .rail a:hover { background: var(--raised); } }
+.rail a:active { background: var(--line); }
 
 @media (min-width: 900px) {
-  .options .shell { grid-template-columns: 200px minmax(0, 640px); gap: var(--s-7); align-items: start; }
-  .options .head { grid-column: 1 / -1; }
-  .rail { display: grid; align-content: start; position: sticky; top: var(--s-5); }
+  .options main { columns: 2; column-gap: var(--s-4); }
 }
 
 #sites, #fixes { list-style: none; margin: 0; padding: 0; }
@@ -504,18 +583,51 @@ dialog {
   background: var(--group);
   color: var(--fg);
   border: 0;
-  border-radius: var(--r-lg);
+  border-radius: var(--r-lens);
   box-shadow: var(--float);
   max-width: min(420px, calc(100vw - 2rem));
-  padding: var(--s-5);
+  padding: var(--s-5) var(--s-5) var(--s-6);
 }
 dialog::backdrop { background: var(--scrim); }
+dialog[open] { animation: pop var(--dur) var(--ease); }
+dialog[open]::backdrop { animation: reveal var(--dur) var(--ease); }
+@keyframes reveal { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(var(--pop)); } }
 dialog h2 { margin-bottom: var(--s-2); }
 dialog .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--s-2); margin-top: var(--s-4); }
 
+/* ------------------------------------------------------- undo toast */
+
+/* "Removed … / Undo" after a removal (undo-toast.js). Fades in, leaves a
+   little faster; while hidden it is out of the tab order. */
+.toast {
+  position: fixed;
+  z-index: 1;
+  left: var(--s-3);
+  right: var(--s-3);
+  bottom: max(var(--s-3), env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  max-width: 420px;
+  margin: 0 auto;
+  padding: var(--s-2) var(--s-2) var(--s-2) var(--s-4);
+  border-radius: var(--r-lg);
+  background: var(--raised);
+  box-shadow: var(--float), inset 0 0 0 1px var(--line);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-exit) var(--ease), visibility var(--dur-exit) step-end;
+}
+.toast.show { opacity: 1; visibility: visible; transition: opacity var(--dur) var(--ease); }
+.toast p { flex: 1; min-width: 0; font-size: var(--text-sm); overflow-wrap: anywhere; }
+.toast button { flex: none; background: transparent; color: var(--accent); font-weight: var(--weight-bold); }
+
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
-  button:active { transform: none; }
+  *, *::before, *::after, ::backdrop { transition: none !important; animation: none !important; }
+  button:active, .preset:active .swatch { transform: none; }
+  .switch-input:active ~ .track .thumb { width: 32px; }
+  .switch-input:checked:active ~ .track .thumb { transform: translateX(32px); }
 }
 
 .popup .report {
@@ -533,26 +645,35 @@ dialog .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap
 
 /* Popup: schedule hours and "More settings" (everything the options page has,
    so iOS never needs the separate settings window). */
-.popup #schedule { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); margin-top: var(--s-3); }
-.popup #schedule[hidden] { display: none; }
-.popup #schedule .hint { grid-column: 1 / -1; margin: 0; }
+/* schedule hours live in the When lens, under "On a schedule" */
+.popup #schedule { margin-top: var(--s-2); padding: 0 var(--s-2); }
+.popup #schedule .field { gap: 0 var(--s-2); min-height: var(--target); padding: var(--s-1) 0; }
+.popup #schedule .field + .field { border-top: 0; }
+.popup #schedule input[type="time"] { padding: 0 var(--s-2); }
+.popup #schedule .hint { margin: var(--s-1) 0 0; }
 .popup details.more { margin-top: var(--s-3); }
 .popup details.more > summary {
   display: flex;
   align-items: center;
   min-height: var(--target);
-  padding: 0 var(--s-3);
-  border-radius: var(--r-md);
+  padding: 0 var(--s-4);
+  border-radius: var(--r-full);
   background: var(--group);
   color: var(--fg);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   cursor: pointer;
   list-style: none;
 }
+.popup details.more > summary:active { background: var(--line); }
 .popup details.more > summary::-webkit-details-marker { display: none; }
 .popup details.more > summary::after { content: "›"; margin-left: auto; color: var(--muted); transition: transform var(--dur); }
 .popup details.more[open] > summary::after { transform: rotate(90deg); }
 .popup details.more > fieldset { margin-top: var(--s-3); }
+/* opened by the person, so it may fade in: sections follow each other, the
+   whole reveal is over in 240 ms. Nothing animates when the popup opens. */
+.popup details.more[open] > fieldset, .popup #reset-confirm { animation: reveal var(--dur) var(--ease) backwards; }
+.popup details.more[open] > fieldset:nth-of-type(2) { animation-delay: var(--stagger); }
+.popup details.more[open] > fieldset:nth-of-type(3) { animation-delay: calc(2 * var(--stagger)); }
 .popup #reset-confirm { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--s-2); margin-top: var(--s-2); }
 .popup #reset-confirm[hidden] { display: none; }
 .popup #reset-confirm p { flex: 1 0 100%; margin: 0; }

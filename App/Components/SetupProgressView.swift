@@ -33,6 +33,15 @@ struct StepProgressHeader: View {
     }
 }
 
+/// The panel shape the Safari popup and settings page use ("Two Lenses"):
+/// flat top, round bottom, like a lens of the app's sunglasses.
+struct LensPanel: Shape {
+    func path(in rect: CGRect) -> Path {
+        UnevenRoundedRectangle(topLeadingRadius: 14, bottomLeadingRadius: 34, bottomTrailingRadius: 34, topTrailingRadius: 14, style: .continuous)
+            .path(in: rect)
+    }
+}
+
 /// Onboarding: progress header, the steps, and one primary action for the
 /// current step. Done steps are quiet, the current one stands out, later ones
 /// wait their turn.
@@ -56,6 +65,11 @@ struct SetupProgressView<Actions: View>: View {
                     row(step, number: index + 1, isCurrent: step.id == currentID)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 24)
+            .background(.quaternary.opacity(0.5), in: LensPanel())
             actions
         }
         .frame(maxWidth: .infinity, alignment: .leading)
