@@ -380,6 +380,15 @@ function resolveSite(settings, hostname) {
 // with promise-returning get(key) / set(obj) / remove(key), and optionally
 // an `onChanged` event with addListener/removeListener.
 function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
+  // Read-modify-write calls run one at a time, so overlapping writers can't lose a change.
+  // (Same JS context only; the popup, options page and background are separate contexts.)
+  let queue = Promise.resolve();
+  const serial = (fn) => (...args) => {
+    const run = queue.then(() => fn(...args));
+    queue = run.catch(() => {});
+    return run;
+  };
+
   async function write(settings) {
     await area.set({ [key]: settings });
     return settings;
@@ -392,33 +401,33 @@ function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
     return { settings, errors };
   }
 
-  async function save(candidate) {
+  async function saveNow(candidate) {
     const { settings, errors } = validateSettings(candidate);
     await write(settings);
     return { settings, errors };
   }
 
   // Shallow-merge top level; `look` and `schedule` merge one level deeper.
-  async function update(patch) {
+  async function updateNow(patch) {
     const { settings: current } = await load();
     const next = { ...current, ...patch };
     if (isPlainObject(patch?.look)) next.look = { ...current.look, ...patch.look };
     if (isPlainObject(patch?.schedule)) next.schedule = { ...current.schedule, ...patch.schedule };
-    return save(next);
+    return saveNow(next);
   }
 
   // Set one site's entry. `null` (or an inherit-only entry) deletes it.
-  async function setSite(hostname, entry) {
+  async function setSiteNow(hostname, entry) {
     const host = normalizeHostname(hostname);
     if (!host) return { settings: (await load()).settings, errors: [`sites: rejected hostname ${JSON.stringify(hostname)}`] };
     const { settings: current } = await load();
     const sites = { ...current.sites };
     if (entry === null) delete sites[host];
     else sites[host] = entry;
-    return save({ ...current, sites });
+    return saveNow({ ...current, sites });
   }
 
-  async function reset() {
+  async function resetNow() {
     return write(defaultSettings());
   }
 
@@ -434,7 +443,7 @@ function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
     return () => ev.removeListener(handler);
   }
 
-  return { load, save, update, setSite, reset, subscribe };
+  return { load, save: serial(saveNow), update: serial(updateNow), setSite: serial(setSiteNow), reset: serial(resetNow), subscribe };
 }
 
 // browser.storage.local as a store area. onChanged comes from
@@ -2234,6 +2243,13 @@ async function main() {
   render();
   openAtTop();
 }
+
+// Another window (the popup, the options page, the shortcut) changed the settings.
+store.subscribe((next) => {
+  if (!settings || JSON.stringify(next) === JSON.stringify(settings)) return;
+  settings = next;
+  render();
+});
 
 // Safari may move focus into the popover when it opens (it restores focus to
 // the last control used, e.g. the Engine menu at the bottom), and the scroll

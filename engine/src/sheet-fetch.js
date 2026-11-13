@@ -10,11 +10,42 @@ import { FETCH_SHEET } from './messages.js';
 export const MAX_SHEET_BYTES = 4 * 1024 * 1024;
 const CACHE_LIMIT = 64;
 
-const LOCAL_HOST_RE = /^(?:localhost|.+\.localhost|.+\.local|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+|0\.0\.0\.0|\[(?:::1?|f[cd][0-9a-f]*:.*|fe80:.*)\])$/i;
+const LOCAL_HOST_RE = /^(?:localhost|.+\.(?:localhost|local|lan|internal|home\.arpa|intranet)|0\.\d+\.\d+\.\d+|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+|\[(?:::1?|f[cd][0-9a-f]*:.*|fe[89abcdef][0-9a-f]:.*)\])$/i;
+
+/**
+ * The host as the pattern sees it: no trailing dot, and IPv6 forms that wrap an
+ * IPv4 address (`::ffff:`, IPv4-compatible `::`, NAT64 `64:ff9b::`) as plain IPv4.
+ */
+function normalizeHost(hostname) {
+  const host = hostname.toLowerCase().replace(/\.+$/, '');
+  const wrapped = /^\[(?:::(?:ffff:)?|64:ff9b::)(?:(\d+\.\d+\.\d+\.\d+)|([0-9a-f]{1,4}):([0-9a-f]{1,4}))\]$/.exec(host);
+  if (!wrapped) return host;
+  if (wrapped[1]) return wrapped[1];
+  const hi = parseInt(wrapped[2], 16);
+  const lo = parseInt(wrapped[3], 16);
+  return `${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`;
+}
 
 /** Loopback, private or link-local host: this device or the local network. */
 export function isLocalUrl(url) {
-  try { return LOCAL_HOST_RE.test(new URL(url).hostname); } catch { return false; }
+  try {
+    const host = normalizeHost(new URL(url).hostname);
+    // A name with no dot can only be a local one (router, intranet, a machine name).
+    return LOCAL_HOST_RE.test(host) || (host !== '' && !host.includes('.') && !host.startsWith('['));
+  } catch {
+    return false;
+  }
+}
+
+// about:blank, data:, blob:, file: and the like are never "local pages": only a page
+// on a local http(s) host may ask for local sheets.
+function isLocalPage(pageUrl) {
+  try {
+    const { protocol } = new URL(pageUrl);
+    return (protocol === 'http:' || protocol === 'https:') && isLocalUrl(pageUrl);
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -31,7 +62,7 @@ export function rejectSheetUrl(url, pageUrl) {
   }
   if (u.protocol !== 'https:' && u.protocol !== 'http:') return `scheme ${u.protocol} not allowed`;
   if (u.username || u.password) return 'credentials in URL not allowed';
-  if (isLocalUrl(u.href) && !isLocalUrl(pageUrl)) return 'local network sheet from a public page';
+  if (isLocalUrl(u.href) && !isLocalPage(pageUrl)) return 'local network sheet from a public page';
   return null;
 }
 
@@ -82,7 +113,7 @@ export function createSheetFetcher({ fetch }) {
     const result = await p;
     if (!result.ok && cache.get(key) === p) cache.delete(key);
     // Checked for every asker: the cached answer may have come from a local page.
-    if (result.local && !isLocalUrl(pageUrl)) return { ok: false, error: 'local network sheet from a public page' };
+    if (result.local && !isLocalPage(pageUrl)) return { ok: false, error: 'local network sheet from a public page' };
     return result;
   };
 }

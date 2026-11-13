@@ -19,7 +19,7 @@
 import { createSettingsStore, extensionArea, migrate, STORAGE_KEY, MODES } from './settings.js';
 import { createSheetMessageHandler } from './sheet-fetch.js';
 import { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT, RESTORE_KEY } from './messages.js';
-import { firstPaintPlan, minutesToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } from './first-paint.js';
+import { firstPaintPlan, msToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } from './first-paint.js';
 
 export const TOGGLE_COMMAND = 'toggle-dark-mode';
 // Last App Group reset generation this extension has applied (T014).
@@ -148,8 +148,8 @@ export function createBackground({ api, fetch }) {
       registered = got?.[0] ? { matches: got[0].matches, excludeMatches: got[0].excludeMatches ?? [] } : null;
     }
     clearTimeout(planTimer);
-    const next = minutesToNextChange(settings, new Date());
-    if (next !== null) planTimer = setTimeout(() => syncFirstPaint().catch(ignore), next * 60000 + 1000);
+    const next = msToNextChange(settings, new Date());
+    if (next !== null) planTimer = setTimeout(() => syncFirstPaint().catch(ignore), next + 1000);
     if (samePlan(plan, registered)) return plan;
     if (registered) await Promise.resolve(scripting.unregisterContentScripts({ ids: [FIRST_PAINT_ID] })).catch(ignore);
     registered = null;

@@ -276,6 +276,13 @@ async function main() {
   openAtTop();
 }
 
+// Another window (the popup, the options page, the shortcut) changed the settings.
+store.subscribe((next) => {
+  if (!settings || JSON.stringify(next) === JSON.stringify(settings)) return;
+  settings = next;
+  render();
+});
+
 // Safari may move focus into the popover when it opens (it restores focus to
 // the last control used, e.g. the Engine menu at the bottom), and the scroll
 // container then jumps to show it, hiding the status line under the header.

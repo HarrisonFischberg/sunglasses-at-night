@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { firstPaintPlan, minutesToNextChange, hostPatterns, FIRST_PAINT_CSS, FIRST_PAINT_ID } from '../src/first-paint.js';
+import { firstPaintPlan, msToNextChange, hostPatterns, FIRST_PAINT_CSS, FIRST_PAINT_ID } from '../src/first-paint.js';
 import { defaultSettings } from '../src/settings.js';
 import { createBackground } from '../src/background-core.js';
 
@@ -32,9 +32,25 @@ test('firstPaintPlan: schedule follows the window, crossing midnight', () => {
   const sch = s({ mode: 'schedule', schedule: { start: '20:00', end: '07:00' } });
   assert.deepEqual(firstPaintPlan(sch, at(23, 0)).matches, ['<all_urls>']);
   assert.equal(firstPaintPlan(sch, at(12, 0)), null);
-  assert.equal(minutesToNextChange(sch, at(19, 30)), 30);
-  assert.equal(minutesToNextChange(sch, at(6, 0)), 60);
-  assert.equal(minutesToNextChange(s({ mode: 'always' }), at(6, 0)), null);
+  assert.equal(msToNextChange(sch, at(19, 30)), 30 * 60000);
+  assert.equal(msToNextChange(sch, at(6, 0)), 60 * 60000);
+  assert.equal(msToNextChange(s({ mode: 'always' }), at(6, 0)), null);
+});
+
+test('msToNextChange counts real time on a spring-forward night (B4)', () => {
+  const tz = process.env.TZ;
+  process.env.TZ = 'America/Denver'; // clocks jump 02:00 → 03:00 on 2026-03-08
+  try {
+    const sch = s({ mode: 'schedule', schedule: { start: '20:00', end: '07:00' } });
+    // 01:00 → 07:00 local is 5 real hours, not 6.
+    assert.equal(msToNextChange(sch, new Date(2026, 2, 8, 1, 0)), 5 * 3600000);
+    // The evening before, nothing odd: 20:00 is 4 hours away.
+    assert.equal(msToNextChange(sch, new Date(2026, 2, 7, 16, 0)), 4 * 3600000);
+    // From 12:00 on the spring-forward day the next change (20:00) is 8 hours.
+    assert.equal(msToNextChange(sch, new Date(2026, 2, 8, 12, 0)), 8 * 3600000);
+  } finally {
+    if (tz === undefined) delete process.env.TZ; else process.env.TZ = tz;
+  }
 });
 
 test('base-on.css is base.css without the media gate, still gated on data-sunglasses-off', () => {

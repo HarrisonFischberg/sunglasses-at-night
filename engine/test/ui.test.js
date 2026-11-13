@@ -285,6 +285,10 @@ test('popup and options bundles make no network requests', () => {
   assert.ok(!/https?:\/\//.test(read('Extension/Resources/ui/ui.css')), 'no remote fonts or images');
 });
 
+test('popup and options re-render when settings change elsewhere (U4)', () => {
+  for (const f of ['engine/src/popup.js', 'engine/src/options.js']) assert.match(read(f), /store\.subscribe\(/, f);
+});
+
 test('ui.css (Dusk) tokens meet contrast, and focus stays visible', () => {
   const css = read('Extension/Resources/ui/ui.css');
   const root = css.slice(css.indexOf(':root {'), css.indexOf('* {'));
