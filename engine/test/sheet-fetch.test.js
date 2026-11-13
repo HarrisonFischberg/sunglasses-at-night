@@ -48,19 +48,29 @@ test('rejectSheetUrl: spellings of a local host that used to slip past the guard
     'http://[::ffff:7f00:1]/a.css', 'http://[::ffff:127.0.0.1]/a.css', 'http://[::ffff:c0a8:101]/a.css', 'http://[::ffff:a00:2]/a.css',
     'http://[::]/a.css', 'http://[fe80::1]/a.css', 'http://[fd12:3456::1]/a.css',
     'http://nas.lan/a.css', 'http://git.internal/a.css', 'http://printer.home.arpa/a.css', 'http://wiki.intranet/a.css',
-    'http://router/a.css', 'http://2130706433/a.css']) {
+    'http://router/a.css', 'http://2130706433/a.css',
+    'http://100.64.0.1/a.css', 'http://100.127.255.254/a.css', 'http://0.1.2.3/a.css', 'http://[::7f00:1]/a.css', 'http://[::10.0.0.1]/a.css',
+    'http://[64:ff9b::7f00:1]/a.css', 'http://[64:ff9b::c0a8:101]/a.css', 'http://[fec0::1]/a.css', 'http://[feff::1]/a.css']) {
     assert.match(rejectSheetUrl(sheet, 'https://evil.example/'), /local network/, sheet);
     assert.equal(rejectSheetUrl(sheet, 'http://192.168.1.5/'), null, sheet);
   }
   // Public hosts that merely look similar stay allowed.
   for (const sheet of ['https://cdn.example/a.css', 'https://lan.example/a.css', 'https://internal.example.com/a.css',
-    'http://[::ffff:808:808]/a.css', 'http://[2606:4700::1111]/a.css']) {
+    'http://[::ffff:808:808]/a.css', 'http://[2606:4700::1111]/a.css', 'http://100.63.0.1/a.css', 'http://100.128.0.1/a.css',
+    'http://[64:ff9b::808:808]/a.css']) {
     assert.equal(rejectSheetUrl(sheet, 'https://evil.example/'), null, sheet);
   }
 });
 
+test('rejectSheetUrl: pages that are not on a local http(s) host never get local sheets (S1)', () => {
+  for (const page of ['about:blank', 'about:srcdoc', 'data:text/html,hi', 'blob:https://evil.example/uuid', 'file:///tmp/x.html', '', undefined, 'not a url']) {
+    assert.match(rejectSheetUrl('http://127.0.0.1/x.css', page), /local network/, String(page));
+  }
+  assert.equal(rejectSheetUrl('http://127.0.0.1/x.css', 'http://localhost:3000/'), null);
+});
+
 test('fetcher: a redirect to a hidden spelling of the local network is refused too (S1)', async () => {
-  for (const to of ['http://localhost./a.css', 'http://[::ffff:7f00:1]/a.css', 'http://nas.lan/a.css', 'http://x.home.arpa/a.css']) {
+  for (const to of ['http://localhost./a.css', 'http://[::ffff:7f00:1]/a.css', 'http://nas.lan/a.css', 'http://x.home.arpa/a.css', 'http://100.64.0.1/a.css', 'http://[64:ff9b::7f00:1]/a.css']) {
     const fetch = fakeFetch({ 'https://cdn.example/r.css': { body: 'a{}', url: to } });
     const get = createSheetFetcher({ fetch });
     assert.match((await get('https://cdn.example/r.css', 'https://evil.example/')).error, /local network/, to);

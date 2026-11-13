@@ -320,10 +320,17 @@ test('store: overlapping writes both land, even after one fails (P2)', async () 
   assert.equal(settings.sites['example.com'].rule, 'never');
   assert.equal(settings.look.sepia, 20);
   assert.equal(results[2].settings.mode, 'always');
-  // A failing write must not wedge the queue.
-  const failing = createSettingsStore({ ...createMemoryArea(), set: async () => { throw new Error('quota'); } });
-  await assert.rejects(failing.update({ mode: 'off' }), /quota/);
-  await assert.rejects(failing.update({ mode: 'off' }), /quota/);
+  // A failing write must not wedge the queue: the next one still runs and lands.
+  const flaky = createMemoryArea();
+  let failNext = true;
+  const realSet = flaky.set;
+  flaky.set = async (o) => { if (failNext) { failNext = false; throw new Error('quota'); } return realSet(o); };
+  const fs = createSettingsStore(flaky);
+  const first = fs.update({ mode: 'off' });
+  const second = fs.update({ mode: 'always' });
+  await assert.rejects(first, /quota/);
+  assert.equal((await second).settings.mode, 'always');
+  assert.equal((await fs.load()).settings.mode, 'always');
 });
 
 test('store: save → load round-trip', async () => {
