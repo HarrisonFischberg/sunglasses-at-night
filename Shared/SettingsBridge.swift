@@ -82,14 +82,18 @@ struct SettingsBridge {
         case BridgeMessage.sync:
             let current = resetGeneration
             let seen = (message["resetGeneration"] as? NSNumber)?.intValue ?? 0
-            // Not equal, not less: a wiped App Group starts counting from 0 again.
-            if seen != current {
+            // Only an app-side Reset all (the group is ahead) clears the extension.
+            // The extension ahead means the group is new or was wiped and counts
+            // from 0 again (for example the first build signed with the App Group):
+            // that is not a reset, so adopt its count and keep its settings.
+            if current > seen {
                 return ["ok": true, "reset": true, "resetGeneration": current]
             }
             if let error = store(settings: message["settings"] as Any) {
                 return ["ok": false, "error": error, "resetGeneration": current]
             }
-            return ["ok": true, "reset": false, "resetGeneration": current]
+            if seen > current { defaults.set(seen, forKey: BridgeKeys.resetGeneration) }
+            return ["ok": true, "reset": false, "resetGeneration": max(seen, current)]
         case BridgeMessage.reset:
             return ["ok": true, "resetGeneration": resetAll()]
         default:
@@ -103,9 +107,16 @@ extension SettingsBridge {
     // entitlements in Config/.
     static let appGroup = "group.app.rarecreatures.sunglassesatnight"
 
+    /// True when this build really has the App Group (the entitlement is signed in).
+    static var containerAvailable: Bool {
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) != nil
+    }
+
     /// The bridge over the shared App Group, or nil if the container is unavailable
-    /// (for example an unsigned build).
-    static func shared() -> SettingsBridge? {
-        UserDefaults(suiteName: appGroup).map { SettingsBridge(defaults: $0) }
+    /// (for example a TestFlight archive without the entitlement: UserDefaults(suiteName:)
+    /// still answers there, with a private store nobody else can see).
+    static func shared(containerAvailable: Bool = SettingsBridge.containerAvailable) -> SettingsBridge? {
+        guard containerAvailable else { return nil }
+        return UserDefaults(suiteName: appGroup).map { SettingsBridge(defaults: $0) }
     }
 }

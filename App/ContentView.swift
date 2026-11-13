@@ -248,7 +248,8 @@ struct ContentView: View {
         if on { await check.finish("Found it") }
         check.reset()
         // Only after a later check: the first launch isn't a failure.
-        stillOff = !on && checkedOnce
+        // On iOS without the App Group the check can't tell on from off: no error.
+        stillOff = !on && checkedOnce && (mirror.storageAvailable || Self.canSeeTurnedOff)
         checkedOnce = true
         celebrateNow = on && !celebrated
         phase = on ? .done : .setup
@@ -395,7 +396,12 @@ struct AboutView: View {
                 // Last and quiet: the destructive action never leads the trust screen.
                 section("Reset all settings",
                         "Erases your settings and per-site choices from this device.")
-                Button("Reset all settings…", role: .destructive) { confirmingReset = true }
+                if mirror.storageAvailable {
+                    Button("Reset all settings…", role: .destructive) { confirmingReset = true }
+                } else {
+                    Text("Settings sharing isn't available in this build, so this app can't reset them. Use Reset all in the Sunglasses at Night button in Safari's toolbar.")
+                        .foregroundStyle(.secondary)
+                }
                 if let message = mirror.resetMessage {
                     Text(message).foregroundStyle(.secondary)
                 }
@@ -407,6 +413,7 @@ struct AboutView: View {
             .padding()
         }
         .navigationTitle("Privacy and help")
+        .onAppear { mirror.refresh() }
         .confirmationDialog("Reset all settings?", isPresented: $confirmingReset, titleVisibility: .visible) {
             Button("Reset all settings", role: .destructive) { mirror.resetAll() }
             Button("Cancel", role: .cancel) {}
