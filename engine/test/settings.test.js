@@ -308,6 +308,24 @@ test('store: load on empty storage returns defaults and writes nothing', async (
   assert.deepEqual(area._raw(), {});
 });
 
+test('store: overlapping writes both land, even after one fails (P2)', async () => {
+  const store = createSettingsStore(createMemoryArea());
+  const results = await Promise.all([
+    store.update({ mode: 'always' }),
+    store.setSite('example.com', { rule: 'never' }),
+    store.update({ look: { sepia: 20 } }),
+  ]);
+  const { settings } = await store.load();
+  assert.equal(settings.mode, 'always');
+  assert.equal(settings.sites['example.com'].rule, 'never');
+  assert.equal(settings.look.sepia, 20);
+  assert.equal(results[2].settings.mode, 'always');
+  // A failing write must not wedge the queue.
+  const failing = createSettingsStore({ ...createMemoryArea(), set: async () => { throw new Error('quota'); } });
+  await assert.rejects(failing.update({ mode: 'off' }), /quota/);
+  await assert.rejects(failing.update({ mode: 'off' }), /quota/);
+});
+
 test('store: save → load round-trip', async () => {
   const area = createMemoryArea();
   const store = createSettingsStore(area);

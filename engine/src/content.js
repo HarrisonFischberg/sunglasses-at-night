@@ -16,7 +16,7 @@ import { keepOriginalCss } from './keep-original.js';
 import { siteFixesFor } from './generated/site-fixes-data.js';
 import { cspBlocked, cspBlocksStyles, startAdoptedMirror } from './adopted.js';
 import { cacheKey, readCached, writeCached, adoptCss } from './style-cache.js';
-import { minutesToNextChange } from './first-paint.js';
+import { msToNextChange } from './first-paint.js';
 
 // Bumped when the engine's output changes, so old cached CSS is never reused.
 const CACHE_VERSION = 1;
@@ -231,8 +231,8 @@ async function main() {
     teardown();
     teardown = run(latest);
     clearTimeout(scheduleTimer);
-    const next = minutesToNextChange(latest, new Date());
-    if (next !== null) scheduleTimer = setTimeout(restart, next * 60000 + 1000);
+    const next = msToNextChange(latest, new Date());
+    if (next !== null) scheduleTimer = setTimeout(restart, next + 1000);
   };
   restart();
   // Settings arrive twice per write (storage.onChanged here, and the

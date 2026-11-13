@@ -43,15 +43,19 @@ export function firstPaintPlan(settings, now = new Date(), timeZone) {
   return null;
 }
 
-/** Minutes until the schedule next changes state (for re-planning), or null. */
-export function minutesToNextChange(settings, now = new Date()) {
+/** Milliseconds until the schedule next changes state (for re-planning), or null. */
+export function msToNextChange(settings, now = new Date()) {
   if (settings?.mode !== 'schedule') return null;
   const [sh, sm] = String(settings.schedule?.start ?? '').split(':').map(Number);
   const [eh, em] = String(settings.schedule?.end ?? '').split(':').map(Number);
   if ([sh, sm, eh, em].some((n) => !Number.isFinite(n))) return null;
-  const m = now.getHours() * 60 + now.getMinutes();
-  const until = (t) => ((t - m + 1440) % 1440) || 1440;
-  return Math.min(until(sh * 60 + sm), until(eh * 60 + em));
+  // A real Date, so a 23- or 25-hour day (daylight saving) counts the real time.
+  const until = (h, m) => {
+    const t = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
+    if (t <= now) t.setDate(t.getDate() + 1);
+    return t - now;
+  };
+  return Math.min(until(sh, sm), until(eh, em));
 }
 
 export function samePlan(a, b) {

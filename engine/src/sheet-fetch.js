@@ -10,11 +10,28 @@ import { FETCH_SHEET } from './messages.js';
 export const MAX_SHEET_BYTES = 4 * 1024 * 1024;
 const CACHE_LIMIT = 64;
 
-const LOCAL_HOST_RE = /^(?:localhost|.+\.localhost|.+\.local|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+|0\.0\.0\.0|\[(?:::1?|f[cd][0-9a-f]*:.*|fe80:.*)\])$/i;
+const LOCAL_HOST_RE = /^(?:localhost|.+\.(?:localhost|local|lan|internal|home\.arpa|intranet)|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+|0\.0\.0\.0|\[(?:::1?|f[cd][0-9a-f]*:.*|fe[89ab][0-9a-f]:.*)\])$/i;
+
+/** The host as the pattern sees it: no trailing dot, `::ffff:` IPv4-mapped IPv6 as plain IPv4. */
+function normalizeHost(hostname) {
+  const host = hostname.toLowerCase().replace(/\.+$/, '');
+  const mapped = /^\[::ffff:(?:(\d+\.\d+\.\d+\.\d+)|([0-9a-f]{1,4}):([0-9a-f]{1,4}))\]$/.exec(host);
+  if (!mapped) return host;
+  if (mapped[1]) return mapped[1];
+  const hi = parseInt(mapped[2], 16);
+  const lo = parseInt(mapped[3], 16);
+  return `${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`;
+}
 
 /** Loopback, private or link-local host: this device or the local network. */
 export function isLocalUrl(url) {
-  try { return LOCAL_HOST_RE.test(new URL(url).hostname); } catch { return false; }
+  try {
+    const host = normalizeHost(new URL(url).hostname);
+    // A name with no dot can only be a local one (router, intranet, a machine name).
+    return LOCAL_HOST_RE.test(host) || (!host.includes('.') && !host.startsWith('['));
+  } catch {
+    return false;
+  }
 }
 
 /**

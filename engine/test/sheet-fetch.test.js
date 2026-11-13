@@ -43,6 +43,30 @@ test('rejectSheetUrl: a public page may not reach the local network', () => {
   assert.equal(rejectSheetUrl('http://172.32.0.1/a.css', 'https://evil.example/'), null);
 });
 
+test('rejectSheetUrl: spellings of a local host that used to slip past the guard (S1)', () => {
+  for (const sheet of ['http://localhost./a.css', 'http://LOCALHOST../a.css', 'http://127.0.0.1./a.css', 'http://router.local./a.css',
+    'http://[::ffff:7f00:1]/a.css', 'http://[::ffff:127.0.0.1]/a.css', 'http://[::ffff:c0a8:101]/a.css', 'http://[::ffff:a00:2]/a.css',
+    'http://[::]/a.css', 'http://[fe80::1]/a.css', 'http://[fd12:3456::1]/a.css',
+    'http://nas.lan/a.css', 'http://git.internal/a.css', 'http://printer.home.arpa/a.css', 'http://wiki.intranet/a.css',
+    'http://router/a.css', 'http://2130706433/a.css']) {
+    assert.match(rejectSheetUrl(sheet, 'https://evil.example/'), /local network/, sheet);
+    assert.equal(rejectSheetUrl(sheet, 'http://192.168.1.5/'), null, sheet);
+  }
+  // Public hosts that merely look similar stay allowed.
+  for (const sheet of ['https://cdn.example/a.css', 'https://lan.example/a.css', 'https://internal.example.com/a.css',
+    'http://[::ffff:808:808]/a.css', 'http://[2606:4700::1111]/a.css']) {
+    assert.equal(rejectSheetUrl(sheet, 'https://evil.example/'), null, sheet);
+  }
+});
+
+test('fetcher: a redirect to a hidden spelling of the local network is refused too (S1)', async () => {
+  for (const to of ['http://localhost./a.css', 'http://[::ffff:7f00:1]/a.css', 'http://nas.lan/a.css', 'http://x.home.arpa/a.css']) {
+    const fetch = fakeFetch({ 'https://cdn.example/r.css': { body: 'a{}', url: to } });
+    const get = createSheetFetcher({ fetch });
+    assert.match((await get('https://cdn.example/r.css', 'https://evil.example/')).error, /local network/, to);
+  }
+});
+
 test('isTrustedSender: needs a tab and our extension id', () => {
   assert.equal(isTrustedSender({ tab: { id: 1 }, id: 'ext' }, 'ext'), true);
   assert.equal(isTrustedSender({ id: 'ext' }, 'ext'), false);

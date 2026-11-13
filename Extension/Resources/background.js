@@ -380,6 +380,15 @@ function resolveSite(settings, hostname) {
 // with promise-returning get(key) / set(obj) / remove(key), and optionally
 // an `onChanged` event with addListener/removeListener.
 function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
+  // Read-modify-write calls run one at a time, so overlapping writers can't lose a change.
+  // (Same JS context only; the popup, options page and background are separate contexts.)
+  let queue = Promise.resolve();
+  const serial = (fn) => (...args) => {
+    const run = queue.then(() => fn(...args));
+    queue = run.catch(() => {});
+    return run;
+  };
+
   async function write(settings) {
     await area.set({ [key]: settings });
     return settings;
@@ -392,33 +401,33 @@ function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
     return { settings, errors };
   }
 
-  async function save(candidate) {
+  async function saveNow(candidate) {
     const { settings, errors } = validateSettings(candidate);
     await write(settings);
     return { settings, errors };
   }
 
   // Shallow-merge top level; `look` and `schedule` merge one level deeper.
-  async function update(patch) {
+  async function updateNow(patch) {
     const { settings: current } = await load();
     const next = { ...current, ...patch };
     if (isPlainObject(patch?.look)) next.look = { ...current.look, ...patch.look };
     if (isPlainObject(patch?.schedule)) next.schedule = { ...current.schedule, ...patch.schedule };
-    return save(next);
+    return saveNow(next);
   }
 
   // Set one site's entry. `null` (or an inherit-only entry) deletes it.
-  async function setSite(hostname, entry) {
+  async function setSiteNow(hostname, entry) {
     const host = normalizeHostname(hostname);
     if (!host) return { settings: (await load()).settings, errors: [`sites: rejected hostname ${JSON.stringify(hostname)}`] };
     const { settings: current } = await load();
     const sites = { ...current.sites };
     if (entry === null) delete sites[host];
     else sites[host] = entry;
-    return save({ ...current, sites });
+    return saveNow({ ...current, sites });
   }
 
-  async function reset() {
+  async function resetNow() {
     return write(defaultSettings());
   }
 
@@ -434,7 +443,7 @@ function createSettingsStore(area, { key = STORAGE_KEY } = {}) {
     return () => ev.removeListener(handler);
   }
 
-  return { load, save, update, setSite, reset, subscribe };
+  return { load, save: serial(saveNow), update: serial(updateNow), setSite: serial(setSiteNow), reset: serial(resetNow), subscribe };
 }
 
 // browser.storage.local as a store area. onChanged comes from
@@ -549,11 +558,28 @@ const { FETCH_SHEET } = __m_engine_src_messages_js;
 const MAX_SHEET_BYTES = 4 * 1024 * 1024;
 const CACHE_LIMIT = 64;
 
-const LOCAL_HOST_RE = /^(?:localhost|.+\.localhost|.+\.local|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+|0\.0\.0\.0|\[(?:::1?|f[cd][0-9a-f]*:.*|fe80:.*)\])$/i;
+const LOCAL_HOST_RE = /^(?:localhost|.+\.(?:localhost|local|lan|internal|home\.arpa|intranet)|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+|0\.0\.0\.0|\[(?:::1?|f[cd][0-9a-f]*:.*|fe[89ab][0-9a-f]:.*)\])$/i;
+
+/** The host as the pattern sees it: no trailing dot, `::ffff:` IPv4-mapped IPv6 as plain IPv4. */
+function normalizeHost(hostname) {
+  const host = hostname.toLowerCase().replace(/\.+$/, '');
+  const mapped = /^\[::ffff:(?:(\d+\.\d+\.\d+\.\d+)|([0-9a-f]{1,4}):([0-9a-f]{1,4}))\]$/.exec(host);
+  if (!mapped) return host;
+  if (mapped[1]) return mapped[1];
+  const hi = parseInt(mapped[2], 16);
+  const lo = parseInt(mapped[3], 16);
+  return `${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`;
+}
 
 /** Loopback, private or link-local host: this device or the local network. */
 function isLocalUrl(url) {
-  try { return LOCAL_HOST_RE.test(new URL(url).hostname); } catch { return false; }
+  try {
+    const host = normalizeHost(new URL(url).hostname);
+    // A name with no dot can only be a local one (router, intranet, a machine name).
+    return LOCAL_HOST_RE.test(host) || (!host.includes('.') && !host.startsWith('['));
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -781,21 +807,25 @@ function firstPaintPlan(settings, now = new Date(), timeZone) {
   return null;
 }
 
-/** Minutes until the schedule next changes state (for re-planning), or null. */
-function minutesToNextChange(settings, now = new Date()) {
+/** Milliseconds until the schedule next changes state (for re-planning), or null. */
+function msToNextChange(settings, now = new Date()) {
   if (settings?.mode !== 'schedule') return null;
   const [sh, sm] = String(settings.schedule?.start ?? '').split(':').map(Number);
   const [eh, em] = String(settings.schedule?.end ?? '').split(':').map(Number);
   if ([sh, sm, eh, em].some((n) => !Number.isFinite(n))) return null;
-  const m = now.getHours() * 60 + now.getMinutes();
-  const until = (t) => ((t - m + 1440) % 1440) || 1440;
-  return Math.min(until(sh * 60 + sm), until(eh * 60 + em));
+  // A real Date, so a 23- or 25-hour day (daylight saving) counts the real time.
+  const until = (h, m) => {
+    const t = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
+    if (t <= now) t.setDate(t.getDate() + 1);
+    return t - now;
+  };
+  return Math.min(until(sh, sm), until(eh, em));
 }
 
 function samePlan(a, b) {
   return JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 }
-return { FIRST_PAINT_ID, FIRST_PAINT_CSS, hostPatterns, firstPaintPlan, minutesToNextChange, samePlan };
+return { FIRST_PAINT_ID, FIRST_PAINT_CSS, hostPatterns, firstPaintPlan, msToNextChange, samePlan };
 })();
 
 // ---- engine/src/background-core.js
@@ -821,7 +851,7 @@ const __m_engine_src_background_core_js = (() => {
 const { createSettingsStore, extensionArea, migrate, STORAGE_KEY, MODES } = __m_engine_src_settings_js;
 const { createSheetMessageHandler } = __m_engine_src_sheet_fetch_js;
 const { SETTINGS_CHANGED, TAB_STATE, GET_TAB_STATE, RESET_ALL, OFF_TEXT, RESTORE_KEY } = __m_engine_src_messages_js;
-const { firstPaintPlan, minutesToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } = __m_engine_src_first_paint_js;
+const { firstPaintPlan, msToNextChange, samePlan, FIRST_PAINT_ID, FIRST_PAINT_CSS } = __m_engine_src_first_paint_js;
 
 const TOGGLE_COMMAND = 'toggle-dark-mode';
 // Last App Group reset generation this extension has applied (T014).
@@ -950,8 +980,8 @@ function createBackground({ api, fetch }) {
       registered = got?.[0] ? { matches: got[0].matches, excludeMatches: got[0].excludeMatches ?? [] } : null;
     }
     clearTimeout(planTimer);
-    const next = minutesToNextChange(settings, new Date());
-    if (next !== null) planTimer = setTimeout(() => syncFirstPaint().catch(ignore), next * 60000 + 1000);
+    const next = msToNextChange(settings, new Date());
+    if (next !== null) planTimer = setTimeout(() => syncFirstPaint().catch(ignore), next + 1000);
     if (samePlan(plan, registered)) return plan;
     if (registered) await Promise.resolve(scripting.unregisterContentScripts({ ids: [FIRST_PAINT_ID] })).catch(ignore);
     registered = null;

@@ -65,6 +65,13 @@ async function commit(write) {
   render();
 }
 
+// Another window (the popup, the options page, the shortcut) changed the settings.
+store.subscribe((next) => {
+  if (!settings || JSON.stringify(next) === JSON.stringify(settings)) return;
+  settings = next;
+  render();
+});
+
 $('mode').addEventListener('change', (e) => commit(store.update({ mode: e.target.value })));
 
 for (const k of ['start', 'end']) {
