@@ -1,5 +1,5 @@
 {
-  "when": "2026-10-22T17:41:11.680Z",
+  "when": "2026-10-27T21:27:00.876Z",
   "runs": 3,
   "verdict": {
     "nodesInitialMedian": {
@@ -7,48 +7,48 @@
       "max": 50,
       "values": [
         40,
-        41,
-        40
+        40,
+        39
       ],
       "advisory": false,
       "pass": true
     },
     "nodesBatchMedian": {
-      "value": 8.5,
+      "value": 9.5,
       "max": 8,
       "values": [
-        8.5,
-        7,
-        9.5
+        9.5,
+        10,
+        9
       ],
       "advisory": false,
       "pass": false
     },
     "gridLongestEngineTaskAfterFirstPaint": {
-      "value": 21,
+      "value": 16,
       "max": 50,
       "values": [
-        21,
-        22,
-        21
+        16,
+        16,
+        16
       ],
       "advisory": false,
       "pass": true
     },
     "gridStormEngineShare": {
-      "value": 0.02996,
+      "value": 0.02477,
       "max": 0.1,
       "values": [
-        0.02918,
-        0.02996,
-        0.03059
+        0.02218,
+        0.02477,
+        0.02639
       ],
       "advisory": false,
       "pass": true
     },
     "gridInsertRecalc": {
       "value": 0,
-      "max": 2,
+      "max": 3,
       "values": [
         0,
         0,
@@ -58,23 +58,23 @@
       "pass": true
     },
     "gridGeneratedRules": {
-      "value": 635,
-      "max": 2357,
+      "value": 246,
+      "max": 887,
       "values": [
-        635,
-        635,
-        635
+        246,
+        246,
+        246
       ],
       "advisory": false,
       "pass": true
     },
     "gridStormRafGapMax": {
-      "value": 53,
-      "max": 31,
+      "value": 35,
+      "max": 32,
       "values": [
-        51,
-        53,
-        55
+        44,
+        31,
+        35
       ],
       "advisory": true,
       "pass": false
