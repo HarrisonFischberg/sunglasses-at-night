@@ -29,7 +29,9 @@ The toolbar popup and the settings page, shown with made-up demo sites.
 
 ## Install
 
-Sunglasses at Night isn't on the App Store yet, so for now you build it yourself.
+Get Sunglasses at Night free on the [App Store](https://apps.apple.com/app/id6825091477) for Mac, iPhone and iPad.
+
+To build it yourself instead:
 
 You need a Mac with Xcode (macOS 13 or later for the Mac app, iOS or iPadOS 16 or later for iPhone and iPad) and Node.js 22 for the build scripts.
 
